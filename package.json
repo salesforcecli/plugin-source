@@ -1,7 +1,7 @@
 {
-  "name": "@salesforce/plugin-template",
-  "description": "A template repository for sfdx plugins",
-  "version": "1.0.0",
+  "name": "@salesforce/plugin-source",
+  "description": "Commands to interact with source formatted metadata",
+  "version": "0.0.1",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
@@ -55,7 +55,7 @@
     "/messages",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/salesforcecli/plugin-template",
+  "homepage": "https://github.com/salesforcecli/plugin-source",
   "keywords": [
     "force",
     "salesforce",
@@ -78,7 +78,7 @@
       }
     }
   },
-  "repository": "salesforcecli/plugin-template",
+  "repository": "salesforcecli/plugin-source",
   "scripts": {
     "build": "sf-build",
     "clean": "sf-clean",
