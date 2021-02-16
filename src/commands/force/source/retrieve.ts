@@ -5,10 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
+import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
 import { SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
+import { asString } from '@salesforce/ts-types';
 import { DEFAULT_SRC_WAIT_MINUTES, MINIMUM_SRC_WAIT_MINUTES, SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -57,7 +59,7 @@ export class retrieve extends SourceCommand {
       // safe to cast from the flags as an array of strings
       packagenames: this.flags.packagenames as string[],
       sourcepath: this.flags.sourcepath as string[],
-      manifest: this.flags.manifest as string,
+      manifest: asString(this.flags.manifest),
       metadata: this.flags.metadata as string[],
     });
 
@@ -65,61 +67,12 @@ export class retrieve extends SourceCommand {
     // needs to be a path to the temp dir package.xml
     await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
 
-    const results = await cs.retrieve(this.org.getUsername(), this.getAbsolutePath(defaultPackage.path), {
+    const results = await cs.retrieve(this.org.getUsername(), path.resolve(defaultPackage.path), {
       merge: true,
       // TODO: fix this once wait has been updated in library
       wait: 1000000,
     });
 
-    // emit post retrieve event
-    // results must match = {
-    //   "done": true,
-    //   "fileProperties": [
-    //     {
-    //       "createdById": "0053B000005FbiuQAC",
-    //       "createdByName": "User User",
-    //       "createdDate": "2021-02-09T23:48:26.000Z",
-    //       "fileName": "unpackaged/classes/MyTest.cls",
-    //       "fullName": "MyTest",
-    //       "id": "01p3B000008hOVcQAM",
-    //       "lastModifiedById": "0053B000005FbiuQAC",
-    //       "lastModifiedByName": "User User",
-    //       "lastModifiedDate": "2021-02-11T23:00:49.000Z",
-    //       "manageableState": "unmanaged",
-    //       "type": "ApexClass"
-    //     },
-    //     {
-    //       "createdById": "0053B000005FbiuQAC",
-    //       "createdByName": "User User",
-    //       "createdDate": "2021-02-09T23:48:27.000Z",
-    //       "fileName": "unpackaged/classes/force.cls",
-    //       "fullName": "force",
-    //       "id": "01p3B000008hOVdQAM",
-    //       "lastModifiedById": "0053B000005FbiuQAC",
-    //       "lastModifiedByName": "User User",
-    //       "lastModifiedDate": "2021-02-11T23:00:49.000Z",
-    //       "manageableState": "unmanaged",
-    //       "type": "ApexClass"
-    //     },
-    //     {
-    //       "createdById": "0053B000005FbiuQAC",
-    //       "createdByName": "User User",
-    //       "createdDate": "2021-02-12T17:27:58.876Z",
-    //       "fileName": "unpackaged/package.xml",
-    //       "fullName": "unpackaged/package.xml",
-    //       "id": "",
-    //       "lastModifiedById": "0053B000005FbiuQAC",
-    //       "lastModifiedByName": "User User",
-    //       "lastModifiedDate": "2021-02-12T17:27:58.876Z",
-    //       "manageableState": "unmanaged",
-    //       "type": "Package"
-    //     }
-    //   ],
-    //   "id": "09S3B000002N5lcUAC",
-    //   "status": "Succeeded",
-    //   "success": true,
-    //   "zipFilePath": "/var/folders/28/dmr8rt4d5f5bq_ttscbspz580000gp/T/sdx_sourceRetrieve_pkg_1613150491146/unpackaged.zip"
-    // }
     await hookEmitter.emit('postretrieve', results);
 
     if (results.status === 'InProgress') {

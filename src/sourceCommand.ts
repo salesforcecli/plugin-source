@@ -27,16 +27,7 @@ export const DEFAULT_SRC_WAIT_MINUTES = 33;
 export abstract class SourceCommand extends SfdxCommand {
   public async retrievePackageDirs(): Promise<PackageDir[]> {
     const proj = await SfdxProjectJson.create({});
-    return await proj.getPackageDirectories();
-  }
-
-  /**
-   * creates an absolute path by joining process.cwd() and the passed in string
-   *
-   * @param relPath
-   */
-  public getAbsolutePath(relPath: string): string {
-    return path.join(process.cwd(), relPath);
+    return proj.getPackageDirectories();
   }
 
   /**
@@ -53,7 +44,7 @@ export abstract class SourceCommand extends SfdxCommand {
     if (options.sourcepath) {
       options.sourcepath.forEach((filepath) => {
         if (fs.fileExistsSync(filepath)) {
-          setAggregator.push(ComponentSet.fromSource(this.getAbsolutePath(filepath)));
+          setAggregator.push(ComponentSet.fromSource(path.resolve(filepath)));
         } else {
           throw SfdxError.create('@salesforce/plugin-source', 'sourceCommand', 'SourcePathInvalid', [filepath]);
         }
@@ -69,7 +60,7 @@ export abstract class SourceCommand extends SfdxCommand {
         })
         // for the requested ones get the ComponentSet from their path
         .forEach((pkg) => {
-          setAggregator.push(ComponentSet.fromSource(this.getAbsolutePath(pkg.path)));
+          setAggregator.push(ComponentSet.fromSource(path.resolve(pkg.path)));
         });
     }
 
@@ -79,7 +70,7 @@ export abstract class SourceCommand extends SfdxCommand {
           // to create a link to the actual source component we need to have it resolve through all packages
           // to find the matching source metadata
           // this allows us to deploy after
-          resolve: pkgs.map((pkg) => this.getAbsolutePath(pkg.path)),
+          resolve: pkgs.map((pkg) => path.resolve(pkg.path)),
         })
       );
     }
