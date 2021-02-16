@@ -6,8 +6,11 @@
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
     "@oclif/config": "^1",
+    "@salesforce/cli-plugins-testkit": "^0.0.3",
     "@salesforce/command": "^3.1.0",
-    "@salesforce/core": "^2.18.0",
+    "@salesforce/core": "^2.18.3",
+    "@salesforce/source-deploy-retrieve": "^1.1.17",
+    "chalk": "^4.1.0",
     "tslib": "^2"
   },
   "devDependencies": {
@@ -73,8 +76,13 @@
       "@salesforce/plugin-command-reference"
     ],
     "topics": {
-      "hello": {
-        "description": "Commands to say hello."
+      "force": {
+        "external": true,
+        "subtopics": {
+          "source": {
+            "description": "commands to interact with source formatted metadata"
+          }
+        }
       }
     }
   },

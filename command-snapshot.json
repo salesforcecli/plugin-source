@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "command": "force:source:retrieve",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "json",
+      "loglevel",
+      "manifest",
+      "metadata",
+      "packagenames",
+      "sourcepath",
+      "targetusername",
+      "wait"
+    ]
+  }
+]
