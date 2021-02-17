@@ -11,6 +11,7 @@ import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
 import { SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString } from '@salesforce/ts-types';
+import { blue, yellow } from 'chalk';
 import { DEFAULT_SRC_WAIT_MINUTES, MINIMUM_SRC_WAIT_MINUTES, SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -81,5 +82,36 @@ export class retrieve extends SourceCommand {
     this.printTable(results, true);
 
     return results;
+  }
+
+  /**
+   * to print the results table of successes, failures, partial failures
+   *
+   * @param results what the .deploy or .retrieve method returns
+   * @param withoutState a boolean to add state, default to true
+   */
+  public printTable(results: SourceRetrieveResult, withoutState?: boolean): void {
+    const stateCol = withoutState ? [] : [{ key: 'state', label: messages.getMessage('stateTableColumn') }];
+
+    this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
+    if (results.success && results.successes.length) {
+      const columns = [
+        { key: 'properties.fullName', label: messages.getMessage('fullNameTableColumn') },
+        { key: 'properties.type', label: messages.getMessage('typeTableColumn') },
+        {
+          key: 'properties.fileName',
+          label: messages.getMessage('workspacePathTableColumn'),
+        },
+      ];
+      this.ux.table(results.successes, { columns: [...stateCol, ...columns] });
+    } else {
+      this.ux.log(messages.getMessage('NoResultsFound'));
+    }
+
+    if (results.status === 'PartialSuccess' && results.successes.length && results.failures.length) {
+      this.ux.log('');
+      this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
+      results.failures.forEach((warning) => this.ux.log(warning.message));
+    }
   }
 }

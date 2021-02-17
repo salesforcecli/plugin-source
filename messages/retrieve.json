@@ -23,5 +23,14 @@
     "verbose": "verbose output of retrieve result"
   },
   "SourceRetrieveError": "Could not retrieve files in the sourcepath%s",
-  "retrieveTimeout": "Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time."
+  "retrieveTimeout": "Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time.",
+  "retrievedSourceHeader": "Retrieved Source",
+  "fullNameTableColumn": "FULL NAME",
+  "typeTableColumn": "TYPE",
+  "workspacePathTableColumn": "PROJECT PATH",
+  "NoResultsFound": "No results found",
+  "metadataNotFoundWarning": "WARNING: The following metadata isn’t in your org. If it’s not new, someone deleted it from the org.",
+  "columnNumberColumn": "COLUMN NUMBER",
+  "lineNumberColumn": "LINE NUMBER",
+  "errorColumn": "PROBLEM"
 }

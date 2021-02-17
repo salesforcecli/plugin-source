@@ -6,13 +6,9 @@
  */
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
-import { ComponentSet, SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { fs, Messages, PackageDir, SfdxError, SfdxProjectJson } from '@salesforce/core';
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { fs, PackageDir, SfdxError, SfdxProjectJson } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
-import { blue, yellow } from 'chalk';
-
-Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'sourceCommand');
 
 export type FlagOptions = {
   packagenames?: string[];
@@ -44,6 +40,7 @@ export abstract class SourceCommand extends SfdxCommand {
     if (options.sourcepath) {
       options.sourcepath.forEach((filepath) => {
         if (fs.fileExistsSync(filepath)) {
+          this.logger.debug(`Creating ComponentSet from sourcepath ${path.resolve(filepath)}`);
           setAggregator.push(ComponentSet.fromSource(path.resolve(filepath)));
         } else {
           throw SfdxError.create('@salesforce/plugin-source', 'sourceCommand', 'SourcePathInvalid', [filepath]);
@@ -60,11 +57,14 @@ export abstract class SourceCommand extends SfdxCommand {
         })
         // for the requested ones get the ComponentSet from their path
         .forEach((pkg) => {
+          this.logger.debug(`Creating ComponentSet from source with  ${path.resolve(pkg.path)}`);
           setAggregator.push(ComponentSet.fromSource(path.resolve(pkg.path)));
         });
     }
 
     if (options.manifest) {
+      this.logger.debug(`Creating ComponentSet from manifest ${path.resolve(options.manifest)}`);
+
       setAggregator.push(
         await ComponentSet.fromManifestFile(options.manifest, {
           // to create a link to the actual source component we need to have it resolve through all packages
@@ -88,8 +88,11 @@ export abstract class SourceCommand extends SfdxCommand {
           metadata.type = splitEntry[0];
           metadata.fullName = splitEntry[1];
         }
+        this.logger.debug(`Creating ComponentSet from metadata member ${metadata.type}:${metadata.fullName}`);
+
         const cs = new ComponentSet([metadata]);
-        // not sure about the process.cwd()
+        // we need to search the entire project for the matching metadata component
+        // no better way than to have it search than process.cwd()
         cs.resolveSourceComponents(process.cwd(), { filter: cs });
         setAggregator.push(cs);
       });
@@ -103,36 +106,5 @@ export abstract class SourceCommand extends SfdxCommand {
     });
 
     return new ComponentSet(merged);
-  }
-
-  /**
-   * to print the results table of successes, failures, partial failures
-   *
-   * @param results what the .deploy or .retrieve method returns
-   * @param withoutState a boolean to add state, default to true
-   */
-  public printTable(results: SourceRetrieveResult, withoutState?: boolean): void {
-    const stateCol = withoutState ? [] : [{ key: 'state', label: messages.getMessage('stateTableColumn') }];
-
-    this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
-    if (results.success && results.successes.length) {
-      const columns = [
-        { key: 'properties.fullName', label: messages.getMessage('fullNameTableColumn') },
-        { key: 'properties.type', label: messages.getMessage('typeTableColumn') },
-        {
-          key: 'properties.fileName',
-          label: messages.getMessage('workspacePathTableColumn'),
-        },
-      ];
-      this.ux.table(results.successes, { columns: [...stateCol, ...columns] });
-    } else {
-      this.ux.log(messages.getMessage('NoResultsFound'));
-    }
-
-    if (results.status === 'PartialSuccess' && results.successes.length && results.failures.length) {
-      this.ux.log('');
-      this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
-      results.failures.forEach((warning) => this.ux.log(warning.message));
-    }
   }
 }
