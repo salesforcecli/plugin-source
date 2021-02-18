@@ -12,7 +12,7 @@ import { SourceDeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
-import { DEFAULT_SRC_WAIT_MINUTES, MINIMUM_SRC_WAIT_MINUTES, SourceCommand } from '../../../sourceCommand';
+import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -30,8 +30,8 @@ export class deploy extends SourceCommand {
     }),
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(DEFAULT_SRC_WAIT_MINUTES),
-      min: Duration.minutes(MINIMUM_SRC_WAIT_MINUTES),
+      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      min: Duration.minutes(SourceCommand.MINIMUM_SRC_WAIT_MINUTES),
       description: messages.getMessage('flags.wait'),
     }),
     testlevel: flags.enum({

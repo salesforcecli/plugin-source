@@ -12,7 +12,7 @@ import { SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString } from '@salesforce/ts-types';
 import { blue, yellow } from 'chalk';
-import { DEFAULT_SRC_WAIT_MINUTES, MINIMUM_SRC_WAIT_MINUTES, SourceCommand } from '../../../sourceCommand';
+import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -30,8 +30,8 @@ export class retrieve extends SourceCommand {
     }),
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(DEFAULT_SRC_WAIT_MINUTES),
-      min: MINIMUM_SRC_WAIT_MINUTES,
+      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      min: SourceCommand.MINIMUM_SRC_WAIT_MINUTES,
       description: messages.getMessage('flags.wait'),
     }),
     manifest: flags.filepath({
@@ -73,7 +73,7 @@ export class retrieve extends SourceCommand {
     const results = await cs.retrieve(this.org.getUsername(), path.resolve(defaultPackage.path), {
       merge: true,
       // TODO: fix this once wait has been updated in library
-      wait: 1000000,
+      wait: (this.flags.wait as Duration).milliseconds,
       // TODO: implement retrieve via package name
       // package: options.packagenames
     });

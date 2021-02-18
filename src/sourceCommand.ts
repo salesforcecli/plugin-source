@@ -17,10 +17,9 @@ export type FlagOptions = {
   metadata: string[];
 };
 
-export const MINIMUM_SRC_WAIT_MINUTES = 1;
-export const DEFAULT_SRC_WAIT_MINUTES = 33;
-
 export abstract class SourceCommand extends SfdxCommand {
+  public static MINIMUM_SRC_WAIT_MINUTES = 1;
+  public static DEFAULT_SRC_WAIT_MINUTES = 33;
   /**
    * will create one ComponentSet to be deployed/retrieved
    * will combine from all options passed in
