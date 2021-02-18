@@ -1,16 +1,17 @@
 {
-  "description": "retrieve source from an org",
+  "description": "deploy source to an org",
   "examples": [
-    "sfdx force:source:retrieve -p path/to/source",
-    "sfdx force:source:retrieve -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
-    "sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
-    "sfdx force:source:retrieve -m ApexClass",
-    "sfdx force:source:retrieve -m ApexClass:MyApexClass",
-    "sfdx force:source:retrieve -m \"CustomObject,ApexClass\"",
-    "sfdx force:source:retrieve -x path/to/package.xml",
-    "sfdx force:source:retrieve -n \"Package1, PackageName With Spaces, Package3\"",
-    "sfdx force:source:retrieve -n MyPackageName -p path/to/apex/classes",
-    "sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml"
+    "$ sfdx force:source:deploy -p path/to/source",
+    "$ sfdx force:source:deploy -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
+    "$ sfdx force:source:deploy -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
+    "$ sfdx force:source:deploy -m ApexClass",
+    "$ sfdx force:source:deploy -m ApexClass:MyApexClass",
+    "$ sfdx force:source:deploy -m \"CustomObject,ApexClass\"",
+    "$ sfdx force:source:deploy -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
+    "$ sfdx force:source:deploy -x path/to/package.xml",
+    "$ sfdx force:source:deploy -m ApexClass -l RunLocalTests",
+    "$ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c",
+    "$ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`"
   ],
   "flags": {
     "sourcePath": "comma-separated list of source file paths to retrieve",

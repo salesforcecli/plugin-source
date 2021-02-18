@@ -97,8 +97,6 @@ export class deploy extends SourceCommand {
     const hookEmitter = Lifecycle.getInstance();
 
     const cs = await this.createComponentSet({
-      // safe to cast from the flags as an array of strings
-      packagenames: this.flags.packagenames as string[],
       sourcepath: this.flags.sourcepath as string[],
       manifest: asString(this.flags.manifest),
       metadata: this.flags.metadata as string[],
@@ -166,7 +164,7 @@ export class deploy extends SourceCommand {
         // get relative path for table output
         files.forEach((file) => {
           if (file.component.content) {
-            return (file.component.content = path.relative(process.cwd(), file.component.content));
+            file.component.content = path.relative(process.cwd(), file.component.content);
           }
         });
         this.ux.log('');

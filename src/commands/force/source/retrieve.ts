@@ -7,7 +7,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
+import { Lifecycle, Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
 import { SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString } from '@salesforce/ts-types';
@@ -53,7 +53,9 @@ export class retrieve extends SourceCommand {
 
   public async run(): Promise<SourceRetrieveResult> {
     const hookEmitter = Lifecycle.getInstance();
-    const packages = await this.retrievePackageDirs();
+
+    const proj = await SfdxProjectJson.create({});
+    const packages = await proj.getPackageDirectories();
     const defaultPackage = packages.find((pkg) => pkg.default);
 
     const cs = await this.createComponentSet({
@@ -72,6 +74,8 @@ export class retrieve extends SourceCommand {
       merge: true,
       // TODO: fix this once wait has been updated in library
       wait: 1000000,
+      // TODO: implement retrieve via package name
+      // package: options.packagenames
     });
 
     await hookEmitter.emit('postretrieve', results);
