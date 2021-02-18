@@ -126,13 +126,13 @@ export class deploy extends SourceCommand {
   private printComponentFailures(result: SourceDeployResult): void {
     if (result.status === 'Failed' && result.components) {
       // sort by filename then fullname
-      const failures = result.components
-        .sort((i, j) => {
-          return i.component.type.directoryName < j.component.type.directoryName ? -1 : 1;
-        })
-        .sort((i, j) => {
-          return i.component.fullName < j.component.fullName ? -1 : 1;
-        });
+      const failures = result.components.sort((i, j) => {
+        if (i.component.type.directoryName === j.component.type.directoryName) {
+          // if the have the same directoryName then sort by fullName
+          return i.component.fullName < j.component.fullName ? 1 : -1;
+        }
+        return i.component.type.directoryName < j.component.type.directoryName ? 1 : -1;
+      });
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       this.ux.table(failures, {
@@ -157,14 +157,14 @@ export class deploy extends SourceCommand {
             // same metadata type, according to above comment sort on filename
             if (i.component.type.directoryName === j.component.type.directoryName) {
               // same filename's according to comment sort by fullName
-              return i.component.fullName < j.component.fullName ? -1 : 1;
+              return i.component.fullName < j.component.fullName ? 1 : -1;
             }
-            return i.component.type.directoryName < j.component.type.directoryName ? -1 : 1;
+            return i.component.type.directoryName < j.component.type.directoryName ? 1 : -1;
           }
-          return i.component.type.name < j.component.type.name ? -1 : 1;
+          return i.component.type.name < j.component.type.name ? 1 : -1;
         });
         // get relative path for table output
-        files.map((file) => {
+        files.forEach((file) => {
           if (file.component.content) {
             return (file.component.content = path.relative(process.cwd(), file.component.content));
           }
