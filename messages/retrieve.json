@@ -1,0 +1,36 @@
+{
+  "description": "retrieve source from an org",
+  "examples": [
+    "sfdx force:source:retrieve -p path/to/source",
+    "sfdx force:source:retrieve -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
+    "sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
+    "sfdx force:source:retrieve -m ApexClass",
+    "sfdx force:source:retrieve -m ApexClass:MyApexClass",
+    "sfdx force:source:retrieve -m \"CustomObject,ApexClass\"",
+    "sfdx force:source:retrieve -x path/to/package.xml",
+    "sfdx force:source:retrieve -n \"Package1, PackageName With Spaces, Package3\"",
+    "sfdx force:source:retrieve -n MyPackageName -p path/to/apex/classes",
+    "sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml"
+  ],
+  "flags": {
+    "sourcePath": "comma-separated list of source file paths to retrieve",
+    "manifestParamDescription": "file path for manifest (package.xml) of components to retrieve",
+    "metadataParamDescription": "comma-separated list of metadata component names",
+    "wait": "wait time for command to finish in minutes",
+    "manifest": "file path for manifest (package.xml) of components to retrieve",
+    "metadata": "comma-separated list of metadata component names",
+    "packagename": "a comma-separated list of packages to retrieve",
+    "verbose": "verbose output of retrieve result"
+  },
+  "SourceRetrieveError": "Could not retrieve files in the sourcepath%s",
+  "retrieveTimeout": "Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time.",
+  "retrievedSourceHeader": "Retrieved Source",
+  "fullNameTableColumn": "FULL NAME",
+  "typeTableColumn": "TYPE",
+  "workspacePathTableColumn": "PROJECT PATH",
+  "NoResultsFound": "No results found",
+  "metadataNotFoundWarning": "WARNING: The following metadata isn’t in your org. If it’s not new, someone deleted it from the org.",
+  "columnNumberColumn": "COLUMN NUMBER",
+  "lineNumberColumn": "LINE NUMBER",
+  "errorColumn": "PROBLEM"
+}

@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "command": "force:source:deploy",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "checkonly",
+      "ignoreerrors",
+      "ignorewarnings",
+      "json",
+      "loglevel",
+      "manifest",
+      "metadata",
+      "runtests",
+      "sourcepath",
+      "targetusername",
+      "testlevel",
+      "validateddeployrequestid",
+      "verbose",
+      "wait"
+    ]
+  },
+  {
+    "command": "force:source:retrieve",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "json",
+      "loglevel",
+      "manifest",
+      "metadata",
+      "packagenames",
+      "sourcepath",
+      "targetusername",
+      "wait"
+    ]
+  }
+]

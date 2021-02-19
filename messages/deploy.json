@@ -1,0 +1,32 @@
+{
+  "description": "deploy source to an org",
+  "examples": [
+    "$ sfdx force:source:deploy -p path/to/source",
+    "$ sfdx force:source:deploy -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
+    "$ sfdx force:source:deploy -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
+    "$ sfdx force:source:deploy -m ApexClass",
+    "$ sfdx force:source:deploy -m ApexClass:MyApexClass",
+    "$ sfdx force:source:deploy -m \"CustomObject,ApexClass\"",
+    "$ sfdx force:source:deploy -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
+    "$ sfdx force:source:deploy -x path/to/package.xml",
+    "$ sfdx force:source:deploy -m ApexClass -l RunLocalTests",
+    "$ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c",
+    "$ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`"
+  ],
+  "flags": {
+    "sourcePath": "comma-separated list of source file paths to retrieve",
+    "manifest": "file path for manifest (package.xml) of components to retrieve",
+    "metadata": "comma-separated list of metadata component names",
+    "wait": "wait time for command to finish in minutes",
+    "packagename": "a comma-separated list of packages to retrieve",
+    "verbose": "verbose output of retrieve result",
+    "checkonly": "validate deploy but don’t save to the org",
+    "testLevel": "deployment testing level",
+    "runTests": "tests to run if --testlevel RunSpecifiedTests",
+    "ignoreErrors": "ignore any errors and do not roll back deployment",
+    "ignoreWarnings": "whether a warning will allow a deployment to complete successfully",
+    "validateDeployRequestId": "request ID of the validated deployment to run a Quick Deploy"
+  },
+  "SourceRetrieveError": "Could not retrieve files in the sourcepath%s",
+  "checkOnlySuccess": "\nSuccessfully validated the deployment"
+}
