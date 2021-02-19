@@ -570,7 +570,7 @@
     mkdirp "1.0.4"
     sfdx-faye "^1.0.9"
 
-"@salesforce/core@^2.16.3", "@salesforce/core@^2.18.3", "@salesforce/core@^2.2.0":
+"@salesforce/core@^2.16.3", "@salesforce/core@^2.19.1", "@salesforce/core@^2.2.0":
   version "2.19.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.19.1.tgz#fef31944f7fa1a0af65294de58855e65b1b5d9a5"
   integrity sha512-B4KFq/UaORqHpWl6z6FRZbCf2tlwy+TD0APqv545ECuUsbsDb8Rs96wsram17pm+qAmIpdlTCEbfJnNxy+X2tQ==
