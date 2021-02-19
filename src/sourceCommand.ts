@@ -34,10 +34,9 @@ export abstract class SourceCommand extends SfdxCommand {
     if (options.sourcepath) {
       options.sourcepath.forEach((filepath) => {
         if (fs.fileExistsSync(filepath)) {
-          this.logger.debug(`Creating ComponentSet from sourcepath ${path.resolve(filepath)}`);
           setAggregator.push(...ComponentSet.fromSource(path.resolve(filepath)));
         } else {
-          throw SfdxError.create('@salesforce/plugin-source', 'sourceCommand', 'SourcePathInvalid', [filepath]);
+          throw new SfdxError(`The sourcepath "${filepath}" is not a valid source file path.`);
         }
       });
     }
@@ -48,8 +47,6 @@ export abstract class SourceCommand extends SfdxCommand {
     }
 
     if (options.manifest) {
-      this.logger.debug(`Creating ComponentSet from manifest ${path.resolve(options.manifest)}`);
-
       setAggregator.push(
         ...(await ComponentSet.fromManifestFile(options.manifest, {
           // to create a link to the actual source component we need to have it resolve through all packages
@@ -68,8 +65,6 @@ export abstract class SourceCommand extends SfdxCommand {
           // either -m ApexClass or -m ApexClass:MyApexClass
           fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
         };
-        this.logger.debug(`Creating ComponentSet from metadata member ${metadata.type}:${metadata.fullName}`);
-
         const cs = new ComponentSet([metadata]);
         // we need to search the entire project for the matching metadata component
         // no better way than to have it search than process.cwd()

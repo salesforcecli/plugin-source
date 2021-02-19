@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { SourceDeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString } from '@salesforce/ts-types';
+import { asString, asArray } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { SourceCommand } from '../../../sourceCommand';
 
@@ -97,9 +97,9 @@ export class deploy extends SourceCommand {
     const hookEmitter = Lifecycle.getInstance();
 
     const cs = await this.createComponentSet({
-      sourcepath: this.flags.sourcepath as string[],
+      sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
-      metadata: this.flags.metadata as string[],
+      metadata: asArray<string>(this.flags.metadata),
     });
 
     await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });

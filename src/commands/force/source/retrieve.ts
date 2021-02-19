@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
 import { SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString } from '@salesforce/ts-types';
+import { asArray, asString } from '@salesforce/ts-types';
 import { blue, yellow } from 'chalk';
 import { SourceCommand } from '../../../sourceCommand';
 
@@ -60,10 +60,10 @@ export class retrieve extends SourceCommand {
 
     const cs = await this.createComponentSet({
       // safe to cast from the flags as an array of strings
-      packagenames: this.flags.packagenames as string[],
-      sourcepath: this.flags.sourcepath as string[],
+      packagenames: asArray<string>(this.flags.packagenames),
+      sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
-      metadata: this.flags.metadata as string[],
+      metadata: asArray<string>(this.flags.metadata),
     });
 
     // emit pre retrieve event

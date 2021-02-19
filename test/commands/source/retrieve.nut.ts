@@ -4,25 +4,24 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { execCmd } from '@salesforce/cli-plugins-testkit';
-// import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 
-// let session: TestSession;
+let session: TestSession;
 
 describe('source:retrieve NUTs', () => {
   before(() => {
-    // session = TestSession.create({
-    //   project: {
-    //     gitClone: 'https://github.com/trailheadapps/ebikes-lwc.git',
-    //   },
-    //   // create org and push source to get something to retrieve
-    //   setupCommands: [
-    //     'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
-    //     'sfdx force:source:push',
-    //     'sfdx force:source:convert --packagename force-app --outputdir FORCE-APP',
-    //     'sfdx force:source:convert --packagename my-app --outputdir MY-APP',
-    //   ],
-    // });
+    session = TestSession.create({
+      project: {
+        gitClone: 'https://github.com/amphro/simple-mpd-project.git',
+      },
+      // create org and push source to get something to retrieve
+      setupCommands: [
+        'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+        'sfdx force:source:push',
+        'sfdx force:source:convert --packagename force-app --outputdir FORCE-APP',
+        'sfdx force:source:convert --packagename my-app --outputdir MY-APP',
+      ],
+    });
   });
 
   it('retrieves via sourcepath', () => {
@@ -42,13 +41,13 @@ describe('source:retrieve NUTs', () => {
     execCmd('force:source:retrieve --sourcepath "force-app, my-app" --json', { ensureExitCode: 0 });
   });
 
-  it('retrieves via package name with spaces', () => {
-    execCmd('force:source:retrieve --packagenames "my app" --json', { ensureExitCode: 0 });
-  });
-
-  it('retrieves via package names', () => {
-    execCmd('force:source:retrieve --packagenames "my app, force-app" --json', { ensureExitCode: 0 });
-  });
+  // it('retrieves via package name with spaces', () => {
+  //   execCmd('force:source:retrieve --packagenames "my app" --json', { ensureExitCode: 0 });
+  // });
+  //
+  // it('retrieves via package names', () => {
+  //   execCmd('force:source:retrieve --packagenames "my app, force-app" --json', { ensureExitCode: 0 });
+  // });
 
   it('retrieves via metadata', () => {
     execCmd('force:source:retrieve --metadata ApexClass --json', { ensureExitCode: 0 });
@@ -77,6 +76,6 @@ describe('source:retrieve NUTs', () => {
   });
 
   after(async () => {
-    // await session.clean();
+    await session.clean();
   });
 });

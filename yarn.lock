@@ -523,10 +523,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-0.0.4.tgz#5ab57097df901186a5434fd0675933b9cecb42f0"
-  integrity sha512-4Cr6NugaV049rW1FWqTfrBF2PuEBcSga4vojxkg6sV0UVqKW7cWFjsZ9Coa1cbBneOTjRi9KafQeKI3KVkGWMw==
+"@salesforce/cli-plugins-testkit@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-0.0.8.tgz#d8c39b03e00e49f005a2e8ca20aebdbb5730018a"
+  integrity sha512-Cc8TERl0syLtlhl28jigWOEHRTWR9zI9hk815vBjsu7azsXC14tYEg3xdM/hcqye5N6OxM3BlDNavoGfy8R6tg==
   dependencies:
     "@salesforce/core" "^2.16.3"
     "@salesforce/kit" "^1.3.4"
@@ -571,9 +571,9 @@
     sfdx-faye "^1.0.9"
 
 "@salesforce/core@^2.16.3", "@salesforce/core@^2.18.3", "@salesforce/core@^2.2.0":
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.19.0.tgz#960fe7893a4391eabd177b12ce105e86e4ff13be"
-  integrity sha512-pXsmrxSJyYcHhu8xkiV8aNNMHPoQ3l3VTnGAdkerq4+pVW4mfajsDR9WH8IB8XOFigmpvV4S6kG6baxH5G+9Tw==
+  version "2.19.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.19.1.tgz#fef31944f7fa1a0af65294de58855e65b1b5d9a5"
+  integrity sha512-B4KFq/UaORqHpWl6z6FRZbCf2tlwy+TD0APqv545ECuUsbsDb8Rs96wsram17pm+qAmIpdlTCEbfJnNxy+X2tQ==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.3.3"
@@ -596,14 +596,14 @@
   integrity sha512-I+zrptt8zI1jbP3TVA6g7i3quuh71tPky8gwCsXaQ2X9ea1xbeAslN4YjWfgqbY5SaxJhqP979oxFADlH+OehQ==
 
 "@salesforce/dev-scripts@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-0.7.0.tgz#9f65152f734ef1d6335b422033d40419b34ac9f7"
-  integrity sha512-eVupVz2CQgstG+wIATWWI/tqDc3wkGFno/jOXwjcM6P9MVvXFYqQj2A8JyCjT8yRk7il5mNXl40RVQe+jOjQ/Q==
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-0.7.1.tgz#717d677e3808c6e3c1702d346a4407a518ca4c55"
+  integrity sha512-E/5QspScXPJJhvSqvhSA4NehO5k6LGD5RxLT9lyuS4PJENF6eXtEdQnTgZGCR56G7FLhahwyre370LjukERaQA==
   dependencies:
     "@commitlint/cli" "^9.1.1"
     "@commitlint/config-conventional" "^10.0.0"
     "@salesforce/dev-config" "^2.1.0"
-    "@salesforce/prettier-config" "^0.0.1"
+    "@salesforce/prettier-config" "^0.0.2"
     "@types/chai" "^4.2.11"
     "@types/mocha" "^7.0.2"
     "@types/node" "^12.12.6"
@@ -636,11 +636,11 @@
     xunit-file "^1.0.0"
 
 "@salesforce/kit@^1.2.2", "@salesforce/kit@^1.3.2", "@salesforce/kit@^1.3.3", "@salesforce/kit@^1.3.4":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.4.0.tgz#4a43a8633f967066895d865813907eea071ef541"
-  integrity sha512-/6owokpdkljkbM5axJ7xVgn6ggMS1YJgtD8zv2gBAfIHT/EgIMnwkyU6Rymb8QmWp93q/RoHXdgNQkDonWYSqw==
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.4.1.tgz#561ec1dc8cfe89681c6e56b919dda59ee9e4569e"
+  integrity sha512-Y3M22OT0huDqswtj1lbRWzCOwfyO3ZML0OaXeKaOl0dHf0RggqjEdkSKrctAigZCJRwTSUDRSVXvcBOE962oFQ==
   dependencies:
-    "@salesforce/ts-types" "^1.5.0"
+    "@salesforce/ts-types" "^1.5.1"
     tslib "^1.10.0"
 
 "@salesforce/plugin-command-reference@^1.3.0":
@@ -657,10 +657,10 @@
     handlebars "^4.7.3"
     tslib "^1"
 
-"@salesforce/prettier-config@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/prettier-config/-/prettier-config-0.0.1.tgz#4ef70bca610ea981181fb030b25a27797b15cdff"
-  integrity sha512-o43j1I6JliElZXmTL5q1ni2frSkO5o/kCjIp7nI56cWBHWeZaM81vXOmap8TESDzIrEok6tF5jLKyEv4+SOleQ==
+"@salesforce/prettier-config@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/prettier-config/-/prettier-config-0.0.2.tgz#ded39bf7cb75238edc9db6dd093649111350f8bc"
+  integrity sha512-KExM355BLbxCW6siGBV7oUOotXvvVp0tAWERgzUkM2FcMb9fWrjwXDrIHc8V0UdDlA3UXtFltDWgN+Yqi+BA/g==
 
 "@salesforce/schemas@^1.0.1":
   version "1.0.3"
@@ -690,10 +690,10 @@
     sinon "5.1.1"
     tslib "^1.10.0"
 
-"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.4.4", "@salesforce/ts-types@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.0.tgz#e2baaca088f30a3f9d10127eb789a12abad44958"
-  integrity sha512-fJsVXSJ0s8voDNM7TYulPkiRDdR1bC/rE2hsY/+2q0DDa57UAeql34tEdaBs84GGbe/VGCVbiazkLDJW/bX7KQ==
+"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.4.4", "@salesforce/ts-types@^1.5.0", "@salesforce/ts-types@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.1.tgz#ff0463fa4336397b051b42df40574e6fcacd2780"
+  integrity sha512-6fUVyzh0+6wYUDWAqH9IJbeu7AXUaJoPrYdkDvWxcselXPqr7jycMQHpwLiBcshF9E1gNRj5YfOwFT18cvvFMQ==
   dependencies:
     tslib "^1.10.0"
 
@@ -814,14 +814,14 @@
   integrity sha512-ZvO2tAcjmMi8V/5Z3JsyofMe3hasRcaw88cto5etSVMwVQfeivGAlEYmaQgceUSVYFofVjT+ioHsATjdWcFt1w==
 
 "@types/node@*":
-  version "14.14.28"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.28.tgz#cade4b64f8438f588951a6b35843ce536853f25b"
-  integrity sha512-lg55ArB+ZiHHbBBttLpzD07akz0QPrZgUODNakeC09i62dnrywr9mFErHuaPlB6I7z+sEbK+IYmplahvplCj2g==
+  version "14.14.31"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
+  integrity sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
 
 "@types/node@^12.12.6":
-  version "12.20.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.1.tgz#63d36c10e162666f0107f247cdca76542c3c7472"
-  integrity sha512-tCkE96/ZTO+cWbln2xfyvd6ngHLanvVlJ3e5BeirJ3BYI5GbAyubIrmV4JjjugDly5D9fHjOL5MNsqsCnqwW6g==
+  version "12.20.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.4.tgz#73687043dd00fcb6962c60fbf499553a24d6bdf2"
+  integrity sha512-xRCgeE0Q4pT5UZ189TJ3SpYuX/QGl6QIAOAIeDSbAVAd2gX1NxSZup4jNVK7cxIeP8KDSbJgcckun495isP1jQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
