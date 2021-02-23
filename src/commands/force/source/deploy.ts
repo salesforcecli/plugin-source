@@ -26,7 +26,6 @@ export class deploy extends SourceCommand {
     checkonly: flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
-      default: false,
     }),
     wait: flags.minutes({
       char: 'w',
@@ -48,12 +47,10 @@ export class deploy extends SourceCommand {
     ignoreerrors: flags.boolean({
       char: 'o',
       description: messages.getMessage('flags.ignoreErrors'),
-      default: false,
     }),
     ignorewarnings: flags.boolean({
       char: 'g',
       description: messages.getMessage('flags.ignoreWarnings'),
-      default: false,
     }),
     validateddeployrequestid: flags.id({
       char: 'q',
@@ -104,19 +101,22 @@ export class deploy extends SourceCommand {
 
     await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
 
-    const results = await cs.deploy(this.org.getUsername(), {
-      wait: (this.flags.wait as Duration).milliseconds,
-      apiOptions: {
-        // TODO: build out more api options
-        checkOnly: this.flags.checkonly as boolean,
-        ignoreWarnings: this.flags.ignorewarnings as boolean,
-        runTests: this.flags.runtests as string[],
-      },
-    });
-
+    const results = await cs
+      .deploy({
+        usernameOrConnection: this.org.getUsername(),
+        apiOptions: {
+          checkOnly: this.flags.checkonly as boolean,
+          ignoreWarnings: this.flags.ignorewarnings as boolean,
+          runTests: this.flags.runtests as string[],
+        },
+      })
+      .start();
     await hookEmitter.emit('postdeploy', results);
 
-    this.print(results);
+    // skip a lot of steps that would do nothing
+    if (!this.flags.json) {
+      this.print(results);
+    }
 
     return results;
   }
