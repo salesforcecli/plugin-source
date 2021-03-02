@@ -20,6 +20,7 @@ lib
 *unitcoverage
 .nyc_output
 coverage
+test_session*
 
 # generated docs
 docs
@@ -38,3 +39,6 @@ node_modules
 # os specific files
 .DS_Store
 .idea
+
+# ignore generated nut tests
+test/nuts/generated/

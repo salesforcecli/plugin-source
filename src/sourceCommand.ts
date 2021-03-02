@@ -10,12 +10,39 @@ import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
+export type SourceState = 'Local Add' | 'Local Changed' | 'Remote Add' | 'Remote Changed' | 'Local Deleted';
+
 export type FlagOptions = {
   packagenames?: string[];
   sourcepath: string[];
   manifest: string;
   metadata: string[];
 };
+
+export type SourceInfo = {
+  state: string;
+  fullName: string;
+  type: string;
+  filePath: string;
+};
+
+export type RetrieveResult = {
+  inboundFiles: SourceInfo[];
+};
+
+export type DeployResult = {
+  deployedSource: SourceInfo[];
+};
+
+export type PushResult = {
+  pushedSource: SourceInfo[];
+};
+
+export type PullResult = {
+  pulledSource: SourceInfo[];
+};
+
+export type StatusResult = SourceInfo[];
 
 export abstract class SourceCommand extends SfdxCommand {
   public static MINIMUM_SRC_WAIT_MINUTES = 1;
