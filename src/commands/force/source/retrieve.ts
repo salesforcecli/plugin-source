@@ -76,10 +76,7 @@ export class retrieve extends SourceCommand {
         usernameOrConnection: this.org.getUsername(),
         merge: true,
         output: (this.flags.sourcepath as string) ?? defaultPackage.path,
-        // TODO: fix this once wait has been updated in library
-        // wait: (this.flags.wait as Duration).milliseconds,
-        // TODO: implement retrieve via package name
-        // package: options.packagenames
+        packageNames: asArray<string>(this.flags.packagenames),
       })
       .start();
 
@@ -89,6 +86,7 @@ export class retrieve extends SourceCommand {
     if (results.status === 'InProgress') {
       throw new SfdxError(messages.getMessage('retrieveTimeout', [(this.flags.wait as Duration).minutes]));
     }
+    this.ux.logJson(mdapiResult.getFileResponses());
     // this.printTable(results, true);
 
     return results;

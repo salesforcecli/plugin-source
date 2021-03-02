@@ -42,8 +42,8 @@ export abstract class SourceCommand extends SfdxCommand {
     }
 
     if (options.packagenames) {
-      // retrieve only
-      // TODO: @W-8908888@
+      // return ComponentSet and use packageNames in the library via `.retrieve` options
+      setAggregator.push(...new ComponentSet([]));
     }
 
     if (options.manifest) {
