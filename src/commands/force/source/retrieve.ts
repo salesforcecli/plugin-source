@@ -5,13 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
-import * as path from 'path';
+
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
-import { SourceRetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
-import { blue, yellow } from 'chalk';
+import { blue } from 'chalk';
+import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
+import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -51,7 +52,8 @@ export class retrieve extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
 
-  public async run(): Promise<SourceRetrieveResult> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async run(): Promise<any> {
     const hookEmitter = Lifecycle.getInstance();
 
     const proj = await SfdxProjectJson.create({});
@@ -70,20 +72,27 @@ export class retrieve extends SourceCommand {
     // needs to be a path to the temp dir package.xml
     await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
 
-    const results = await cs.retrieve(this.org.getUsername(), path.resolve(defaultPackage.path), {
-      merge: true,
-      // TODO: fix this once wait has been updated in library
-      wait: (this.flags.wait as Duration).milliseconds,
-      // TODO: implement retrieve via package name
-      // package: options.packagenames
-    });
+    const mdapiResult = await cs
+      .retrieve({
+        usernameOrConnection: this.org.getUsername(),
+        merge: true,
+        output: (this.flags.sourcepath as string) ?? defaultPackage.path,
+        packageNames: asArray<string>(this.flags.packagenames),
+      })
+      .start();
 
+    const results = mdapiResult.response;
     await hookEmitter.emit('postretrieve', results);
 
     if (results.status === 'InProgress') {
       throw new SfdxError(messages.getMessage('retrieveTimeout', [(this.flags.wait as Duration).minutes]));
     }
-    this.printTable(results, true);
+
+    if (this.flags.json) {
+      this.ux.logJson(mdapiResult.getFileResponses());
+    } else {
+      this.printTable(results, true);
+    }
 
     return results;
   }
@@ -94,28 +103,25 @@ export class retrieve extends SourceCommand {
    * @param results what the .deploy or .retrieve method returns
    * @param withoutState a boolean to add state, default to true
    */
-  public printTable(results: SourceRetrieveResult, withoutState?: boolean): void {
-    const stateCol = withoutState ? [] : [{ key: 'state', label: messages.getMessage('stateTableColumn') }];
+  public printTable(results: MetadataApiRetrieveStatus, withoutState?: boolean): void {
+    const stateCol = withoutState ? [] : [{ key: 'state', label: 'STATE' }];
 
     this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
-    if (results.success && results.successes.length) {
+    if (results.success) {
       const columns = [
-        { key: 'properties.fullName', label: messages.getMessage('fullNameTableColumn') },
-        { key: 'properties.type', label: messages.getMessage('typeTableColumn') },
-        {
-          key: 'properties.fileName',
-          label: messages.getMessage('workspacePathTableColumn'),
-        },
+        { key: 'fullName', label: 'FULL NAME' },
+        { key: 'type', label: 'TYPE' },
+        { key: 'fileName', label: 'PROJECT PATH' },
       ];
-      this.ux.table(results.successes, { columns: [...stateCol, ...columns] });
+      this.ux.table(results.fileProperties as FileProperties[], { columns: [...stateCol, ...columns] });
     } else {
       this.ux.log(messages.getMessage('NoResultsFound'));
     }
 
-    if (results.status === 'PartialSuccess' && results.successes.length && results.failures.length) {
-      this.ux.log('');
-      this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
-      results.failures.forEach((warning) => this.ux.log(warning.message));
-    }
+    // if (results.status === 'SucceededPartial' && results.successes.length && results.failures.length) {
+    //   this.ux.log('');
+    //   this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
+    //   results.failures.forEach((warning) => this.ux.log(warning.message));
+    // }
   }
 }

@@ -8,7 +8,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
-import { SourceDeployResult } from '@salesforce/source-deploy-retrieve';
+import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString, asArray } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
@@ -26,7 +26,6 @@ export class deploy extends SourceCommand {
     checkonly: flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
-      default: false,
     }),
     wait: flags.minutes({
       char: 'w',
@@ -48,12 +47,10 @@ export class deploy extends SourceCommand {
     ignoreerrors: flags.boolean({
       char: 'o',
       description: messages.getMessage('flags.ignoreErrors'),
-      default: false,
     }),
     ignorewarnings: flags.boolean({
       char: 'g',
       description: messages.getMessage('flags.ignoreWarnings'),
-      default: false,
     }),
     validateddeployrequestid: flags.id({
       char: 'q',
@@ -90,7 +87,7 @@ export class deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<SourceDeployResult> {
+  public async run(): Promise<DeployResult> {
     if (this.flags.validatedeployrequestid) {
       // TODO: return this.doDeployRecentValidation();
     }
@@ -104,88 +101,82 @@ export class deploy extends SourceCommand {
 
     await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
 
-    const results = await cs.deploy(this.org.getUsername(), {
-      wait: (this.flags.wait as Duration).milliseconds,
-      apiOptions: {
-        // TODO: build out more api options
-        checkOnly: this.flags.checkonly as boolean,
-        ignoreWarnings: this.flags.ignorewarnings as boolean,
-        runTests: this.flags.runtests as string[],
-      },
-    });
-
+    const results = await cs
+      .deploy({
+        usernameOrConnection: this.org.getUsername(),
+      })
+      .start();
     await hookEmitter.emit('postdeploy', results);
 
-    this.print(results);
+    // skip a lot of steps that would do nothing
+    if (!this.flags.json) {
+      this.print(results);
+    }
 
     return results;
   }
 
-  private printComponentFailures(result: SourceDeployResult): void {
-    if (result.status === 'Failed' && result.components) {
+  private printComponentFailures(result: DeployResult): void {
+    if (result.response.status === 'Failed' && result.components) {
       // sort by filename then fullname
-      const failures = result.components.sort((i, j) => {
-        if (i.component.type.directoryName === j.component.type.directoryName) {
+      const failures = result.getFileResponses().sort((i, j) => {
+        if (i.filePath === j.filePath) {
           // if the have the same directoryName then sort by fullName
-          return i.component.fullName < j.component.fullName ? 1 : -1;
+          return i.fullName < j.fullName ? 1 : -1;
         }
-        return i.component.type.directoryName < j.component.type.directoryName ? 1 : -1;
+        return i.filePath < j.filePath ? 1 : -1;
       });
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       this.ux.table(failures, {
-        // TODO:  these accessors are temporary until library JSON fixes
         columns: [
-          { key: 'component.type.name', label: 'Type' },
-          { key: 'diagnostics[0].filePath', label: 'File' },
-          { key: 'component.name', label: 'Name' },
-          { key: 'diagnostics[0].message', label: 'Problem' },
+          { key: 'componentType', label: 'Type' },
+          { key: 'fileName', label: 'File' },
+          { key: 'fullName', label: 'Name' },
+          { key: 'problem', label: 'Problem' },
         ],
       });
       this.ux.log('');
     }
   }
 
-  private printComponentSuccess(result: SourceDeployResult): void {
-    if (result.success && result.components) {
-      if (result.components.length > 0) {
-        //  sort by type then filename then fullname
-        const files = result.components.sort((i, j) => {
-          if (i.component.type.name === j.component.type.name) {
-            // same metadata type, according to above comment sort on filename
-            if (i.component.type.directoryName === j.component.type.directoryName) {
-              // same filename's according to comment sort by fullName
-              return i.component.fullName < j.component.fullName ? 1 : -1;
-            }
-            return i.component.type.directoryName < j.component.type.directoryName ? 1 : -1;
+  private printComponentSuccess(result: DeployResult): void {
+    if (result.response.success && result.components?.size) {
+      //  sort by type then filename then fullname
+      const files = result.getFileResponses().sort((i, j) => {
+        if (i.fullName === j.fullName) {
+          // same metadata type, according to above comment sort on filename
+          if (i.filePath === j.filePath) {
+            // same filename's according to comment sort by fullName
+            return i.fullName < j.fullName ? 1 : -1;
           }
-          return i.component.type.name < j.component.type.name ? 1 : -1;
-        });
-        // get relative path for table output
-        files.forEach((file) => {
-          if (file.component.content) {
-            file.component.content = path.relative(process.cwd(), file.component.content);
-          }
-        });
-        this.ux.log('');
-        this.ux.styledHeader(chalk.blue('Deployed Source'));
-        this.ux.table(files, {
-          // TODO:  these accessors are temporary until library JSON fixes
-          columns: [
-            { key: 'component.name', label: 'FULL NAME' },
-            { key: 'component.type.name', label: 'TYPE' },
-            { key: 'component.content', label: 'PROJECT PATH' },
-          ],
-        });
-      }
+          return i.filePath < j.filePath ? 1 : -1;
+        }
+        return i.type < j.type ? 1 : -1;
+      });
+      // get relative path for table output
+      files.forEach((file) => {
+        if (file.filePath) {
+          file.filePath = path.relative(process.cwd(), file.filePath);
+        }
+      });
+      this.ux.log('');
+      this.ux.styledHeader(chalk.blue('Deployed Source'));
+      this.ux.table(files, {
+        columns: [
+          { key: 'fullName', label: 'FULL NAME' },
+          { key: 'type', label: 'TYPE' },
+          { key: 'filePath', label: 'PROJECT PATH' },
+        ],
+      });
     }
   }
 
-  private print(result: SourceDeployResult): SourceDeployResult {
+  private print(result: DeployResult): DeployResult {
     this.printComponentSuccess(result);
     this.printComponentFailures(result);
     // TODO: this.printTestResults(result); <- this has WI @W-8903671@
-    if (result.success && this.flags.checkonly) {
+    if (result.response.success && this.flags.checkonly) {
       this.log(messages.getMessage('checkOnlySuccess'));
     }
 
