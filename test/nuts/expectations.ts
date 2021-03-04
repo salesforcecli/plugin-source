@@ -133,6 +133,10 @@ export class Expectations {
     expect(result.name).to.equal(name);
   }
 
+  public toHaveProperty(result: JsonMap, prop: string): void {
+    expect(result).to.have.property(prop);
+  }
+
   public pullJsonToBeValid(result: PullResult): void {
     expect(result).to.have.property('pulledSource');
     for (const deployedSource of result.pulledSource) {

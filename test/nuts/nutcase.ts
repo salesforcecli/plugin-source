@@ -199,10 +199,22 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
     const command = [cmd, args, '--json'].join(' ');
     this.debug(`${command} (expecting exit code: ${exitCode})`);
     await this.fileTracker.updateAll(`PRE: ${command}`);
-    const result = execCmd<T>(command, { ensureExitCode: exitCode }).jsonOutput;
-    this.debug('%O', result);
+    const result = execCmd<T>(command, { ensureExitCode: exitCode });
     await this.fileTracker.updateAll(`POST: ${command}`);
-    return result;
+
+    const json = result.jsonOutput;
+    this.debug('%O', json);
+    if (!json) {
+      // eslint-disable-next-line no-console
+      console.error(`${command} returned null jsonOutput`);
+      // eslint-disable-next-line no-console
+      console.error(result);
+    }
+    this.expect.toHaveProperty(json, 'status');
+    if (json.status === 0) {
+      this.expect.toHaveProperty(json, 'result');
+    }
+    return json;
   }
 
   private async createSession(): Promise<TestSession> {
