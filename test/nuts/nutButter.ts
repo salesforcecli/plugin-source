@@ -18,9 +18,9 @@ import { DeployResult, PullResult, PushResult, RetrieveResult, StatusResult } fr
 import { Expectations, traverseForFiles } from './expectations';
 import { FileTracker } from './fileTracker';
 
-export class Nutcase extends AsyncCreatable<Nutcase.Options> {
+export class NutButter extends AsyncCreatable<NutButter.Options> {
   public static Env = new Env();
-  private static DefaultCmdOpts: Nutcase.CommandOpts = {
+  private static DefaultCmdOpts: NutButter.CommandOpts = {
     exitCode: 0,
     args: '',
   };
@@ -41,7 +41,7 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
   private session: TestSession;
   private username: string;
 
-  public constructor(options: Nutcase.Options) {
+  public constructor(options: NutButter.Options) {
     super(options);
     this.debug = debug('nutcase');
     this.executable = options.executable;
@@ -49,27 +49,27 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
   }
 
   public async clean(): Promise<void> {
-    Nutcase.Env.unset('TESTKIT_EXECUTABLE_PATH');
+    NutButter.Env.unset('TESTKIT_EXECUTABLE_PATH');
     await this.session?.clean();
   }
 
-  public async deploy(options: Partial<Nutcase.CommandOpts> = {}): Promise<Nutcase.CmdResult<DeployResult>> {
+  public async deploy(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<DeployResult>> {
     return this.execute<DeployResult>('force:source:deploy', options);
   }
 
-  public async retrieve(options: Partial<Nutcase.CommandOpts> = {}): Promise<Nutcase.CmdResult<RetrieveResult>> {
+  public async retrieve(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<RetrieveResult>> {
     return this.execute<RetrieveResult>('force:source:retrieve', options);
   }
 
-  public async push(options: Partial<Nutcase.CommandOpts> = {}): Promise<Nutcase.CmdResult<PushResult>> {
+  public async push(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<PushResult>> {
     return this.execute<PushResult>('force:source:push', options);
   }
 
-  public async pull(options: Partial<Nutcase.CommandOpts> = {}): Promise<Nutcase.CmdResult<PullResult>> {
+  public async pull(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<PullResult>> {
     return this.execute<PullResult>('force:source:pull', options);
   }
 
-  public async status(options: Partial<Nutcase.CommandOpts> = {}): Promise<Nutcase.CmdResult<StatusResult>> {
+  public async status(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
   }
 
@@ -162,13 +162,13 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
   }
 
   protected async init(): Promise<void> {
-    if (!Nutcase.Env.getString('TESTKIT_HUB_USERNAME')) {
-      ensureString(Nutcase.Env.getString('TESTKIT_JWT_KEY'));
-      ensureString(Nutcase.Env.getString('TESTKIT_JWT_CLIENT_ID'));
-      ensureString(Nutcase.Env.getString('TESTKIT_HUB_INSTANCE'));
+    if (!NutButter.Env.getString('TESTKIT_HUB_USERNAME')) {
+      ensureString(NutButter.Env.getString('TESTKIT_JWT_KEY'));
+      ensureString(NutButter.Env.getString('TESTKIT_JWT_CLIENT_ID'));
+      ensureString(NutButter.Env.getString('TESTKIT_HUB_INSTANCE'));
     }
     if (this.executable) {
-      Nutcase.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
+      NutButter.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
     }
 
     this.session = await this.createSession();
@@ -181,7 +181,7 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
     this.configAggregator = await ConfigAggregator.create();
     this.username =
       (this.configAggregator.getPropertyValue('defaultusername') as string) ||
-      Nutcase.Env.getString('TESTKIT_ORG_USERNAME');
+      NutButter.Env.getString('TESTKIT_ORG_USERNAME');
     this.connection = await Connection.create({
       authInfo: await AuthInfo.create({ username: this.username }),
     });
@@ -193,9 +193,9 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
 
   private async execute<T = AnyJson>(
     cmd: string,
-    options: Partial<Nutcase.CommandOpts> = {}
-  ): Promise<Nutcase.CmdResult<T>> {
-    const { args, exitCode } = Object.assign({}, Nutcase.DefaultCmdOpts, options);
+    options: Partial<NutButter.CommandOpts> = {}
+  ): Promise<NutButter.CmdResult<T>> {
+    const { args, exitCode } = Object.assign({}, NutButter.DefaultCmdOpts, options);
     const command = [cmd, args, '--json'].join(' ');
     this.debug(`${command} (expecting exit code: ${exitCode})`);
     await this.fileTracker.updateAll(`PRE: ${command}`);
@@ -228,7 +228,7 @@ export class Nutcase extends AsyncCreatable<Nutcase.Options> {
   }
 }
 
-export namespace Nutcase {
+export namespace NutButter {
   export type Options = {
     readonly executable?: string;
     readonly repository: string;
