@@ -34,6 +34,50 @@ export type DeployResult = {
   deployedSource: SourceInfo[];
 };
 
+export type ComponentSuccess = {
+  changed: string;
+  componentType: string;
+  created: string;
+  createdDate: string;
+  deleted: string;
+  fileName: string;
+  fullName: string;
+  id?: string;
+  success: string;
+};
+
+export type DeployVerboseResult = {
+  outboundFiles: string[];
+  deploys: DeployVerboseResult[];
+  checkOnly: boolean;
+  completedDate: string;
+  createdBy: string;
+  createdByName: string;
+  details: {
+    componentSuccesses: ComponentSuccess[];
+    runTestResult: {
+      numFailures: string;
+      numTestsRun: string;
+      totalTime: string;
+    };
+  };
+  done: boolean;
+  id: string;
+  ignoreWarnings: boolean;
+  lastModifiedDate: string;
+  numberComponentErrors: number;
+  numberComponentsDeployed: number;
+  numberComponentsTotal: number;
+  numberTestErrors: number;
+  numberTestsCompleted: number;
+  numberTestsTotal: number;
+  rollbackOnError: boolean;
+  runTestsEnabled: boolean;
+  startDate: string;
+  status: string;
+  success: boolean;
+};
+
 export type PushResult = {
   pushedSource: SourceInfo[];
 };

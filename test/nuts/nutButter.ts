@@ -17,6 +17,7 @@ import { debug, Debugger } from 'debug';
 import {
   ConvertResult,
   DeployResult,
+  DeployVerboseResult,
   PullResult,
   PushResult,
   RetrieveResult,
@@ -60,27 +61,41 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
     await this.session?.clean();
   }
 
-  public async convert(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<ConvertResult>> {
+  public async convert(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<ConvertResult>> {
     return this.execute<ConvertResult>('force:source:convert', options);
   }
 
-  public async deploy(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<DeployResult>> {
-    return this.execute<DeployResult>('force:source:deploy', options);
+  public async deploy<T = DeployResult>(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<T>> {
+    return this.execute<T>('force:source:deploy', options);
   }
 
-  public async retrieve(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<RetrieveResult>> {
+  // TODO: Return type here isn't quite accurate
+  public async deployReport(
+    options: Partial<NutButter.CommandOpts> = {}
+  ): Promise<NutButter.Result<DeployVerboseResult>> {
+    return this.execute<DeployVerboseResult>('force:source:deploy:report', options);
+  }
+
+  // TODO: Return type here isn't quite accurate
+  public async deployCancel(
+    options: Partial<NutButter.CommandOpts> = {}
+  ): Promise<NutButter.Result<DeployVerboseResult>> {
+    return this.execute<DeployVerboseResult>('force:source:deploy:cancel', options);
+  }
+
+  public async retrieve(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<RetrieveResult>> {
     return this.execute<RetrieveResult>('force:source:retrieve', options);
   }
 
-  public async push(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<PushResult>> {
+  public async push(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<PushResult>> {
     return this.execute<PushResult>('force:source:push', options);
   }
 
-  public async pull(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<PullResult>> {
+  public async pull(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<PullResult>> {
     return this.execute<PullResult>('force:source:pull', options);
   }
 
-  public async status(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<StatusResult>> {
+  public async status(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
   }
 
@@ -205,7 +220,7 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   private async execute<T = AnyJson>(
     cmd: string,
     options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.CmdResult<T>> {
+  ): Promise<NutButter.Result<T>> {
     const { args, exitCode } = Object.assign({}, NutButter.DefaultCmdOpts, options);
     const command = [cmd, args, '--json'].join(' ');
     this.debug(`${command} (expecting exit code: ${exitCode})`);
@@ -250,7 +265,7 @@ export namespace NutButter {
     args: string;
   };
 
-  export type CmdResult<T> = JsonMap & {
+  export type Result<T> = JsonMap & {
     status: number;
     result: T;
   };

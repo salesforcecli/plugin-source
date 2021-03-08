@@ -17,7 +17,7 @@ import { SourceCommand } from '../../../sourceCommand';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
-export class deploy extends SourceCommand {
+export class Deploy extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;

@@ -18,6 +18,7 @@ import {
   StatusResult,
   PullResult,
   ConvertResult,
+  DeployVerboseResult,
 } from '../../src/sourceCommand';
 import { FileTracker } from './fileTracker';
 
@@ -42,6 +43,25 @@ export class Expectations {
 
     const truncatedFilesToExpect = filesToExpect.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
     const deployedFiles = result.deployedSource.map((d) => d.filePath);
+    const everyExpectedFileFound = truncatedFilesToExpect.every((f) => deployedFiles.includes(f));
+    expect(everyExpectedFileFound).to.be.true;
+  }
+
+  public async filesToBeDeployedVerbose(result: DeployVerboseResult, files: string[]): Promise<void> {
+    const filesToExpect: string[] = [];
+    for (const file of files) {
+      const filePath = path.join(this.projectDir, file);
+      if (fs.statSync(filePath).isDirectory()) {
+        filesToExpect.push(...(await traverseForFiles(filePath)));
+      } else {
+        filesToExpect.push(file);
+      }
+    }
+
+    const truncatedFilesToExpect = filesToExpect.map((f) => path.basename(f)).filter((f) => !f.endsWith('-meta.xml'));
+    const deployedFiles = result.deploys.reduce((x, y) => {
+      return x.concat(y.details.componentSuccesses.map((d) => path.basename(d.fileName)));
+    }, [] as string[]);
     const everyExpectedFileFound = truncatedFilesToExpect.every((f) => deployedFiles.includes(f));
     expect(everyExpectedFileFound).to.be.true;
   }
@@ -111,6 +131,46 @@ export class Expectations {
     }
   }
 
+  public deployVerboseJsonToBeValid(result: DeployVerboseResult): void {
+    expect(result).to.have.property('outboundFiles');
+    expect(result).to.have.property('deploys');
+    expect(result).to.have.property('checkOnly');
+    expect(result).to.have.property('completedDate');
+    expect(result).to.have.property('createdBy');
+    expect(result).to.have.property('createdByName');
+    expect(result).to.have.property('details');
+    expect(result).to.have.property('done');
+    expect(result).to.have.property('id');
+    expect(result).to.have.property('ignoreWarnings');
+    expect(result).to.have.property('lastModifiedDate');
+    expect(result).to.have.property('numberComponentErrors');
+    expect(result).to.have.property('numberComponentsDeployed');
+    expect(result).to.have.property('numberComponentsTotal');
+    expect(result).to.have.property('numberTestErrors');
+    expect(result).to.have.property('numberTestsCompleted');
+    expect(result).to.have.property('numberTestsTotal');
+    expect(result).to.have.property('rollbackOnError');
+    expect(result).to.have.property('runTestsEnabled');
+    expect(result).to.have.property('startDate');
+    expect(result).to.have.property('status');
+    expect(result).to.have.property('success');
+
+    expect(result.details).to.have.property('componentSuccesses');
+    for (const success of result.details.componentSuccesses) {
+      expect(success).to.have.property('changed');
+      expect(success).to.have.property('componentType');
+      expect(success).to.have.property('created');
+      expect(success).to.have.property('createdDate');
+      expect(success).to.have.property('deleted');
+      expect(success).to.have.property('fileName');
+      expect(success).to.have.property('fullName');
+      expect(success).to.have.property('success');
+      if (success.fullName !== 'package.xml') {
+        expect(success).to.have.property('id');
+      }
+    }
+  }
+
   public pushJsonToBeValid(result: PushResult): void {
     expect(result).to.have.property('pushedSource');
     for (const deployedSource of result.pushedSource) {
@@ -128,6 +188,11 @@ export class Expectations {
 
   public toHaveProperty(result: JsonMap, prop: string): void {
     expect(result).to.have.property(prop);
+  }
+
+  public toHavePropertyAndValue(result: JsonMap, prop: string, value: unknown): void {
+    expect(result).to.have.property(prop);
+    expect(result[prop]).to.equal(value);
   }
 
   public pullJsonToBeValid(result: PullResult): void {

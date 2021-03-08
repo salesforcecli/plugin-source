@@ -6,6 +6,7 @@
  */
 
 import * as path from 'path';
+import { DeployVerboseResult } from '../../../src/sourceCommand';
 import { NutButter } from '../nutButter';
 import { RepoConfig } from '../testMatrix';
 
@@ -76,6 +77,41 @@ context('Deploy NUTs %REPO% %EXEC%', () => {
     it('should throw an error if the package.xml is not valid', async () => {
       const deploy = await nutButter.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
       nutButter.expect.errorToHaveName(deploy, 'InvalidManifestError');
+    });
+  });
+
+  describe('--checkonly flag', () => {
+    it('should check deploy of all packages', async () => {
+      const deploy = await nutButter.deploy<DeployVerboseResult>({
+        args: `--sourcepath ${nutButter.packageNames.join(',')} --checkonly`,
+      });
+      nutButter.expect.deployVerboseJsonToBeValid(deploy.result);
+      await nutButter.expect.filesToBeDeployedVerbose(deploy.result, nutButter.packageNames);
+    });
+  });
+
+  describe('async deploy', () => {
+    it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
+      const deploy = await nutButter.deploy<DeployVerboseResult>({
+        args: `--sourcepath ${nutButter.packageNames.join(',')} --wait 0`,
+      });
+      nutButter.expect.toHaveProperty(deploy.result, 'id');
+
+      const report = await nutButter.deployReport({ args: `-i ${deploy.result.id}` });
+      nutButter.expect.toHaveProperty(report.result, 'details');
+    });
+
+    it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
+      const deploy = await nutButter.deploy<DeployVerboseResult>({
+        args: `--sourcepath ${nutButter.packageNames.join(',')} --wait 0`,
+      });
+      nutButter.expect.toHaveProperty(deploy.result, 'id');
+
+      const cancel = await nutButter.deployCancel({ args: `-i ${deploy.result.id}` });
+
+      nutButter.expect.toHaveProperty(cancel.result, 'details');
+      nutButter.expect.toHaveProperty(cancel.result, 'canceledBy');
+      nutButter.expect.toHavePropertyAndValue(cancel.result, 'status', 'Canceled');
     });
   });
 });
