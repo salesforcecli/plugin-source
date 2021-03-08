@@ -44,6 +44,10 @@ export type PullResult = {
 
 export type StatusResult = SourceInfo[];
 
+export type ConvertResult = {
+  location: string;
+};
+
 export abstract class SourceCommand extends SfdxCommand {
   public static MINIMUM_SRC_WAIT_MINUTES = 1;
   public static DEFAULT_SRC_WAIT_MINUTES = 33;

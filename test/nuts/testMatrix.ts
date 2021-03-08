@@ -20,6 +20,7 @@ export type RepoConfig = {
   deploy: {
     metadata: DeployTestCase[];
     sourcepath: DeployTestCase[];
+    manifest: DeployTestCase[];
   };
 };
 
@@ -29,11 +30,18 @@ export const TEST_REPOS: RepoConfig[] = [
     deploy: {
       sourcepath: normalizeFilePaths([
         { toDeploy: 'force-app,my-app', toVerify: ['force-app', 'my-app'] },
+        { toDeploy: '"force-app, my-app"', toVerify: ['force-app', 'my-app'] },
         { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects'] },
         { toDeploy: 'my-app/objects', toVerify: ['my-app/objects'] },
+        { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
       ]),
       metadata: normalizeFilePaths([
         { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects', 'my-app/objects'] },
+      ]),
+      manifest: normalizeFilePaths([
+        { toDeploy: 'force-app', toVerify: ['force-app'] },
+        { toDeploy: 'my-app', toVerify: ['my-app'] },
+        { toDeploy: 'force-app,my-app', toVerify: ['force-app', 'my-app'] },
       ]),
     },
   },
@@ -43,6 +51,18 @@ export const TEST_REPOS: RepoConfig[] = [
       sourcepath: normalizeFilePaths([
         { toDeploy: 'force-app', toVerify: ['force-app/main/default'] },
         { toDeploy: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes'] },
+        {
+          toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
+          toVerify: ['force-app/main/default/classes', 'force-app/main/default/objects'],
+        },
+        {
+          toDeploy: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
+          toVerify: ['force-app/main/default/classes', 'force-app/main/default/permissionsets'],
+        },
+        {
+          toDeploy: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
+          toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
+        },
       ]),
       metadata: normalizeFilePaths([
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes'] },
@@ -58,6 +78,29 @@ export const TEST_REPOS: RepoConfig[] = [
           toDeploy: 'ApexClass:BotController,CustomObject',
           toVerify: ['force-app/main/default/classes/BotController.cls', 'force-app/main/default/objects'],
         },
+        {
+          toDeploy: '"ApexClass:BotController, CustomObject, PermissionSet"',
+          toVerify: [
+            'force-app/main/default/classes/BotController.cls',
+            'force-app/main/default/objects',
+            'force-app/main/default/permissionsets',
+          ],
+        },
+      ]),
+      manifest: normalizeFilePaths([
+        { toDeploy: 'force-app', toVerify: ['force-app'] },
+        {
+          toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
+          toVerify: ['force-app/main/default/classes', 'force-app/main/default/objects'],
+        },
+        {
+          toDeploy:
+            '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
+          toVerify: [
+            'force-app/main/default/objects',
+            'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
+          ],
+        },
       ]),
     },
   },
@@ -69,7 +112,7 @@ export const TEST_REPOS: RepoConfig[] = [
 function normalizeFilePaths(testCases: DeployTestCase[]): DeployTestCase[] {
   return testCases.map((testCase) => {
     return {
-      toDeploy: normalize(testCase.toDeploy),
+      toDeploy: testCase.toDeploy.split(',').map(normalize).join(','),
       toVerify: testCase.toVerify.map(normalize),
     };
   });

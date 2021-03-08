@@ -14,7 +14,14 @@ import { AnyJson, JsonMap, ensureString } from '@salesforce/ts-types';
 import { AuthInfo, ConfigAggregator, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
-import { DeployResult, PullResult, PushResult, RetrieveResult, StatusResult } from '../../src/sourceCommand';
+import {
+  ConvertResult,
+  DeployResult,
+  PullResult,
+  PushResult,
+  RetrieveResult,
+  StatusResult,
+} from '../../src/sourceCommand';
 import { Expectations, traverseForFiles } from './expectations';
 import { FileTracker } from './fileTracker';
 
@@ -43,7 +50,7 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
 
   public constructor(options: NutButter.Options) {
     super(options);
-    this.debug = debug('nutcase');
+    this.debug = debug('nutbutter');
     this.executable = options.executable;
     this.repository = options.repository;
   }
@@ -51,6 +58,10 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   public async clean(): Promise<void> {
     NutButter.Env.unset('TESTKIT_EXECUTABLE_PATH');
     await this.session?.clean();
+  }
+
+  public async convert(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<ConvertResult>> {
+    return this.execute<ConvertResult>('force:source:convert', options);
   }
 
   public async deploy(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.CmdResult<DeployResult>> {

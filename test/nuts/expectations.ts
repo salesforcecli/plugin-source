@@ -17,6 +17,7 @@ import {
   SourceState,
   StatusResult,
   PullResult,
+  ConvertResult,
 } from '../../src/sourceCommand';
 import { FileTracker } from './fileTracker';
 
@@ -26,14 +27,6 @@ export class Expectations {
   public fileToBeChanged(file: string): void {
     const fileHistory = this.fileTracker.get(file);
     expect(fileHistory[fileHistory.length - 1].changedFromPrevious).to.be.true;
-  }
-
-  public async specificMetadataToBeDeployed(result: DeployResult, ...metadata: string[]): Promise<void> {
-    const specificMetadata = result.deployedSource.filter((r) => metadata.includes(r.type));
-    const clsFileCount = await countFiles(this.packagePaths, '.cls');
-    const clsMetaXmlFileCount = await countFiles(this.packagePaths, '.cls-meta.xml');
-
-    expect(specificMetadata.length).to.equal(clsFileCount + clsMetaXmlFileCount);
   }
 
   public async filesToBeDeployed(result: DeployResult, files: string[]): Promise<void> {
@@ -154,6 +147,11 @@ export class Expectations {
       expect(entry).to.have.property('type');
       expect(entry).to.have.property('state');
     }
+  }
+
+  public convertJsonToBeValid(result: ConvertResult): void {
+    expect(result).to.have.property('location');
+    expect(result.location).to.be.a('string');
   }
 
   public async allMetaXmlsToBePushed(result: PushResult): Promise<void> {
