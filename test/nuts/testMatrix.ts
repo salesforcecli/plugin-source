@@ -21,12 +21,13 @@ export type RepoConfig = {
     metadata: DeployTestCase[];
     sourcepath: DeployTestCase[];
     manifest: DeployTestCase[];
+    testlevel: { specifiedTests: string[] };
   };
 };
 
 export const TEST_REPOS: RepoConfig[] = [
   {
-    gitUrl: 'https://github.com/amphro/simple-mpd-project.git',
+    gitUrl: 'https://github.com/mdonnalley/simple-mpd-project.git',
     deploy: {
       sourcepath: normalizeFilePaths([
         { toDeploy: 'force-app,my-app', toVerify: ['force-app', 'my-app'] },
@@ -43,10 +44,10 @@ export const TEST_REPOS: RepoConfig[] = [
         { toDeploy: 'my-app', toVerify: ['my-app'] },
         { toDeploy: 'force-app,my-app', toVerify: ['force-app', 'my-app'] },
       ]),
+      testlevel: { specifiedTests: ['MyTest'] },
     },
   },
   {
-    skip: true,
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
     deploy: {
       sourcepath: normalizeFilePaths([
@@ -103,6 +104,7 @@ export const TEST_REPOS: RepoConfig[] = [
           ],
         },
       ]),
+      testlevel: { specifiedTests: ['BotTest'] },
     },
   },
   // { gitUrl: 'https://github.com/trailheadapps/ebikes-lwc.git' },

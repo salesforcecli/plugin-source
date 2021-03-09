@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { JsonMap } from '@salesforce/ts-types';
+
 /**
  * NOTICE: These types are only sufficient for running the NUTs. They are likely incomplete and in some cases incorrect.
  * As we add commands to plugin-source, we should finalize the respective types and move them to the appropriate file location.
@@ -28,7 +30,7 @@ export type SimpleDeployResult = {
   deployedSource: SourceInfo[];
 };
 
-type BaseDeployResult = {
+export type BaseDeployResult = {
   checkOnly: boolean;
   createdBy: string;
   createdByName: string;
@@ -65,10 +67,29 @@ export type ComponentSuccess = {
   success: string;
 };
 
+type TestSuccess = {
+  id: string;
+  methodName: string;
+  namespace: JsonMap;
+  name: string;
+  time: string;
+};
+
+type CodeCoverage = {
+  id: string;
+  name: string;
+  namespace: JsonMap;
+  numLocations: string;
+  numLocationsNotCovered: string;
+  type: string;
+};
+
 export type RunTestResult = {
   numFailures: string;
   numTestsRun: string;
   totalTime: string;
+  successes?: TestSuccess[];
+  codeCoverage?: CodeCoverage[];
 };
 
 export type ComplexDeployResult = BaseDeployResult & {

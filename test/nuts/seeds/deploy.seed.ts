@@ -31,7 +31,7 @@ context('Deploy NUTs %REPO% %EXEC%', () => {
     await nutshell.expect.allMetaXmlsToBeDeployed(deploy.result, ...nutshell.packagePaths);
   });
 
-  describe('--sourcepath flag', () => {
+  describe.skip('--sourcepath flag', () => {
     for (const testCase of REPO.deploy.sourcepath) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
         const deploy = await nutshell.deploy({ args: `--sourcepath ${testCase.toDeploy}` });
@@ -46,7 +46,7 @@ context('Deploy NUTs %REPO% %EXEC%', () => {
     });
   });
 
-  describe('--metadata flag', () => {
+  describe.skip('--metadata flag', () => {
     for (const testCase of REPO.deploy.metadata) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
         const deploy = await nutshell.deploy({ args: `--metadata ${testCase.toDeploy}` });
@@ -61,7 +61,7 @@ context('Deploy NUTs %REPO% %EXEC%', () => {
     });
   });
 
-  describe('--manifest flag', () => {
+  describe.skip('--manifest flag', () => {
     for (const testCase of REPO.deploy.manifest) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
         const convert = await nutshell.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
@@ -80,26 +80,28 @@ context('Deploy NUTs %REPO% %EXEC%', () => {
     });
   });
 
-  describe('--checkonly flag', () => {
+  describe.skip('--checkonly flag', () => {
     it('should check deploy of all packages', async () => {
       const deploy = await nutshell.deploy<ComplexDeployResult>({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --checkonly`,
       });
-      nutshell.expect.deployVerboseJsonToBeValid(deploy.result);
-      await nutshell.expect.filesToBeDeployedVerbose(deploy.result, nutshell.packageNames);
+      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
     });
   });
 
-  describe('async deploy', () => {
+  describe.skip('async deploy', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       const deploy = await nutshell.deploy<ComplexDeployResult>({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --wait 0`,
       });
+
       nutshell.expect.toHaveProperty(deploy.result, 'id');
+      nutshell.expect.toHavePropertyAndValue(deploy.result, 'status', 'Pending');
 
       const report = await nutshell.deployReport({ args: `-i ${deploy.result.id}` });
       nutshell.expect.toHaveProperty(report.result, 'details');
       nutshell.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
+      nutshell.expect.deployReportJsonToBeValid(report.result);
     });
 
     it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
@@ -107,12 +109,65 @@ context('Deploy NUTs %REPO% %EXEC%', () => {
         args: `--sourcepath ${nutshell.packageNames.join(',')} --wait 0`,
       });
       nutshell.expect.toHaveProperty(deploy.result, 'id');
+      nutshell.expect.toHavePropertyAndValue(deploy.result, 'status', 'Pending');
 
       const cancel = await nutshell.deployCancel({ args: `-i ${deploy.result.id}` });
+      nutshell.expect.deployCancelJsonToBeValid(cancel.result);
+    });
+  });
 
-      nutshell.expect.toHaveProperty(cancel.result, 'details');
-      nutshell.expect.toHaveProperty(cancel.result, 'canceledBy');
-      nutshell.expect.toHavePropertyAndValue(cancel.result, 'status', 'Canceled');
+  describe('--testlevel', () => {
+    it('should run no tests (NoTestRun)', async () => {
+      const deploy = await nutshell.deploy<ComplexDeployResult>({
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel NoTestRun --checkonly`,
+      });
+      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
+      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
+      nutshell.expect.toHavePropertyAndValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+    });
+
+    it('should run tests locally (RunLocalTests)', async () => {
+      const deploy = await nutshell.deploy<ComplexDeployResult>({
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests --checkonly`,
+      });
+      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
+      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
+      nutshell.expect.toHavePropertyAndNotValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+    });
+
+    it('should run tests in org (RunAllTestsInOrg)', async () => {
+      const deploy = await nutshell.deploy<ComplexDeployResult>({
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunAllTestsInOrg --checkonly`,
+      });
+      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
+      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
+      nutshell.expect.toHavePropertyAndNotValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+    });
+
+    it('should run specified tests in org (RunSpecifiedTests)', async () => {
+      const packageNames = nutshell.packageNames.join(',');
+      const tests = REPO.deploy.testlevel.specifiedTests.join(',');
+      const deploy = await nutshell.deploy<ComplexDeployResult>({
+        args: `--sourcepath ${packageNames} --testlevel RunSpecifiedTests --runtests ${tests} --checkonly --ignoreerrors`,
+      });
+      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
+      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
+      nutshell.expect.toHavePropertyAndNotValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+    });
+  });
+
+  describe.skip('quick deploy', () => {
+    it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
+      const checkOnly = await nutshell.deploy<ComplexDeployResult>({
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests --checkonly`,
+      });
+      nutshell.expect.toHaveProperty(checkOnly.result, 'id');
+
+      const quickDeploy = await nutshell.deploy<ComplexDeployResult>({
+        args: `--validateddeployrequestid ${checkOnly.result.id}`,
+      });
+      nutshell.expect.deployReportJsonToBeValid(quickDeploy.result);
+      nutshell.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
     });
   });
 });

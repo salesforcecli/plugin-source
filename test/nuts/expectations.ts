@@ -10,15 +10,19 @@ import { expect } from 'chai';
 import { fs } from '@salesforce/core';
 import { JsonMap } from '@salesforce/ts-types';
 import {
-  SimpleDeployResult,
-  SourceInfo,
+  BaseDeployResult,
+  ComplexDeployResult,
+  ConvertResult,
+  DeployCancelResult,
+  DeployReportResult,
+  PullResult,
   PushResult,
   RetrieveResult,
+  RunTestResult,
+  SimpleDeployResult,
+  SourceInfo,
   SourceState,
   StatusResult,
-  PullResult,
-  ConvertResult,
-  DeployResult,
 } from './types';
 import { FileTracker } from './fileTracker';
 
@@ -43,25 +47,6 @@ export class Expectations {
 
     const truncatedFilesToExpect = filesToExpect.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
     const deployedFiles = result.deployedSource.map((d) => d.filePath);
-    const everyExpectedFileFound = truncatedFilesToExpect.every((f) => deployedFiles.includes(f));
-    expect(everyExpectedFileFound).to.be.true;
-  }
-
-  public async filesToBeDeployedVerbose(result: DeployResult, files: string[]): Promise<void> {
-    const filesToExpect: string[] = [];
-    for (const file of files) {
-      const filePath = path.join(this.projectDir, file);
-      if (fs.statSync(filePath).isDirectory()) {
-        filesToExpect.push(...(await traverseForFiles(filePath)));
-      } else {
-        filesToExpect.push(file);
-      }
-    }
-
-    const truncatedFilesToExpect = filesToExpect.map((f) => path.basename(f)).filter((f) => !f.endsWith('-meta.xml'));
-    const deployedFiles = result.deploys.reduce((x, y) => {
-      return x.concat(y.details.componentSuccesses.map((d) => path.basename(d.fileName)));
-    }, [] as string[]);
     const everyExpectedFileFound = truncatedFilesToExpect.every((f) => deployedFiles.includes(f));
     expect(everyExpectedFileFound).to.be.true;
   }
@@ -131,11 +116,30 @@ export class Expectations {
     }
   }
 
-  public deployVerboseJsonToBeValid(result: DeployResult): void {
+  public deployComplexJsonToBeValid(result: ComplexDeployResult): void {
     expect(result).to.have.property('outboundFiles');
-    expect(result).to.have.property('deploys');
-    expect(result).to.have.property('checkOnly');
     expect(result).to.have.property('completedDate');
+    expect(result).to.have.property('startDate');
+
+    this.deployBaseJsonToBeValid(result);
+  }
+
+  public deployReportJsonToBeValid(result: DeployReportResult): void {
+    expect(result).to.have.property('completedDate');
+    expect(result).to.have.property('startDate');
+
+    this.deployBaseJsonToBeValid(result);
+  }
+
+  public deployCancelJsonToBeValid(result: DeployCancelResult): void {
+    expect(result).to.have.property('canceledBy');
+    expect(result).to.have.property('canceledByName');
+    expect(result).to.have.property('details');
+    this.toHavePropertyAndValue(result, 'status', 'Canceled');
+  }
+
+  public deployBaseJsonToBeValid(result: BaseDeployResult): void {
+    expect(result).to.have.property('checkOnly');
     expect(result).to.have.property('createdBy');
     expect(result).to.have.property('createdByName');
     expect(result).to.have.property('details');
@@ -151,7 +155,6 @@ export class Expectations {
     expect(result).to.have.property('numberTestsTotal');
     expect(result).to.have.property('rollbackOnError');
     expect(result).to.have.property('runTestsEnabled');
-    expect(result).to.have.property('startDate');
     expect(result).to.have.property('status');
     expect(result).to.have.property('success');
 
@@ -165,8 +168,32 @@ export class Expectations {
       expect(success).to.have.property('fileName');
       expect(success).to.have.property('fullName');
       expect(success).to.have.property('success');
-      if (success.fullName !== 'package.xml') {
+    }
+  }
+
+  public deployTestResultsToBeValid(testResults: RunTestResult): void {
+    expect(testResults).to.have.property('numFailures');
+    expect(testResults).to.have.property('numTestsRun');
+    expect(testResults).to.have.property('totalTime');
+
+    if (testResults.successes) {
+      for (const success of testResults.successes) {
         expect(success).to.have.property('id');
+        expect(success).to.have.property('name');
+        expect(success).to.have.property('namespace');
+        expect(success).to.have.property('time');
+        expect(success).to.have.property('methodName');
+      }
+    }
+
+    if (testResults.codeCoverage) {
+      for (const coverage of testResults.codeCoverage) {
+        expect(coverage).to.have.property('id');
+        expect(coverage).to.have.property('name');
+        expect(coverage).to.have.property('namespace');
+        expect(coverage).to.have.property('numLocations');
+        expect(coverage).to.have.property('numLocationsNotCovered');
+        expect(coverage).to.have.property('type');
       }
     }
   }
@@ -193,6 +220,11 @@ export class Expectations {
   public toHavePropertyAndValue(result: JsonMap, prop: string, value: unknown): void {
     expect(result).to.have.property(prop);
     expect(result[prop]).to.equal(value);
+  }
+
+  public toHavePropertyAndNotValue(result: JsonMap, prop: string, value: unknown): void {
+    expect(result).to.have.property(prop);
+    expect(result[prop]).to.not.equal(value);
   }
 
   public pullJsonToBeValid(result: PullResult): void {

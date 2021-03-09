@@ -69,7 +69,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   // We allow a type parameter here because different flags produce completely
   // different json. We could utilize function overloads to make the typing
   // automatic but that would require typing all the different flags which
-  // isn't something we want to.
+  // is something we'd rather not do.
   public async deploy<T = SimpleDeployResult>(
     options: Partial<Nutshell.CommandOpts> = {}
   ): Promise<Nutshell.Result<T>> {
@@ -81,7 +81,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<DeployCancelResult>> {
-    return this.execute<DeployCancelResult>('force:source:deploy:cacnel', options);
+    return this.execute<DeployCancelResult>('force:source:deploy:cancel', options);
   }
 
   public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<RetrieveResult>> {
