@@ -10,7 +10,7 @@ import { expect } from 'chai';
 import { fs } from '@salesforce/core';
 import { JsonMap } from '@salesforce/ts-types';
 import {
-  DeployResult,
+  SimpleDeployResult,
   SourceInfo,
   PushResult,
   RetrieveResult,
@@ -18,8 +18,8 @@ import {
   StatusResult,
   PullResult,
   ConvertResult,
-  DeployVerboseResult,
-} from '../../src/sourceCommand';
+  DeployResult,
+} from './types';
 import { FileTracker } from './fileTracker';
 
 export class Expectations {
@@ -30,7 +30,7 @@ export class Expectations {
     expect(fileHistory[fileHistory.length - 1].changedFromPrevious).to.be.true;
   }
 
-  public async filesToBeDeployed(result: DeployResult, files: string[]): Promise<void> {
+  public async filesToBeDeployed(result: SimpleDeployResult, files: string[]): Promise<void> {
     const filesToExpect: string[] = [];
     for (const file of files) {
       const filePath = path.join(this.projectDir, file);
@@ -47,7 +47,7 @@ export class Expectations {
     expect(everyExpectedFileFound).to.be.true;
   }
 
-  public async filesToBeDeployedVerbose(result: DeployVerboseResult, files: string[]): Promise<void> {
+  public async filesToBeDeployedVerbose(result: DeployResult, files: string[]): Promise<void> {
     const filesToExpect: string[] = [];
     for (const file of files) {
       const filePath = path.join(this.projectDir, file);
@@ -121,7 +121,7 @@ export class Expectations {
     }
   }
 
-  public deployJsonToBeValid(result: DeployResult): void {
+  public deployJsonToBeValid(result: SimpleDeployResult): void {
     expect(result).to.have.property('deployedSource');
     for (const deployedSource of result.deployedSource) {
       expect(deployedSource).to.have.property('filePath');
@@ -131,7 +131,7 @@ export class Expectations {
     }
   }
 
-  public deployVerboseJsonToBeValid(result: DeployVerboseResult): void {
+  public deployVerboseJsonToBeValid(result: DeployResult): void {
     expect(result).to.have.property('outboundFiles');
     expect(result).to.have.property('deploys');
     expect(result).to.have.property('checkOnly');
@@ -227,7 +227,7 @@ export class Expectations {
     await this.allMetaXmlsToBePresent(result.pulledSource, this.packagePaths);
   }
 
-  public async allMetaXmlsToBeDeployed(result: DeployResult, ...directories: string[]): Promise<void> {
+  public async allMetaXmlsToBeDeployed(result: SimpleDeployResult, ...directories: string[]): Promise<void> {
     await this.allMetaXmlsToBePresent(result.deployedSource, directories);
   }
 

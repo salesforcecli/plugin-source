@@ -10,19 +10,20 @@ import * as os from 'os';
 import { copyFile } from 'fs/promises';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Env } from '@salesforce/kit';
-import { AnyJson, JsonMap, ensureString } from '@salesforce/ts-types';
+import { AnyJson, JsonMap, ensureString, Nullable } from '@salesforce/ts-types';
 import { AuthInfo, ConfigAggregator, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
 import {
   ConvertResult,
-  DeployResult,
-  DeployVerboseResult,
+  DeployCancelResult,
+  DeployReportResult,
   PullResult,
   PushResult,
   RetrieveResult,
+  SimpleDeployResult,
   StatusResult,
-} from '../../src/sourceCommand';
+} from './types';
 import { Expectations, traverseForFiles } from './expectations';
 import { FileTracker } from './fileTracker';
 
@@ -43,7 +44,7 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   private configAggregator: ConfigAggregator;
   private connection: Connection;
   private debug: Debugger;
-  private executable?: string;
+  private executable: Nullable<string>;
   private fileTracker: FileTracker;
   private repository: string;
   private session: TestSession;
@@ -65,22 +66,26 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
     return this.execute<ConvertResult>('force:source:convert', options);
   }
 
-  public async deploy<T = DeployResult>(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<T>> {
+  // We allow a type parameter here because different flags produce completely
+  // different json. We could utilize function overloads to make the typing
+  // automatic but that would require typing all the different flags which
+  // isn't something we want to.
+  public async deploy<T = SimpleDeployResult>(
+    options: Partial<NutButter.CommandOpts> = {}
+  ): Promise<NutButter.Result<T>> {
     return this.execute<T>('force:source:deploy', options);
   }
 
-  // TODO: Return type here isn't quite accurate
   public async deployReport(
     options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.Result<DeployVerboseResult>> {
-    return this.execute<DeployVerboseResult>('force:source:deploy:report', options);
+  ): Promise<NutButter.Result<DeployReportResult>> {
+    return this.execute<DeployReportResult>('force:source:deploy:report', options);
   }
 
-  // TODO: Return type here isn't quite accurate
   public async deployCancel(
     options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.Result<DeployVerboseResult>> {
-    return this.execute<DeployVerboseResult>('force:source:deploy:cancel', options);
+  ): Promise<NutButter.Result<DeployCancelResult>> {
+    return this.execute<DeployCancelResult>('force:source:deploy:cacnel', options);
   }
 
   public async retrieve(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<RetrieveResult>> {

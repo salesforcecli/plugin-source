@@ -10,86 +10,11 @@ import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
-export type SourceState = 'Local Add' | 'Local Changed' | 'Remote Add' | 'Remote Changed' | 'Local Deleted';
-
 export type FlagOptions = {
   packagenames?: string[];
   sourcepath: string[];
   manifest: string;
   metadata: string[];
-};
-
-export type SourceInfo = {
-  state: string;
-  fullName: string;
-  type: string;
-  filePath: string;
-};
-
-export type RetrieveResult = {
-  inboundFiles: SourceInfo[];
-};
-
-export type DeployResult = {
-  deployedSource: SourceInfo[];
-};
-
-export type ComponentSuccess = {
-  changed: string;
-  componentType: string;
-  created: string;
-  createdDate: string;
-  deleted: string;
-  fileName: string;
-  fullName: string;
-  id?: string;
-  success: string;
-};
-
-export type DeployVerboseResult = {
-  outboundFiles: string[];
-  deploys: DeployVerboseResult[];
-  checkOnly: boolean;
-  completedDate: string;
-  createdBy: string;
-  createdByName: string;
-  details: {
-    componentSuccesses: ComponentSuccess[];
-    runTestResult: {
-      numFailures: string;
-      numTestsRun: string;
-      totalTime: string;
-    };
-  };
-  done: boolean;
-  id: string;
-  ignoreWarnings: boolean;
-  lastModifiedDate: string;
-  numberComponentErrors: number;
-  numberComponentsDeployed: number;
-  numberComponentsTotal: number;
-  numberTestErrors: number;
-  numberTestsCompleted: number;
-  numberTestsTotal: number;
-  rollbackOnError: boolean;
-  runTestsEnabled: boolean;
-  startDate: string;
-  status: string;
-  success: boolean;
-};
-
-export type PushResult = {
-  pushedSource: SourceInfo[];
-};
-
-export type PullResult = {
-  pulledSource: SourceInfo[];
-};
-
-export type StatusResult = SourceInfo[];
-
-export type ConvertResult = {
-  location: string;
 };
 
 export abstract class SourceCommand extends SfdxCommand {
