@@ -15,8 +15,12 @@ const EXECUTABLE = '';
 context.skip('Source Tracking NUTs %REPO% %EXEC%', () => {
   let nutshell: Nutshell;
 
-  before(async () => {
-    nutshell = await Nutshell.create({ repository: REPO.gitUrl, executable: EXECUTABLE });
+  before(async function () {
+    nutshell = await Nutshell.create({
+      repository: REPO.gitUrl,
+      executable: EXECUTABLE,
+      context: this.test?.parent.title,
+    });
   });
 
   after(async () => {

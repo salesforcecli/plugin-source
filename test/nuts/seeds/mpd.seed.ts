@@ -13,10 +13,11 @@ const EXECUTABLE = '';
 context.skip('MPD NUTs %EXEC%', () => {
   let nutshell: Nutshell;
 
-  before(async () => {
+  before(async function () {
     nutshell = await Nutshell.create({
       repository: 'https://github.com/amphro/simple-mpd-project.git',
       executable: EXECUTABLE,
+      context: this.test?.parent.title,
     });
   });
 

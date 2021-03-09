@@ -49,12 +49,14 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   private repository: string;
   private session: TestSession;
   private username: string;
+  private context: string;
 
   public constructor(options: Nutshell.Options) {
     super(options);
     this.debug = debug('nutshell');
     this.executable = options.executable;
     this.repository = options.repository;
+    this.context = options.context;
   }
 
   public async clean(): Promise<void> {
@@ -224,7 +226,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   ): Promise<Nutshell.Result<T>> {
     const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
     const command = [cmd, args, '--json'].join(' ');
-    this.debug(`${command} (expecting exit code: ${exitCode})`);
+    this.debug(`[${this.context}] ${command} (expecting exit code: ${exitCode})`);
     await this.fileTracker.updateAll(`PRE: ${command}`);
     const result = execCmd<T>(command, { ensureExitCode: exitCode });
     await this.fileTracker.updateAll(`POST: ${command}`);
@@ -259,6 +261,7 @@ export namespace Nutshell {
   export type Options = {
     readonly executable?: string;
     readonly repository: string;
+    readonly context: string;
   };
 
   export type CommandOpts = {
