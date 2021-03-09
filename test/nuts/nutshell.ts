@@ -27,9 +27,9 @@ import {
 import { Expectations, traverseForFiles } from './expectations';
 import { FileTracker } from './fileTracker';
 
-export class NutButter extends AsyncCreatable<NutButter.Options> {
+export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public static Env = new Env();
-  private static DefaultCmdOpts: NutButter.CommandOpts = {
+  private static DefaultCmdOpts: Nutshell.CommandOpts = {
     exitCode: 0,
     args: '',
   };
@@ -50,19 +50,19 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   private session: TestSession;
   private username: string;
 
-  public constructor(options: NutButter.Options) {
+  public constructor(options: Nutshell.Options) {
     super(options);
-    this.debug = debug('nutbutter');
+    this.debug = debug('nutshell');
     this.executable = options.executable;
     this.repository = options.repository;
   }
 
   public async clean(): Promise<void> {
-    NutButter.Env.unset('TESTKIT_EXECUTABLE_PATH');
+    Nutshell.Env.unset('TESTKIT_EXECUTABLE_PATH');
     await this.session?.clean();
   }
 
-  public async convert(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<ConvertResult>> {
+  public async convert(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<ConvertResult>> {
     return this.execute<ConvertResult>('force:source:convert', options);
   }
 
@@ -71,36 +71,32 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   // automatic but that would require typing all the different flags which
   // isn't something we want to.
   public async deploy<T = SimpleDeployResult>(
-    options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.Result<T>> {
+    options: Partial<Nutshell.CommandOpts> = {}
+  ): Promise<Nutshell.Result<T>> {
     return this.execute<T>('force:source:deploy', options);
   }
 
-  public async deployReport(
-    options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.Result<DeployReportResult>> {
+  public async deployReport(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<DeployReportResult>> {
     return this.execute<DeployReportResult>('force:source:deploy:report', options);
   }
 
-  public async deployCancel(
-    options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.Result<DeployCancelResult>> {
+  public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<DeployCancelResult>> {
     return this.execute<DeployCancelResult>('force:source:deploy:cacnel', options);
   }
 
-  public async retrieve(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<RetrieveResult>> {
+  public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<RetrieveResult>> {
     return this.execute<RetrieveResult>('force:source:retrieve', options);
   }
 
-  public async push(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<PushResult>> {
+  public async push(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<PushResult>> {
     return this.execute<PushResult>('force:source:push', options);
   }
 
-  public async pull(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<PullResult>> {
+  public async pull(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<PullResult>> {
     return this.execute<PullResult>('force:source:pull', options);
   }
 
-  public async status(options: Partial<NutButter.CommandOpts> = {}): Promise<NutButter.Result<StatusResult>> {
+  public async status(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
   }
 
@@ -193,13 +189,13 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   }
 
   protected async init(): Promise<void> {
-    if (!NutButter.Env.getString('TESTKIT_HUB_USERNAME')) {
-      ensureString(NutButter.Env.getString('TESTKIT_JWT_KEY'));
-      ensureString(NutButter.Env.getString('TESTKIT_JWT_CLIENT_ID'));
-      ensureString(NutButter.Env.getString('TESTKIT_HUB_INSTANCE'));
+    if (!Nutshell.Env.getString('TESTKIT_HUB_USERNAME')) {
+      ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
+      ensureString(Nutshell.Env.getString('TESTKIT_JWT_CLIENT_ID'));
+      ensureString(Nutshell.Env.getString('TESTKIT_HUB_INSTANCE'));
     }
     if (this.executable) {
-      NutButter.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
+      Nutshell.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
     }
 
     this.session = await this.createSession();
@@ -212,7 +208,7 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
     this.configAggregator = await ConfigAggregator.create();
     this.username =
       (this.configAggregator.getPropertyValue('defaultusername') as string) ||
-      NutButter.Env.getString('TESTKIT_ORG_USERNAME');
+      Nutshell.Env.getString('TESTKIT_ORG_USERNAME');
     this.connection = await Connection.create({
       authInfo: await AuthInfo.create({ username: this.username }),
     });
@@ -224,9 +220,9 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
 
   private async execute<T = AnyJson>(
     cmd: string,
-    options: Partial<NutButter.CommandOpts> = {}
-  ): Promise<NutButter.Result<T>> {
-    const { args, exitCode } = Object.assign({}, NutButter.DefaultCmdOpts, options);
+    options: Partial<Nutshell.CommandOpts> = {}
+  ): Promise<Nutshell.Result<T>> {
+    const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
     const command = [cmd, args, '--json'].join(' ');
     this.debug(`${command} (expecting exit code: ${exitCode})`);
     await this.fileTracker.updateAll(`PRE: ${command}`);
@@ -259,7 +255,7 @@ export class NutButter extends AsyncCreatable<NutButter.Options> {
   }
 }
 
-export namespace NutButter {
+export namespace Nutshell {
   export type Options = {
     readonly executable?: string;
     readonly repository: string;

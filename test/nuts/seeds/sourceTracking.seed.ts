@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { NutButter } from '../nutButter';
+import { Nutshell } from '../nutshell';
 import { RepoConfig } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -13,134 +13,134 @@ const REPO = { gitUrl: '' } as RepoConfig;
 const EXECUTABLE = '';
 
 context.skip('Source Tracking NUTs %REPO% %EXEC%', () => {
-  let nutButter: NutButter;
+  let nutshell: Nutshell;
 
   before(async () => {
-    nutButter = await NutButter.create({ repository: REPO.gitUrl, executable: EXECUTABLE });
+    nutshell = await Nutshell.create({ repository: REPO.gitUrl, executable: EXECUTABLE });
   });
 
   after(async () => {
-    await nutButter?.clean();
+    await nutshell?.clean();
   });
 
   it('should show all files as Local Add', async () => {
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToOnlyHaveState(status.result, 'Local Add');
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToOnlyHaveState(status.result, 'Local Add');
   });
 
   it('should push the entire project', async () => {
-    const push = await nutButter.push();
-    await nutButter.expect.allMetaXmlsToBePushed(push.result);
-    nutButter.expect.pushJsonToBeValid(push.result);
+    const push = await nutshell.push();
+    await nutshell.expect.allMetaXmlsToBePushed(push.result);
+    nutshell.expect.pushJsonToBeValid(push.result);
 
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToBeEmpty(status.result);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToBeEmpty(status.result);
   });
 
   it('should show Local Add when files have been added', async () => {
-    await nutButter.addTestFiles();
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusFilesToHaveState(status.result, 'Local Add', nutButter.testMetadataFiles);
+    await nutshell.addTestFiles();
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusFilesToHaveState(status.result, 'Local Add', nutshell.testMetadataFiles);
   });
 
   it('should push the added files', async () => {
-    const push = await nutButter.push();
-    nutButter.expect.filesToBePushed(push.result, nutButter.testMetadataFiles);
-    nutButter.expect.pushJsonToBeValid(push.result);
+    const push = await nutshell.push();
+    nutshell.expect.filesToBePushed(push.result, nutshell.testMetadataFiles);
+    nutshell.expect.pushJsonToBeValid(push.result);
 
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToBeEmpty(status.result);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToBeEmpty(status.result);
   });
 
   it('should have results in source status after local file change', async () => {
-    await nutButter.modifyLocalFiles(nutButter.testMetadataFiles[0]);
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusFileToHaveState(status.result, 'Local Changed', nutButter.testMetadataFiles[0]);
+    await nutshell.modifyLocalFiles(nutshell.testMetadataFiles[0]);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusFileToHaveState(status.result, 'Local Changed', nutshell.testMetadataFiles[0]);
   });
 
   it('should push only changed files', async () => {
-    const push = await nutButter.push();
-    nutButter.expect.fileToBePushed(push.result, nutButter.testMetadataFiles[0]);
-    nutButter.expect.pushJsonToBeValid(push.result);
+    const push = await nutshell.push();
+    nutshell.expect.fileToBePushed(push.result, nutshell.testMetadataFiles[0]);
+    nutshell.expect.pushJsonToBeValid(push.result);
   });
 
   it('should should show and pull remote changes', async () => {
-    const quickAction = await nutButter.modifyRemoteFile();
+    const quickAction = await nutshell.modifyRemoteFile();
 
-    const statusPre = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(statusPre.result);
-    nutButter.expect.statusToOnlyHaveState(statusPre.result, 'Remote Changed');
+    const statusPre = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(statusPre.result);
+    nutshell.expect.statusToOnlyHaveState(statusPre.result, 'Remote Changed');
 
-    const pull = await nutButter.pull();
-    nutButter.expect.fileToBeChanged(quickAction);
-    nutButter.expect.pullJsonToBeValid(pull.result);
-    nutButter.expect.fileToBePulled(pull.result, quickAction);
+    const pull = await nutshell.pull();
+    nutshell.expect.fileToBeChanged(quickAction);
+    nutshell.expect.pullJsonToBeValid(pull.result);
+    nutshell.expect.fileToBePulled(pull.result, quickAction);
 
-    const statusPost = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(statusPost.result);
-    nutButter.expect.statusToBeEmpty(statusPost.result);
+    const statusPost = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(statusPost.result);
+    nutshell.expect.statusToBeEmpty(statusPost.result);
   });
 
   it('should fail when conflicts are present', async () => {
-    const quickAction = await nutButter.modifyRemoteFile();
-    await nutButter.modifyLocalFiles(quickAction);
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToOnlyHaveConflicts(status.result);
+    const quickAction = await nutshell.modifyRemoteFile();
+    await nutshell.modifyLocalFiles(quickAction);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
-    const push = await nutButter.push({ exitCode: 1 });
-    nutButter.expect.errorToHaveName(push, 'sourceConflictDetected');
+    const push = await nutshell.push({ exitCode: 1 });
+    nutshell.expect.errorToHaveName(push, 'sourceConflictDetected');
 
-    const pull = await nutButter.pull({ exitCode: 1 });
-    nutButter.expect.errorToHaveName(pull, 'sourceConflictDetected');
+    const pull = await nutshell.pull({ exitCode: 1 });
+    nutshell.expect.errorToHaveName(pull, 'sourceConflictDetected');
   });
 
   it('should push with --forceoverwrite when conflicts are present', async () => {
-    const quickAction = await nutButter.modifyRemoteFile();
-    await nutButter.modifyLocalFiles(quickAction);
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToOnlyHaveConflicts(status.result);
+    const quickAction = await nutshell.modifyRemoteFile();
+    await nutshell.modifyLocalFiles(quickAction);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
-    const push = await nutButter.push({ args: '--forceoverwrite' });
-    nutButter.expect.pushJsonToBeValid(push.result);
-    nutButter.expect.fileToBePushed(push.result, quickAction);
+    const push = await nutshell.push({ args: '--forceoverwrite' });
+    nutshell.expect.pushJsonToBeValid(push.result);
+    nutshell.expect.fileToBePushed(push.result, quickAction);
   });
 
   it('should pull with --forceoverwrite when conflicts are present', async () => {
-    const quickAction = await nutButter.modifyRemoteFile();
-    await nutButter.modifyLocalFiles(quickAction);
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToOnlyHaveConflicts(status.result);
+    const quickAction = await nutshell.modifyRemoteFile();
+    await nutshell.modifyLocalFiles(quickAction);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
-    const pull = await nutButter.pull({ args: '--forceoverwrite' });
-    nutButter.expect.pullJsonToBeValid(pull.result);
-    nutButter.expect.fileToBePulled(pull.result, quickAction);
+    const pull = await nutshell.pull({ args: '--forceoverwrite' });
+    nutshell.expect.pullJsonToBeValid(pull.result);
+    nutshell.expect.fileToBePulled(pull.result, quickAction);
   });
 
   it('should show all files as Remote Add when source tracking is cleared and source files are removed', async () => {
-    await nutButter.deleteAllSourceFiles();
-    await nutButter.deleteMaxRevision();
-    await nutButter.deleteSourcePathInfos();
+    await nutshell.deleteAllSourceFiles();
+    await nutshell.deleteMaxRevision();
+    await nutshell.deleteSourcePathInfos();
 
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToOnlyHaveState(status.result, 'Remote Add');
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToOnlyHaveState(status.result, 'Remote Add');
   });
 
   it('should pull the entire project', async () => {
-    const pull = await nutButter.pull();
-    await nutButter.expect.allMetaXmlsToBePulled(pull.result);
-    nutButter.expect.pullJsonToBeValid(pull.result);
+    const pull = await nutshell.pull();
+    await nutshell.expect.allMetaXmlsToBePulled(pull.result);
+    nutshell.expect.pullJsonToBeValid(pull.result);
 
-    const status = await nutButter.status();
-    nutButter.expect.statusJsonToBeValid(status.result);
-    nutButter.expect.statusToBeEmpty(status.result);
+    const status = await nutshell.status();
+    nutshell.expect.statusJsonToBeValid(status.result);
+    nutshell.expect.statusToBeEmpty(status.result);
   });
 });
