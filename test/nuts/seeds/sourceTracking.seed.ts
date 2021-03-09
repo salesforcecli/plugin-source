@@ -12,7 +12,7 @@ import { RepoConfig } from '../testMatrix';
 const REPO = { gitUrl: '' } as RepoConfig;
 const EXECUTABLE = '';
 
-context.skip('Source Tracking NUTs %REPO% %EXEC%', () => {
+context('Source Tracking NUTs %REPO% %EXEC%', () => {
   let nutshell: Nutshell;
 
   before(async function () {

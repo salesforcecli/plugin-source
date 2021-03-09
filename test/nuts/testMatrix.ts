@@ -48,7 +48,6 @@ export const TEST_REPOS: RepoConfig[] = [
     },
   },
   {
-    skip: true,
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
     deploy: {
       sourcepath: normalizeFilePaths([
