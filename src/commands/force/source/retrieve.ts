@@ -5,18 +5,34 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
-
+import { join, sep } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
+import { Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { asArray, asString } from '@salesforce/ts-types';
+import { asArray, asString, Dictionary } from '@salesforce/ts-types';
 import { blue } from 'chalk';
-import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
+import { FileResponse, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
 import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+
+interface WorkspaceElementObj {
+  state: string;
+  fullName: string;
+  type: string;
+  filePath: string;
+  deleteSupported: boolean;
+}
+interface MetadataInfo {
+  mdapiFilePath: string[];
+}
+interface SourceInfo {
+  workspaceElements: WorkspaceElementObj[];
+}
+type MetadataResult = Dictionary<MetadataInfo>;
+type SourceResult = Dictionary<SourceInfo>;
 
 export class retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -50,12 +66,9 @@ export class retrieve extends SourceCommand {
       description: messages.getMessage('flags.packagename'),
     }),
   };
-  protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
+  protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve', 'postsourceupdate'];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async run(): Promise<any> {
-    const hookEmitter = Lifecycle.getInstance();
-
+  public async run(): Promise<MetadataApiRetrieveStatus> {
     const proj = await SfdxProjectJson.create({});
     const packages = await proj.getPackageDirectories();
     const defaultPackage = packages.find((pkg) => pkg.default);
@@ -68,9 +81,7 @@ export class retrieve extends SourceCommand {
       metadata: asArray<string>(this.flags.metadata),
     });
 
-    // emit pre retrieve event
-    // needs to be a path to the temp dir package.xml
-    await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
+    await this.hookEmitter.emit('preretrieve', { packageXmlPath: `${this.tmpDir}${sep}package.xml` });
 
     const mdapiResult = await cs
       .retrieve({
@@ -82,7 +93,9 @@ export class retrieve extends SourceCommand {
       .start();
 
     const results = mdapiResult.response;
-    await hookEmitter.emit('postretrieve', results);
+    await this.emitPostRetrieveHook(results.fileProperties);
+    // with the library the source update is happening in real time
+    await this.emitPostSourceUpdateHook(mdapiResult.getFileResponses());
 
     if (results.status === 'InProgress') {
       throw new SfdxError(messages.getMessage('retrieveTimeout', [(this.flags.wait as Duration).minutes]));
@@ -94,6 +107,7 @@ export class retrieve extends SourceCommand {
       this.printTable(results, true);
     }
 
+    this.cleanTmpDir();
     return results;
   }
 
@@ -123,5 +137,55 @@ export class retrieve extends SourceCommand {
     //   this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
     //   results.failures.forEach((warning) => this.ux.log(warning.message));
     // }
+  }
+
+  private async emitPostRetrieveHook(fileProperties: FileProperties | FileProperties[]): Promise<void> {
+    const postRetrieveHookData: MetadataResult = {};
+
+    asArray<{
+      fullName: string;
+      fileName: string;
+    }>(fileProperties).forEach((fileProperty) => {
+      const { fullName, fileName } = fileProperty;
+
+      if (!(typeof postRetrieveHookData[fullName] === 'object')) {
+        postRetrieveHookData[fullName] = {
+          mdapiFilePath: [],
+        };
+      }
+
+      postRetrieveHookData[fullName].mdapiFilePath = postRetrieveHookData[fullName].mdapiFilePath.concat(
+        join(this.tmpDir, fileName)
+      );
+    });
+    await this.hookEmitter.emit('postretrieve', postRetrieveHookData);
+  }
+
+  private async emitPostSourceUpdateHook(fileProperties: FileResponse[]): Promise<void> {
+    const postSourceUpdateHookInfo: SourceResult = {};
+
+    fileProperties.forEach((file) => {
+      const fullName = file.fullName;
+
+      if (!postSourceUpdateHookInfo[fullName]) {
+        postSourceUpdateHookInfo[fullName] = {
+          workspaceElements: [],
+        };
+      }
+
+      const hookInfo = postSourceUpdateHookInfo[fullName];
+      const newElements = hookInfo.workspaceElements.concat({
+        state: file.state[0].toLowerCase(),
+        fullName: file.fullName,
+        type: file.type,
+        filePath: file.filePath,
+        // TODO: don't hard code this.
+        deleteSupported: true,
+      } as WorkspaceElementObj);
+
+      hookInfo.workspaceElements = [...newElements];
+      postSourceUpdateHookInfo[fullName] = hookInfo;
+    });
+    await this.hookEmitter.emit('postsourceupdate', postSourceUpdateHookInfo);
   }
 }

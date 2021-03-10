@@ -5,10 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
+import * as os from 'os';
 import { SfdxCommand } from '@salesforce/command';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { fs, SfdxError } from '@salesforce/core';
+import { ComponentSet, MetadataConverter } from '@salesforce/source-deploy-retrieve';
+import { fs, Lifecycle, SfdxError } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
+import {
+  deleteDirectory,
+  ensureDirectoryExists,
+} from '@salesforce/source-deploy-retrieve/lib/src/utils/fileSystemHandler';
 
 export type FlagOptions = {
   packagenames?: string[];
@@ -20,6 +25,14 @@ export type FlagOptions = {
 export abstract class SourceCommand extends SfdxCommand {
   public static MINIMUM_SRC_WAIT_MINUTES = 1;
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
+  public tmpDir = `${process.env.SFDX_MDAPI_TEMP_DIR || os.tmpdir()}${path.sep}sfdx_${Date.now()}`;
+  protected hookEmitter = Lifecycle.getInstance();
+
+  public cleanTmpDir(): void {
+    if (!process.env.SFDX_MDAPI_TEMP_DIR) {
+      deleteDirectory(this.tmpDir);
+    }
+  }
   /**
    * will create one ComponentSet to be deployed/retrieved
    * will combine from all options passed in
@@ -65,14 +78,26 @@ export abstract class SourceCommand extends SfdxCommand {
           // either -m ApexClass or -m ApexClass:MyApexClass
           fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
         };
-        const cs = new ComponentSet([metadata]);
+        const componentSet = new ComponentSet([metadata]);
         // we need to search the entire project for the matching metadata component
         // no better way than to have it search than process.cwd()
-        cs.resolveSourceComponents(process.cwd(), { filter: cs });
-        setAggregator.push(...cs);
+        componentSet.resolveSourceComponents(process.cwd(), { filter: componentSet });
+        setAggregator.push(...componentSet);
       });
     }
 
-    return new ComponentSet(setAggregator);
+    const cs = new ComponentSet(setAggregator);
+    const converter = new MetadataConverter();
+
+    // unfortunately because of hook data requirements, we need to convert every time, regardless of
+    // SFDX_MDAPI_TEMP_DIR or not
+    await converter.convert(Array.from(cs.getSourceComponents()), 'metadata', {
+      type: 'directory',
+      outputDirectory: this.tmpDir,
+    });
+    ensureDirectoryExists(this.tmpDir);
+    fs.writeFileSync(`${this.tmpDir}${path.sep}package.xml`, cs.getPackageXml());
+
+    return cs;
   }
 }

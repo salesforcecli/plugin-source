@@ -7,7 +7,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString, asArray } from '@salesforce/ts-types';
@@ -91,7 +91,6 @@ export class deploy extends SourceCommand {
     if (this.flags.validatedeployrequestid) {
       // TODO: return this.doDeployRecentValidation();
     }
-    const hookEmitter = Lifecycle.getInstance();
 
     const cs = await this.createComponentSet({
       sourcepath: asArray<string>(this.flags.sourcepath),
@@ -99,29 +98,31 @@ export class deploy extends SourceCommand {
       metadata: asArray<string>(this.flags.metadata),
     });
 
-    await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
+    await this.hookEmitter.emit('predeploy', { packageXmlPath: `${this.tmpDir}${path.sep}package.xml` });
 
     const results = await cs
       .deploy({
         usernameOrConnection: this.org.getUsername(),
       })
       .start();
-    await hookEmitter.emit('postdeploy', results);
+
+    await this.hookEmitter.emit('postdeploy', results.response);
 
     // skip a lot of steps that would do nothing
     if (!this.flags.json) {
       this.print(results);
     }
 
+    this.cleanTmpDir();
     return results;
   }
 
   private printComponentFailures(result: DeployResult): void {
     if (result.response.status === 'Failed' && result.components) {
-      // sort by filename then fullname
+      // sort by filePath then fullname
       const failures = result.getFileResponses().sort((i, j) => {
         if (i.filePath === j.filePath) {
-          // if the have the same directoryName then sort by fullName
+          // if they have the same filePath then sort by fullName
           return i.fullName < j.fullName ? 1 : -1;
         }
         return i.filePath < j.filePath ? 1 : -1;
