@@ -113,7 +113,6 @@ export class deploy extends SourceCommand {
       this.print(results);
     }
 
-    this.cleanTmpDir();
     return results;
   }
 

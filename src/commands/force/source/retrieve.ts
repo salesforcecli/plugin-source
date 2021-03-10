@@ -93,7 +93,7 @@ export class retrieve extends SourceCommand {
       .start();
 
     const results = mdapiResult.response;
-    await this.emitPostRetrieveHook(results.fileProperties);
+    await this.emitPostRetrieveHook(asArray(results.fileProperties));
     // with the library the source update is happening in real time
     await this.emitPostSourceUpdateHook(mdapiResult.getFileResponses());
 
@@ -107,7 +107,6 @@ export class retrieve extends SourceCommand {
       this.printTable(results, true);
     }
 
-    this.cleanTmpDir();
     return results;
   }
 
@@ -131,21 +130,12 @@ export class retrieve extends SourceCommand {
     } else {
       this.ux.log(messages.getMessage('NoResultsFound'));
     }
-
-    // if (results.status === 'SucceededPartial' && results.successes.length && results.failures.length) {
-    //   this.ux.log('');
-    //   this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
-    //   results.failures.forEach((warning) => this.ux.log(warning.message));
-    // }
   }
 
-  private async emitPostRetrieveHook(fileProperties: FileProperties | FileProperties[]): Promise<void> {
+  private async emitPostRetrieveHook(fileProperties: FileProperties[]): Promise<void> {
     const postRetrieveHookData: MetadataResult = {};
 
-    asArray<{
-      fullName: string;
-      fileName: string;
-    }>(fileProperties).forEach((fileProperty) => {
+    fileProperties.forEach((fileProperty) => {
       const { fullName, fileName } = fileProperty;
 
       if (!(typeof postRetrieveHookData[fullName] === 'object')) {
@@ -154,9 +144,7 @@ export class retrieve extends SourceCommand {
         };
       }
 
-      postRetrieveHookData[fullName].mdapiFilePath = postRetrieveHookData[fullName].mdapiFilePath.concat(
-        join(this.tmpDir, fileName)
-      );
+      postRetrieveHookData[fullName].mdapiFilePath.push(join(this.tmpDir, fileName));
     });
     await this.hookEmitter.emit('postretrieve', postRetrieveHookData);
   }
@@ -173,18 +161,14 @@ export class retrieve extends SourceCommand {
         };
       }
 
-      const hookInfo = postSourceUpdateHookInfo[fullName];
-      const newElements = hookInfo.workspaceElements.concat({
-        state: file.state[0].toLowerCase(),
+      postSourceUpdateHookInfo[fullName].workspaceElements.push({
+        state: file?.state[0]?.toLowerCase(),
         fullName: file.fullName,
         type: file.type,
         filePath: file.filePath,
         // TODO: don't hard code this.
         deleteSupported: true,
-      } as WorkspaceElementObj);
-
-      hookInfo.workspaceElements = [...newElements];
-      postSourceUpdateHookInfo[fullName] = hookInfo;
+      });
     });
     await this.hookEmitter.emit('postsourceupdate', postSourceUpdateHookInfo);
   }

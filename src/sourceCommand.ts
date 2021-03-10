@@ -14,6 +14,7 @@ import {
   deleteDirectory,
   ensureDirectoryExists,
 } from '@salesforce/source-deploy-retrieve/lib/src/utils/fileSystemHandler';
+import { Optional } from '@salesforce/ts-types';
 
 export type FlagOptions = {
   packagenames?: string[];
@@ -28,11 +29,13 @@ export abstract class SourceCommand extends SfdxCommand {
   public tmpDir = `${process.env.SFDX_MDAPI_TEMP_DIR || os.tmpdir()}${path.sep}sfdx_${Date.now()}`;
   protected hookEmitter = Lifecycle.getInstance();
 
-  public cleanTmpDir(): void {
+  protected finally(err: Optional<Error>): Promise<void> {
     if (!process.env.SFDX_MDAPI_TEMP_DIR) {
       deleteDirectory(this.tmpDir);
     }
+    return super.finally(err);
   }
+
   /**
    * will create one ComponentSet to be deployed/retrieved
    * will combine from all options passed in
