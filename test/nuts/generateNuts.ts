@@ -11,10 +11,15 @@ import * as util from 'util';
 import { fs } from '@salesforce/core';
 import { EXECUTABLES, TEST_REPOS, RepoConfig } from './testMatrix';
 
+const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
+
 async function getSeedFiles(): Promise<string[]> {
   const seedDir = path.join(__dirname, 'seeds');
   const files = await fs.readdir(seedDir);
-  const seeds = files.filter((f) => f.endsWith('.seed.ts')).map((f) => path.resolve(path.join(seedDir, f)));
+  const seeds = files
+    .filter((f) => f.endsWith('.seed.ts'))
+    .filter((f) => f.includes(SEED_FILTER))
+    .map((f) => path.resolve(path.join(seedDir, f)));
   return seeds;
 }
 

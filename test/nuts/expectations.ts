@@ -9,6 +9,7 @@ import * as path from 'path';
 import { expect } from 'chai';
 import { fs } from '@salesforce/core';
 import { JsonMap } from '@salesforce/ts-types';
+import * as fg from 'fast-glob';
 import {
   BaseDeployResult,
   ComplexDeployResult,
@@ -34,21 +35,12 @@ export class Expectations {
     expect(fileHistory[fileHistory.length - 1].changedFromPrevious).to.be.true;
   }
 
-  public async filesToBeDeployed(result: SimpleDeployResult, files: string[]): Promise<void> {
-    const filesToExpect: string[] = [];
-    for (const file of files) {
-      const filePath = path.join(this.projectDir, file);
-      if (fs.statSync(filePath).isDirectory()) {
-        filesToExpect.push(...(await traverseForFiles(filePath)));
-      } else {
-        filesToExpect.push(file);
-      }
-    }
+  public async filesToBeDeployed(result: SimpleDeployResult, globs: string[]): Promise<void> {
+    await this.filesToBePresent(result.deployedSource, globs);
+  }
 
-    const truncatedFilesToExpect = filesToExpect.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
-    const deployedFiles = result.deployedSource.map((d) => d.filePath);
-    const everyExpectedFileFound = truncatedFilesToExpect.every((f) => deployedFiles.includes(f));
-    expect(everyExpectedFileFound).to.be.true;
+  public async filesToBeRetrieved(result: RetrieveResult, globs: string[]): Promise<void> {
+    await this.filesToBePresent(result.inboundFiles, globs);
   }
 
   public fileToBePushed(result: PushResult, file: string): void {
@@ -113,6 +105,16 @@ export class Expectations {
       expect(deployedSource).to.have.property('fullName');
       expect(deployedSource).to.have.property('type');
       expect(deployedSource).to.have.property('state');
+    }
+  }
+
+  public retrieveJsonToBeValid(result: RetrieveResult): void {
+    expect(result).to.have.property('inboundFiles');
+    for (const inboundFile of result.inboundFiles) {
+      expect(inboundFile).to.have.property('filePath');
+      expect(inboundFile).to.have.property('fullName');
+      expect(inboundFile).to.have.property('type');
+      expect(inboundFile).to.have.property('state');
     }
   }
 
@@ -271,6 +273,37 @@ export class Expectations {
     const expectedFileCount = await countFiles(directories, '-meta.xml');
     const actualFileCount = results.filter((d) => d.filePath.endsWith('-meta.xml')).length;
     expect(actualFileCount).to.equal(expectedFileCount);
+  }
+
+  private async filesToBePresent(results: SourceInfo[], globs: string[]): Promise<void> {
+    // eslint-disable-next-line no-console
+    // console.log('----------------------');
+    const filesToExpect: string[] = [];
+    for (const glob of globs) {
+      const fullGlob = [this.projectDir, glob].join('/');
+      const globResults = await fg(fullGlob);
+      // // eslint-disable-next-line no-console
+      // console.log(fullGlob);
+      // // eslint-disable-next-line no-console
+      // console.log(globResults);
+      filesToExpect.push(...globResults);
+    }
+
+    const truncatedFilesToExpect = filesToExpect.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
+    const actualFiles = results.map((d) => d.filePath);
+
+    // // eslint-disable-next-line no-console
+    // console.log(truncatedFilesToExpect);
+    // // eslint-disable-next-line no-console
+    // console.log(actualFiles);
+
+    // const missingFiles = truncatedFilesToExpect.filter((f) => !actualFiles.includes(f));
+    // // eslint-disable-next-line no-console
+    // console.log(missingFiles);
+
+    const everyExpectedFileFound = truncatedFilesToExpect.every((f) => actualFiles.includes(f));
+    expect(truncatedFilesToExpect.length).to.be.greaterThan(0);
+    expect(everyExpectedFileFound).to.be.true;
   }
 }
 

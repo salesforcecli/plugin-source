@@ -245,8 +245,8 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   private async handleError(err: Error, clean = false): Promise<never> {
-    const header = `# ENCOUNTERED ERROR IN: ${this.debug.namespace}`;
-    const orgs = execCmd('force:org:list --all --json');
+    const header = `  ENCOUNTERED ERROR IN: ${this.debug.namespace}  `;
+    const orgs = execCmd<{ nonScratchOrgs: AnyJson; scratchOrgs: AnyJson }>('force:org:list --all --json');
     const auth = execCmd('auth:list --json');
     const config = execCmd('config:list --json');
     console.log('-'.repeat(header.length));
@@ -255,9 +255,10 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     console.log(err);
     console.log('session:', this.session?.dir);
     console.log('username:', this.username);
-    console.log('orgs:', orgs.jsonOutput);
-    console.log('auths:', auth.jsonOutput);
-    console.log('config:', config.jsonOutput);
+    console.log('orgs:', orgs.jsonOutput.result.nonScratchOrgs);
+    console.log('scratch orgs:', orgs.jsonOutput.result.scratchOrgs);
+    console.log('auths:', auth.jsonOutput.result);
+    console.log('config:', config.jsonOutput.result);
     console.log('-'.repeat(header.length));
     if (clean) await this.clean();
     throw err;

@@ -37,6 +37,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsdoc": "^27.0.3",
     "eslint-plugin-prettier": "^3.1.3",
+    "fast-glob": "^3.2.5",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.2",
     "mocha": "^8.3.0",
@@ -108,7 +109,7 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 2",
+    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 2",
     "version": "oclif-dev readme"
   },
   "husky": {
