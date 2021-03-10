@@ -125,3 +125,8 @@ export type StatusResult = SourceInfo[];
 export type ConvertResult = {
   location: string;
 };
+
+export type Result<T> = JsonMap & {
+  status: number;
+  result: T;
+};

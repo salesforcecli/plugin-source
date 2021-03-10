@@ -16,11 +16,11 @@ const EXECUTABLE = '';
 context('Async Deploy NUTs %REPO% %EXEC%', () => {
   let nutshell: Nutshell;
 
-  before(async function () {
+  before(async () => {
     nutshell = await Nutshell.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
-      context: this.test?.parent.title,
+      context: __filename,
     });
   });
 

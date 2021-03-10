@@ -130,10 +130,10 @@ const env = new Env();
 export const EXECUTABLES = [
   {
     path: which('sfdx').stdout, // the full path to the sfdx executable
-    skip: env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', false),
+    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', true),
   },
   {
     path: path.join(process.cwd(), 'bin', 'run'), // path to the plugin's bin/run executable
-    skip: env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', true),
+    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', false),
   },
 ];

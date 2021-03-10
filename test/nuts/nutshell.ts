@@ -5,13 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/* eslint-disable no-console */
+
 import * as path from 'path';
 import * as os from 'os';
 import { copyFile } from 'fs/promises';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Env } from '@salesforce/kit';
-import { AnyJson, JsonMap, ensureString, Nullable } from '@salesforce/ts-types';
-import { AuthInfo, ConfigAggregator, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
+import { AnyJson, ensureString, Nullable } from '@salesforce/ts-types';
+import { AuthInfo, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
 import {
@@ -20,6 +22,7 @@ import {
   DeployReportResult,
   PullResult,
   PushResult,
+  Result,
   RetrieveResult,
   SimpleDeployResult,
   StatusResult,
@@ -41,7 +44,6 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public testMetadataFolder: string;
   public testMetadataFiles: string[];
 
-  private configAggregator: ConfigAggregator;
   private connection: Connection;
   private debug: Debugger;
   private executable: Nullable<string>;
@@ -49,14 +51,12 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   private repository: string;
   private session: TestSession;
   private username: string;
-  private context: string;
 
   public constructor(options: Nutshell.Options) {
     super(options);
-    this.debug = debug('nutshell');
     this.executable = options.executable;
     this.repository = options.repository;
-    this.context = options.context;
+    this.debug = debug(`nutshell:${path.basename(options.context)}`);
   }
 
   public async clean(): Promise<void> {
@@ -64,7 +64,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     await this.session?.clean();
   }
 
-  public async convert(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<ConvertResult>> {
+  public async convert(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<ConvertResult>> {
     return this.execute<ConvertResult>('force:source:convert', options);
   }
 
@@ -72,33 +72,31 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   // different json. We could utilize function overloads to make the typing
   // automatic but that would require typing all the different flags which
   // is something we'd rather not do.
-  public async deploy<T = SimpleDeployResult>(
-    options: Partial<Nutshell.CommandOpts> = {}
-  ): Promise<Nutshell.Result<T>> {
+  public async deploy<T = SimpleDeployResult>(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
     return this.execute<T>('force:source:deploy', options);
   }
 
-  public async deployReport(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<DeployReportResult>> {
+  public async deployReport(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<DeployReportResult>> {
     return this.execute<DeployReportResult>('force:source:deploy:report', options);
   }
 
-  public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<DeployCancelResult>> {
+  public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<DeployCancelResult>> {
     return this.execute<DeployCancelResult>('force:source:deploy:cancel', options);
   }
 
-  public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<RetrieveResult>> {
+  public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<RetrieveResult>> {
     return this.execute<RetrieveResult>('force:source:retrieve', options);
   }
 
-  public async push(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<PushResult>> {
+  public async push(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<PushResult>> {
     return this.execute<PushResult>('force:source:push', options);
   }
 
-  public async pull(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<PullResult>> {
+  public async pull(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<PullResult>> {
     return this.execute<PullResult>('force:source:pull', options);
   }
 
-  public async status(options: Partial<Nutshell.CommandOpts> = {}): Promise<Nutshell.Result<StatusResult>> {
+  public async status(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
   }
 
@@ -197,63 +195,89 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       ensureString(Nutshell.Env.getString('TESTKIT_HUB_INSTANCE'));
     }
     if (this.executable) {
+      // Is this going to be a problem when we start running both executables?
       Nutshell.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
     }
-
-    this.session = await this.createSession();
-    const sfdxProject = await SfdxProject.resolve(this.session.project.dir);
-    this.packages = sfdxProject.getPackageDirectories();
-    this.packageNames = this.packages.map((p) => p.name);
-    this.packagePaths = this.packages.map((p) => p.fullPath);
-    this.fileTracker = new FileTracker(this.session.project.dir);
-    this.expect = new Expectations(this.session.project.dir, this.fileTracker, this.packagePaths);
-    this.configAggregator = await ConfigAggregator.create();
-    this.username =
-      (this.configAggregator.getPropertyValue('defaultusername') as string) ||
-      Nutshell.Env.getString('TESTKIT_ORG_USERNAME');
-    this.connection = await Connection.create({
-      authInfo: await AuthInfo.create({ username: this.username }),
-    });
-    this.testMetadataFolder = path.join(__dirname, 'metadata');
-    this.testMetadataFiles = (await traverseForFiles(this.testMetadataFolder))
-      .filter((f) => !f.endsWith('.DS_Store'))
-      .map((f) => f.replace(`${this.testMetadataFolder}${path.sep}`, ''));
+    try {
+      this.session = await this.createSession();
+      const sfdxProject = await SfdxProject.resolve(this.session.project.dir);
+      this.packages = sfdxProject.getPackageDirectories();
+      this.packageNames = this.packages.map((p) => p.name);
+      this.packagePaths = this.packages.map((p) => p.fullPath);
+      this.fileTracker = new FileTracker(this.session.project.dir);
+      this.expect = new Expectations(this.session.project.dir, this.fileTracker, this.packagePaths);
+      this.username = this.getDefaultUsername();
+      this.connection = await Connection.create({
+        authInfo: await AuthInfo.create({ username: this.username }),
+      });
+      this.testMetadataFolder = path.join(__dirname, 'metadata');
+      this.testMetadataFiles = (await traverseForFiles(this.testMetadataFolder))
+        .filter((f) => !f.endsWith('.DS_Store'))
+        .map((f) => f.replace(`${this.testMetadataFolder}${path.sep}`, ''));
+    } catch (err) {
+      await this.handleError(err, true);
+    }
   }
 
-  private async execute<T = AnyJson>(
-    cmd: string,
-    options: Partial<Nutshell.CommandOpts> = {}
-  ): Promise<Nutshell.Result<T>> {
-    const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
-    const command = [cmd, args, '--json'].join(' ');
-    this.debug(`[${this.context}] ${command} (expecting exit code: ${exitCode})`);
-    await this.fileTracker.updateAll(`PRE: ${command}`);
-    const result = execCmd<T>(command, { ensureExitCode: exitCode });
-    await this.fileTracker.updateAll(`POST: ${command}`);
+  private async execute<T = AnyJson>(cmd: string, options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
+    try {
+      const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
+      const command = [cmd, args, '--json'].join(' ');
+      this.debug(`${command} (expecting exit code: ${exitCode})`);
+      await this.fileTracker.updateAll(`PRE: ${command}`);
+      const result = execCmd<T>(command, { ensureExitCode: exitCode });
+      await this.fileTracker.updateAll(`POST: ${command}`);
 
-    const json = result.jsonOutput;
-    this.debug('%O', json);
-    if (!json) {
-      // eslint-disable-next-line no-console
-      console.error(`${command} returned null jsonOutput`);
-      // eslint-disable-next-line no-console
-      console.error(result);
+      const json = result.jsonOutput;
+      this.debug('%O', json);
+      if (!json) {
+        console.error(`${command} returned null jsonOutput`);
+        console.error(result);
+      }
+      this.expect.toHaveProperty(json, 'status');
+      if (json.status === 0) {
+        this.expect.toHaveProperty(json, 'result');
+      }
+      return json;
+    } catch (err) {
+      await this.handleError(err);
     }
-    this.expect.toHaveProperty(json, 'status');
-    if (json.status === 0) {
-      this.expect.toHaveProperty(json, 'result');
-    }
-    return json;
+  }
+
+  private async handleError(err: Error, clean = false): Promise<never> {
+    const header = `# ENCOUNTERED ERROR IN: ${this.debug.namespace}`;
+    const orgs = execCmd('force:org:list --all --json');
+    const auth = execCmd('auth:list --json');
+    const config = execCmd('config:list --json');
+    console.log('-'.repeat(header.length));
+    console.log(header);
+    console.log('-'.repeat(header.length));
+    console.log(err);
+    console.log('session:', this.session?.dir);
+    console.log('username:', this.username);
+    console.log('orgs:', orgs.jsonOutput);
+    console.log('auths:', auth.jsonOutput);
+    console.log('config:', config.jsonOutput);
+    console.log('-'.repeat(header.length));
+    if (clean) await this.clean();
+    throw err;
   }
 
   private async createSession(): Promise<TestSession> {
     return TestSession.create({
       project: { gitClone: this.repository },
       setupCommands: [
+        // TODO: remove this config:set call
         'sfdx config:set apiVersion=50.0 --global',
         'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
       ],
     });
+  }
+
+  private getDefaultUsername(): string {
+    const result = execCmd<Array<{ key: string; value: string }>>('config:get defaultusername --json').jsonOutput
+      .result;
+    return result.find((r) => r.key === 'defaultusername')?.value;
   }
 }
 
@@ -267,10 +291,5 @@ export namespace Nutshell {
   export type CommandOpts = {
     exitCode: number;
     args: string;
-  };
-
-  export type Result<T> = JsonMap & {
-    status: number;
-    result: T;
   };
 }

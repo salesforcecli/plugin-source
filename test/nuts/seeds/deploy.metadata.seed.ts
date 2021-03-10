@@ -15,16 +15,22 @@ const EXECUTABLE = '';
 context('Deploy metadata NUTs %REPO% %EXEC%', () => {
   let nutshell: Nutshell;
 
-  before(async function () {
+  before(async () => {
     nutshell = await Nutshell.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
-      context: this.test?.parent.title,
+      context: __filename,
     });
   });
 
   after(async () => {
     await nutshell?.clean();
+  });
+
+  it('should deploy the entire project', async () => {
+    const deploy = await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    nutshell.expect.deployJsonToBeValid(deploy.result);
+    await nutshell.expect.allMetaXmlsToBeDeployed(deploy.result, ...nutshell.packagePaths);
   });
 
   describe('--metadata flag', () => {
