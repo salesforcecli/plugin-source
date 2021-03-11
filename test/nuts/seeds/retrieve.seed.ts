@@ -13,7 +13,7 @@ import { RepoConfig } from '../testMatrix';
 const REPO = { gitUrl: '' } as RepoConfig;
 const EXECUTABLE = '';
 
-context('Retrieve manifest NUTs %REPO% %EXEC%', () => {
+context('Retrieve NUTs %REPO% %EXEC%', () => {
   let nutshell: Nutshell;
 
   before(async () => {
@@ -22,16 +22,11 @@ context('Retrieve manifest NUTs %REPO% %EXEC%', () => {
       executable: EXECUTABLE,
       context: __filename,
     });
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 
   after(async () => {
     await nutshell?.clean();
-  });
-
-  it('should deploy the entire project', async () => {
-    const deploy = await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
-    nutshell.expect.deployJsonToBeValid(deploy.result);
-    await nutshell.expect.allMetaXmlsToBeDeployed(deploy.result, ...nutshell.packagePaths);
   });
 
   describe('--manifest flag', () => {
@@ -50,6 +45,36 @@ context('Retrieve manifest NUTs %REPO% %EXEC%', () => {
     it('should throw an error if the package.xml is not valid', async () => {
       const deploy = await nutshell.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
       nutshell.expect.errorToHaveName(deploy, 'InvalidManifestError');
+    });
+  });
+
+  describe('--metadata flag', () => {
+    for (const testCase of REPO.retrieve.metadata) {
+      it(`should retrieve ${testCase.toRetrieve}`, async () => {
+        const retrieve = await nutshell.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
+        nutshell.expect.retrieveJsonToBeValid(retrieve.result);
+        await nutshell.expect.filesToBeRetrieved(retrieve.result, testCase.toVerify);
+      });
+    }
+
+    it('should throw an error if the metadata is not valid', async () => {
+      const retrieve = await nutshell.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
+      nutshell.expect.errorToHaveName(retrieve, 'UnsupportedType');
+    });
+  });
+
+  describe('--sourcepath flag', () => {
+    for (const testCase of REPO.retrieve.sourcepath) {
+      it(`should retrieve ${testCase.toRetrieve}`, async () => {
+        const retrieve = await nutshell.retrieve({ args: `--sourcepath ${testCase.toRetrieve}` });
+        nutshell.expect.retrieveJsonToBeValid(retrieve.result);
+        await nutshell.expect.filesToBeRetrieved(retrieve.result, testCase.toVerify);
+      });
+    }
+
+    it('should throw an error if the sourcepath is not valid', async () => {
+      const retrieve = await nutshell.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
+      nutshell.expect.errorToHaveName(retrieve, 'UnexpectedFileFound');
     });
   });
 });
