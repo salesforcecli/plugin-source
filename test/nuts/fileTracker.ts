@@ -9,10 +9,17 @@ import * as path from 'path';
 import { fs } from '@salesforce/core';
 import { Nullable } from '@salesforce/ts-types';
 
+/**
+ * This class maintains a map of tacked files. This is particularly useful
+ * for determining if files have changed after a command has been executed
+ */
 export class FileTracker {
   private files = new Map<string, FileTracker.FileHistory[]>();
   public constructor(private projectDir: string) {}
 
+  /**
+   * Add a file to be tracked
+   */
   public async track(file: string): Promise<void> {
     const entry = {
       annotation: 'initial state',
@@ -22,10 +29,17 @@ export class FileTracker {
     this.files.set(file, [entry]);
   }
 
+  /**
+   * Returns tracked file's history
+   */
   public get(file: string): FileTracker.FileHistory[] {
     return this.files.get(file);
   }
 
+  /**
+   * Update the file history for given file. Annotation is required since
+   * it is useful for debugging/understanding a file's history
+   */
   public async update(file: string, annotation: string): Promise<void> {
     if (!this.files.has(file)) {
       await this.track(file);
@@ -43,6 +57,10 @@ export class FileTracker {
     this.files.set(file, [...entries, newEntry]);
   }
 
+  /**
+   * Update the history for all tracked files. Annotation is required since
+   * it is useful for debugging/understanding a file's history
+   */
   public async updateAll(annotation: string): Promise<void> {
     const files = this.files.keys();
     for (const file of files) {
@@ -73,4 +91,40 @@ export namespace FileTracker {
     hash: Nullable<string>;
     changedFromPrevious: boolean;
   };
+}
+
+/**
+ * Returns all files in directory that match the filter
+ */
+export async function traverseForFiles(
+  dirPath: string,
+  regexFilter: Nullable<RegExp> = null,
+  allFiles: string[] = []
+): Promise<string[]> {
+  const files = await fs.readdir(dirPath);
+
+  for (const file of files) {
+    const filePath = path.join(dirPath, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      allFiles = await traverseForFiles(filePath, regexFilter, allFiles);
+    } else if (regexFilter) {
+      if (regexFilter.test(file)) {
+        allFiles.push(path.join(dirPath, file));
+      }
+    } else {
+      allFiles.push(path.join(dirPath, file));
+    }
+  }
+  return allFiles;
+}
+
+/**
+ * Returns the number of files found in directories that match the filter
+ */
+export async function countFiles(directories: string[], regexFilter: Nullable<RegExp> = null): Promise<number> {
+  let fileCount = 0;
+  for (const dir of directories) {
+    fileCount += (await traverseForFiles(dir, regexFilter)).length;
+  }
+  return fileCount;
 }

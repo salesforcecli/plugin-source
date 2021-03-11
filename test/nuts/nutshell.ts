@@ -28,9 +28,25 @@ import {
   SimpleDeployResult,
   StatusResult,
 } from './types';
-import { Expectations, traverseForFiles } from './expectations';
-import { FileTracker } from './fileTracker';
+import { Assertions } from './assertions';
+import { FileTracker, traverseForFiles } from './fileTracker';
 
+/**
+ * Nutshell is a class that is designed to make composing source nuts easy and painless
+ *
+ * It provides the following functionality:
+ * 1. Methods that wrap around source commands, e.g. Nutshell.deploy wraps around force:source:deploy
+ * 2. Access to commonly used assertions (provided by the Assertions class)
+ * 3. Ability to track file history (provided by the FileTracker class)
+ * 4. Ability to modify remote metadata
+ * 5. Ability to add local metadata
+ * 6. Miscellaneous helper methods
+ *
+ * To see debug logs for command executions set these env vars:
+ * - DEBUG=nutshell:* (for logs from all nuts)
+ * - DEBUG=nutshell:<filename.nut.ts> (for logs from specific nut)
+ * - DEBUG_DEPTH=8
+ */
 export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public static Env = new Env();
   private static DefaultCmdOpts: Nutshell.CommandOpts = {
@@ -41,7 +57,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public packages: NamedPackageDir[];
   public packageNames: string[];
   public packagePaths: string[];
-  public expect: Expectations;
+  public expect: Assertions;
   public testMetadataFolder: string;
   public testMetadataFiles: string[];
 
@@ -60,57 +76,95 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     this.debug = debug(`nutshell:${path.basename(options.context)}`);
   }
 
+  /**
+   * Cleans the test session
+   */
   public async clean(): Promise<void> {
     Nutshell.Env.unset('TESTKIT_EXECUTABLE_PATH');
     await this.session?.clean();
   }
 
+  /**
+   * Executes force:source:convert
+   */
   public async convert(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<ConvertResult>> {
     return this.execute<ConvertResult>('force:source:convert', options);
   }
 
-  // We allow a type parameter here because different flags produce completely
-  // different json. We could utilize function overloads to make the typing
-  // automatic but that would require typing all the different flags which
-  // is something we'd rather not do.
+  /**
+   * Executes force:source:deploy
+   *
+   * We allow a type parameter here because different flags produce completely
+   * different json. We could utilize function overloads to make the typing
+   * automatic but that would require typing all the different flags which
+   * is something we'd rather not do.
+   */
   public async deploy<T = SimpleDeployResult>(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
     return this.execute<T>('force:source:deploy', options);
   }
 
+  /**
+   * Executes force:source:deploy:report
+   */
   public async deployReport(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<DeployReportResult>> {
     return this.execute<DeployReportResult>('force:source:deploy:report', options);
   }
 
+  /**
+   * Executes force:source:deploy:cancel
+   */
   public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<DeployCancelResult>> {
     return this.execute<DeployCancelResult>('force:source:deploy:cancel', options);
   }
 
+  /**
+   * Executes force:source:retrieve
+   */
   public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<RetrieveResult>> {
     return this.execute<RetrieveResult>('force:source:retrieve', options);
   }
 
+  /**
+   * Executes force:source:push
+   */
   public async push(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<PushResult>> {
     return this.execute<PushResult>('force:source:push', options);
   }
 
+  /**
+   * Executes force:source:pull
+   */
   public async pull(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<PullResult>> {
     return this.execute<PullResult>('force:source:pull', options);
   }
 
+  /**
+   * Executes force:source:status
+   */
   public async status(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
   }
 
+  /**
+   * Installs a package into the scratch org. This method uses shelljs instead of testkit because
+   * we can't add plugin-package as a dev plugin yet.
+   */
   public installPackage(id: string): void {
     exec(`sfdx force:package:install --package ${id} --wait 5 --json 2> /dev/null`, { silent: true });
   }
 
+  /**
+   * Adds given files to FileTracker for tracking
+   */
   public async trackFile(...files: string[]): Promise<void> {
     for (const file of files) {
       await this.fileTracker.track(file);
     }
   }
 
+  /**
+   * Read the org's sourcePathInfos.json
+   */
   public async readSourcePathInfos(): Promise<AnyJson> {
     const sourcePathInfosPath = path.join(
       this.session.project.dir,
@@ -122,11 +176,17 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     return fs.readJson(sourcePathInfosPath);
   }
 
+  /**
+   * Read the org's maxRevision.json
+   */
   public async readMaxRevision(): Promise<AnyJson> {
     const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
     return fs.readJson(maxRevisionPath);
   }
 
+  /**
+   * Delete the org's sourcePathInfos.json
+   */
   public async deleteSourcePathInfos(): Promise<void> {
     const sourcePathInfosPath = path.join(
       this.session.project.dir,
@@ -138,11 +198,17 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     return fs.unlink(sourcePathInfosPath);
   }
 
+  /**
+   * Delete the org's maxRevision.json
+   */
   public async deleteMaxRevision(): Promise<void> {
     const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
     return fs.unlink(maxRevisionPath);
   }
 
+  /**
+   * Delete all source files in the project directory
+   */
   public async deleteAllSourceFiles(): Promise<void> {
     for (const pkg of this.packagePaths) {
       await fs.rmdir(pkg, { recursive: true });
@@ -150,6 +216,9 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     }
   }
 
+  /**
+   * Modify given files by inserting a new line at the end of the file
+   */
   public async modifyLocalFiles(...files: string[]): Promise<void> {
     for (const file of files) {
       const filePath = path.join(this.session.project.dir, file);
@@ -161,6 +230,8 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
+   * Modify a remote file
+   *
    * This presumes that there is a QuickAction called NutAction in
    * the test metadata. Ideally this method would be able to update
    * any metadata type with any name
@@ -177,6 +248,9 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     return this.testMetadataFiles.find((f) => f.endsWith('NutAction.quickAction-meta.xml'));
   }
 
+  /**
+   * Adds test files (located in the test/nuts/metadata folder) to the project directory
+   */
   public async addTestFiles(): Promise<void> {
     for (const file of this.testMetadataFiles) {
       const dest = path.join(this.session.project.dir, file);
@@ -200,7 +274,6 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       ensureString(Nutshell.Env.getString('TESTKIT_HUB_INSTANCE'));
     }
     if (this.executable) {
-      // Is this going to be a problem when we start running both executables?
       Nutshell.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
     }
     try {
@@ -210,7 +283,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       this.packageNames = this.packages.map((p) => p.name);
       this.packagePaths = this.packages.map((p) => p.fullPath);
       this.fileTracker = new FileTracker(this.session.project.dir);
-      this.expect = new Expectations(this.session.project.dir, this.fileTracker, this.packagePaths);
+      this.expect = new Assertions(this.session.project.dir, this.fileTracker, this.packagePaths);
       this.username = this.getDefaultUsername();
       this.connection = await Connection.create({
         authInfo: await AuthInfo.create({ username: this.username }),
@@ -224,6 +297,9 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     }
   }
 
+  /**
+   * Execute a command using testkit. Adds --json to every command to ensure json output.
+   */
   private async execute<T = AnyJson>(cmd: string, options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
     try {
       const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
@@ -249,6 +325,9 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     }
   }
 
+  /**
+   * Log error to console with helpful debugging information
+   */
   private async handleError(err: Error, clean = false): Promise<never> {
     const header = `  ENCOUNTERED ERROR IN: ${this.debug.namespace}  `;
     const orgs = execCmd<{ nonScratchOrgs: AnyJson; scratchOrgs: AnyJson }>('force:org:list --all --json');

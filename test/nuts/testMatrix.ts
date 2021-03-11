@@ -7,86 +7,77 @@
 
 import * as path from 'path';
 import { which } from 'shelljs';
-import { Env } from '@salesforce/kit';
+import { Env, set } from '@salesforce/kit';
+import { get, getString } from '@salesforce/ts-types';
 
-type GlobPattern = string; // see: https://github.com/mrmlnc/fast-glob#pattern-syntax
+const env = new Env();
 
-type DeployTestCase = {
-  toDeploy: string;
-  toVerify: GlobPattern[];
-};
+/**
+ * The executables we want to test against. These can be toggled with environment variables
+ */
+export const EXECUTABLES = [
+  {
+    path: which('sfdx').stdout, // the full path to the sfdx executable
+    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', true),
+  },
+  {
+    path: path.join(process.cwd(), 'bin', 'run'), // path to the plugin's bin/run executable
+    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', false),
+  },
+];
 
-type RetrieveTestCase = {
-  toRetrieve: string;
-  toVerify: GlobPattern[];
-};
-
-type TestCase = DeployTestCase & RetrieveTestCase;
-
-export type RepoConfig = {
-  skip?: boolean;
-  gitUrl: string;
-  deploy: {
-    metadata: DeployTestCase[];
-    sourcepath: DeployTestCase[];
-    manifest: DeployTestCase[];
-    testlevel: { specifiedTests: string[] };
-  };
-  retrieve: {
-    metadata: RetrieveTestCase[];
-    sourcepath: RetrieveTestCase[];
-    manifest: RetrieveTestCase[];
-  };
-};
-
-export const TEST_REPOS: RepoConfig[] = [
+/**
+ * The repositories we want to test against. See the type definition for explanation
+ * of the configuration options.
+ */
+const testRepos: RepoConfig[] = [
   {
     skip: false,
     gitUrl: 'https://github.com/mdonnalley/simple-mpd-project.git',
     deploy: {
-      sourcepath: normalizeFilePaths([
+      sourcepath: [
         { toDeploy: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
         { toDeploy: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] },
         { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/**/*'] },
         { toDeploy: 'my-app/objects', toVerify: ['my-app/objects/**/*'] },
         { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
-      ]),
-      metadata: normalizeFilePaths([
+      ],
+      metadata: [
         { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/**/*', 'my-app/objects/**/*'] },
-      ]),
-      manifest: normalizeFilePaths([
+      ],
+      manifest: [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
         { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
         { toDeploy: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
-      ]),
+      ],
       testlevel: { specifiedTests: ['MyTest'] },
     },
     retrieve: {
-      sourcepath: normalizeFilePaths([
+      sourcepath: [
         { toRetrieve: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
         { toRetrieve: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] },
         { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
         { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/*'] },
         { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
-      ]),
-      metadata: normalizeFilePaths([
+      ],
+      metadata: [
         {
           toRetrieve: 'CustomObject',
           toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'],
         },
-      ]),
-      manifest: normalizeFilePaths([
+      ],
+      manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
         { toRetrieve: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
-      ]),
+      ],
     },
   },
   {
     skip: true,
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
     deploy: {
-      sourcepath: normalizeFilePaths([
+      sourcepath: [
         { toDeploy: 'force-app', toVerify: ['force-app/main/default/**/*'] },
         { toDeploy: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/**/*'] },
         {
@@ -101,8 +92,8 @@ export const TEST_REPOS: RepoConfig[] = [
           toDeploy: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
         },
-      ]),
-      metadata: normalizeFilePaths([
+      ],
+      metadata: [
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
           toDeploy: 'CustomObject:Bot_Command__c',
@@ -124,8 +115,8 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/*',
           ],
         },
-      ]),
-      manifest: normalizeFilePaths([
+      ],
+      manifest: [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
         {
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -139,11 +130,11 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
         },
-      ]),
+      ],
       testlevel: { specifiedTests: ['BotTest'] },
     },
     retrieve: {
-      sourcepath: normalizeFilePaths([
+      sourcepath: [
         { toRetrieve: 'force-app', toVerify: ['force-app/main/default/**/*'] },
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
@@ -158,8 +149,8 @@ export const TEST_REPOS: RepoConfig[] = [
           toRetrieve: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
         },
-      ]),
-      metadata: normalizeFilePaths([
+      ],
+      metadata: [
         { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'CustomObject:Bot_Command__c',
@@ -181,8 +172,8 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/*',
           ],
         },
-      ]),
-      manifest: normalizeFilePaths([
+      ],
+      manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -196,14 +187,14 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
         },
-      ]),
+      ],
     },
   },
   {
     skip: true,
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     deploy: {
-      sourcepath: normalizeFilePaths([
+      sourcepath: [
         { toDeploy: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
         { toDeploy: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/**/*'] },
         {
@@ -218,8 +209,8 @@ export const TEST_REPOS: RepoConfig[] = [
           toDeploy: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
         },
-      ]),
-      metadata: normalizeFilePaths([
+      ],
+      metadata: [
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
           toDeploy: 'CustomObject:Broker__c',
@@ -241,8 +232,8 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/*',
           ],
         },
-      ]),
-      manifest: normalizeFilePaths([
+      ],
+      manifest: [
         { toDeploy: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
         {
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -256,11 +247,11 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
         },
-      ]),
+      ],
       testlevel: { specifiedTests: ['BotTest'] },
     },
     retrieve: {
-      sourcepath: normalizeFilePaths([
+      sourcepath: [
         { toRetrieve: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
@@ -275,8 +266,8 @@ export const TEST_REPOS: RepoConfig[] = [
           toRetrieve: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
         },
-      ]),
-      metadata: normalizeFilePaths([
+      ],
+      metadata: [
         { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'CustomObject:Broker__c',
@@ -298,8 +289,8 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/*',
           ],
         },
-      ]),
-      manifest: normalizeFilePaths([
+      ],
+      manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -313,44 +304,68 @@ export const TEST_REPOS: RepoConfig[] = [
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
         },
-      ]),
+      ],
     },
   },
   // { gitUrl: 'https://github.com/trailheadapps/ebikes-lwc.git' },
   // { gitUrl: 'https://github.com/trailheadapps/ecars.git' },
 ];
 
-function normalizeFilePaths(testCases: RetrieveTestCase[]): RetrieveTestCase[];
-function normalizeFilePaths(testCases: DeployTestCase[]): DeployTestCase[];
-function normalizeFilePaths(testCases: TestCase[]): TestCase[] {
-  return testCases.map((testCase) => {
-    if (testCase.toDeploy) {
-      return {
-        toDeploy: testCase.toDeploy.split(',').map(normalize).join(','),
-        toVerify: testCase.toVerify,
-      };
-    } else {
-      return {
-        toRetrieve: testCase.toRetrieve.split(',').map(normalize).join(','),
-        toVerify: testCase.toVerify,
-      };
+export const TEST_REPOS = normalizeFilePaths(testRepos);
+
+export type RepoConfig = {
+  skip?: boolean; // determines if the repository should be skipped during nut generation
+  gitUrl: string; // the git url used for cloning the repository
+  deploy: {
+    metadata: DeployTestCase[];
+    sourcepath: DeployTestCase[];
+    manifest: DeployTestCase[];
+    testlevel: { specifiedTests: string[] }; // the apex test to be executed for the RunSpecificTest flag test
+  };
+  retrieve: {
+    metadata: RetrieveTestCase[];
+    sourcepath: RetrieveTestCase[];
+    manifest: RetrieveTestCase[];
+  };
+};
+
+type DeployTestCase = {
+  toDeploy: string; // the string to be based into the source:deploy command execution. Do not include the flag name (e.g. --sourcepath)
+  toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were deployed to the org
+};
+
+type RetrieveTestCase = {
+  toRetrieve: string; // the string to be based into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
+  toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were retrieved from the org
+};
+
+type TestCase = DeployTestCase & RetrieveTestCase;
+
+type GlobPattern = string; // see: https://github.com/mrmlnc/fast-glob#pattern-syntax
+
+function normalizeFilePaths(repos: RepoConfig[]): RepoConfig[] {
+  const pathsToNormalize = [
+    'retrieve.manifest',
+    'retrieve.metadata',
+    'retrieve.sourcepath',
+    'deploy.manifest',
+    'deploy.metadata',
+    'deploy.sourcepath',
+  ];
+  for (const repo of repos) {
+    for (const p of pathsToNormalize) {
+      const testCases = get(repo, p) as TestCase[];
+      for (const testCase of testCases) {
+        const key = testCase.toDeploy ? 'toDeploy' : 'toRetrieve';
+        const value = getString(testCase, key);
+        const normalized = value.split(',').map(normalize).join(',');
+        set(testRepos, `${p}.${key}`, normalized);
+      }
     }
-  }) as TestCase[];
+  }
+  return repos;
 }
 
 function normalize(filePath: string) {
   return path.join(...filePath.split('/'));
 }
-
-const env = new Env();
-
-export const EXECUTABLES = [
-  {
-    path: which('sfdx').stdout, // the full path to the sfdx executable
-    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', true),
-  },
-  {
-    path: path.join(process.cwd(), 'bin', 'run'), // path to the plugin's bin/run executable
-    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', false),
-  },
-];
