@@ -8,7 +8,7 @@
 import * as path from 'path';
 import { which } from 'shelljs';
 import { Env, set } from '@salesforce/kit';
-import { get, getString } from '@salesforce/ts-types';
+import { get, getString, isString } from '@salesforce/ts-types';
 
 const env = new Env();
 
@@ -72,9 +72,24 @@ const testRepos: RepoConfig[] = [
         { toRetrieve: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
       ],
     },
+    convert: {
+      sourcepath: [
+        { toConvert: 'force-app,my-app', toVerify: ['**/force.cls', '**/my.cls'] },
+        { toConvert: '"force-app, my-app"', toVerify: ['**/force.cls', '**/my.cls'] },
+        { toConvert: 'force-app/main/default/objects', toVerify: ['objects/MyObj__c.object'] },
+        { toConvert: 'my-app/objects', toVerify: ['objects/MyObj__c.object'] },
+        { toConvert: 'my-app/apex/my.cls-meta.xml', toVerify: ['**/my.cls-meta.xml'] },
+      ],
+      metadata: [{ toConvert: 'CustomObject', toVerify: ['objects/MyObj__c.object'] }],
+      manifest: [
+        { toConvert: 'force-app', toVerify: ['**/force.cls'] },
+        { toConvert: 'my-app', toVerify: ['**/my.cls'] },
+        { toConvert: 'force-app,my-app', toVerify: ['**/force.cls', '**/my.cls'] },
+      ],
+    },
   },
   {
-    skip: true,
+    skip: false,
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
     deploy: {
       sourcepath: [
@@ -186,6 +201,55 @@ const testRepos: RepoConfig[] = [
             'force-app/main/default/objects/*',
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
+        },
+      ],
+    },
+    convert: {
+      sourcepath: [
+        { toConvert: 'force-app', toVerify: ['**/*'] },
+        { toConvert: 'force-app/main/default/classes', toVerify: ['classes/*'] },
+        {
+          toConvert: 'force-app/main/default/classes,force-app/main/default/objects',
+          toVerify: ['classes/*', 'objects/*'],
+        },
+        {
+          toConvert: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
+          toVerify: ['classes/*', 'permissionsets/*'],
+        },
+        {
+          toConvert: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
+          toVerify: ['permissionsets/dreamhouse.permissionset'],
+        },
+      ],
+      metadata: [
+        { toConvert: 'ApexClass', toVerify: ['classes/*'] },
+        {
+          toConvert: 'CustomObject:Bot_Command__c',
+          toVerify: ['objects/Bot_Command__c.object'],
+        },
+        {
+          toConvert: 'ApexClass,CustomObject:Bot_Command__c',
+          toVerify: ['classes/*', 'objects/Bot_Command__c.object'],
+        },
+        {
+          toConvert: 'ApexClass:BotController,CustomObject',
+          toVerify: ['classes/BotController.cls', 'objects/*__c.object'],
+        },
+        {
+          toConvert: '"ApexClass:BotController, CustomObject, PermissionSet"',
+          toVerify: ['classes/BotController.cls', 'objects/*__c.object', 'permissionsets/*'],
+        },
+      ],
+      manifest: [
+        { toConvert: 'force-app', toVerify: ['f**/*'] },
+        {
+          toConvert: 'force-app/main/default/classes,force-app/main/default/objects',
+          toVerify: ['classes/*', 'objects/*'],
+        },
+        {
+          toConvert:
+            '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
+          toVerify: ['objects/*', 'permissionsets/dreamhouse.permissionset'],
         },
       ],
     },
@@ -306,6 +370,11 @@ const testRepos: RepoConfig[] = [
         },
       ],
     },
+    convert: {
+      sourcepath: [],
+      manifest: [],
+      metadata: [],
+    },
   },
   // { gitUrl: 'https://github.com/trailheadapps/ebikes-lwc.git' },
   // { gitUrl: 'https://github.com/trailheadapps/ecars.git' },
@@ -327,19 +396,29 @@ export type RepoConfig = {
     sourcepath: RetrieveTestCase[];
     manifest: RetrieveTestCase[];
   };
+  convert: {
+    metadata: ConvertTestCase[];
+    sourcepath: ConvertTestCase[];
+    manifest: ConvertTestCase[];
+  };
 };
 
 type DeployTestCase = {
-  toDeploy: string; // the string to be based into the source:deploy command execution. Do not include the flag name (e.g. --sourcepath)
+  toDeploy: string; // the string to be passed into the source:deploy command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were deployed to the org
 };
 
 type RetrieveTestCase = {
-  toRetrieve: string; // the string to be based into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
+  toRetrieve: string; // the string to be passed into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were retrieved from the org
 };
 
-type TestCase = DeployTestCase & RetrieveTestCase;
+type ConvertTestCase = {
+  toConvert: string; // the string to be passed into the source:convert command execution. Do not include the flag name (e.g. --sourcepath)
+  toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were converted. NOTE: this is relative to the converted output dir
+};
+
+type TestCase = DeployTestCase & RetrieveTestCase & ConvertTestCase;
 
 type GlobPattern = string; // see: https://github.com/mrmlnc/fast-glob#pattern-syntax
 
@@ -356,10 +435,13 @@ function normalizeFilePaths(repos: RepoConfig[]): RepoConfig[] {
     for (const p of pathsToNormalize) {
       const testCases = get(repo, p) as TestCase[];
       for (const testCase of testCases) {
-        const key = testCase.toDeploy ? 'toDeploy' : 'toRetrieve';
-        const value = getString(testCase, key);
-        const normalized = value.split(',').map(normalize).join(',');
-        set(testRepos, `${p}.${key}`, normalized);
+        for (const key of Object.keys(testCase)) {
+          const value = getString(testCase, key);
+          if (isString(value)) {
+            const normalized = value.split(',').map(normalize).join(',');
+            set(testRepos, `${p}.${key}`, normalized);
+          }
+        }
       }
     }
   }

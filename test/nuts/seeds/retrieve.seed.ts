@@ -43,8 +43,8 @@ context('Retrieve NUTs %REPO% %EXEC%', () => {
     }
 
     it('should throw an error if the package.xml is not valid', async () => {
-      const deploy = await nutshell.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      nutshell.expect.errorToHaveName(deploy, 'InvalidManifestError');
+      const retrieve = await nutshell.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
+      nutshell.expect.errorToHaveName(retrieve, 'InvalidManifestError');
     });
   });
 

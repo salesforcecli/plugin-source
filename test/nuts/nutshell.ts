@@ -61,18 +61,20 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public testMetadataFolder: string;
   public testMetadataFiles: string[];
 
-  private connection: Connection;
+  private connection: Nullable<Connection>;
   private debug: Debugger;
   private executable: Nullable<string>;
   private fileTracker: FileTracker;
   private repository: string;
   private session: TestSession;
   private username: string;
+  private orgless: boolean;
 
   public constructor(options: Nutshell.Options) {
     super(options);
     this.executable = options.executable;
     this.repository = options.repository;
+    this.orgless = options.orgless;
     this.debug = debug(`nutshell:${path.basename(options.context)}`);
   }
 
@@ -237,14 +239,14 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    * any metadata type with any name
    */
   public async modifyRemoteFile(): Promise<string> {
-    const result: Array<{ Id: string }> = await this.connection.tooling
+    const result: Array<{ Id: string }> = await this.connection?.tooling
       .sobject('QuickActionDefinition')
       .find({ DeveloperName: 'NutAction' }, ['ID']);
     const updateRequest = {
       Id: result[0].Id,
       Description: 'updated description',
     };
-    await this.connection.tooling.sobject('QuickActionDefinition').update(updateRequest);
+    await this.connection?.tooling.sobject('QuickActionDefinition').update(updateRequest);
     return this.testMetadataFiles.find((f) => f.endsWith('NutAction.quickAction-meta.xml'));
   }
 
@@ -285,9 +287,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       this.fileTracker = new FileTracker(this.session.project.dir);
       this.expect = new Assertions(this.session.project.dir, this.fileTracker, this.packagePaths);
       this.username = this.getDefaultUsername();
-      this.connection = await Connection.create({
-        authInfo: await AuthInfo.create({ username: this.username }),
-      });
+      this.connection = await this.createConnection();
       this.testMetadataFolder = path.join(__dirname, 'metadata');
       this.testMetadataFiles = (await traverseForFiles(this.testMetadataFolder))
         .filter((f) => !f.endsWith('.DS_Store'))
@@ -349,13 +349,16 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   private async createSession(): Promise<TestSession> {
+    const setupCommands = this.orgless
+      ? []
+      : [
+          // TODO: remove this config:set call
+          'sfdx config:set apiVersion=50.0 --global',
+          'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+        ];
     return TestSession.create({
       project: { gitClone: this.repository },
-      setupCommands: [
-        // TODO: remove this config:set call
-        'sfdx config:set apiVersion=50.0 --global',
-        'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
-      ],
+      setupCommands,
     });
   }
 
@@ -364,6 +367,13 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       .result;
     return result.find((r) => r.key === 'defaultusername')?.value;
   }
+
+  private async createConnection(): Promise<Nullable<Connection>> {
+    if (this.orgless) return;
+    return await Connection.create({
+      authInfo: await AuthInfo.create({ username: this.username }),
+    });
+  }
 }
 
 export namespace Nutshell {
@@ -371,6 +381,7 @@ export namespace Nutshell {
     readonly executable?: string;
     readonly repository: string;
     readonly context: string;
+    readonly orgless?: boolean;
   };
 
   export type CommandOpts = {

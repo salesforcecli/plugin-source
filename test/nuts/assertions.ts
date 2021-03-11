@@ -10,6 +10,7 @@ import { expect, use } from 'chai';
 import * as chaiEach from 'chai-each';
 import { JsonMap } from '@salesforce/ts-types';
 import * as fg from 'fast-glob';
+import { fs } from '@salesforce/core';
 import {
   BaseDeployResult,
   ComplexDeployResult,
@@ -52,6 +53,28 @@ export class Assertions {
    */
   public async filesToBeRetrieved(result: RetrieveResult, globs: string[]): Promise<void> {
     await this.filesToBePresent(result.inboundFiles, globs);
+  }
+
+  /**
+   * Expects given file to exist
+   */
+  public async fileToExist(file: string): Promise<void> {
+    const fileExists = await fs.fileExists(file);
+    expect(fileExists, `${file} to exist`).to.be.true;
+  }
+
+  /**
+   * Expects files to exist in convert output directory
+   */
+  public async filesToBeConverted(result: ConvertResult, globs: string[]): Promise<void> {
+    const convertedFiles: string[] = [];
+    for (const glob of globs) {
+      const fullGlob = [result.location, glob].join('/');
+      const globResults = await fg(fullGlob);
+      const files = globResults.map((f) => path.basename(f));
+      convertedFiles.push(...files);
+    }
+    expect(convertedFiles.length, 'files to be converted').to.be.greaterThan(0);
   }
 
   /**
@@ -258,7 +281,7 @@ export class Assertions {
     );
 
     if (testResults.successes) {
-      expect(testResults.successes, 'deploy test successes to have all expected keys').to.each.have.all.keys(
+      expect(testResults.successes, 'deploy test successes to have all expected keys').to.each.include.all.keys(
         'id',
         'name',
         'namespace',
@@ -268,7 +291,7 @@ export class Assertions {
     }
 
     if (testResults.codeCoverage) {
-      expect(testResults.codeCoverage, 'deploy code coverage to have all expected keys').to.each.have.all.keys(
+      expect(testResults.codeCoverage, 'deploy code coverage to have all expected keys').to.each.include.all.keys(
         'id',
         'name',
         'namespace',
