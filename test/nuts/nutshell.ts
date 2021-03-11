@@ -10,6 +10,7 @@
 import * as path from 'path';
 import * as os from 'os';
 import { copyFile } from 'fs/promises';
+import { exec } from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Env } from '@salesforce/kit';
 import { AnyJson, ensureString, Nullable } from '@salesforce/ts-types';
@@ -98,6 +99,13 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
 
   public async status(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
+  }
+
+  public installPackage(): { id: string; name: string } {
+    // https://appexchange.salesforce.com/appxListingDetail?listingId=a0N3u00000MRhyZEAT
+    const pkg = { id: '04t4x0000000YCSAA2', name: 'Inactivate Contacts V1' };
+    exec(`sfdx force:package:install --package ${pkg.id} --wait 5 --json 2> /dev/null`, { silent: true });
+    return pkg;
   }
 
   public async trackFile(...files: string[]): Promise<void> {

@@ -69,6 +69,11 @@ export class Expectations {
     expect(everyExpectedFileFound).to.be.true;
   }
 
+  public async directoryToHaveSomeFiles(directory: string): Promise<void> {
+    const fileCount = await countFiles([path.join(this.projectDir, directory)]);
+    expect(fileCount).to.be.greaterThan(0);
+  }
+
   public statusToBeEmpty(result: StatusResult): void {
     expect(result.length).to.equal(0);
   }
@@ -276,30 +281,15 @@ export class Expectations {
   }
 
   private async filesToBePresent(results: SourceInfo[], globs: string[]): Promise<void> {
-    // eslint-disable-next-line no-console
-    // console.log('----------------------');
     const filesToExpect: string[] = [];
     for (const glob of globs) {
       const fullGlob = [this.projectDir, glob].join('/');
       const globResults = await fg(fullGlob);
-      // // eslint-disable-next-line no-console
-      // console.log(fullGlob);
-      // // eslint-disable-next-line no-console
-      // console.log(globResults);
       filesToExpect.push(...globResults);
     }
 
     const truncatedFilesToExpect = filesToExpect.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
     const actualFiles = results.map((d) => d.filePath);
-
-    // // eslint-disable-next-line no-console
-    // console.log(truncatedFilesToExpect);
-    // // eslint-disable-next-line no-console
-    // console.log(actualFiles);
-
-    // const missingFiles = truncatedFilesToExpect.filter((f) => !actualFiles.includes(f));
-    // // eslint-disable-next-line no-console
-    // console.log(missingFiles);
 
     const everyExpectedFileFound = truncatedFilesToExpect.every((f) => actualFiles.includes(f));
     expect(truncatedFilesToExpect.length).to.be.greaterThan(0);

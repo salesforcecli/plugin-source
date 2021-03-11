@@ -35,7 +35,7 @@ export type RepoConfig = {
   retrieve: {
     metadata: RetrieveTestCase[];
     sourcepath: RetrieveTestCase[];
-    manifest?: RetrieveTestCase[];
+    manifest: RetrieveTestCase[];
   };
 };
 
@@ -83,7 +83,7 @@ export const TEST_REPOS: RepoConfig[] = [
     },
   },
   {
-    skip: false,
+    skip: true,
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
     deploy: {
       sourcepath: normalizeFilePaths([
