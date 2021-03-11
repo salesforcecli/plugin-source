@@ -24,6 +24,10 @@ export type SourceInfo = {
 
 export type RetrieveResult = {
   inboundFiles: SourceInfo[];
+  packages?: Array<{
+    name: string;
+    path: string;
+  }>;
 };
 
 export type SimpleDeployResult = {

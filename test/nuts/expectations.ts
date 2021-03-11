@@ -43,6 +43,14 @@ export class Expectations {
     await this.filesToBePresent(result.inboundFiles, globs);
   }
 
+  public async packagesToBeRetrieved(result: RetrieveResult, name: string): Promise<void> {
+    const retrievedPkg = result.packages.find((pkg) => pkg.name === name);
+    expect(retrievedPkg).to.not.be.undefined;
+    expect(retrievedPkg).to.have.property('name');
+    expect(retrievedPkg).to.have.property('path');
+    await this.directoryToHaveSomeFiles(retrievedPkg.path);
+  }
+
   public fileToBePushed(result: PushResult, file: string): void {
     const pushedFiles = result.pushedSource.map((d) => d.filePath);
     const expectedFileFound = pushedFiles.includes(file);
@@ -70,7 +78,8 @@ export class Expectations {
   }
 
   public async directoryToHaveSomeFiles(directory: string): Promise<void> {
-    const fileCount = await countFiles([path.join(this.projectDir, directory)]);
+    const fullPath = directory.startsWith(this.projectDir) ? directory : path.join(this.projectDir, directory);
+    const fileCount = await countFiles([fullPath]);
     expect(fileCount).to.be.greaterThan(0);
   }
 
@@ -120,6 +129,13 @@ export class Expectations {
       expect(inboundFile).to.have.property('fullName');
       expect(inboundFile).to.have.property('type');
       expect(inboundFile).to.have.property('state');
+    }
+
+    if (result.packages) {
+      for (const pkg of result.packages) {
+        expect(pkg).to.have.property('name');
+        expect(pkg).to.have.property('path');
+      }
     }
   }
 
