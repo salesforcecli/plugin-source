@@ -359,6 +359,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     return TestSession.create({
       project: { gitClone: this.repository },
       setupCommands,
+      retries: 2,
     });
   }
 

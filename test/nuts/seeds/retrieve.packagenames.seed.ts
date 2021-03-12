@@ -14,7 +14,7 @@ const EXECUTABLE = '';
 // https://appexchange.salesforce.com/appxListingDetail?listingId=a0N3u00000MRhyZEAT
 const PACKAGE = { id: '04t4x0000000YCSAA2', name: 'Inactivate Contacts V1' };
 
-context('Retrieve packagenames NUTs %EXEC%', () => {
+context.skip('Retrieve packagenames NUTs %EXEC%', () => {
   let nutshell: Nutshell;
 
   before(async () => {
