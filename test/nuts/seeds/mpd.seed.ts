@@ -8,9 +8,9 @@
 import { Nutshell } from '../nutshell';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const EXECUTABLE = '';
+const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('MPD NUTs %EXEC%', () => {
+context.skip('MPD NUTs [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {

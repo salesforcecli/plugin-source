@@ -9,12 +9,11 @@ import * as path from 'path';
 import { Nutshell } from '../nutshell';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const EXECUTABLE = '';
+const EXECUTABLE = '%EXECUTABLE%';
 
-// https://appexchange.salesforce.com/appxListingDetail?listingId=a0N3u00000MRhyZEAT
-const PACKAGE = { id: '04t4x0000000YCSAA2', name: 'Inactivate Contacts V1' };
+const PACKAGE = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 
-context.skip('Retrieve packagenames NUTs %EXEC%', () => {
+context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
@@ -45,9 +44,9 @@ context.skip('Retrieve packagenames NUTs %EXEC%', () => {
       nutshell.expect.retrieveJsonToBeValid(retrieve.result);
       await nutshell.expect.packagesToBeRetrieved(retrieve.result, PACKAGE.name);
       await nutshell.expect.filesToBeRetrieved(retrieve.result, [
-        `${PACKAGE.name}/**/labels/*-meta.xml`,
-        `${PACKAGE.name}/**/objects/*__c/*-meta.xml`,
-        `${PACKAGE.name}/**/flows/*-meta.xml`,
+        `${PACKAGE.name}/**/brandingSets/*-meta.xml`,
+        `${PACKAGE.name}/**/contentassests/*-meta.xml`,
+        `${PACKAGE.name}/**/lightningExperienceThemes/*-meta.xml`,
       ]);
     });
 

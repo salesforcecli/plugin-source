@@ -6,13 +6,13 @@
  */
 
 import { Nutshell } from '../nutshell';
-import { RepoConfig } from '../testMatrix';
+import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = { gitUrl: '' } as RepoConfig;
-const EXECUTABLE = '';
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const EXECUTABLE = '%EXECUTABLE%';
 
-context('Deploy sourcepath NUTs %REPO% %EXEC%', () => {
+context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {

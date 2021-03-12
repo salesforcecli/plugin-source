@@ -152,7 +152,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    * we can't add plugin-package as a dev plugin yet.
    */
   public installPackage(id: string): void {
-    exec(`sfdx force:package:install --package ${id} --wait 5 --json 2> /dev/null`, { silent: true });
+    exec(`sfdx force:package:install --noprompt --package ${id} --wait 5 --json 2> /dev/null`, { silent: true });
   }
 
   /**

@@ -7,7 +7,7 @@
 
 import * as path from 'path';
 import { which } from 'shelljs';
-import { Env, set } from '@salesforce/kit';
+import { Env, set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
 
 const env = new Env();
@@ -380,7 +380,14 @@ const testRepos: RepoConfig[] = [
   // { gitUrl: 'https://github.com/trailheadapps/ecars.git' },
 ];
 
-export const TEST_REPOS = normalizeFilePaths(testRepos);
+/**
+ * We want to export a map of the repo configs that:
+ * 1. are keyed by the gitUrl
+ * 2. have normalized file paths
+ */
+export const TEST_REPOS_MAP = new Map<string, RepoConfig>(
+  Object.entries(keyBy(normalizeFilePaths(testRepos), 'gitUrl'))
+);
 
 export type RepoConfig = {
   skip?: boolean; // determines if the repository should be skipped during nut generation
