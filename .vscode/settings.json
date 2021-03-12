@@ -12,8 +12,5 @@
   },
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "rewrap.wrappingColumn": 80,
-  "cSpell.words": [
-    "contentassests"
-  ]
+  "rewrap.wrappingColumn": 80
 }

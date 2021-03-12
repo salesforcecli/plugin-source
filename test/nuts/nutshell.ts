@@ -148,6 +148,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
+   * Create an apex class
+   */
+  public async createApexClass(
+    options: Partial<Nutshell.CommandOpts> = {}
+  ): Promise<Result<{ created: string[]; outputDir: string }>> {
+    return this.execute('force:apex:class:create', options);
+  }
+
+  /**
    * Installs a package into the scratch org. This method uses shelljs instead of testkit because
    * we can't add plugin-package as a dev plugin yet.
    */
@@ -330,19 +339,12 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    */
   private async handleError(err: Error, clean = false): Promise<never> {
     const header = `  ENCOUNTERED ERROR IN: ${this.debug.namespace}  `;
-    const orgs = execCmd<{ nonScratchOrgs: AnyJson; scratchOrgs: AnyJson }>('force:org:list --all --json');
-    const auth = execCmd('auth:list --json');
-    const config = execCmd('config:list --json');
     console.log('-'.repeat(header.length));
     console.log(header);
     console.log('-'.repeat(header.length));
-    console.log(err);
     console.log('session:', this.session?.dir);
     console.log('username:', this.username);
-    console.log('orgs:', orgs.jsonOutput.result.nonScratchOrgs);
-    console.log('scratch orgs:', orgs.jsonOutput.result.scratchOrgs);
-    console.log('auths:', auth.jsonOutput.result);
-    console.log('config:', config.jsonOutput.result);
+    console.log(err);
     console.log('-'.repeat(header.length));
     if (clean) await this.clean();
     throw err;

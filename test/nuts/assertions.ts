@@ -49,6 +49,13 @@ export class Assertions {
   }
 
   /**
+   * Finds all files in project based on the provided globs and expects them to NOT exist in the deploy json response
+   */
+  public async filesToNotBeDeployed(result: SimpleDeployResult, globs: string[]): Promise<void> {
+    await this.filesToNotBePresent(result.deployedSource, globs);
+  }
+
+  /**
    * Finds all files in project based on the provided globs and expects them to exist in the retrieve json response
    */
   public async filesToBeRetrieved(result: RetrieveResult, globs: string[]): Promise<void> {
@@ -425,5 +432,21 @@ export class Assertions {
     const everyExpectedFileFound = truncatedFilesToExpect.every((f) => actualFiles.includes(f));
     expect(truncatedFilesToExpect.length).to.be.greaterThan(0);
     expect(everyExpectedFileFound, 'All expected files to be present in the response').to.be.true;
+  }
+
+  private async filesToNotBePresent(results: SourceInfo[], globs: string[]): Promise<void> {
+    const filesYouDontWantFound: string[] = [];
+    for (const glob of globs) {
+      const fullGlob = [this.projectDir, glob].join('/');
+      const globResults = await fg(fullGlob);
+      filesYouDontWantFound.push(...globResults);
+    }
+
+    const truncated = filesYouDontWantFound.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
+    const actualFiles = results.map((d) => d.filePath);
+
+    const everyFileNotFound = truncated.every((f) => !actualFiles.includes(f));
+    expect(truncated.length).to.be.greaterThan(0);
+    expect(everyFileNotFound, 'All files to NOT be present in the response').to.be.true;
   }
 }

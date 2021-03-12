@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { JsonMap } from '@salesforce/ts-types';
+import { AnyJson, JsonMap } from '@salesforce/ts-types';
 
 /**
  * NOTICE: These types are only sufficient for running the NUTs. They are likely incomplete and in some cases incorrect.
@@ -130,7 +130,7 @@ export type ConvertResult = {
   location: string;
 };
 
-export type Result<T> = JsonMap & {
+export type Result<T = AnyJson> = JsonMap & {
   status: number;
   result: T;
 };

@@ -46,5 +46,12 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       const deploy = await nutshell.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
       nutshell.expect.errorToHaveName(deploy, 'UnsupportedType');
     });
+
+    it('should not deploy metadata outside of a package directory', async () => {
+      const apex = await nutshell.createApexClass({ args: '--outputdir NotAPackage --classname ShouldNotBeDeployed' });
+      const deploy = await nutshell.deploy({ args: '--metadata ApexClass' });
+      nutshell.expect.deployJsonToBeValid(deploy.result);
+      await nutshell.expect.filesToNotBeDeployed(deploy.result, apex.result.created);
+    });
   });
 });
