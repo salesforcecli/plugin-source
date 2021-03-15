@@ -29,6 +29,7 @@ import {
   StatusResult,
 } from './types';
 import { Assertions } from './assertions';
+import { ExecutionLog } from './executionLog';
 import { FileTracker, traverseForFiles } from './fileTracker';
 
 /**
@@ -57,6 +58,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public packages: NamedPackageDir[];
   public packageNames: string[];
   public packagePaths: string[];
+  public packageGlobs: string[];
   public expect: Assertions;
   public testMetadataFolder: string;
   public testMetadataFiles: string[];
@@ -69,6 +71,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   private session: TestSession;
   private username: string;
   private orgless: boolean;
+  private executionLog: ExecutionLog;
 
   public constructor(options: Nutshell.Options) {
     super(options);
@@ -293,10 +296,18 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       this.packages = sfdxProject.getPackageDirectories();
       this.packageNames = this.packages.map((p) => p.name);
       this.packagePaths = this.packages.map((p) => p.fullPath);
-      this.fileTracker = new FileTracker(this.session.project.dir);
-      this.expect = new Assertions(this.session.project.dir, this.fileTracker, this.packagePaths);
+      this.packageGlobs = this.packages.map((p) => `${p.path}/**/*`);
       this.username = this.getDefaultUsername();
       this.connection = await this.createConnection();
+      this.fileTracker = new FileTracker(this.session.project.dir);
+      this.executionLog = new ExecutionLog();
+      this.expect = new Assertions(
+        this.session.project.dir,
+        this.fileTracker,
+        this.packagePaths,
+        this.connection,
+        this.executionLog
+      );
       this.testMetadataFolder = path.join(__dirname, 'metadata');
       this.testMetadataFiles = (await traverseForFiles(this.testMetadataFolder))
         .filter((f) => !f.endsWith('.DS_Store'))
@@ -315,6 +326,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       const command = [cmd, args, '--json'].join(' ');
       this.debug(`${command} (expecting exit code: ${exitCode})`);
       await this.fileTracker.updateAll(`PRE: ${command}`);
+      this.executionLog.add(command);
       const result = execCmd<T>(command, { ensureExitCode: exitCode });
       await this.fileTracker.updateAll(`POST: ${command}`);
 

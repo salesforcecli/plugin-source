@@ -30,40 +30,35 @@ context('Deploy testlevel NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => 
 
   describe('--testlevel', () => {
     it('should run no tests (NoTestRun)', async () => {
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
+      await nutshell.deploy<ComplexDeployResult>({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel NoTestRun --checkonly`,
       });
-      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
-      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
-      nutshell.expect.toHavePropertyAndValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+      await nutshell.expect.noApexTestsToBeRun();
     });
 
     it('should run tests locally (RunLocalTests)', async () => {
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
+      await nutshell.deploy<ComplexDeployResult>({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests --checkonly`,
       });
-      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
-      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
-      nutshell.expect.toHavePropertyAndNotValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+      await nutshell.expect.apexTestsToBeRun();
     });
 
     it('should run tests in org (RunAllTestsInOrg)', async () => {
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
+      await nutshell.deploy<ComplexDeployResult>({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunAllTestsInOrg --checkonly`,
       });
-      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
-      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
-      nutshell.expect.toHavePropertyAndNotValue(deploy.result.details.runTestResult, 'numTestsRun', '0');
+      await nutshell.expect.apexTestsToBeRun();
     });
 
-    it('should run specified tests in org (RunSpecifiedTests)', async () => {
+    it('should run specified tests (RunSpecifiedTests)', async () => {
       const packageNames = nutshell.packageNames.join(',');
       const tests = REPO.deploy.testlevel.specifiedTests.join(',');
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
-        args: `--sourcepath ${packageNames} --testlevel RunSpecifiedTests --runtests ${tests} --checkonly --ignoreerrors`,
+      // NOTE: we cannot do a --checkonly deployment here because we need the ApexClasses to exist in the
+      // org in order to programmatically map the specified test to the test results
+      await nutshell.deploy<ComplexDeployResult>({
+        args: `--sourcepath ${packageNames} --testlevel RunSpecifiedTests --runtests ${tests} --ignoreerrors`,
       });
-      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
-      nutshell.expect.deployTestResultsToBeValid(deploy.result.details.runTestResult);
+      await nutshell.expect.specificApexTestsToBeRun(REPO.deploy.testlevel.specifiedTests);
     });
   });
 });

@@ -29,9 +29,8 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should deploy the entire project', async () => {
-    const deploy = await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
-    nutshell.expect.deployJsonToBeValid(deploy.result);
-    await nutshell.expect.allMetaXmlsToBeDeployed(deploy.result, ...nutshell.packagePaths);
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs);
   });
 
   describe('async deploy', () => {
@@ -44,9 +43,8 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       nutshell.expect.toHavePropertyAndNotValue(deploy.result, 'status', 'Succeeded');
 
       const report = await nutshell.deployReport({ args: `-i ${deploy.result.id}` });
-      nutshell.expect.toHaveProperty(report.result, 'details');
       nutshell.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
-      nutshell.expect.deployReportJsonToBeValid(report.result);
+      await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs, 'force:source:deploy:report');
     });
 
     it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
@@ -56,8 +54,8 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       nutshell.expect.toHaveProperty(deploy.result, 'id');
       nutshell.expect.toHavePropertyAndNotValue(deploy.result, 'status', 'Succeeded');
 
-      const cancel = await nutshell.deployCancel({ args: `-i ${deploy.result.id}` });
-      nutshell.expect.deployCancelJsonToBeValid(cancel.result);
+      await nutshell.deployCancel({ args: `-i ${deploy.result.id}` });
+      await nutshell.expect.someFilesToNotBeDeployed(nutshell.packageGlobs, 'force:source:deploy:cancel');
     });
   });
 });

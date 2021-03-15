@@ -43,7 +43,7 @@ const testRepos: RepoConfig[] = [
         { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
       ],
       metadata: [
-        { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/**/*', 'my-app/objects/**/*'] },
+        { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'] },
       ],
       manifest: [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },

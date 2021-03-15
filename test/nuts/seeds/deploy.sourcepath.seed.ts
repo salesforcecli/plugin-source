@@ -30,9 +30,8 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.deploy.sourcepath) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
-        const deploy = await nutshell.deploy({ args: `--sourcepath ${testCase.toDeploy}` });
-        nutshell.expect.deployJsonToBeValid(deploy.result);
-        await nutshell.expect.filesToBeDeployed(deploy.result, testCase.toVerify);
+        await nutshell.deploy({ args: `--sourcepath ${testCase.toDeploy}` });
+        await nutshell.expect.filesToBeDeployed(testCase.toVerify);
       });
     }
 

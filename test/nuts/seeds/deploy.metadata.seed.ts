@@ -28,17 +28,15 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should deploy the entire project', async () => {
-    const deploy = await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
-    nutshell.expect.deployJsonToBeValid(deploy.result);
-    await nutshell.expect.allMetaXmlsToBeDeployed(deploy.result, ...nutshell.packagePaths);
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs);
   });
 
   describe('--metadata flag', () => {
     for (const testCase of REPO.deploy.metadata) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
-        const deploy = await nutshell.deploy({ args: `--metadata ${testCase.toDeploy}` });
-        nutshell.expect.deployJsonToBeValid(deploy.result);
-        await nutshell.expect.filesToBeDeployed(deploy.result, testCase.toVerify);
+        await nutshell.deploy({ args: `--metadata ${testCase.toDeploy}` });
+        await nutshell.expect.filesToBeDeployed(testCase.toVerify);
       });
     }
 
@@ -49,9 +47,8 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should not deploy metadata outside of a package directory', async () => {
       const apex = await nutshell.createApexClass({ args: '--outputdir NotAPackage --classname ShouldNotBeDeployed' });
-      const deploy = await nutshell.deploy({ args: '--metadata ApexClass' });
-      nutshell.expect.deployJsonToBeValid(deploy.result);
-      await nutshell.expect.filesToNotBeDeployed(deploy.result, apex.result.created);
+      await nutshell.deploy({ args: '--metadata ApexClass' });
+      await nutshell.expect.filesToNotBeDeployed(apex.result.created);
     });
   });
 });

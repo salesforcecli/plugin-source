@@ -8,9 +8,12 @@
 import * as path from 'path';
 import { expect, use } from 'chai';
 import * as chaiEach from 'chai-each';
+import { findKey } from '@salesforce/kit';
 import { JsonMap } from '@salesforce/ts-types';
 import * as fg from 'fast-glob';
-import { fs } from '@salesforce/core';
+import { Connection, fs } from '@salesforce/core';
+import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
+import { debug, Debugger } from 'debug';
 import {
   BaseDeployResult,
   ComplexDeployResult,
@@ -26,12 +29,44 @@ import {
   SourceState,
   StatusResult,
 } from './types';
+import { ExecutionLog } from './executionLog';
 import { FileTracker, countFiles } from './fileTracker';
 
 use(chaiEach);
 
+type SObjectRecord = {
+  attributes: {
+    type: string;
+    url: string;
+  };
+  Id: string;
+  LastModifiedDate: string;
+};
+
+type ApexTestResult = {
+  TestTimestamp: string;
+  ApexClassId: string;
+};
+
+type ApexClass = {
+  Id: string;
+  Name: string;
+};
+
 export class Assertions {
-  public constructor(private projectDir: string, private fileTracker: FileTracker, private packagePaths: string[]) {}
+  private debug: Debugger;
+  private metadataResolver: MetadataResolver;
+
+  public constructor(
+    private projectDir: string,
+    private fileTracker: FileTracker,
+    private packagePaths: string[],
+    private connection: Connection,
+    private executionLog: ExecutionLog
+  ) {
+    this.debug = debug('assertions');
+    this.metadataResolver = new MetadataResolver();
+  }
 
   /**
    * Expect given file to be changed according to the file history provided by FileTracker
@@ -42,17 +77,25 @@ export class Assertions {
   }
 
   /**
-   * Finds all files in project based on the provided globs and expects them to exist in the deploy json response
+   * Finds all files in project based on the provided globs and expects them to be updated on the server
    */
-  public async filesToBeDeployed(result: SimpleDeployResult, globs: string[]): Promise<void> {
-    await this.filesToBePresent(result.deployedSource, globs);
+  public async filesToBeDeployed(globs: string[], deployCommand = 'force:source:deploy'): Promise<void> {
+    await this.filesToBeUpdated(globs, deployCommand);
   }
 
   /**
-   * Finds all files in project based on the provided globs and expects them to NOT exist in the deploy json response
+   * Finds all files in project based on the provided globs and expects them to NOT be updated on the server
    */
-  public async filesToNotBeDeployed(result: SimpleDeployResult, globs: string[]): Promise<void> {
-    await this.filesToNotBePresent(result.deployedSource, globs);
+  public async filesToNotBeDeployed(globs: string[], deployCommand = 'force:source:deploy'): Promise<void> {
+    await this.filesToNotBeUpdated(globs, deployCommand);
+  }
+
+  /**
+   * Finds all files in project based on the provided globs and expects SOME of them to NOT be updated on the server.
+   * This is helpful for testing force:source:deploy:cancel where we can know beforehand which files will be deployed.
+   */
+  public async someFilesToNotBeDeployed(globs: string[], deployCommand = 'force:source:deploy'): Promise<void> {
+    await this.someFilesToNotBeUpdated(globs, deployCommand);
   }
 
   /**
@@ -112,6 +155,8 @@ export class Assertions {
     const pushedFiles = result.pushedSource.map((d) => d.filePath);
     const everyExpectedFileFound = filesToExpect.every((f) => pushedFiles.includes(f));
     expect(everyExpectedFileFound, 'all files to be present in json response').to.be.true;
+    // TODO: figure out how to do this when the "Requested Resource" doesn't exist
+    // await this.filesToBeUpdated(globs, 'force:source:push');
   }
 
   /**
@@ -358,6 +403,32 @@ export class Assertions {
     expect(result.name, `error name to equal ${name}`).to.equal(name);
   }
 
+  public async noApexTestsToBeRun(): Promise<void> {
+    const executionTimestamp = this.executionLog.getLatestTimestamp('force:source:deploy');
+    const testResults = await this.retrieveApexTestResults();
+    const testsRunAfterTimestamp = testResults.filter((r) => new Date(r.TestTimestamp) > executionTimestamp);
+    expect(testsRunAfterTimestamp.length, 'no tests to be run during deploy').to.equal(0);
+  }
+
+  public async apexTestsToBeRun(): Promise<void> {
+    const executionTimestamp = this.executionLog.getLatestTimestamp('force:source:deploy');
+    const testResults = await this.retrieveApexTestResults();
+    const testsRunAfterTimestamp = testResults.filter((r) => new Date(r.TestTimestamp) > executionTimestamp);
+    expect(testsRunAfterTimestamp.length, 'tests to be run during deploy').to.be.greaterThan(0);
+  }
+
+  public async specificApexTestsToBeRun(classNames: string[]): Promise<void> {
+    const apexClasses = await this.retrieveApexClasses(classNames);
+    const classIds = apexClasses.map((c) => c.Id);
+    const executionTimestamp = this.executionLog.getLatestTimestamp('force:source:deploy');
+    const testResults = await this.retrieveApexTestResults();
+    const testsRunAfterTimestamp = testResults.filter((r) => {
+      return new Date(r.TestTimestamp) > executionTimestamp && classIds.includes(r.ApexClassId);
+    });
+
+    expect(testsRunAfterTimestamp.length, 'tests to be run during deploy').to.be.greaterThan(0);
+  }
+
   /**
    * Expect result to have given property
    */
@@ -434,19 +505,88 @@ export class Assertions {
     expect(everyExpectedFileFound, 'All expected files to be present in the response').to.be.true;
   }
 
-  private async filesToNotBePresent(results: SourceInfo[], globs: string[]): Promise<void> {
-    const filesYouDontWantFound: string[] = [];
+  private async filesToBeUpdated(globs: string[], command: string): Promise<void> {
+    const executionTimestamp = this.executionLog.getLatestTimestamp(command);
+    const assertionMessage = `expect all metadata to have LastModifiedDate later than ${executionTimestamp.toString()}`;
+    this.debug(assertionMessage);
+
+    const records = await this.retrieveSObjectsBasedOnGlobs(globs);
+    this.debug('Found SObjects: %O', records);
+    const allRecordsUpdated = records.every((record) => new Date(record.LastModifiedDate) > executionTimestamp);
+    expect(allRecordsUpdated, assertionMessage).to.be.true;
+  }
+
+  private async filesToNotBeUpdated(globs: string[], command: string): Promise<void> {
+    const executionTimestamp = this.executionLog.getLatestTimestamp(command);
+    const assertionMessage = `expect all metadata to have LastModifiedDate earlier than ${executionTimestamp.toString()}`;
+    this.debug(assertionMessage);
+
+    const records = await this.retrieveSObjectsBasedOnGlobs(globs);
+    this.debug('Found SObjects: %O', records);
+    const allRecordsNotUpdated = records.every((record) => new Date(record.LastModifiedDate) < executionTimestamp);
+    expect(allRecordsNotUpdated, assertionMessage).to.be.true;
+  }
+
+  private async someFilesToNotBeUpdated(globs: string[], command: string): Promise<void> {
+    const executionTimestamp = this.executionLog.getLatestTimestamp(command);
+    const assertionMessage = `expect all metadata to have LastModifiedDate earlier than ${executionTimestamp.toString()}`;
+    this.debug(assertionMessage);
+
+    const records = await this.retrieveSObjectsBasedOnGlobs(globs);
+    this.debug('Found SObjects: %O', records);
+    const allRecordsNotUpdated = records.some((record) => new Date(record['LastModifiedDate']) < executionTimestamp);
+    expect(allRecordsNotUpdated, assertionMessage).to.be.true;
+  }
+
+  private async retrieveSObjectsBasedOnGlobs(globs: string[]): Promise<SObjectRecord[]> {
+    // the LastModifiedDate field isn't always updated for CustomFields when its CustomObject
+    // is deployed. So the sake of simplicity, we filter those out before checking that all
+    // metadata has been updated by the deploy.
+    const exceptions = ['CustomField'];
+    const filesToExpect: string[] = [];
     for (const glob of globs) {
-      const fullGlob = [this.projectDir, glob].join('/');
+      const fullGlob = glob.includes(this.projectDir) ? glob : [this.projectDir, glob].join('/');
+      this.debug(`Finding files using glob: ${fullGlob}`);
       const globResults = await fg(fullGlob);
-      filesYouDontWantFound.push(...globResults);
+      this.debug('Found: %O', globResults);
+      filesToExpect.push(...globResults);
     }
 
-    const truncated = filesYouDontWantFound.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
-    const actualFiles = results.map((d) => d.filePath);
+    // metadata type => records
+    const cache = new Map<string, SObjectRecord[]>();
+    // metadata name => records
+    const records = new Map<string, SObjectRecord>();
 
-    const everyFileNotFound = truncated.every((f) => !actualFiles.includes(f));
-    expect(truncated.length).to.be.greaterThan(0);
-    expect(everyFileNotFound, 'All files to NOT be present in the response').to.be.true;
+    for (const file of filesToExpect) {
+      const components = this.metadataResolver.getComponentsFromPath(file);
+      const metadataType = components[0].type.name;
+      const metadataName = components[0].fullName;
+      if (records.has(metadataName)) continue;
+      if (!cache.has(metadataType)) {
+        const describe = await this.connection.tooling.describe(metadataType);
+        const fields = describe.fields.map((f) => f.name).join(',');
+        const query = `SELECT ${fields} FROM ${components[0].type.name}`;
+        const result = await this.connection.tooling.query<SObjectRecord>(query, { autoFetch: true, maxFetch: 50000 });
+        cache.set(metadataType, result.records);
+      }
+
+      const recordsForType = cache.get(metadataType);
+      const match = recordsForType.find((record) => findKey(record, (v: string) => metadataName.includes(v)));
+      if (match) records.set(metadataName, match);
+    }
+    return [...records.values()].filter((r) => !exceptions.includes(r.attributes.type));
+  }
+
+  private async retrieveApexTestResults(): Promise<ApexTestResult[]> {
+    const query = 'SELECT TestTimestamp, ApexClassId FROM ApexTestResult';
+    const result = await this.connection.tooling.query<ApexTestResult>(query, { autoFetch: true, maxFetch: 50000 });
+    return result.records;
+  }
+
+  private async retrieveApexClasses(classNames?: string[]): Promise<ApexClass[]> {
+    const query = 'SELECT Name,Id FROM ApexClass';
+    const result = await this.connection.tooling.query<ApexClass>(query, { autoFetch: true, maxFetch: 50000 });
+    const apexClasses = classNames ? result.records.filter((r) => classNames.includes(r.Name)) : result.records;
+    return apexClasses;
   }
 }

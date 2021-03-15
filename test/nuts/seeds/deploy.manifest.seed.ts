@@ -32,12 +32,10 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.deploy.manifest) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
         const convert = await nutshell.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
-        nutshell.expect.convertJsonToBeValid(convert.result);
         const packageXml = path.join(convert.result.location, 'package.xml');
 
-        const deploy = await nutshell.deploy({ args: `--manifest ${packageXml}` });
-        nutshell.expect.deployJsonToBeValid(deploy.result);
-        await nutshell.expect.filesToBeDeployed(deploy.result, testCase.toVerify);
+        await nutshell.deploy({ args: `--manifest ${packageXml}` });
+        await nutshell.expect.filesToBeDeployed(testCase.toVerify);
       });
     }
 

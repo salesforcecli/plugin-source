@@ -30,10 +30,10 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   describe('--checkonly flag', () => {
     it('should check deploy of all packages', async () => {
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
+      await nutshell.deploy<ComplexDeployResult>({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --checkonly`,
       });
-      nutshell.expect.deployComplexJsonToBeValid(deploy.result);
+      await nutshell.expect.filesToNotBeDeployed(nutshell.packageGlobs);
     });
   });
 
@@ -47,8 +47,8 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       const quickDeploy = await nutshell.deploy<ComplexDeployResult>({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
       });
-      nutshell.expect.deployReportJsonToBeValid(quickDeploy.result);
       nutshell.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
+      await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs);
     });
   });
 });
