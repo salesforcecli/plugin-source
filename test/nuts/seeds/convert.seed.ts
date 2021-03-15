@@ -32,15 +32,13 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--manifest flag', () => {
     for (const testCase of REPO.convert.manifest) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        const convert1 = await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out1` });
-        nutshell.expect.convertJsonToBeValid(convert1.result);
-        const packageXml = path.join(convert1.result.location, 'package.xml');
+        await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out1` });
+        const packageXml = path.join('out1', 'package.xml');
 
-        const convert2 = await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2` });
-        nutshell.expect.convertJsonToBeValid(convert2.result);
-        await nutshell.expect.directoryToHaveSomeFiles(convert2.result.location);
-        await nutshell.expect.fileToExist(path.join(convert2.result.location, 'package.xml'));
-        await nutshell.expect.filesToBeConverted(convert2.result, testCase.toVerify);
+        await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2` });
+        await nutshell.expect.directoryToHaveSomeFiles('out2');
+        await nutshell.expect.fileToExist(path.join('out2', 'package.xml'));
+        await nutshell.expect.filesToBeConverted('out2', testCase.toVerify);
       });
     }
 
@@ -53,11 +51,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--metadata flag', () => {
     for (const testCase of REPO.convert.metadata) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        const convert = await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out` });
-        nutshell.expect.convertJsonToBeValid(convert.result);
-        await nutshell.expect.directoryToHaveSomeFiles(convert.result.location);
-        await nutshell.expect.fileToExist(path.join(convert.result.location, 'package.xml'));
-        await nutshell.expect.filesToBeConverted(convert.result, testCase.toVerify);
+        await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out` });
+        await nutshell.expect.directoryToHaveSomeFiles('out');
+        await nutshell.expect.fileToExist(path.join('out', 'package.xml'));
+        await nutshell.expect.filesToBeConverted('out', testCase.toVerify);
       });
     }
 
@@ -70,11 +67,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.convert.sourcepath) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        const convert = await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out` });
-        nutshell.expect.convertJsonToBeValid(convert.result);
-        await nutshell.expect.directoryToHaveSomeFiles(convert.result.location);
-        await nutshell.expect.fileToExist(path.join(convert.result.location, 'package.xml'));
-        await nutshell.expect.filesToBeConverted(convert.result, testCase.toVerify);
+        await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out` });
+        await nutshell.expect.directoryToHaveSomeFiles('out');
+        await nutshell.expect.fileToExist(path.join('out', 'package.xml'));
+        await nutshell.expect.filesToBeConverted('out', testCase.toVerify);
       });
     }
 

@@ -33,7 +33,6 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.retrieve.manifest) {
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
         const convert = await nutshell.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir out` });
-        nutshell.expect.convertJsonToBeValid(convert.result);
         const packageXml = path.join(convert.result.location, 'package.xml');
 
         const retrieve = await nutshell.retrieve({ args: `--manifest ${packageXml}` });

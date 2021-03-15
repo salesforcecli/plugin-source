@@ -14,7 +14,7 @@ import * as fg from 'fast-glob';
 import { Connection, fs } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
-import { ConvertResult, PullResult, RetrieveResult, SourceInfo, SourceState, StatusResult } from './types';
+import { PullResult, RetrieveResult, SourceInfo, SourceState, StatusResult } from './types';
 import { ExecutionLog } from './executionLog';
 import { FileTracker, countFiles } from './fileTracker';
 
@@ -95,17 +95,18 @@ export class Assertions {
    * Expects given file to exist
    */
   public async fileToExist(file: string): Promise<void> {
-    const fileExists = await fs.fileExists(file);
-    expect(fileExists, `${file} to exist`).to.be.true;
+    const fullPath = file.startsWith(this.projectDir) ? file : path.join(this.projectDir, file);
+    const fileExists = await fs.fileExists(fullPath);
+    expect(fileExists, `${fullPath} to exist`).to.be.true;
   }
 
   /**
    * Expects files to exist in convert output directory
    */
-  public async filesToBeConverted(result: ConvertResult, globs: string[]): Promise<void> {
+  public async filesToBeConverted(directory: string, globs: string[]): Promise<void> {
     const convertedFiles: string[] = [];
     for (const glob of globs) {
-      const fullGlob = [result.location, glob].join('/');
+      const fullGlob = [directory, glob].join('/');
       const globResults = await fg(fullGlob);
       const files = globResults.map((f) => path.basename(f));
       convertedFiles.push(...files);
@@ -243,14 +244,6 @@ export class Assertions {
    */
   public statusJsonToBeValid(result: StatusResult): void {
     expect(result).to.each.have.all.keys('filePath', 'fullName', 'type', 'state');
-  }
-
-  /**
-   * Expect source:convert json response to be valid
-   */
-  public convertJsonToBeValid(result: ConvertResult): void {
-    expect(result).to.have.property('location');
-    expect(result.location).to.be.a('string');
   }
 
   /**
