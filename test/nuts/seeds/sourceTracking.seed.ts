@@ -34,9 +34,8 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should push the entire project', async () => {
-    const push = await nutshell.push();
-    await nutshell.expect.allMetaXmlsToBePushed(push.result);
-    nutshell.expect.pushJsonToBeValid(push.result);
+    await nutshell.push();
+    await nutshell.expect.filesToBePushed(nutshell.testMetadataFiles);
 
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
@@ -51,9 +50,8 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should push the added files', async () => {
-    const push = await nutshell.push();
-    nutshell.expect.filesToBePushed(push.result, nutshell.testMetadataFiles);
-    nutshell.expect.pushJsonToBeValid(push.result);
+    await nutshell.push();
+    await nutshell.expect.filesToBePushed(nutshell.testMetadataFiles);
 
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
@@ -68,9 +66,8 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should push only changed files', async () => {
-    const push = await nutshell.push();
-    nutshell.expect.fileToBePushed(push.result, nutshell.testMetadataFiles[0]);
-    nutshell.expect.pushJsonToBeValid(push.result);
+    await nutshell.push();
+    await nutshell.expect.fileToBePushed(nutshell.testMetadataFiles[0]);
   });
 
   it('should should show and pull remote changes', async () => {
@@ -111,9 +108,8 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
-    const push = await nutshell.push({ args: '--forceoverwrite' });
-    nutshell.expect.pushJsonToBeValid(push.result);
-    nutshell.expect.fileToBePushed(push.result, quickAction);
+    await nutshell.push({ args: '--forceoverwrite' });
+    await nutshell.expect.fileToBePushed(quickAction);
   });
 
   it('should pull with --forceoverwrite when conflicts are present', async () => {
