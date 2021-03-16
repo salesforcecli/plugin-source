@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { ComplexDeployResult } from '../types';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
 

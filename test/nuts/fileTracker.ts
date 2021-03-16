@@ -26,6 +26,7 @@ export class FileTracker {
       annotation: 'initial state',
       hash: await this.getContentHash(file),
       changedFromPrevious: false,
+      name: file,
     };
     this.files.set(file, [entry]);
   }
@@ -34,15 +35,15 @@ export class FileTracker {
    * Returns tracked file's history
    */
   public get(file: string): FileTracker.FileHistory[] {
-    return this.files.get(file);
+    return this.files.get(file) || [];
   }
 
   /**
    * Returns latest entry for file
    */
-  public getLatest(file: string): FileTracker.FileHistory {
+  public getLatest(file: string): Nullable<FileTracker.FileHistory> {
     const history = this.files.get(file);
-    return history[history.length - 1];
+    return history ? history[history.length - 1] : null;
   }
 
   /**
@@ -61,6 +62,7 @@ export class FileTracker {
       annotation,
       hash: latestHash,
       changedFromPrevious: lastEntry.hash !== latestHash,
+      name: file,
     };
 
     this.files.set(file, [...entries, newEntry]);
@@ -99,6 +101,7 @@ export namespace FileTracker {
     annotation: string;
     hash: Nullable<string>;
     changedFromPrevious: boolean;
+    name: string;
   };
 }
 

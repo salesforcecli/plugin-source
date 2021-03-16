@@ -22,7 +22,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
-    await nutshell.trackFiles(...nutshell.packagePaths);
+    await nutshell.trackGlobs(nutshell.packageGlobs);
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 

@@ -158,7 +158,20 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   /**
    * Adds given files to FileTracker for tracking
    */
-  public async trackFiles(...files: string[]): Promise<void> {
+  public async trackFiles(files: string[]): Promise<void> {
+    for (const file of files) {
+      await this.fileTracker.track(file);
+    }
+  }
+
+  /**
+   * Adds files found by globs to FileTracker for tracking
+   */
+  public async trackGlobs(globs: string[]): Promise<void> {
+    const fullGlobs = globs.map((g) =>
+      g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
+    );
+    const files = await fg(fullGlobs);
     for (const file of files) {
       await this.fileTracker.track(file);
     }
@@ -275,10 +288,9 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       } catch {
         await fs.mkdirp(path.dirname(dest));
         await copyFile(src, dest);
-      } finally {
-        await this.trackFiles(file);
       }
     }
+    await this.trackFiles(this.testMetadataFiles);
   }
 
   protected async init(): Promise<void> {
@@ -369,7 +381,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
           'sfdx config:set apiVersion=50.0 --global',
           'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
         ];
-    return TestSession.create({
+    return await TestSession.create({
       project: { gitClone: this.repository },
       setupCommands,
       retries: 2,

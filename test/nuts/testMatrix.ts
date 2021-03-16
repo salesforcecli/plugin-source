@@ -150,7 +150,7 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/main/default/**/*'] },
+        { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',

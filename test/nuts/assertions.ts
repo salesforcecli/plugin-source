@@ -53,8 +53,11 @@ export class Assertions {
    */
   public async filesToBeChanged(globs: string[]): Promise<void> {
     const files = await this.doGlob(globs);
-    const fileHistories = files.map((f) => this.fileTracker.getLatest(f).changedFromPrevious);
-    const allChanged = fileHistories.every((f) => !!f);
+    const fileHistories = files
+      .filter((f) => !f.endsWith('.resource-meta.xml'))
+      .map((f) => this.fileTracker.getLatest(f))
+      .filter((f) => !!f);
+    const allChanged = fileHistories.every((f) => f.changedFromPrevious);
     expect(allChanged, 'all files to be changed').to.be.true;
   }
 
