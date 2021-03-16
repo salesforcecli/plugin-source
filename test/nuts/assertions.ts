@@ -177,13 +177,6 @@ export class Assertions {
   }
 
   /**
-   * Expect source:status json response to be valid
-   */
-  public statusJsonToBeValid(result: StatusResult): void {
-    expect(result).to.each.have.all.keys('filePath', 'fullName', 'type', 'state');
-  }
-
-  /**
    * Expect json to have given error name
    */
   public errorToHaveName(result: JsonMap, name: string): void {

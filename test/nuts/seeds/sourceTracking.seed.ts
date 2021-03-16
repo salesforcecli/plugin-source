@@ -29,7 +29,6 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should show all files as Local Add', async () => {
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveState(status.result, 'Local Add');
   });
 
@@ -38,14 +37,12 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     await nutshell.expect.filesToBePushed(nutshell.packageGlobs);
 
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToBeEmpty(status.result);
   });
 
   it('should show Local Add when files have been added', async () => {
     await nutshell.addTestFiles();
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusFilesToHaveState(status.result, 'Local Add', nutshell.testMetadataFiles);
   });
 
@@ -54,14 +51,12 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     await nutshell.expect.filesToBePushed(nutshell.testMetadataFiles);
 
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToBeEmpty(status.result);
   });
 
   it('should have results in source status after local file change', async () => {
     await nutshell.modifyLocalFile(nutshell.testMetadataFiles[0]);
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusFileToHaveState(status.result, 'Local Changed', nutshell.testMetadataFiles[0]);
   });
 
@@ -74,14 +69,12 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     const quickAction = await nutshell.modifyRemoteFile();
 
     const statusPre = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(statusPre.result);
     nutshell.expect.statusToOnlyHaveState(statusPre.result, 'Remote Changed');
 
     await nutshell.pull();
     nutshell.expect.fileToBeChanged(quickAction);
 
     const statusPost = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(statusPost.result);
     nutshell.expect.statusToBeEmpty(statusPost.result);
   });
 
@@ -89,7 +82,6 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     const quickAction = await nutshell.modifyRemoteFile();
     await nutshell.modifyLocalFile(quickAction);
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
     const push = await nutshell.push({ exitCode: 1 });
@@ -103,7 +95,6 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     const quickAction = await nutshell.modifyRemoteFile();
     await nutshell.modifyLocalFile(quickAction);
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
     await nutshell.push({ args: '--forceoverwrite' });
@@ -114,7 +105,6 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     const quickAction = await nutshell.modifyRemoteFile();
     await nutshell.modifyLocalFile(quickAction);
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
     await nutshell.pull({ args: '--forceoverwrite' });
@@ -127,7 +117,6 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     await nutshell.deleteSourcePathInfos();
 
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveState(status.result, 'Remote Add');
   });
 
@@ -136,7 +125,6 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     // Only expect the first package to exist in this scenario since we deleted all the source files
     await nutshell.expect.filesToExist([nutshell.packageGlobs[0]]);
     const status = await nutshell.status();
-    nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToBeEmpty(status.result);
   });
 });
