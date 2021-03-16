@@ -14,21 +14,11 @@ import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Env } from '@salesforce/kit';
-import { AnyJson, ensureString, Nullable } from '@salesforce/ts-types';
+import { AnyJson, ensureString, JsonMap, Nullable } from '@salesforce/ts-types';
 import { AuthInfo, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
-import {
-  ConvertResult,
-  DeployCancelResult,
-  DeployReportResult,
-  PullResult,
-  PushResult,
-  Result,
-  RetrieveResult,
-  SimpleDeployResult,
-  StatusResult,
-} from './types';
+import { Result, StatusResult } from './types';
 import { Assertions } from './assertions';
 import { ExecutionLog } from './executionLog';
 import { FileTracker, traverseForFiles } from './fileTracker';
@@ -95,55 +85,50 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   /**
    * Executes force:source:convert
    */
-  public async convert(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<ConvertResult>> {
-    return this.execute<ConvertResult>('force:source:convert', options);
+  public async convert(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result> {
+    return this.execute('force:source:convert', options);
   }
 
   /**
    * Executes force:source:deploy
-   *
-   * We allow a type parameter here because different flags produce completely
-   * different json. We could utilize function overloads to make the typing
-   * automatic but that would require typing all the different flags which
-   * is something we'd rather not do.
    */
-  public async deploy<T = SimpleDeployResult>(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
-    return this.execute<T>('force:source:deploy', options);
+  public async deploy(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<{ id: string }>> {
+    return this.execute<{ id: string }>('force:source:deploy', options);
   }
 
   /**
    * Executes force:source:deploy:report
    */
-  public async deployReport(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<DeployReportResult>> {
-    return this.execute<DeployReportResult>('force:source:deploy:report', options);
+  public async deployReport(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<{ id: string }>> {
+    return this.execute<{ id: string }>('force:source:deploy:report', options);
   }
 
   /**
    * Executes force:source:deploy:cancel
    */
-  public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<DeployCancelResult>> {
-    return this.execute<DeployCancelResult>('force:source:deploy:cancel', options);
+  public async deployCancel(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<{ id: string }>> {
+    return this.execute<{ id: string }>('force:source:deploy:cancel', options);
   }
 
   /**
    * Executes force:source:retrieve
    */
-  public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<RetrieveResult>> {
-    return this.execute<RetrieveResult>('force:source:retrieve', options);
+  public async retrieve(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result> {
+    return this.execute('force:source:retrieve', options);
   }
 
   /**
    * Executes force:source:push
    */
-  public async push(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<PushResult>> {
-    return this.execute<PushResult>('force:source:push', options);
+  public async push(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result> {
+    return this.execute('force:source:push', options);
   }
 
   /**
    * Executes force:source:pull
    */
-  public async pull(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<PullResult>> {
-    return this.execute<PullResult>('force:source:pull', options);
+  public async pull(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result> {
+    return this.execute('force:source:pull', options);
   }
 
   /**
@@ -334,7 +319,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   /**
    * Execute a command using testkit. Adds --json to every command to ensure json output.
    */
-  private async execute<T = AnyJson>(cmd: string, options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
+  private async execute<T = JsonMap>(cmd: string, options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
     try {
       const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
       const command = [cmd, args, '--json'].join(' ');

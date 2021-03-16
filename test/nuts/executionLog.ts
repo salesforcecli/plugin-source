@@ -7,11 +7,19 @@
 
 import { Context, SourceMember } from './types';
 
+/**
+ * This class maintains a map of command execution history.
+ *
+ * This is helpful for collecting important information before a command is executed (e.g. SourceMember information)
+ */
 export class ExecutionLog {
   public log: ExecutionLog.Log = new Map<string, ExecutionLog.Details[]>();
 
   public constructor(private context: Context) {}
 
+  /**
+   * Add a command to the execution log
+   */
   public async add(cmd: string): Promise<void> {
     const baseCmd = cmd.split(' ')[0];
     const existingEntries = this.log.get(baseCmd) || [];
@@ -28,10 +36,16 @@ export class ExecutionLog {
     this.log.set(baseCmd, [...existingEntries, newEntry]);
   }
 
+  /**
+   * Return the most recent timestamp for a command
+   */
   public getLatestTimestamp(cmd: string): Date {
-    return this.log.get(cmd).reverse()[0].timestamp;
+    return this.getLatest(cmd).timestamp;
   }
 
+  /**
+   * Return the most recent entry for a command
+   */
   public getLatest(cmd: string): ExecutionLog.Details {
     return this.log.get(cmd).reverse()[0];
   }

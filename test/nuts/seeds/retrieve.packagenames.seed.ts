@@ -57,8 +57,8 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
     // This test fails because of an existing bug
     it.skip('should retrieve an installed package and manifest', async () => {
-      const convert = await nutshell.convert({ args: '--sourcepath force-app --outputdir out' });
-      const packageXml = path.join(convert.result.location, 'package.xml');
+      await nutshell.convert({ args: '--sourcepath force-app --outputdir out' });
+      const packageXml = path.join('out', 'package.xml');
       await nutshell.retrieve({
         args: `--packagenames "${PACKAGE.name}" --manifest ${packageXml}`,
       });

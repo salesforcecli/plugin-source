@@ -35,7 +35,7 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   describe('async deploy', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
+      const deploy = await nutshell.deploy({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --wait 0`,
       });
 
@@ -48,7 +48,7 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     });
 
     it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
-      const deploy = await nutshell.deploy<ComplexDeployResult>({
+      const deploy = await nutshell.deploy({
         args: `--sourcepath ${nutshell.packageNames.join(',')} --wait 0`,
       });
       nutshell.expect.toHaveProperty(deploy.result, 'id');

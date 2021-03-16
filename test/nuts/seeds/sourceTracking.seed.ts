@@ -67,7 +67,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should push only changed files', async () => {
     await nutshell.push();
-    await nutshell.expect.fileToBePushed(nutshell.testMetadataFiles[0]);
+    await nutshell.expect.filesToBePushed([nutshell.testMetadataFiles[0]]);
   });
 
   it('should should show and pull remote changes', async () => {
@@ -107,7 +107,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
     await nutshell.push({ args: '--forceoverwrite' });
-    await nutshell.expect.fileToBePushed(quickAction);
+    await nutshell.expect.filesToBePushed([quickAction]);
   });
 
   it('should pull with --forceoverwrite when conflicts are present', async () => {

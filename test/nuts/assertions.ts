@@ -13,12 +13,20 @@ import * as fg from 'fast-glob';
 import { Connection, fs } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
-import { ApexClass, ApexTestResult, Context, PullResult, SourceMember, SourceState, StatusResult } from './types';
+import { ApexClass, ApexTestResult, Context, SourceMember, SourceState, StatusResult } from './types';
 import { ExecutionLog } from './executionLog';
 import { FileTracker, countFiles } from './fileTracker';
 
 use(chaiEach);
 
+/**
+ * Assertions is a class that is designed to encapsulate common assertions we want to
+ * make during NUT testings
+ *
+ * To see debug logs for command executions set these env vars:
+ * - DEBUG=assertions:* (for logs from all nuts)
+ * - DEBUG=assertions:<filename.nut.ts> (for logs from specific nut)
+ */
 export class Assertions {
   private debug: Debugger;
   private metadataResolver: MetadataResolver;
@@ -40,6 +48,9 @@ export class Assertions {
     expect(fileHistory.changedFromPrevious, 'File to be changed').to.be.true;
   }
 
+  /**
+   * Expect all files found by globs to be changed according to the file history provided by FileTracker
+   */
   public async filesToBeChanged(globs: string[]): Promise<void> {
     const files = await this.doGlob(globs);
     const fileHistories = files.map((f) => this.fileTracker.getLatest(f).changedFromPrevious);
@@ -108,36 +119,10 @@ export class Assertions {
   }
 
   /**
-   * Expect given file to be found in the push json response
-   */
-  public async fileToBePushed(glob: string): Promise<void> {
-    await this.filesToBeUpdated([glob], 'force:source:push');
-  }
-
-  /**
    * Expect all given files to be be updated in the org
    */
   public async filesToBePushed(globs: string[]): Promise<void> {
     await this.filesToBeUpdated(globs, 'force:source:push');
-  }
-
-  /**
-   * Expect given file to be found in the pull json response
-   */
-  public fileToBePulled(result: PullResult, file: string): void {
-    const pulledFiles = result.pulledSource.map((d) => d.filePath);
-    const expectedFileFound = pulledFiles.includes(file);
-    expect(expectedFileFound, `${file} to be present in json response`).to.be.true;
-  }
-
-  /**
-   * Expect all given files to be found in the pull json response
-   */
-  public filesToBePulled(result: PullResult, files: string[]): void {
-    const filesToExpect = files.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
-    const pulledFiles = result.pulledSource.map((d) => d.filePath);
-    const everyExpectedFileFound = filesToExpect.every((f) => pulledFiles.includes(f));
-    expect(everyExpectedFileFound, 'all files to be present in json response').to.be.true;
   }
 
   /**
@@ -350,7 +335,6 @@ export class Assertions {
   }
 
   private async doGlob(globs: string[]): Promise<string[]> {
-    this.debug('------------------------');
     const files: string[] = [];
     for (const glob of globs) {
       const fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
