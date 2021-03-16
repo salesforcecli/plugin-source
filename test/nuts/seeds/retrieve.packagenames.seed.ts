@@ -32,41 +32,37 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      const retrieve = await nutshell.retrieve({ args: `--packagenames "${PACKAGE.name}"` });
-      nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-      await nutshell.expect.packagesToBeRetrieved(retrieve.result, PACKAGE.name);
+      await nutshell.retrieve({ args: `--packagenames "${PACKAGE.name}"` });
+      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      const retrieve = await nutshell.retrieve({
+      await nutshell.retrieve({
         args: `--packagenames "${PACKAGE.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
       });
-      nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-      await nutshell.expect.packagesToBeRetrieved(retrieve.result, PACKAGE.name);
-      await nutshell.expect.filesToBeRetrieved(retrieve.result, [
-        `${PACKAGE.name}/**/brandingSets/*-meta.xml`,
-        `${PACKAGE.name}/**/contentassests/*-meta.xml`,
-        `${PACKAGE.name}/**/lightningExperienceThemes/*-meta.xml`,
+      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
+      await nutshell.expect.filesToExist([
+        `${PACKAGE.name}/**/brandingSets/*`,
+        `${PACKAGE.name}/**/contentassets/*`,
+        `${PACKAGE.name}/**/lightningExperienceThemes/*`,
       ]);
     });
 
     it('should retrieve an installed package and metadata', async () => {
-      const retrieve = await nutshell.retrieve({
+      await nutshell.retrieve({
         args: `--packagenames "${PACKAGE.name}" --metadata CustomObject`,
       });
-      nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-      await nutshell.expect.packagesToBeRetrieved(retrieve.result, PACKAGE.name);
+      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
     });
 
     // This test fails because of an existing bug
     it.skip('should retrieve an installed package and manifest', async () => {
       const convert = await nutshell.convert({ args: '--sourcepath force-app --outputdir out' });
       const packageXml = path.join(convert.result.location, 'package.xml');
-      const retrieve = await nutshell.retrieve({
+      await nutshell.retrieve({
         args: `--packagenames "${PACKAGE.name}" --manifest ${packageXml}`,
       });
-      nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-      await nutshell.expect.packagesToBeRetrieved(retrieve.result, PACKAGE.name);
+      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
     });
 
     it('should throw an error if the packagenames is not valid', async () => {

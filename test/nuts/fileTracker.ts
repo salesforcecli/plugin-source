@@ -37,6 +37,14 @@ export class FileTracker {
   }
 
   /**
+   * Returns latest entry for file
+   */
+  public getLatest(file: string): FileTracker.FileHistory {
+    const history = this.files.get(file);
+    return history[history.length - 1];
+  }
+
+  /**
    * Update the file history for given file. Annotation is required since
    * it is useful for debugging/understanding a file's history
    */

@@ -59,7 +59,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should have results in source status after local file change', async () => {
-    await nutshell.modifyLocalFiles(nutshell.testMetadataFiles[0]);
+    await nutshell.modifyLocalFile(nutshell.testMetadataFiles[0]);
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusFileToHaveState(status.result, 'Local Changed', nutshell.testMetadataFiles[0]);
@@ -89,7 +89,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should fail when conflicts are present', async () => {
     const quickAction = await nutshell.modifyRemoteFile();
-    await nutshell.modifyLocalFiles(quickAction);
+    await nutshell.modifyLocalFile(quickAction);
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
@@ -103,7 +103,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should push with --forceoverwrite when conflicts are present', async () => {
     const quickAction = await nutshell.modifyRemoteFile();
-    await nutshell.modifyLocalFiles(quickAction);
+    await nutshell.modifyLocalFile(quickAction);
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
@@ -114,7 +114,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should pull with --forceoverwrite when conflicts are present', async () => {
     const quickAction = await nutshell.modifyRemoteFile();
-    await nutshell.modifyLocalFiles(quickAction);
+    await nutshell.modifyLocalFile(quickAction);
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);

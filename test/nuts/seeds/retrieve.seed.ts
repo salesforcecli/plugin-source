@@ -22,6 +22,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       context: __filename,
     });
+    await nutshell.trackFiles(...nutshell.packagePaths);
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 
@@ -32,12 +33,12 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--manifest flag', () => {
     for (const testCase of REPO.retrieve.manifest) {
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
-        const convert = await nutshell.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir out` });
-        const packageXml = path.join(convert.result.location, 'package.xml');
+        await nutshell.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir out` });
+        const packageXml = path.join('out', 'package.xml');
 
-        const retrieve = await nutshell.retrieve({ args: `--manifest ${packageXml}` });
-        nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-        await nutshell.expect.filesToBeRetrieved(retrieve.result, testCase.toVerify);
+        await nutshell.modifyLocalGlobs(testCase.toVerify);
+        await nutshell.retrieve({ args: `--manifest ${packageXml}` });
+        await nutshell.expect.filesToBeChanged(testCase.toVerify);
       });
     }
 
@@ -50,9 +51,9 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--metadata flag', () => {
     for (const testCase of REPO.retrieve.metadata) {
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
-        const retrieve = await nutshell.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
-        nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-        await nutshell.expect.filesToBeRetrieved(retrieve.result, testCase.toVerify);
+        await nutshell.modifyLocalGlobs(testCase.toVerify);
+        await nutshell.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
+        await nutshell.expect.filesToBeChanged(testCase.toVerify);
       });
     }
 
@@ -65,9 +66,9 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.retrieve.sourcepath) {
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
-        const retrieve = await nutshell.retrieve({ args: `--sourcepath ${testCase.toRetrieve}` });
-        nutshell.expect.retrieveJsonToBeValid(retrieve.result);
-        await nutshell.expect.filesToBeRetrieved(retrieve.result, testCase.toVerify);
+        await nutshell.modifyLocalGlobs(testCase.toVerify);
+        await nutshell.retrieve({ args: `--sourcepath ${testCase.toRetrieve}` });
+        await nutshell.expect.filesToBeChanged(testCase.toVerify);
       });
     }
 

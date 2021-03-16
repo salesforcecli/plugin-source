@@ -14,7 +14,7 @@ import * as fg from 'fast-glob';
 import { Connection, fs } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
-import { PullResult, RetrieveResult, SourceInfo, SourceState, StatusResult } from './types';
+import { PullResult, SourceInfo, SourceState, StatusResult } from './types';
 import { ExecutionLog } from './executionLog';
 import { FileTracker, countFiles } from './fileTracker';
 
@@ -58,8 +58,15 @@ export class Assertions {
    * Expect given file to be changed according to the file history provided by FileTracker
    */
   public fileToBeChanged(file: string): void {
-    const fileHistory = this.fileTracker.get(file);
-    expect(fileHistory[fileHistory.length - 1].changedFromPrevious, 'File to be changed').to.be.true;
+    const fileHistory = this.fileTracker.getLatest(file);
+    expect(fileHistory.changedFromPrevious, 'File to be changed').to.be.true;
+  }
+
+  public async filesToBeChanged(globs: string[]): Promise<void> {
+    const files = await this.doGlob(globs);
+    const fileHistories = files.map((f) => this.fileTracker.getLatest(f).changedFromPrevious);
+    const allChanged = fileHistories.every((f) => !!f);
+    expect(allChanged, 'all files to be changed').to.be.true;
   }
 
   /**
@@ -85,13 +92,6 @@ export class Assertions {
   }
 
   /**
-   * Finds all files in project based on the provided globs and expects them to exist in the retrieve json response
-   */
-  public async filesToBeRetrieved(result: RetrieveResult, globs: string[]): Promise<void> {
-    await this.filesToBePresent(result.inboundFiles, globs);
-  }
-
-  /**
    * Expects given file to exist
    */
   public async fileToExist(file: string): Promise<void> {
@@ -101,35 +101,39 @@ export class Assertions {
   }
 
   /**
+   * Expects given globs to return files
+   */
+  public async filesToExist(globs: string[]): Promise<void> {
+    for (const glob of globs) {
+      const results = await this.doGlob([glob]);
+      expect(results.length, `expect files to be found by glob: ${glob}`).to.be.greaterThan(0);
+    }
+  }
+
+  /**
    * Expects files to exist in convert output directory
    */
   public async filesToBeConverted(directory: string, globs: string[]): Promise<void> {
-    const convertedFiles: string[] = [];
-    for (const glob of globs) {
-      const fullGlob = [directory, glob].join('/');
-      const globResults = await fg(fullGlob);
-      const files = globResults.map((f) => path.basename(f));
-      convertedFiles.push(...files);
-    }
+    const fullGlobs = globs.map((glob) => [directory, glob].join('/'));
+    const convertedFiles = await fg(fullGlobs);
     expect(convertedFiles.length, 'files to be converted').to.be.greaterThan(0);
   }
 
   /**
-   * Expect package to be present in json response and for the retrieved package to contain some files
+   * Expect the retrieved package to exist and contain some files
    */
-  public async packagesToBeRetrieved(result: RetrieveResult, name: string): Promise<void> {
-    const retrievedPkg = result.packages.find((pkg) => pkg.name === name);
-    expect(retrievedPkg, 'package to be returned in json response').to.not.be.undefined;
-    expect(retrievedPkg, 'package to have name property').to.have.property('name');
-    expect(retrievedPkg, 'package to have path property').to.have.property('path');
-    await this.directoryToHaveSomeFiles(retrievedPkg.path);
+  public async packagesToBeRetrieved(pkgNames: string[]): Promise<void> {
+    for (const pkgName of pkgNames) {
+      await this.fileToExist(pkgName);
+      await this.directoryToHaveSomeFiles(pkgName);
+    }
   }
 
   /**
    * Expect given file to be found in the push json response
    */
-  public async fileToBePushed(file: string): Promise<void> {
-    await this.filesToBeUpdated([file], 'force:source:push');
+  public async fileToBePushed(glob: string): Promise<void> {
+    await this.filesToBeUpdated([glob], 'force:source:push');
   }
 
   /**
@@ -210,23 +214,6 @@ export class Assertions {
   }
 
   /**
-   * Expect source:retrieve json response to be valid
-   */
-  public retrieveJsonToBeValid(result: RetrieveResult): void {
-    expect(result).to.have.property('inboundFiles');
-    expect(result.inboundFiles, 'all retrieved source to have expected keys').to.each.have.all.keys(
-      'filePath',
-      'fullName',
-      'type',
-      'state'
-    );
-
-    if (result.packages) {
-      expect(result.packages, 'all retrieved packages to have expected keys').to.each.have.all.keys('name', 'path');
-    }
-  }
-
-  /**
    * Expect source:pull json response to be valid
    */
   public pullJsonToBeValid(result: PullResult): void {
@@ -254,6 +241,9 @@ export class Assertions {
     expect(result.name, `error name to equal ${name}`).to.equal(name);
   }
 
+  /**
+   * Expect no apex tests to be run
+   */
   public async noApexTestsToBeRun(): Promise<void> {
     const executionTimestamp = this.executionLog.getLatestTimestamp('force:source:deploy');
     const testResults = await this.retrieveApexTestResults();
@@ -261,6 +251,9 @@ export class Assertions {
     expect(testsRunAfterTimestamp.length, 'no tests to be run during deploy').to.equal(0);
   }
 
+  /**
+   * Expect some apex tests to be run
+   */
   public async apexTestsToBeRun(): Promise<void> {
     const executionTimestamp = this.executionLog.getLatestTimestamp('force:source:deploy');
     const testResults = await this.retrieveApexTestResults();
@@ -268,6 +261,9 @@ export class Assertions {
     expect(testsRunAfterTimestamp.length, 'tests to be run during deploy').to.be.greaterThan(0);
   }
 
+  /**
+   * Expect apex tests owned by the provided classes to be run
+   */
   public async specificApexTestsToBeRun(classNames: string[]): Promise<void> {
     const apexClasses = await this.retrieveApexClasses(classNames);
     const classIds = apexClasses.map((c) => c.Id);
@@ -311,35 +307,12 @@ export class Assertions {
   }
 
   /**
-   * Expect all files in given directories to be found in the source:retrieve json response
-   */
-  public async allMetaXmlsToBeRetrieved(result: RetrieveResult, ...directories: string[]): Promise<void> {
-    await this.allMetaXmlsToBePresent(result.inboundFiles, directories);
-  }
-
-  /**
    * Expect all files in given directories to be found in the json response
    */
   private async allMetaXmlsToBePresent(results: SourceInfo[], directories: string[]): Promise<void> {
     const expectedFileCount = await countFiles(directories, /-meta.xml$/);
     const actualFileCount = results.filter((d) => d.filePath.endsWith('-meta.xml')).length;
     expect(actualFileCount, 'all meta.xml files to be present in json response').to.equal(expectedFileCount);
-  }
-
-  private async filesToBePresent(results: SourceInfo[], globs: string[]): Promise<void> {
-    const filesToExpect: string[] = [];
-    for (const glob of globs) {
-      const fullGlob = [this.projectDir, glob].join('/');
-      const globResults = await fg(fullGlob);
-      filesToExpect.push(...globResults);
-    }
-
-    const truncatedFilesToExpect = filesToExpect.map((f) => f.replace(`${this.projectDir}${path.sep}`, ''));
-    const actualFiles = results.map((d) => d.filePath);
-
-    const everyExpectedFileFound = truncatedFilesToExpect.every((f) => actualFiles.includes(f));
-    expect(truncatedFilesToExpect.length).to.be.greaterThan(0);
-    expect(everyExpectedFileFound, 'All expected files to be present in the response').to.be.true;
   }
 
   private async filesToBeUpdated(globs: string[], command: string): Promise<void> {
@@ -380,14 +353,7 @@ export class Assertions {
     // is deployed. So the sake of simplicity, we filter those out before checking that all
     // metadata has been updated by the deploy.
     const exceptions = ['CustomField'];
-    const filesToExpect: string[] = [];
-    for (const glob of globs) {
-      const fullGlob = glob.includes(this.projectDir) ? glob : [this.projectDir, glob].join('/');
-      this.debug(`Finding files using glob: ${fullGlob}`);
-      const globResults = await fg(fullGlob);
-      this.debug('Found: %O', globResults);
-      filesToExpect.push(...globResults);
-    }
+    const filesToExpect = await this.doGlob(globs);
 
     const cache = new Map<string, SObjectRecord[]>();
     const records = new Map<string, SObjectRecord>();
@@ -430,5 +396,17 @@ export class Assertions {
     const result = await this.connection.tooling.query<ApexClass>(query, { autoFetch: true, maxFetch: 50000 });
     const apexClasses = classNames ? result.records.filter((r) => classNames.includes(r.Name)) : result.records;
     return apexClasses;
+  }
+
+  private async doGlob(globs: string[]): Promise<string[]> {
+    const files: string[] = [];
+    for (const glob of globs) {
+      const fullGlob = glob.includes(this.projectDir) ? glob : [this.projectDir, glob].join('/');
+      this.debug(`Finding files using glob: ${fullGlob}`);
+      const globResults = await fg(fullGlob);
+      this.debug('Found: %O', globResults);
+      files.push(...globResults);
+    }
+    return files;
   }
 }

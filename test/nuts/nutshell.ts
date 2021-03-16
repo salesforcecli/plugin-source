@@ -10,6 +10,7 @@
 import * as path from 'path';
 import * as os from 'os';
 import { copyFile } from 'fs/promises';
+import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Env } from '@salesforce/kit';
@@ -170,7 +171,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   /**
    * Adds given files to FileTracker for tracking
    */
-  public async trackFile(...files: string[]): Promise<void> {
+  public async trackFiles(...files: string[]): Promise<void> {
     for (const file of files) {
       await this.fileTracker.track(file);
     }
@@ -231,16 +232,27 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
-   * Modify given files by inserting a new line at the end of the file
+   * Modify files found by given globs
    */
-  public async modifyLocalFiles(...files: string[]): Promise<void> {
-    for (const file of files) {
-      const filePath = path.join(this.session.project.dir, file);
-      let contents = await fs.readFile(filePath, 'UTF-8');
-      contents += os.EOL;
-      await fs.writeFile(filePath, contents);
-      await this.fileTracker.update(file, 'modified file');
+  public async modifyLocalGlobs(globs: string[]): Promise<void> {
+    const fullGlobs = globs.map((g) =>
+      g.includes(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
+    );
+    const allFiles = await fg(fullGlobs);
+
+    for (const file of allFiles) {
+      await this.modifyLocalFile(file);
     }
+  }
+
+  /**
+   * Modify file by inserting a new line at the end of the file
+   */
+  public async modifyLocalFile(file: string): Promise<void> {
+    let contents = await fs.readFile(file, 'UTF-8');
+    contents += os.EOL;
+    await fs.writeFile(file, contents);
+    await this.fileTracker.update(file, 'modified file');
   }
 
   /**
@@ -276,7 +288,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
         await fs.mkdirp(path.dirname(dest));
         await copyFile(src, dest);
       } finally {
-        await this.trackFile(file);
+        await this.trackFiles(file);
       }
     }
   }
