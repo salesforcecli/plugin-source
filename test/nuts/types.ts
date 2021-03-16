@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { Connection } from '@salesforce/core';
 import { AnyJson, JsonMap } from '@salesforce/ts-types';
 
 /**
@@ -133,4 +134,28 @@ export type ConvertResult = {
 export type Result<T = AnyJson> = JsonMap & {
   status: number;
   result: T;
+};
+
+export type Context = {
+  projectDir: string;
+  packagePaths: string[];
+  connection: Connection;
+  nut: string;
+};
+
+export type ApexTestResult = {
+  TestTimestamp: string;
+  ApexClassId: string;
+};
+
+export type ApexClass = {
+  Id: string;
+  Name: string;
+};
+
+export type SourceMember = {
+  Id: string;
+  MemberName: string;
+  MemberType: string;
+  RevisionCounter: number;
 };

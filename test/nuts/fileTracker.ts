@@ -8,6 +8,7 @@
 import * as path from 'path';
 import { fs } from '@salesforce/core';
 import { Nullable } from '@salesforce/ts-types';
+import { Context } from './types';
 
 /**
  * This class maintains a map of tacked files. This is particularly useful
@@ -15,7 +16,7 @@ import { Nullable } from '@salesforce/ts-types';
  */
 export class FileTracker {
   private files = new Map<string, FileTracker.FileHistory[]>();
-  public constructor(private projectDir: string) {}
+  public constructor(private context: Context) {}
 
   /**
    * Add a file to be tracked
@@ -89,7 +90,7 @@ export class FileTracker {
   }
 
   private getFullPath(file: string): string {
-    return file.includes(this.projectDir) ? file : path.join(this.projectDir, file);
+    return file.includes(this.context.projectDir) ? file : path.join(this.context.projectDir, file);
   }
 }
 

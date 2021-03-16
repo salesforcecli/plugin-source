@@ -8,49 +8,38 @@
 import * as path from 'path';
 import { expect, use } from 'chai';
 import * as chaiEach from 'chai-each';
-import { findKey } from '@salesforce/kit';
 import { JsonMap } from '@salesforce/ts-types';
 import * as fg from 'fast-glob';
 import { Connection, fs } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
-import { PullResult, SourceInfo, SourceState, StatusResult } from './types';
+import {
+  ApexClass,
+  ApexTestResult,
+  Context,
+  PullResult,
+  SourceInfo,
+  SourceMember,
+  SourceState,
+  StatusResult,
+} from './types';
 import { ExecutionLog } from './executionLog';
 import { FileTracker, countFiles } from './fileTracker';
 
 use(chaiEach);
 
-type SObjectRecord = {
-  attributes: {
-    type: string;
-    url: string;
-  };
-  Id: string;
-  LastModifiedDate: string;
-};
-
-type ApexTestResult = {
-  TestTimestamp: string;
-  ApexClassId: string;
-};
-
-type ApexClass = {
-  Id: string;
-  Name: string;
-};
-
 export class Assertions {
   private debug: Debugger;
   private metadataResolver: MetadataResolver;
+  private projectDir: string;
+  private packagePaths: string[];
+  private connection: Connection;
 
-  public constructor(
-    private projectDir: string,
-    private fileTracker: FileTracker,
-    private packagePaths: string[],
-    private connection: Connection,
-    private executionLog: ExecutionLog
-  ) {
-    this.debug = debug('assertions');
+  public constructor(context: Context, private executionLog: ExecutionLog, private fileTracker: FileTracker) {
+    this.projectDir = context.projectDir;
+    this.packagePaths = context.packagePaths;
+    this.connection = context.connection;
+    this.debug = debug(`assertions:${context.nut}`);
     this.metadataResolver = new MetadataResolver();
   }
 
@@ -316,73 +305,77 @@ export class Assertions {
   }
 
   private async filesToBeUpdated(globs: string[], command: string): Promise<void> {
-    const executionTimestamp = this.executionLog.getLatestTimestamp(command);
-    const assertionMessage = `expect all metadata to have LastModifiedDate later than ${executionTimestamp.toString()}`;
-    this.debug(assertionMessage);
+    const { sourceMembers } = this.executionLog.getLatest(command);
+    const latestSourceMembers = await this.retrieveSourceMembers(globs);
 
-    const records = await this.retrieveSObjectsBasedOnGlobs(globs);
-    this.debug('Found SObjects: %O', records);
-    const allRecordsUpdated = records.every((record) => new Date(record.LastModifiedDate) > executionTimestamp);
-    expect(allRecordsUpdated, assertionMessage).to.be.true;
+    for (const sourceMember of latestSourceMembers) {
+      const assertionMessage = `expect RevisionCounter for ${sourceMember.MemberName} (${sourceMember.MemberType}) to be incremented`;
+      this.debug(assertionMessage);
+      const preCommandExecution = sourceMembers.find(
+        (s) => s.MemberType === sourceMember.MemberType && s.MemberName === sourceMember.MemberName
+      ) || { RevisionCounter: 0 };
+      expect(sourceMember.RevisionCounter, assertionMessage).to.be.greaterThan(preCommandExecution.RevisionCounter);
+    }
   }
 
   private async filesToNotBeUpdated(globs: string[], command: string): Promise<void> {
-    const executionTimestamp = this.executionLog.getLatestTimestamp(command);
-    const assertionMessage = `expect all metadata to have LastModifiedDate earlier than ${executionTimestamp.toString()}`;
-    this.debug(assertionMessage);
-
-    const records = await this.retrieveSObjectsBasedOnGlobs(globs);
-    this.debug('Found SObjects: %O', records);
-    const allRecordsNotUpdated = records.every((record) => new Date(record.LastModifiedDate) < executionTimestamp);
-    expect(allRecordsNotUpdated, assertionMessage).to.be.true;
+    const { sourceMembers } = this.executionLog.getLatest(command);
+    const latestSourceMembers = await this.retrieveSourceMembers(globs);
+    if (!latestSourceMembers.length) {
+      // Not finding any source members based on the globs means that there is no SourceMember for those files
+      // which we're assuming means that it hasn't been deployed to the org yet.
+      // That's acceptable for this test since we're testing that metadata hasn't been deployed.
+      expect(latestSourceMembers.length).to.equal(0);
+    } else {
+      for (const sourceMember of latestSourceMembers) {
+        const assertionMessage = `expect RevisionCounter for ${sourceMember.MemberName} (${sourceMember.MemberType}) to NOT be incremented`;
+        this.debug(assertionMessage);
+        const preCommandExecution = sourceMembers.find(
+          (s) => s.MemberType === sourceMember.MemberType && s.MemberName === sourceMember.MemberName
+        ) || { RevisionCounter: 0 };
+        expect(sourceMember.RevisionCounter, assertionMessage).to.equal(preCommandExecution.RevisionCounter);
+      }
+    }
   }
 
   private async someFilesToNotBeUpdated(globs: string[], command: string): Promise<void> {
-    const executionTimestamp = this.executionLog.getLatestTimestamp(command);
-    const assertionMessage = `expect all metadata to have LastModifiedDate earlier than ${executionTimestamp.toString()}`;
-    this.debug(assertionMessage);
-
-    const records = await this.retrieveSObjectsBasedOnGlobs(globs);
-    this.debug('Found SObjects: %O', records);
-    const allRecordsNotUpdated = records.some((record) => new Date(record['LastModifiedDate']) < executionTimestamp);
-    expect(allRecordsNotUpdated, assertionMessage).to.be.true;
+    const { sourceMembers } = this.executionLog.getLatest(command);
+    const latestSourceMembers = await this.retrieveSourceMembers(globs);
+    const someAreNotUpdated = latestSourceMembers.some((sourceMember) => {
+      const preCommandExecution = sourceMembers.find(
+        (s) => s.MemberType === sourceMember.MemberType && s.MemberName === sourceMember.MemberName
+      ) || { RevisionCounter: 0 };
+      return sourceMember.RevisionCounter === preCommandExecution.RevisionCounter;
+    });
+    expect(someAreNotUpdated, 'expect some SourceMembers to not be updated').to.be.true;
   }
 
-  private async retrieveSObjectsBasedOnGlobs(globs: string[]): Promise<SObjectRecord[]> {
-    // the LastModifiedDate field isn't always updated for CustomFields when its CustomObject
-    // is deployed. So the sake of simplicity, we filter those out before checking that all
-    // metadata has been updated by the deploy.
-    const exceptions = ['CustomField'];
+  private async retrieveSourceMembers(globs: string[]): Promise<SourceMember[]> {
+    const query = 'SELECT Id,MemberName,MemberType,RevisionCounter FROM SourceMember';
+    const result = await this.connection.tooling.query<SourceMember>(query, {
+      autoFetch: true,
+      maxFetch: 50000,
+    });
     const filesToExpect = await this.doGlob(globs);
-
-    const cache = new Map<string, SObjectRecord[]>();
-    const records = new Map<string, SObjectRecord>();
-
+    const membersMap = new Map<string, Set<string>>();
     for (const file of filesToExpect) {
       const components = this.metadataResolver.getComponentsFromPath(file);
-      const metadataType = components[0].type.name;
-      const metadataName = components[0].fullName;
-      if (records.has(metadataName)) continue;
-      if (!cache.has(metadataType)) {
-        try {
-          const describe = await this.connection.tooling.describe(metadataType);
-          const fields = describe.fields.map((f) => f.name).join(',');
-          const query = `SELECT ${fields} FROM ${components[0].type.name}`;
-          const result = await this.connection.tooling.query<SObjectRecord>(query, {
-            autoFetch: true,
-            maxFetch: 50000,
-          });
-          cache.set(metadataType, result.records);
-        } catch {
-          // do nothing
+      for (const component of components) {
+        const metadataType = component.type.name;
+        const metadataName = component.fullName;
+        if (membersMap.has(metadataType)) {
+          const updated = membersMap.get(metadataType).add(metadataName);
+          membersMap.set(metadataType, updated);
+        } else {
+          membersMap.set(metadataType, new Set([metadataName]));
         }
       }
-
-      const recordsForType = cache.get(metadataType) || [];
-      const match = recordsForType.find((record) => findKey(record, (v: string) => metadataName.includes(v)));
-      if (match) records.set(metadataName, match);
     }
-    return [...records.values()].filter((r) => !exceptions.includes(r.attributes.type));
+    return result.records.filter((sourceMember) => {
+      return (
+        membersMap.has(sourceMember.MemberType) && membersMap.get(sourceMember.MemberType).has(sourceMember.MemberName)
+      );
+    });
   }
 
   private async retrieveApexTestResults(): Promise<ApexTestResult[]> {
@@ -407,6 +400,7 @@ export class Assertions {
       this.debug('Found: %O', globResults);
       files.push(...globResults);
     }
+    expect(files.length, 'globs to return files').to.be.greaterThan(0);
     return files;
   }
 }

@@ -20,7 +20,7 @@ context('Deploy testlevel NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => 
     nutshell = await Nutshell.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
-      context: __filename,
+      nut: __filename,
     });
   });
 

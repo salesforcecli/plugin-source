@@ -20,7 +20,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     nutshell = await Nutshell.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
-      context: __filename,
+      nut: __filename,
     });
     await nutshell.trackFiles(...nutshell.packagePaths);
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });

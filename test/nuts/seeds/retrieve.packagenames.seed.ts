@@ -20,7 +20,7 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
     nutshell = await Nutshell.create({
       repository: 'https://github.com/mdonnalley/simple-mpd-project.git',
       executable: EXECUTABLE,
-      context: __filename,
+      nut: __filename,
     });
     nutshell.installPackage(PACKAGE.id);
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });

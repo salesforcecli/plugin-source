@@ -17,7 +17,7 @@ context.skip('MPD NUTs [exec: %EXECUTABLE%]', () => {
     nutshell = await Nutshell.create({
       repository: 'https://github.com/amphro/simple-mpd-project.git',
       executable: EXECUTABLE,
-      context: __filename,
+      nut: __filename,
     });
   });
 

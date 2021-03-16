@@ -73,13 +73,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   private username: string;
   private orgless: boolean;
   private executionLog: ExecutionLog;
+  private nut: string;
 
   public constructor(options: Nutshell.Options) {
     super(options);
     this.executable = options.executable;
     this.repository = options.repository;
     this.orgless = options.orgless;
-    this.debug = debug(`nutshell:${path.basename(options.context)}`);
+    this.nut = path.basename(options.nut);
+    this.debug = debug(`nutshell:${this.nut}`);
   }
 
   /**
@@ -249,10 +251,11 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    * Modify file by inserting a new line at the end of the file
    */
   public async modifyLocalFile(file: string): Promise<void> {
-    let contents = await fs.readFile(file, 'UTF-8');
+    const fullPath = file.includes(this.session.project.dir) ? file : path.join(this.session.project.dir, file);
+    let contents = await fs.readFile(fullPath, 'UTF-8');
     contents += os.EOL;
-    await fs.writeFile(file, contents);
-    await this.fileTracker.update(file, 'modified file');
+    await fs.writeFile(fullPath, contents);
+    await this.fileTracker.update(fullPath, 'modified file');
   }
 
   /**
@@ -311,15 +314,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       this.packageGlobs = this.packages.map((p) => `${p.path}/**/*`);
       this.username = this.getDefaultUsername();
       this.connection = await this.createConnection();
-      this.fileTracker = new FileTracker(this.session.project.dir);
-      this.executionLog = new ExecutionLog();
-      this.expect = new Assertions(
-        this.session.project.dir,
-        this.fileTracker,
-        this.packagePaths,
-        this.connection,
-        this.executionLog
-      );
+      const context = {
+        connection: this.connection,
+        packagePaths: this.packagePaths,
+        projectDir: this.session.project.dir,
+        nut: this.nut,
+      };
+      this.fileTracker = new FileTracker(context);
+      this.executionLog = new ExecutionLog(context);
+      this.expect = new Assertions(context, this.executionLog, this.fileTracker);
       this.testMetadataFolder = path.join(__dirname, 'metadata');
       this.testMetadataFiles = (await traverseForFiles(this.testMetadataFolder))
         .filter((f) => !f.endsWith('.DS_Store'))
@@ -338,7 +341,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       const command = [cmd, args, '--json'].join(' ');
       this.debug(`${command} (expecting exit code: ${exitCode})`);
       await this.fileTracker.updateAll(`PRE: ${command}`);
-      this.executionLog.add(command);
+      await this.executionLog.add(command);
       const result = execCmd<T>(command, { ensureExitCode: exitCode });
       await this.fileTracker.updateAll(`POST: ${command}`);
 
@@ -407,7 +410,7 @@ export namespace Nutshell {
   export type Options = {
     readonly executable?: string;
     readonly repository: string;
-    readonly context: string;
+    readonly nut: string;
     readonly orgless?: boolean;
   };
 

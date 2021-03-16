@@ -19,7 +19,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     nutshell = await Nutshell.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
-      context: __filename,
+      nut: __filename,
     });
   });
 
@@ -35,7 +35,7 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should push the entire project', async () => {
     await nutshell.push();
-    await nutshell.expect.filesToBePushed(nutshell.testMetadataFiles);
+    await nutshell.expect.filesToBePushed(nutshell.packageGlobs);
 
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
