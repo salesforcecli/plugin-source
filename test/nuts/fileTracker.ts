@@ -108,22 +108,14 @@ export namespace FileTracker {
 /**
  * Returns all files in directory that match the filter
  */
-export async function traverseForFiles(
-  dirPath: string,
-  regexFilter: Nullable<RegExp> = null,
-  allFiles: string[] = []
-): Promise<string[]> {
+export async function traverseForFiles(dirPath: string, regexFilter = /./, allFiles: string[] = []): Promise<string[]> {
   const files = await fs.readdir(dirPath);
 
   for (const file of files) {
     const filePath = path.join(dirPath, file);
     if (fs.statSync(filePath).isDirectory()) {
       allFiles = await traverseForFiles(filePath, regexFilter, allFiles);
-    } else if (regexFilter) {
-      if (regexFilter.test(file)) {
-        allFiles.push(path.join(dirPath, file));
-      }
-    } else {
+    } else if (regexFilter.test(file)) {
       allFiles.push(path.join(dirPath, file));
     }
   }
@@ -133,7 +125,7 @@ export async function traverseForFiles(
 /**
  * Returns the number of files found in directories that match the filter
  */
-export async function countFiles(directories: string[], regexFilter: Nullable<RegExp> = null): Promise<number> {
+export async function countFiles(directories: string[], regexFilter = /./): Promise<number> {
   let fileCount = 0;
   for (const dir of directories) {
     fileCount += (await traverseForFiles(dir, regexFilter)).length;
