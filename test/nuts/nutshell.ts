@@ -238,7 +238,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    */
   public async modifyLocalGlobs(globs: string[]): Promise<void> {
     const fullGlobs = globs.map((g) =>
-      g.includes(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
+      g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
     );
     const allFiles = await fg(fullGlobs);
 
@@ -251,7 +251,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    * Modify file by inserting a new line at the end of the file
    */
   public async modifyLocalFile(file: string): Promise<void> {
-    const fullPath = file.includes(this.session.project.dir) ? file : path.join(this.session.project.dir, file);
+    const fullPath = file.startsWith(this.session.project.dir) ? file : path.join(this.session.project.dir, file);
     let contents = await fs.readFile(fullPath, 'UTF-8');
     contents += os.EOL;
     await fs.writeFile(fullPath, contents);
@@ -316,7 +316,6 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       this.connection = await this.createConnection();
       const context = {
         connection: this.connection,
-        packagePaths: this.packagePaths,
         projectDir: this.session.project.dir,
         nut: this.nut,
       };

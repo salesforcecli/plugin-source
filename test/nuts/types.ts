@@ -138,7 +138,6 @@ export type Result<T = AnyJson> = JsonMap & {
 
 export type Context = {
   projectDir: string;
-  packagePaths: string[];
   connection: Connection;
   nut: string;
 };

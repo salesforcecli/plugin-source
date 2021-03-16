@@ -77,10 +77,8 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     nutshell.expect.statusJsonToBeValid(statusPre.result);
     nutshell.expect.statusToOnlyHaveState(statusPre.result, 'Remote Changed');
 
-    const pull = await nutshell.pull();
+    await nutshell.pull();
     nutshell.expect.fileToBeChanged(quickAction);
-    nutshell.expect.pullJsonToBeValid(pull.result);
-    nutshell.expect.fileToBePulled(pull.result, quickAction);
 
     const statusPost = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(statusPost.result);
@@ -119,9 +117,8 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToOnlyHaveConflicts(status.result);
 
-    const pull = await nutshell.pull({ args: '--forceoverwrite' });
-    nutshell.expect.pullJsonToBeValid(pull.result);
-    nutshell.expect.fileToBePulled(pull.result, quickAction);
+    await nutshell.pull({ args: '--forceoverwrite' });
+    nutshell.expect.fileToBeChanged(quickAction);
   });
 
   it('should show all files as Remote Add when source tracking is cleared and source files are removed', async () => {
@@ -135,10 +132,9 @@ context('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   it('should pull the entire project', async () => {
-    const pull = await nutshell.pull();
-    await nutshell.expect.allMetaXmlsToBePulled(pull.result);
-    nutshell.expect.pullJsonToBeValid(pull.result);
-
+    await nutshell.pull();
+    // Only expect the first package to exist in this scenario since we deleted all the source files
+    await nutshell.expect.filesToExist([nutshell.packageGlobs[0]]);
     const status = await nutshell.status();
     nutshell.expect.statusJsonToBeValid(status.result);
     nutshell.expect.statusToBeEmpty(status.result);

@@ -13,16 +13,7 @@ import * as fg from 'fast-glob';
 import { Connection, fs } from '@salesforce/core';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
-import {
-  ApexClass,
-  ApexTestResult,
-  Context,
-  PullResult,
-  SourceInfo,
-  SourceMember,
-  SourceState,
-  StatusResult,
-} from './types';
+import { ApexClass, ApexTestResult, Context, PullResult, SourceMember, SourceState, StatusResult } from './types';
 import { ExecutionLog } from './executionLog';
 import { FileTracker, countFiles } from './fileTracker';
 
@@ -32,12 +23,10 @@ export class Assertions {
   private debug: Debugger;
   private metadataResolver: MetadataResolver;
   private projectDir: string;
-  private packagePaths: string[];
   private connection: Connection;
 
   public constructor(context: Context, private executionLog: ExecutionLog, private fileTracker: FileTracker) {
     this.projectDir = context.projectDir;
-    this.packagePaths = context.packagePaths;
     this.connection = context.connection;
     this.debug = debug(`assertions:${context.nut}`);
     this.metadataResolver = new MetadataResolver();
@@ -203,19 +192,6 @@ export class Assertions {
   }
 
   /**
-   * Expect source:pull json response to be valid
-   */
-  public pullJsonToBeValid(result: PullResult): void {
-    expect(result).to.have.property('pulledSource');
-    expect(result.pulledSource, 'all pulled source to have expected keys').to.each.have.all.keys(
-      'filePath',
-      'fullName',
-      'type',
-      'state'
-    );
-  }
-
-  /**
    * Expect source:status json response to be valid
    */
   public statusJsonToBeValid(result: StatusResult): void {
@@ -288,29 +264,12 @@ export class Assertions {
     expect(result[prop], `${prop} to have value that does not equal ${value.toString()}`).to.not.equal(value);
   }
 
-  /**
-   * Expect all files in all packages to be found in the source:pull json response
-   */
-  public async allMetaXmlsToBePulled(result: PullResult): Promise<void> {
-    await this.allMetaXmlsToBePresent(result.pulledSource, this.packagePaths);
-  }
-
-  /**
-   * Expect all files in given directories to be found in the json response
-   */
-  private async allMetaXmlsToBePresent(results: SourceInfo[], directories: string[]): Promise<void> {
-    const expectedFileCount = await countFiles(directories, /-meta.xml$/);
-    const actualFileCount = results.filter((d) => d.filePath.endsWith('-meta.xml')).length;
-    expect(actualFileCount, 'all meta.xml files to be present in json response').to.equal(expectedFileCount);
-  }
-
   private async filesToBeUpdated(globs: string[], command: string): Promise<void> {
     const { sourceMembers } = this.executionLog.getLatest(command);
     const latestSourceMembers = await this.retrieveSourceMembers(globs);
 
     for (const sourceMember of latestSourceMembers) {
       const assertionMessage = `expect RevisionCounter for ${sourceMember.MemberName} (${sourceMember.MemberType}) to be incremented`;
-      this.debug(assertionMessage);
       const preCommandExecution = sourceMembers.find(
         (s) => s.MemberType === sourceMember.MemberType && s.MemberName === sourceMember.MemberName
       ) || { RevisionCounter: 0 };
@@ -329,7 +288,6 @@ export class Assertions {
     } else {
       for (const sourceMember of latestSourceMembers) {
         const assertionMessage = `expect RevisionCounter for ${sourceMember.MemberName} (${sourceMember.MemberType}) to NOT be incremented`;
-        this.debug(assertionMessage);
         const preCommandExecution = sourceMembers.find(
           (s) => s.MemberType === sourceMember.MemberType && s.MemberName === sourceMember.MemberName
         ) || { RevisionCounter: 0 };
@@ -392,9 +350,10 @@ export class Assertions {
   }
 
   private async doGlob(globs: string[]): Promise<string[]> {
+    this.debug('------------------------');
     const files: string[] = [];
     for (const glob of globs) {
-      const fullGlob = glob.includes(this.projectDir) ? glob : [this.projectDir, glob].join('/');
+      const fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
       this.debug(`Finding files using glob: ${fullGlob}`);
       const globResults = await fg(fullGlob);
       this.debug('Found: %O', globResults);
