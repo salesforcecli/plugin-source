@@ -103,12 +103,35 @@ export class Assertions {
   }
 
   /**
+   * Expects given globs to NOT return files
+   */
+  public async filesToNotExist(globs: string[]): Promise<void> {
+    for (const glob of globs) {
+      const results = await this.doGlob([glob], false);
+      expect(results.length, `expect no files to be found by glob: ${glob}`).to.equal(0);
+    }
+  }
+
+  /**
    * Expects files to exist in convert output directory
    */
   public async filesToBeConverted(directory: string, globs: string[]): Promise<void> {
     const fullGlobs = globs.map((glob) => [directory, glob].join('/'));
     const convertedFiles = await fg(fullGlobs);
     expect(convertedFiles.length, 'files to be converted').to.be.greaterThan(0);
+  }
+
+  /**
+   * Expects given globs to return files
+   */
+  public async filesToNotContainString(glob: string, ...strings: string[]): Promise<void> {
+    const files = await this.doGlob([glob]);
+    for (const file of files) {
+      const contents = await fs.readFile(file, 'UTF-8');
+      for (const str of strings) {
+        expect(contents, `expect ${file} to not include ${str}`).to.not.include(str);
+      }
+    }
   }
 
   /**
@@ -330,7 +353,7 @@ export class Assertions {
     return apexClasses;
   }
 
-  private async doGlob(globs: string[]): Promise<string[]> {
+  private async doGlob(globs: string[], assert = true): Promise<string[]> {
     const files: string[] = [];
     for (const glob of globs) {
       const fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
@@ -339,7 +362,7 @@ export class Assertions {
       this.debug('Found: %O', globResults);
       files.push(...globResults);
     }
-    expect(files.length, 'globs to return files').to.be.greaterThan(0);
+    if (assert) expect(files.length, 'globs to return files').to.be.greaterThan(0);
     return files;
   }
 }

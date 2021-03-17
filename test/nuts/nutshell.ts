@@ -18,6 +18,7 @@ import { AnyJson, ensureString, JsonMap, Nullable } from '@salesforce/ts-types';
 import { AuthInfo, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
+import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { Result, StatusResult } from './types';
 import { Assertions } from './assertions';
 import { ExecutionLog } from './executionLog';
@@ -64,6 +65,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   private orgless: boolean;
   private executionLog: ExecutionLog;
   private nut: string;
+  private metadataResolver: MetadataResolver;
 
   public constructor(options: Nutshell.Options) {
     super(options);
@@ -168,10 +170,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    * Adds files found by globs to FileTracker for tracking
    */
   public async trackGlobs(globs: string[]): Promise<void> {
-    const fullGlobs = globs.map((g) =>
-      g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
-    );
-    const files = await fg(fullGlobs);
+    const files = await this.doGlob(globs);
     for (const file of files) {
       await this.fileTracker.track(file);
     }
@@ -194,9 +193,17 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   /**
    * Read the org's maxRevision.json
    */
-  public async readMaxRevision(): Promise<AnyJson> {
+  public async readMaxRevision(): Promise<{ sourceMembers: JsonMap }> {
     const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
-    return fs.readJson(maxRevisionPath);
+    return (fs.readJson(maxRevisionPath) as unknown) as { sourceMembers: JsonMap };
+  }
+
+  /**
+   * Write the org's maxRevision.json
+   */
+  public async writeMaxRevision(contents: JsonMap): Promise<void> {
+    const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
+    return fs.writeJson(maxRevisionPath, contents);
   }
 
   /**
@@ -235,10 +242,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    * Modify files found by given globs
    */
   public async modifyLocalGlobs(globs: string[]): Promise<void> {
-    const fullGlobs = globs.map((g) =>
-      g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
-    );
-    const allFiles = await fg(fullGlobs);
+    const allFiles = await this.doGlob(globs);
 
     for (const file of allFiles) {
       await this.modifyLocalFile(file);
@@ -293,6 +297,27 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     await this.trackFiles(this.testMetadataFiles);
   }
 
+  public async spoofRemoteChange(globs: string[]): Promise<void> {
+    const files = await this.doGlob(globs);
+    const maxRevision = await this.readMaxRevision();
+    for (const file of files) {
+      const component = this.metadataResolver.getComponentsFromPath(file)[0];
+      const parent = component.parent?.name;
+      const type = component.type.name;
+      const name = component.name;
+      if (!type.includes('CustomLabel')) {
+        const maxRevisionKey = parent ? `${type}__${parent}.${name}` : `${type}__${name}`;
+        maxRevision.sourceMembers[maxRevisionKey]['lastRetrievedFromServer'] = null;
+      } else {
+        const labels = Object.keys(maxRevision.sourceMembers).filter((k) => k.startsWith('CustomLabel'));
+        labels.forEach((label) => {
+          maxRevision.sourceMembers[label]['lastRetrievedFromServer'] = null;
+        });
+      }
+    }
+    await this.writeMaxRevision(maxRevision);
+  }
+
   protected async init(): Promise<void> {
     if (!Nutshell.Env.getString('TESTKIT_HUB_USERNAME')) {
       ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
@@ -303,6 +328,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       Nutshell.Env.setString('TESTKIT_EXECUTABLE_PATH', this.executable);
     }
     try {
+      this.metadataResolver = new MetadataResolver();
       this.session = await this.createSession();
       const sfdxProject = await SfdxProject.resolve(this.session.project.dir);
       this.packages = sfdxProject.getPackageDirectories();
@@ -399,6 +425,13 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     return await Connection.create({
       authInfo: await AuthInfo.create({ username: this.username }),
     });
+  }
+
+  private async doGlob(globs: string[]): Promise<string[]> {
+    const fullGlobs = globs.map((g) =>
+      g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
+    );
+    return fg(fullGlobs);
   }
 }
 
