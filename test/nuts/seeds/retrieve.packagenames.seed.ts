@@ -18,7 +18,7 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   before(async () => {
     nutshell = await Nutshell.create({
-      repository: 'https://github.com/mdonnalley/simple-mpd-project.git',
+      repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
       executable: EXECUTABLE,
       nut: __filename,
     });

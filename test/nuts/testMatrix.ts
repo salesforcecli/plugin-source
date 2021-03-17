@@ -33,43 +33,60 @@ export const EXECUTABLES = [
 const testRepos: RepoConfig[] = [
   {
     skip: false,
-    gitUrl: 'https://github.com/mdonnalley/simple-mpd-project.git',
+    gitUrl: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
     deploy: {
       sourcepath: [
         { toDeploy: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
-        { toDeploy: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] },
+        { toDeploy: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
         { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/**/*'] },
         { toDeploy: 'my-app/objects', toVerify: ['my-app/objects/**/*'] },
         { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
+        { toDeploy: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
       ],
       metadata: [
         { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'] },
+        {
+          toDeploy: 'CustomLabels',
+          toVerify: [
+            'force-app/main/default/labels/CustomLabels.labels-meta.xml',
+            'my-app/labels/CustomLabels.labels-meta.xml',
+          ],
+        },
       ],
       manifest: [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
         { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
-        { toDeploy: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
+        { toDeploy: 'foo-bar', toVerify: ['foo-bar/**/*'] },
+        { toDeploy: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
       ],
       testlevel: { specifiedTests: ['MyTest'] },
     },
     retrieve: {
       sourcepath: [
-        { toRetrieve: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
-        { toRetrieve: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] },
+        { toRetrieve: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        { toRetrieve: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
         { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
-        { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/*'] },
+        { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
         { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
+        { toRetrieve: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
       ],
       metadata: [
         {
           toRetrieve: 'CustomObject',
           toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'],
         },
+        {
+          toRetrieve: 'CustomLabels',
+          toVerify: [
+            'force-app/main/default/labels/CustomLabels.labels-meta.xml',
+            'my-app/labels/CustomLabels.labels-meta.xml',
+          ],
+        },
       ],
       manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
-        { toRetrieve: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
+        { toRetrieve: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
       ],
     },
     convert: {
@@ -254,130 +271,6 @@ const testRepos: RepoConfig[] = [
       ],
     },
   },
-  {
-    skip: true,
-    gitUrl: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
-    deploy: {
-      sourcepath: [
-        { toDeploy: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
-        { toDeploy: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/**/*'] },
-        {
-          toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
-        },
-        {
-          toDeploy: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/permissionsets/*'],
-        },
-        {
-          toDeploy: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
-          toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
-        },
-      ],
-      metadata: [
-        { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
-        {
-          toDeploy: 'CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/objects/Broker__c/*'],
-        },
-        {
-          toDeploy: 'ApexClass,CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
-        },
-        {
-          toDeploy: 'ApexClass:GeocodingService,CustomObject',
-          toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*'],
-        },
-        {
-          toDeploy: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
-          toVerify: [
-            'force-app/main/default/classes/GeocodingService.cls',
-            'force-app/main/default/objects/*',
-            'force-app/main/default/permissionsets/*',
-          ],
-        },
-      ],
-      manifest: [
-        { toDeploy: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
-        {
-          toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
-        },
-        {
-          toDeploy:
-            '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
-          toVerify: [
-            'force-app/main/default/objects/*',
-            'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
-          ],
-        },
-      ],
-      testlevel: { specifiedTests: ['BotTest'] },
-    },
-    retrieve: {
-      sourcepath: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
-        { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
-        {
-          toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*__c/*'],
-        },
-        {
-          toRetrieve: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/permissionsets/*'],
-        },
-        {
-          toRetrieve: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
-          toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
-        },
-      ],
-      metadata: [
-        { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
-        {
-          toRetrieve: 'CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/objects/Broker__c/*'],
-        },
-        {
-          toRetrieve: 'ApexClass,CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
-        },
-        {
-          toRetrieve: 'ApexClass:GeocodingService,CustomObject',
-          toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*__c/*'],
-        },
-        {
-          toRetrieve: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
-          toVerify: [
-            'force-app/main/default/classes/GeocodingService.cls',
-            'force-app/main/default/objects/*__c/*',
-            'force-app/main/default/permissionsets/*',
-          ],
-        },
-      ],
-      manifest: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/main/default/**!(__tests__)/*'] },
-        {
-          toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
-        },
-        {
-          toRetrieve:
-            '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
-          toVerify: [
-            'force-app/main/default/objects/*',
-            'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
-          ],
-        },
-      ],
-    },
-    convert: {
-      sourcepath: [],
-      manifest: [],
-      metadata: [],
-    },
-  },
-  // { gitUrl: 'https://github.com/trailheadapps/ebikes-lwc.git' },
-  // { gitUrl: 'https://github.com/trailheadapps/ecars.git' },
 ];
 
 /**
