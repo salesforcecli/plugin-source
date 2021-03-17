@@ -47,27 +47,5 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
         `${PACKAGE.name}/**/lightningExperienceThemes/*`,
       ]);
     });
-
-    it('should retrieve an installed package and metadata', async () => {
-      await nutshell.retrieve({
-        args: `--packagenames "${PACKAGE.name}" --metadata CustomObject`,
-      });
-      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
-    });
-
-    // This test fails because of an existing bug
-    it.skip('should retrieve an installed package and manifest', async () => {
-      await nutshell.convert({ args: '--sourcepath force-app --outputdir out' });
-      const packageXml = path.join('out', 'package.xml');
-      await nutshell.retrieve({
-        args: `--packagenames "${PACKAGE.name}" --manifest ${packageXml}`,
-      });
-      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
-    });
-
-    it('should throw an error if the packagenames is not valid', async () => {
-      const deploy = await nutshell.retrieve({ args: '--packagenames DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(deploy, 'mdapiRetrieveFailed');
-    });
   });
 });
