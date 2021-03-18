@@ -11,7 +11,7 @@ import { Nullable } from '@salesforce/ts-types';
 import { Context } from './types';
 
 /**
- * This class maintains a map of tacked files. This is particularly useful
+ * This class maintains a map of tracked files. This is particularly useful
  * for determining if files have changed after a command has been executed
  */
 export class FileTracker {
