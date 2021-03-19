@@ -30,7 +30,7 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--checkonly flag', () => {
     it('should check deploy of all packages', async () => {
       await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --checkonly`,
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --checkonly --ignoreerrors`,
       });
       await nutshell.expect.filesToNotBeDeployed(nutshell.packageGlobs);
     });
@@ -39,7 +39,7 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('quick deploy', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       const checkOnly = await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests --checkonly`,
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
       });
       nutshell.expect.toHaveProperty(checkOnly.result, 'id');
 
