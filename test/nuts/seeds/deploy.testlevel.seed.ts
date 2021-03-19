@@ -30,21 +30,21 @@ context('Deploy testlevel NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => 
   describe('--testlevel', () => {
     it('should run no tests (NoTestRun)', async () => {
       await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel NoTestRun --checkonly`,
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel NoTestRun`,
       });
       await nutshell.expect.noApexTestsToBeRun();
     });
 
     it('should run tests locally (RunLocalTests)', async () => {
       await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests --checkonly`,
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests`,
       });
       await nutshell.expect.apexTestsToBeRun();
     });
 
     it('should run tests in org (RunAllTestsInOrg)', async () => {
       await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunAllTestsInOrg --checkonly`,
+        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunAllTestsInOrg`,
       });
       await nutshell.expect.apexTestsToBeRun();
     });
