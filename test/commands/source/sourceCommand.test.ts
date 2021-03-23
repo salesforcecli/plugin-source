@@ -15,7 +15,7 @@ import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
 
 class sourceCommandTest extends SourceCommand {
   public async run() {}
-  public async callCreateCopmonentSet(options: FlagOptions): Promise<ComponentSet> {
+  public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
     return await this.createComponentSet(options);
   }
 }
@@ -38,7 +38,7 @@ describe('sourceCommand tests', () => {
 
     it('will create appropriate ComponentSet from path', async () => {
       try {
-        await command.callCreateCopmonentSet({
+        await command.callCreateComponentSet({
           sourcepath: asArray<string>(['force-app']),
           manifest: asString(''),
           metadata: asArray<string>([]),
@@ -53,7 +53,7 @@ describe('sourceCommand tests', () => {
 
     it('will create appropriate ComponentSet from multiple paths', async () => {
       try {
-        await command.callCreateCopmonentSet({
+        await command.callCreateComponentSet({
           sourcepath: asArray<string>(['force-app', 'my-app']),
           manifest: asString(''),
           metadata: asArray<string>([]),
@@ -66,29 +66,29 @@ describe('sourceCommand tests', () => {
       expect(fromSource.callCount).to.equal(2);
     });
 
-    it('will create appropriate ComponentSet from packagenames', async () => {
+    it.skip('will create appropriate ComponentSet from packagenames', async () => {
       // TODO: Flush out once we can retrieve via packagenames
     });
 
-    it('will create appropriate ComponentSet from multiple packagenames', async () => {
+    it.skip('will create appropriate ComponentSet from multiple packagenames', async () => {
       // TODO: Flush out once we can retrieve via packagenames
     });
 
-    it('will create appropriate ComponentSet from metadata (ApexClass)', async () => {
+    it.skip('will create appropriate ComponentSet from metadata (ApexClass)', async () => {
       // not sure how to stub ComponentSet constructor
     });
 
-    it('will create appropriate ComponentSet from metadata (ApexClass:MyClass)', async () => {
+    it.skip('will create appropriate ComponentSet from metadata (ApexClass:MyClass)', async () => {
       // not sure how to stub ComponentSet constructor
     });
 
-    it('will create appropriate ComponentSet from metadata (ApexClass:MyClass,CustomObject,CustomField:MyField', async () => {
+    it.skip('will create appropriate ComponentSet from metadata (ApexClass:MyClass,CustomObject,CustomField:MyField', async () => {
       // not sure how to stub ComponentSet constructor
     });
 
     it('will create appropriate ComponentSet from manifest', async () => {
       try {
-        await command.callCreateCopmonentSet({
+        await command.callCreateComponentSet({
           sourcepath: asArray<string>([]),
           manifest: asString('manifest.xml'),
           metadata: asArray<string>(['']),

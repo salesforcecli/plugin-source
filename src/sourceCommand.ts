@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { fs, SfdxError } from '@salesforce/core';
+import { fs, SfdxError, Logger } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
 export type FlagOptions = {
@@ -15,10 +15,10 @@ export type FlagOptions = {
   sourcepath: string[];
   manifest: string;
   metadata: string[];
+  apiversion?: string;
 };
 
 export abstract class SourceCommand extends SfdxCommand {
-  public static MINIMUM_SRC_WAIT_MINUTES = 1;
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
   /**
    * will create one ComponentSet to be deployed/retrieved
@@ -27,11 +27,13 @@ export abstract class SourceCommand extends SfdxCommand {
    * @param options: FlagOptions where to create ComponentSets from
    */
   protected async createComponentSet(options: FlagOptions): Promise<ComponentSet> {
+    const logger = Logger.childFromRoot(this.constructor.name);
     const setAggregator: ComponentLike[] = [];
 
     // go through options to create a list of ComponentSets
     // we'll then combine all of those to deploy/retrieve
     if (options.sourcepath) {
+      logger.debug(`Building ComponentSet from sourcepath: ${options.sourcepath.toString()}`);
       options.sourcepath.forEach((filepath) => {
         if (fs.fileExistsSync(filepath)) {
           setAggregator.push(...ComponentSet.fromSource(path.resolve(filepath)));
@@ -41,38 +43,63 @@ export abstract class SourceCommand extends SfdxCommand {
       });
     }
 
+    // Return empty ComponentSet and use packageNames in the library via `.retrieve` options
     if (options.packagenames) {
-      // return ComponentSet and use packageNames in the library via `.retrieve` options
+      logger.debug(`Building ComponentSet for packagenames: ${options.packagenames.toString()}`);
       setAggregator.push(...new ComponentSet([]));
     }
 
+    // Resolve manifest with source in package directories.
     if (options.manifest) {
-      setAggregator.push(
-        ...(await ComponentSet.fromManifestFile(options.manifest, {
-          // to create a link to the actual source component we need to have it resolve through all packages
-          // to find the matching source metadata
-          // this allows us to deploy after
-          resolve: process.cwd(),
-        }))
-      );
+      logger.debug(`Building ComponentSet from manifest: ${options.manifest}`);
+      const packageDirs = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+      for (const packageDir of packageDirs) {
+        logger.debug(`Searching in packageDir: ${packageDir} for matching metadata`);
+        const compSet = await ComponentSet.fromManifestFile(options.manifest, { resolve: packageDir });
+        setAggregator.push(...compSet);
+      }
     }
 
+    // Resolve metadata entries with source in package directories.
     if (options.metadata) {
+      logger.debug(`Building ComponentSet from metadata: ${options.metadata.toString()}`);
+
+      // Build a Set of metadata entries
+      const compSet = new ComponentSet();
       options.metadata.forEach((entry) => {
         const splitEntry = entry.split(':');
-        const metadata: ComponentLike = {
+        compSet.add({
           type: splitEntry[0],
-          // either -m ApexClass or -m ApexClass:MyApexClass
           fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
-        };
-        const cs = new ComponentSet([metadata]);
-        // we need to search the entire project for the matching metadata component
-        // no better way than to have it search than process.cwd()
-        cs.resolveSourceComponents(process.cwd(), { filter: cs });
-        setAggregator.push(...cs);
+        });
       });
+
+      // Search the packages directories for matching metadata
+      const packageDirs = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+      for (const packageDir of packageDirs) {
+        logger.debug(`Searching for matching metadata in packageDir: ${packageDir}`);
+        setAggregator.push(...compSet.resolveSourceComponents(packageDir, { filter: compSet }));
+      }
     }
 
-    return new ComponentSet(setAggregator);
+    const componentSet = new ComponentSet(setAggregator);
+    if (componentSet.size) {
+      logger.debug(`Matching metadata files (${componentSet.size}):`);
+      // Log up to 20 file matches
+      const components = componentSet.getSourceComponents().toArray();
+      for (let i = 0; i < componentSet.size; i++) {
+        logger.debug(components[i].content);
+        if (i > 19) {
+          logger.debug(`(showing 20 of ${componentSet.size} matches)`);
+          break;
+        }
+      }
+    }
+
+    if (options.apiversion) {
+      componentSet.apiVersion = options.apiversion;
+    }
+
+    return componentSet;
   }
 }

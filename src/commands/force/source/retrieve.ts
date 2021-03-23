@@ -32,7 +32,7 @@ export class retrieve extends SourceCommand {
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
-      min: SourceCommand.MINIMUM_SRC_WAIT_MINUTES,
+      min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
     }),
     manifest: flags.filepath({
@@ -66,6 +66,7 @@ export class retrieve extends SourceCommand {
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
       metadata: asArray<string>(this.flags.metadata),
+      apiversion: asString(this.flags.apiversion),
     });
 
     // emit pre retrieve event
