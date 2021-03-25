@@ -59,12 +59,7 @@ export abstract class SourceCommand extends SfdxCommand {
 
     if (options.metadata) {
       options.metadata.forEach((entry) => {
-        const splitEntry = entry.split(':');
-        const metadata: ComponentLike = {
-          type: splitEntry[0],
-          // either -m ApexClass or -m ApexClass:MyApexClass
-          fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
-        };
+        const metadata = this.makeComponentLike(entry);
         const cs = new ComponentSet([metadata]);
         // we need to search the entire project for the matching metadata component
         // no better way than to have it search than process.cwd()
@@ -74,5 +69,10 @@ export abstract class SourceCommand extends SfdxCommand {
     }
 
     return new ComponentSet(setAggregator);
+  }
+
+  private makeComponentLike(metadata: string): ComponentLike {
+    const [type, fullName] = metadata.split(':');
+    return type === 'CustomLabel' ? { type: 'CustomLabels', fullName: '*' } : { type, fullName: fullName || '*' };
   }
 }
