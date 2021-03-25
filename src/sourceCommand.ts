@@ -71,8 +71,8 @@ export abstract class SourceCommand extends SfdxCommand {
     return new ComponentSet(setAggregator);
   }
 
-  private makeComponentLike(metadata: string): ComponentLike {
+  protected makeComponentLike(metadata: string): ComponentLike {
     const [type, fullName] = metadata.split(':');
-    return type === 'CustomLabel' ? { type: 'CustomLabels', fullName: '*' } : { type, fullName: fullName || '*' };
+    return { type, fullName: fullName || '*' };
   }
 }

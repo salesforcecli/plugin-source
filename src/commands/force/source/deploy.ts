@@ -12,6 +12,7 @@ import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString, asArray } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
+import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -114,6 +115,11 @@ export class Deploy extends SourceCommand {
     }
 
     return results;
+  }
+
+  protected makeComponentLike(metadata: string): ComponentLike {
+    const [type, fullName] = metadata.split(':');
+    return type === 'CustomLabel' ? { type: 'CustomLabels', fullName: '*' } : { type, fullName: fullName || '*' };
   }
 
   private printComponentFailures(result: DeployResult): void {
