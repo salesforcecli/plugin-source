@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
+// import { inspect } from 'util';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError, Logger } from '@salesforce/core';
@@ -83,13 +84,20 @@ export abstract class SourceCommand extends SfdxCommand {
     }
 
     const componentSet = new ComponentSet(setAggregator);
+
+    // This is only for debug output of matched files based on the command flags.
+    // It will log up to 20 file matches.
     if (componentSet.size) {
       logger.debug(`Matching metadata files (${componentSet.size}):`);
-      // Log up to 20 file matches
       const components = componentSet.getSourceComponents().toArray();
       for (let i = 0; i < componentSet.size; i++) {
-        logger.debug(components[i].content);
-        if (i > 19) {
+        if (components[i]?.content) {
+          logger.debug(components[i].content);
+        } else if (components[i]?.xml) {
+          logger.debug(components[i].xml);
+        }
+
+        if (i > 18) {
           logger.debug(`(showing 20 of ${componentSet.size} matches)`);
           break;
         }

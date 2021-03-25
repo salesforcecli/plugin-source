@@ -5,100 +5,300 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
+import * as path from 'path';
+import * as sinon from 'sinon';
+import { assert, expect } from 'chai';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { asArray, asString } from '@salesforce/ts-types';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { expect, $$ } from '@salesforce/command/lib/test';
-import { fs } from '@salesforce/core';
-import { SinonStub } from 'sinon';
+import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
 import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
 
-class sourceCommandTest extends SourceCommand {
-  public async run() {}
-  public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
-    return await this.createComponentSet(options);
-  }
-}
+describe('SourceCommand', () => {
+  const sandbox = sinon.createSandbox();
 
-describe('sourceCommand tests', () => {
-  describe('createComponentSet tests', () => {
-    const command = new sourceCommandTest([''], null);
-    let fromSource: SinonStub;
-    let fromManifest: SinonStub;
+  class SourceCommandTest extends SourceCommand {
+    public async run() {}
+    public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
+      return this.createComponentSet(options);
+    }
+  }
+
+  const apexClassComponent = {
+    type: 'ApexClass',
+    fullName: 'MyClass',
+    content: 'MyClass.cls',
+    xml: 'MyClass.cls-meta.xml',
+  };
+  const customObjectComponent = {
+    type: 'CustomObject',
+    fullName: 'MyCustomObject__c',
+    content: undefined,
+    xml: 'MyCustomObject__c.object-meta.xml',
+  };
+
+  describe('createComponentSet', () => {
+    const command = new SourceCommandTest([''], null);
+    const projectPath = 'stubbedProjectPath';
+    stubMethod(sandbox, SfdxProject, 'resolveProjectPathSync').returns(projectPath);
+    // @ts-ignore assigning to a protected member
+    command.project = SfdxProject.getInstance(projectPath);
+
+    let componentSet: ComponentSet;
+
+    let fileExistsSyncStub: sinon.SinonStub;
+    let fromSourceStub: sinon.SinonStub;
+    let fromManifestStub: sinon.SinonStub;
+    let getUniquePackageDirectoriesStub: sinon.SinonStub;
 
     beforeEach(() => {
-      stubMethod($$.SANDBOX, fs, 'fileExistsSync').returns(true);
-      fromSource = stubMethod($$.SANDBOX, ComponentSet, 'fromSource').returns([
-        { name: 'MyTest', type: { id: 'apexclass', name: 'ApexClass' }, xml: '', parent: undefined, content: '' },
-      ]);
-      fromManifest = stubMethod($$.SANDBOX, ComponentSet, 'fromManifestFile').resolves([
-        { name: 'MyTest', type: { id: 'apexclass', name: 'ApexClass' }, xml: '', parent: undefined, content: '' },
-      ]);
+      fileExistsSyncStub = stubMethod(sandbox, fsCore, 'fileExistsSync');
+      fromSourceStub = stubMethod(sandbox, ComponentSet, 'fromSource');
+      fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifestFile');
+      getUniquePackageDirectoriesStub = stubMethod(sandbox, SfdxProject.prototype, 'getUniquePackageDirectories');
+      componentSet = new ComponentSet();
     });
 
-    it('will create appropriate ComponentSet from path', async () => {
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should create ComponentSet from single sourcepath', async () => {
+      fileExistsSyncStub.returns(true);
+      componentSet.add(apexClassComponent);
+      fromSourceStub.returns(componentSet);
+      const sourcepath = ['force-app'];
+      const options = {
+        sourcepath,
+        manifest: undefined,
+        metadata: undefined,
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      const expectedPath = path.resolve(sourcepath[0]);
+      expect(fromSourceStub.calledOnceWith(expectedPath)).to.equal(true);
+      expect(compSet.size).to.equal(1);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+    });
+
+    it('should create ComponentSet from multiple sourcepaths', async () => {
+      fileExistsSyncStub.returns(true);
+      componentSet.add(apexClassComponent);
+      componentSet.add(customObjectComponent);
+      fromSourceStub.returns(componentSet);
+      const sourcepath = ['force-app', 'my-app'];
+      const options = {
+        sourcepath,
+        manifest: undefined,
+        metadata: undefined,
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      const expectedPath1 = path.resolve(sourcepath[0]);
+      const expectedPath2 = path.resolve(sourcepath[1]);
+      expect(fromSourceStub.calledTwice).to.equal(true);
+      expect(fromSourceStub.firstCall.args[0]).to.equal(expectedPath1);
+      expect(fromSourceStub.secondCall.args[0]).to.equal(expectedPath2);
+      expect(compSet.size).to.equal(2);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+      expect(compSet.has(customObjectComponent)).to.equal(true);
+    });
+
+    it('should create ComponentSet with overridden apiVersion', async () => {
+      fileExistsSyncStub.returns(true);
+      fromSourceStub.returns(componentSet);
+      const sourcepath = ['force-app'];
+      const options = {
+        sourcepath,
+        manifest: undefined,
+        metadata: undefined,
+        apiversion: '50.0',
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      const expectedPath = path.resolve(sourcepath[0]);
+      expect(fromSourceStub.calledOnceWith(expectedPath)).to.equal(true);
+      expect(compSet.size).to.equal(0);
+      expect(compSet.apiVersion).to.equal(options.apiversion);
+    });
+
+    it('should throw with an invalid sourcepath', async () => {
+      fileExistsSyncStub.returns(false);
+      const sourcepath = ['nonexistent'];
       try {
         await command.callCreateComponentSet({
-          sourcepath: asArray<string>(['force-app']),
-          manifest: asString(''),
-          metadata: asArray<string>([]),
+          sourcepath,
+          manifest: undefined,
+          metadata: undefined,
         });
-      } catch (e) {
-        // we can't stub everything needed to create a ComponentSet, so expect the constructor to throw
-        // but we'll spy on everything and make sure it looks correct
-        // we need lots of NUTs
+        assert(false, 'should have thrown SfdxError');
+      } catch (e: unknown) {
+        const err = e as SfdxError;
+        expect(fromSourceStub.notCalled).to.equal(true);
+        expect(err.message).to.include(sourcepath[0]);
       }
-      expect(fromSource.callCount).to.equal(1);
     });
 
-    it('will create appropriate ComponentSet from multiple paths', async () => {
-      try {
-        await command.callCreateComponentSet({
-          sourcepath: asArray<string>(['force-app', 'my-app']),
-          manifest: asString(''),
-          metadata: asArray<string>([]),
-        });
-      } catch (e) {
-        // we can't stub everything needed to create a ComponentSet, so expect the constructor to throw
-        // but we'll spy on everything and make sure it looks correct
-        // we need lots of NUTs
-      }
-      expect(fromSource.callCount).to.equal(2);
+    it('should create empty ComponentSet from packagenames', async () => {
+      fileExistsSyncStub.returns(true);
+      const options = {
+        sourcepath: undefined,
+        manifest: undefined,
+        metadata: undefined,
+        packagenames: ['mypackage'],
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(compSet.size).to.equal(0);
+      expect(fromSourceStub.notCalled).to.equal(true);
+      expect(fromManifestStub.notCalled).to.equal(true);
+      expect(getUniquePackageDirectoriesStub.notCalled).to.equal(true);
     });
 
-    it.skip('will create appropriate ComponentSet from packagenames', async () => {
-      // TODO: Flush out once we can retrieve via packagenames
+    it('should create ComponentSet from wildcarded metadata (ApexClass)', async () => {
+      componentSet.add(apexClassComponent);
+      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
+      resolveStub.returns(componentSet);
+      const packageDir1 = path.resolve('force-app');
+      getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
+      const options = {
+        sourcepath: undefined,
+        manifest: undefined,
+        metadata: ['ApexClass'],
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(resolveStub.calledOnce).to.equal(true);
+      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      const filter = new ComponentSet();
+      filter.add({ type: 'ApexClass', fullName: '*' });
+      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(compSet.size).to.equal(1);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
-    it.skip('will create appropriate ComponentSet from multiple packagenames', async () => {
-      // TODO: Flush out once we can retrieve via packagenames
+    it('should create ComponentSet from specific metadata (ApexClass:MyClass)', async () => {
+      componentSet.add(apexClassComponent);
+      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
+      resolveStub.returns(componentSet);
+      const packageDir1 = path.resolve('force-app');
+      getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
+      const options = {
+        sourcepath: undefined,
+        manifest: undefined,
+        metadata: ['ApexClass:MyClass'],
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(resolveStub.calledOnce).to.equal(true);
+      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      const filter = new ComponentSet();
+      filter.add({ type: 'ApexClass', fullName: 'MyClass' });
+      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(compSet.size).to.equal(1);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
-    it.skip('will create appropriate ComponentSet from metadata (ApexClass)', async () => {
-      // not sure how to stub ComponentSet constructor
+    it('should create ComponentSet from multiple metadata (ApexClass:MyClass,CustomObject)', async () => {
+      componentSet.add(apexClassComponent);
+      componentSet.add(customObjectComponent);
+      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
+      resolveStub.returns(componentSet);
+      const packageDir1 = path.resolve('force-app');
+      getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
+      const options = {
+        sourcepath: undefined,
+        manifest: undefined,
+        metadata: ['ApexClass:MyClass', 'CustomObject'],
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(resolveStub.calledOnce).to.equal(true);
+      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      const filter = new ComponentSet();
+      filter.add({ type: 'ApexClass', fullName: 'MyClass' });
+      filter.add({ type: 'CustomObject', fullName: '*' });
+      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(compSet.size).to.equal(2);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+      expect(compSet.has(customObjectComponent)).to.equal(true);
     });
 
-    it.skip('will create appropriate ComponentSet from metadata (ApexClass:MyClass)', async () => {
-      // not sure how to stub ComponentSet constructor
+    it('should create ComponentSet from metadata and multiple package directories', async () => {
+      componentSet.add(apexClassComponent);
+      const componentSet2 = new ComponentSet();
+      const apexClassComponent2 = { type: 'ApexClass', fullName: 'MyClass2' };
+      componentSet2.add(apexClassComponent2);
+      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
+      resolveStub.onFirstCall().returns(componentSet);
+      resolveStub.onSecondCall().returns(componentSet2);
+      const packageDir1 = path.resolve('force-app');
+      const packageDir2 = path.resolve('my-app');
+      getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }, { fullPath: packageDir2 }]);
+      const options = {
+        sourcepath: undefined,
+        manifest: undefined,
+        metadata: ['ApexClass'],
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(resolveStub.callCount).to.equal(2);
+      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      expect(resolveStub.secondCall.args[0]).to.equal(packageDir2);
+      const filter = new ComponentSet();
+      filter.add({ type: 'ApexClass', fullName: '*' });
+      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(resolveStub.secondCall.args[1]).to.deep.equal({ filter });
+      expect(compSet.size).to.equal(2);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+      expect(compSet.has(apexClassComponent2)).to.equal(true);
     });
 
-    it.skip('will create appropriate ComponentSet from metadata (ApexClass:MyClass,CustomObject,CustomField:MyField', async () => {
-      // not sure how to stub ComponentSet constructor
+    it('should create ComponentSet from manifest', async () => {
+      componentSet.add(apexClassComponent);
+      fromManifestStub.resolves(componentSet);
+      const packageDir1 = path.resolve('force-app');
+      getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
+      const options = {
+        sourcepath: undefined,
+        manifest: 'apex-package.xml',
+        metadata: undefined,
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(fromManifestStub.calledOnce).to.equal(true);
+      expect(fromManifestStub.firstCall.args[0]).to.equal(options.manifest);
+      expect(fromManifestStub.firstCall.args[1]).to.deep.equal({ resolve: packageDir1 });
+      expect(compSet.size).to.equal(1);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
-    it('will create appropriate ComponentSet from manifest', async () => {
-      try {
-        await command.callCreateComponentSet({
-          sourcepath: asArray<string>([]),
-          manifest: asString('manifest.xml'),
-          metadata: asArray<string>(['']),
-        });
-      } catch (e) {
-        // we can't stub everything needed to create a ComponentSet, so expect the constructor to throw
-        // but we'll spy on everything and make sure it looks correct
-        // we need lots of NUTs
-      }
-      expect(fromManifest.callCount).to.equal(1);
+    it('should create ComponentSet from manifest and multiple package', async () => {
+      componentSet.add(apexClassComponent);
+      const componentSet2 = new ComponentSet();
+      const apexClassComponent2 = { type: 'ApexClass', fullName: 'MyClass2' };
+      componentSet2.add(apexClassComponent2);
+      fromManifestStub.onFirstCall().resolves(componentSet);
+      fromManifestStub.onSecondCall().resolves(componentSet2);
+      const packageDir1 = path.resolve('force-app');
+      const packageDir2 = path.resolve('my-app');
+      getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }, { fullPath: packageDir2 }]);
+      const options = {
+        sourcepath: undefined,
+        manifest: 'apex-package.xml',
+        metadata: undefined,
+      };
+
+      const compSet = await command.callCreateComponentSet(options);
+      expect(fromManifestStub.callCount).to.equal(2);
+      expect(fromManifestStub.firstCall.args[0]).to.equal(options.manifest);
+      expect(fromManifestStub.firstCall.args[1]).to.deep.equal({ resolve: packageDir1 });
+      expect(fromManifestStub.secondCall.args[0]).to.equal(options.manifest);
+      expect(fromManifestStub.secondCall.args[1]).to.deep.equal({ resolve: packageDir2 });
+      expect(compSet.size).to.equal(2);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+      expect(compSet.has(apexClassComponent2)).to.equal(true);
     });
   });
 });
