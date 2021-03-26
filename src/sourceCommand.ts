@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
-// import { inspect } from 'util';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError, Logger } from '@salesforce/core';
