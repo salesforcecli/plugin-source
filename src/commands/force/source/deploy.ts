@@ -115,7 +115,7 @@ export class Deploy extends SourceCommand {
           checkOnly: getBoolean(this.flags, 'checkonly', false),
           runTests: asArray<string>(this.flags.runtests),
           // @ts-ignore testLevel isn't on the apiOptions type yet
-          testLevel: asString(this.flags.testLevel, 'NoTestRun'),
+          testLevel: asString(this.flags.testlevel, 'NoTestRun'),
         },
       })
       .start();
@@ -134,7 +134,7 @@ export class Deploy extends SourceCommand {
       // sort by filename then fullname
       const failures = result.getFileResponses().sort((i, j) => {
         if (i.filePath === j.filePath) {
-          // if the have the same directoryName then sort by fullName
+          // if they have the same directoryName then sort by fullName
           return i.fullName < j.fullName ? 1 : -1;
         }
         return i.filePath < j.filePath ? 1 : -1;
@@ -190,7 +190,7 @@ export class Deploy extends SourceCommand {
     this.printComponentFailures(result);
     // TODO: this.printTestResults(result); <- this has WI @W-8903671@
     if (result.response.success && this.flags.checkonly) {
-      this.log(messages.getMessage('checkOnlySuccess'));
+      this.ux.log(messages.getMessage('checkOnlySuccess'));
     }
 
     return result;

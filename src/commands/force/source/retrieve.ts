@@ -11,14 +11,14 @@ import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
 import { blue } from 'chalk';
-import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export class retrieve extends SourceCommand {
+export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -53,13 +53,12 @@ export class retrieve extends SourceCommand {
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async run(): Promise<any> {
+  public async run(): Promise<RetrieveResult> {
     const hookEmitter = Lifecycle.getInstance();
 
     const defaultPackagePath = this.project.getDefaultPackage().fullPath;
 
     const cs = await this.createComponentSet({
-      // safe to cast from the flags as an array of strings
       packagenames: asArray<string>(this.flags.packagenames),
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
@@ -92,7 +91,7 @@ export class retrieve extends SourceCommand {
       this.printTable(results, true);
     }
 
-    return results;
+    return mdapiResult;
   }
 
   /**

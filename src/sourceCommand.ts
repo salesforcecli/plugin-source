@@ -86,6 +86,7 @@ export abstract class SourceCommand extends SfdxCommand {
 
     // This is only for debug output of matched files based on the command flags.
     // It will log up to 20 file matches.
+    // TODO: add logger.debugEnabled
     if (componentSet.size) {
       logger.debug(`Matching metadata files (${componentSet.size}):`);
       const components = componentSet.getSourceComponents().toArray();
