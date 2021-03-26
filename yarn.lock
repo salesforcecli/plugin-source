@@ -618,7 +618,7 @@
     mkdirp "1.0.4"
     sfdx-faye "^1.0.9"
 
-"@salesforce/core@^2.15.2", "@salesforce/core@^2.16.3", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.3", "@salesforce/core@^2.6.0":
+"@salesforce/core@^2.15.2", "@salesforce/core@^2.16.3", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.3", "@salesforce/core@^2.20.5", "@salesforce/core@^2.6.0":
   version "2.20.5"
   resolved "https://registry.npmjs.org/@salesforce/core/-/core-2.20.5.tgz#043d4aa6fb7ffc5270fc69fbec08aa1a52a2f2b7"
   integrity sha512-hB4o4TuOGJo01rLmx84nf6KFGizDqLo5bmQ8bFlMZw5xKeQaP1Jc74se6hj+6eI5Nx331EvbD+YHphsuLbaJjQ==
@@ -740,7 +740,7 @@
   resolved "https://registry.npmjs.org/@salesforce/schemas/-/schemas-1.0.4.tgz#e75ea97102f028bb1773523ca4e783e89a381ff7"
   integrity sha512-JatCrSuWbr4aWJlkJ9CVCUucZvY1pfKfO/m1AHxaWix5kUQykA+oI1zQRKjelOy2IbDmz09cBCEGjMrMp3u+dA==
 
-"@salesforce/source-deploy-retrieve@1.1.20":
+"@salesforce/source-deploy-retrieve@^1.1.20":
   version "1.1.20"
   resolved "https://registry.npmjs.org/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-1.1.20.tgz#4dfe4781c0d4762ed2fa1d53c3e575a9ecd1882d"
   integrity sha512-LJRCXievJfj1l1oVIcvvxiyghoMu20J6M3j2huQBh3486fka6fVMeCi18hjSYSyka5oYzIQquJdU8W4aZuVzpg==

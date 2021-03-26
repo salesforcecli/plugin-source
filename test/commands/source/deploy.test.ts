@@ -76,7 +76,8 @@ describe('force:source:deploy', () => {
   };
 
   // Ensure ComponentSet.deploy() args
-  const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions>) => {
+  // TODO: remove `& { apiOptions: { testLevel: string } }` when that version of SDR is published.
+  const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions & { apiOptions: { testLevel: string } }>) => {
     const expectedDeployArgs = {
       usernameOrConnection: username,
       apiOptions: {
