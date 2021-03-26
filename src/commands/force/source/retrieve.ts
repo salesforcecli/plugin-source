@@ -7,7 +7,7 @@
 import * as os from 'os';
 
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
+import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
 import { blue } from 'chalk';
@@ -56,9 +56,7 @@ export class retrieve extends SourceCommand {
   public async run(): Promise<any> {
     const hookEmitter = Lifecycle.getInstance();
 
-    const proj = await SfdxProjectJson.create({});
-    const packages = await proj.getPackageDirectories();
-    const defaultPackage = packages.find((pkg) => pkg.default);
+    const defaultPackagePath = this.project.getDefaultPackage().fullPath;
 
     const cs = await this.createComponentSet({
       // safe to cast from the flags as an array of strings
@@ -69,15 +67,14 @@ export class retrieve extends SourceCommand {
       apiversion: asString(this.flags.apiversion),
     });
 
-    // emit pre retrieve event
-    // needs to be a path to the temp dir package.xml
+    // Emit the preretrieve event, which needs the package.xml from the ComponentSet
     await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
 
     const mdapiResult = await cs
       .retrieve({
         usernameOrConnection: this.org.getUsername(),
         merge: true,
-        output: (this.flags.sourcepath as string) ?? defaultPackage.path,
+        output: defaultPackagePath,
         packageNames: asArray<string>(this.flags.packagenames),
       })
       .start();
