@@ -27,6 +27,10 @@ export class Deploy extends SourceCommand {
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
     }),
+    soapdeploy: flags.boolean({
+      default: false,
+      description: messages.getMessage('flags.checkonly'),
+    }),
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
@@ -92,7 +96,6 @@ export class Deploy extends SourceCommand {
       // TODO: return this.doDeployRecentValidation();
     }
     const hookEmitter = Lifecycle.getInstance();
-
     const cs = await this.createComponentSet({
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
@@ -103,6 +106,9 @@ export class Deploy extends SourceCommand {
 
     const results = await cs
       .deploy({
+        apiOptions: {
+          rest: !this.flags.soapdeploy,
+        },
         usernameOrConnection: this.org.getUsername(),
       })
       .start();
