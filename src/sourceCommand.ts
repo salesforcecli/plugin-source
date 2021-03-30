@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { fs, SfdxError, Logger } from '@salesforce/core';
+import { fs, Lifecycle, SfdxError, Logger } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
 export type FlagOptions = {
@@ -20,6 +20,8 @@ export type FlagOptions = {
 
 export abstract class SourceCommand extends SfdxCommand {
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
+  public hookEmitter = Lifecycle.getInstance();
+
   /**
    * will create one ComponentSet to be deployed/retrieved
    * will combine from all options passed in

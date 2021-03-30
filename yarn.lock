@@ -553,7 +553,11 @@
 
 "@salesforce/cli-plugins-testkit@^0.0.15":
   version "0.0.15"
+<<<<<<< HEAD
   resolved "https://registry.npmjs.org/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-0.0.15.tgz#4114ce84a538410a2e7ee11d801711049dd271c3"
+=======
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-0.0.15.tgz#4114ce84a538410a2e7ee11d801711049dd271c3"
+>>>>>>> fix: add hooks matching toolbelt
   integrity sha512-nAjPa8zfUAWMTURkEv9FhSJ+b/xrlrCka4tWX2ssw1ZsVUOsbCoCUuP3iVvHCL1gsj/6gGlLr4Z9TjuAK6X9Ig==
   dependencies:
     "@salesforce/core" "^2.20.3"
@@ -616,10 +620,17 @@
     mkdirp "1.0.4"
     sfdx-faye "^1.0.9"
 
+<<<<<<< HEAD
 "@salesforce/core@^2.15.2", "@salesforce/core@^2.16.3", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.3", "@salesforce/core@^2.20.8", "@salesforce/core@^2.6.0":
   version "2.20.8"
   resolved "https://registry.npmjs.org/@salesforce/core/-/core-2.20.8.tgz#7767c2fc19c7663a803e9d0092f102dabdc23a0d"
   integrity sha512-7bhpj95SS7EDtKOwAnpoBu4zreooI2PUKbIQPCfK2yx1Tl/sm4j5FrE44wl33j3QA0GUwk93VSj6RNNDHB9VLw==
+=======
+"@salesforce/core@^2.15.2", "@salesforce/core@^2.20.3", "@salesforce/core@^2.6.0":
+  version "2.20.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.20.5.tgz#043d4aa6fb7ffc5270fc69fbec08aa1a52a2f2b7"
+  integrity sha512-hB4o4TuOGJo01rLmx84nf6KFGizDqLo5bmQ8bFlMZw5xKeQaP1Jc74se6hj+6eI5Nx331EvbD+YHphsuLbaJjQ==
+>>>>>>> fix: add hooks matching toolbelt
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.4.3"
@@ -682,10 +693,25 @@
     typescript "^4.1.3"
     xunit-file "^1.0.0"
 
+<<<<<<< HEAD
 "@salesforce/kit@^1.2.2", "@salesforce/kit@^1.3.2", "@salesforce/kit@^1.4.3", "@salesforce/kit@^1.4.5":
   version "1.5.0"
   resolved "https://registry.npmjs.org/@salesforce/kit/-/kit-1.5.0.tgz#81ddd712d224bd9007f8bceb32d1fd13ef7aa57f"
   integrity sha512-Op7Q6bLfzMccX1fbW3/xiNb94/9a8mTTm+EcxsPPFQOwxRWt12uj2htDYZFUgEvVzBWu8V82Vo+g90NG+pvHXA==
+=======
+"@salesforce/kit@^1.2.2", "@salesforce/kit@^1.3.2", "@salesforce/kit@^1.3.3":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.4.1.tgz#561ec1dc8cfe89681c6e56b919dda59ee9e4569e"
+  integrity sha512-Y3M22OT0huDqswtj1lbRWzCOwfyO3ZML0OaXeKaOl0dHf0RggqjEdkSKrctAigZCJRwTSUDRSVXvcBOE962oFQ==
+  dependencies:
+    "@salesforce/ts-types" "^1.5.1"
+    tslib "^1.10.0"
+
+"@salesforce/kit@^1.4.3", "@salesforce/kit@^1.4.5":
+  version "1.4.5"
+  resolved "https://registry.npmjs.org/@salesforce/kit/-/kit-1.4.5.tgz#f892e16079e926b16f85977e3e48c86d950c8cb3"
+  integrity sha512-EPR9BkbdLPr//CB9IXVPUyM0ANEvadlH7yfI1p1xA9lxzSakJk7w2CEds+8VDaJ9nlY60jjSWR8TpJWuPqU6dA==
+>>>>>>> fix: add hooks matching toolbelt
   dependencies:
     "@salesforce/ts-types" "^1.5.5"
     tslib "^1.10.0"
@@ -761,7 +787,18 @@
     sinon "5.1.1"
     tslib "^1.10.0"
 
+<<<<<<< HEAD
 "@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.5.5":
+=======
+"@salesforce/ts-types@^1.0.0", "@salesforce/ts-types@^1.2.0", "@salesforce/ts-types@^1.5.0", "@salesforce/ts-types@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.5.1.tgz#ff0463fa4336397b051b42df40574e6fcacd2780"
+  integrity sha512-6fUVyzh0+6wYUDWAqH9IJbeu7AXUaJoPrYdkDvWxcselXPqr7jycMQHpwLiBcshF9E1gNRj5YfOwFT18cvvFMQ==
+  dependencies:
+    tslib "^1.10.0"
+
+"@salesforce/ts-types@^1.5.5":
+>>>>>>> fix: add hooks matching toolbelt
   version "1.5.5"
   resolved "https://registry.npmjs.org/@salesforce/ts-types/-/ts-types-1.5.5.tgz#cf6d0fe12a8ba48d79b57f63c54b5592c312e0ba"
   integrity sha512-d4YdsA3MBTJcC6ZdqHe2+yv7MWKsoYmgjTlc56SOy8sROrQ9RjJYaUnj1h1Zi1aWGgkGaNCCAOBomcrhMa4crw==

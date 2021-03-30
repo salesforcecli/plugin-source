@@ -4,19 +4,33 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
 import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages } from '@salesforce/core';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
+import { Messages } from '@salesforce/core';
+import { ComponentSet, DeployResult, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, getBoolean, JsonCollection } from '@salesforce/ts-types';
+import { asString, asArray } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
+
+type DeployElement = {
+  fullName: string;
+  metadataName: string;
+  sourcePath: string;
+  state: 'n' | 'c' | 'd';
+  deleteSupported: boolean;
+};
+
+type DeployHook = {
+  [name: string]: {
+    workspaceElements: DeployElement[];
+    mdapiFilePath: string;
+  };
+};
 
 export class Deploy extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -28,14 +42,10 @@ export class Deploy extends SourceCommand {
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
     }),
-    soapdeploy: flags.boolean({
-      default: false,
-      description: messages.getMessage('flags.soapDeploy'),
-    }),
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
-      min: Duration.minutes(0), // wait=0 means deploy is asynchronous
+      min: Duration.minutes(SourceCommand.MINIMUM_SRC_WAIT_MINUTES),
       description: messages.getMessage('flags.wait'),
     }),
     testlevel: flags.enum({
@@ -92,39 +102,30 @@ export class Deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<DeployResult | JsonCollection> {
-    if (this.flags.validateddeployrequestid) {
-      const conn = this.org.getConnection();
-      return conn.deployRecentValidation({
-        id: this.flags.validateddeployrequestid as string,
-        rest: !this.flags.soapdeploy,
-      });
+  public async run(): Promise<DeployResult> {
+    if (this.flags.validatedeployrequestid) {
+      // TODO: return this.doDeployRecentValidation();
     }
 
-    const hookEmitter = Lifecycle.getInstance();
     const cs = await this.createComponentSet({
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
       metadata: asArray<string>(this.flags.metadata),
-      apiversion: asString(this.flags.apiversion),
     });
 
-    await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
+    await this.emitIfListening('predeploy', async () => {
+      return await this.hookEmitter.emit('predeploy', this.massageHookData(cs));
+    });
 
     const results = await cs
       .deploy({
         usernameOrConnection: this.org.getUsername(),
-        apiOptions: {
-          ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
-          rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
-          checkOnly: getBoolean(this.flags, 'checkonly', false),
-          runTests: asArray<string>(this.flags.runtests),
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          testLevel: this.flags.testlevel,
-        },
       })
       .start();
-    await hookEmitter.emit('postdeploy', results);
+
+    await this.emitIfListening('postdeploy', async () => {
+      await this.hookEmitter.emit('postdeploy', results.response);
+    });
 
     // skip a lot of steps that would do nothing
     if (!this.flags.json) {
@@ -134,12 +135,45 @@ export class Deploy extends SourceCommand {
     return results;
   }
 
+  /**
+   * this will map the component set data into the backwards compatible hook format
+   * for the predeploy hook
+   *
+   * @param cs component set to map
+   */
+  private massageHookData(cs: ComponentSet): DeployHook {
+    const preDeployData: DeployHook = {};
+    cs.toArray().forEach((entry: SourceComponent) => {
+      preDeployData[entry.name] = {
+        workspaceElements: [
+          // split the xml entry into its own for backwards compatibility
+          {
+            fullName: entry.fullName,
+            metadataName: entry.type.name,
+            sourcePath: entry.xml,
+            state: 'n',
+            deleteSupported: true,
+          },
+          {
+            fullName: entry.fullName,
+            metadataName: entry.type.name,
+            sourcePath: entry.content,
+            state: 'n',
+            deleteSupported: true,
+          },
+        ],
+        mdapiFilePath: entry.xml,
+      };
+    });
+    return preDeployData;
+  }
+
   private printComponentFailures(result: DeployResult): void {
     if (result.response.status === 'Failed' && result.components) {
       // sort by filename then fullname
       const failures = result.getFileResponses().sort((i, j) => {
         if (i.filePath === j.filePath) {
-          // if they have the same directoryName then sort by fullName
+          // if the have the same directoryName then sort by fullName
           return i.fullName < j.fullName ? 1 : -1;
         }
         return i.filePath < j.filePath ? 1 : -1;
@@ -195,7 +229,7 @@ export class Deploy extends SourceCommand {
     this.printComponentFailures(result);
     // TODO: this.printTestResults(result); <- this has WI @W-8903671@
     if (result.response.success && this.flags.checkonly) {
-      this.ux.log(messages.getMessage('checkOnlySuccess'));
+      this.log(messages.getMessage('checkOnlySuccess'));
     }
 
     return result;
