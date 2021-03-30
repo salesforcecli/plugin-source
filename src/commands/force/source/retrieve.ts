@@ -6,19 +6,39 @@
  */
 import * as os from 'os';
 
+import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfdxError, fs } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
 import { blue } from 'chalk';
-import { MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  MetadataApiRetrieveStatus,
+  RetrieveResult,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
 import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export class Retrieve extends SourceCommand {
+type RetrieveElement = {
+  filePath: string;
+  type: string;
+  fullName: string;
+  state: 'n' | 'c' | 'd';
+  deleteSupported: boolean;
+};
+
+type RetrieveHook = {
+  [name: string]: {
+    workspaceElements: RetrieveElement[];
+  };
+};
+
+export class retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -52,10 +72,7 @@ export class Retrieve extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(): Promise<RetrieveResult> {
-    const hookEmitter = Lifecycle.getInstance();
-
     const defaultPackagePath = this.project.getDefaultPackage().fullPath;
 
     const cs = await this.createComponentSet({
@@ -137,5 +154,35 @@ export class Retrieve extends SourceCommand {
     //   this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
     //   results.failures.forEach((warning) => this.ux.log(warning.message));
     // }
+  }
+  /**
+   * this will map the component set data into the backwards compatible hook format
+   * for the postsourceupdate hook
+   *
+   * @param cs
+   */
+  private massageHookData(cs: ComponentSet): RetrieveHook {
+    const retrieveHook: RetrieveHook = {};
+    cs.toArray().forEach((entry: SourceComponent) => {
+      retrieveHook[entry.fullName] = {
+        workspaceElements: [
+          {
+            filePath: entry.xml,
+            type: entry.type.name,
+            state: 'c',
+            fullName: entry.fullName,
+            deleteSupported: true,
+          },
+          {
+            filePath: entry.content,
+            type: entry.type.name,
+            state: 'c',
+            fullName: entry.fullName,
+            deleteSupported: true,
+          },
+        ],
+      };
+    });
+    return retrieveHook;
   }
 }

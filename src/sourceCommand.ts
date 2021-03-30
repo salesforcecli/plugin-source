@@ -27,6 +27,7 @@ export abstract class SourceCommand extends SfdxCommand {
       await emitterConsumer();
     }
   }
+
   /**
    * will create one ComponentSet to be deployed/retrieved
    * will combine from all options passed in
