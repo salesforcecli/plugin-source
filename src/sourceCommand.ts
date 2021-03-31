@@ -22,6 +22,11 @@ export abstract class SourceCommand extends SfdxCommand {
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
   public hookEmitter = Lifecycle.getInstance();
 
+  public async emitIfListening(topic: string, emitterConsumer: () => Promise<never | void>): Promise<void> {
+    if (this.hookEmitter.getListeners(topic)) {
+      await emitterConsumer();
+    }
+  }
   /**
    * will create one ComponentSet to be deployed/retrieved
    * will combine from all options passed in

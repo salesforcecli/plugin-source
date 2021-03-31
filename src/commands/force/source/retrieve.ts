@@ -66,8 +66,12 @@ export class Retrieve extends SourceCommand {
       apiversion: asString(this.flags.apiversion),
     });
 
-    // Emit the preretrieve event, which needs the package.xml from the ComponentSet
-    await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
+    await this.emitIfListening('preretrieve', async () => {
+      const packageXml = path.join(os.tmpdir(), 'package.xml');
+      fs.writeFileSync(packageXml, cs.getPackageXml());
+      await this.hookEmitter.emit('preretrieve', { packageXmlPath: packageXml });
+      fs.unlinkSync(packageXml);
+    });
 
     const mdapiResult = await cs
       .retrieve({
@@ -79,7 +83,20 @@ export class Retrieve extends SourceCommand {
       .start();
 
     const results = mdapiResult.response;
-    await hookEmitter.emit('postretrieve', results);
+
+    await this.emitIfListening('postretrieve', async () => {
+      const data = {};
+      asArray<FileProperties>(results.fileProperties).forEach((entry) => {
+        data[entry.fullName] = {
+          mdapiFilePath: [entry.fileName],
+        };
+      });
+      await this.hookEmitter.emit('postretrieve', data);
+    });
+
+    await this.emitIfListening('postsourceupdate', async () => {
+      await this.hookEmitter.emit('postsourceupdate', this.massageHookData(cs));
+    });
 
     if (results.status === 'InProgress') {
       throw new SfdxError(messages.getMessage('retrieveTimeout', [(this.flags.wait as Duration).minutes]));
