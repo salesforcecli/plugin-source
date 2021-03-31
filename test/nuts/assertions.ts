@@ -49,6 +49,14 @@ export class Assertions {
   }
 
   /**
+   * Expect given file to NOT be changed according to the file history provided by FileTracker
+   */
+  public fileToNotBeChanged(file: string): void {
+    const fileHistory = this.fileTracker.getLatest(file);
+    expect(fileHistory.changedFromPrevious, 'File to NOT be changed').to.be.false;
+  }
+
+  /**
    * Expect all files found by globs to be changed according to the file history provided by FileTracker
    */
   public async filesToBeChanged(globs: string[]): Promise<void> {
@@ -59,6 +67,19 @@ export class Assertions {
       .filter((f) => !!f);
     const allChanged = fileHistories.every((f) => f.changedFromPrevious);
     expect(allChanged, 'all files to be changed').to.be.true;
+  }
+
+  /**
+   * Expect all files found by globs to NOT be changed according to the file history provided by FileTracker
+   */
+  public async filesToNotBeChanged(globs: string[]): Promise<void> {
+    const files = await this.doGlob(globs);
+    const fileHistories = files
+      .filter((f) => !f.endsWith('.resource-meta.xml'))
+      .map((f) => this.fileTracker.getLatest(f))
+      .filter((f) => !!f);
+    const allChanged = fileHistories.every((f) => f.changedFromPrevious);
+    expect(allChanged, 'all files to NOT be changed').to.be.false;
   }
 
   /**
@@ -122,7 +143,7 @@ export class Assertions {
   }
 
   /**
-   * Expects given globs to return files
+   * Expects files found by glob to not contain any of the provided strings
    */
   public async filesToNotContainString(glob: string, ...strings: string[]): Promise<void> {
     const files = await this.doGlob([glob]);
@@ -130,6 +151,19 @@ export class Assertions {
       const contents = await fs.readFile(file, 'UTF-8');
       for (const str of strings) {
         expect(contents, `expect ${file} to not include ${str}`).to.not.include(str);
+      }
+    }
+  }
+
+  /**
+   * Expects files found by glob to contain the provided strings
+   */
+  public async filesToContainString(glob: string, ...strings: string[]): Promise<void> {
+    const files = await this.doGlob([glob]);
+    for (const file of files) {
+      const contents = await fs.readFile(file, 'UTF-8');
+      for (const str of strings) {
+        expect(contents, `expect ${file} to not include ${str}`).to.include(str);
       }
     }
   }

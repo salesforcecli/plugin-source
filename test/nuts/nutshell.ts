@@ -14,7 +14,7 @@ import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Env } from '@salesforce/kit';
-import { AnyJson, ensureString, JsonMap, Nullable } from '@salesforce/ts-types';
+import { AnyJson, Dictionary, ensureString, JsonMap, Nullable } from '@salesforce/ts-types';
 import { AuthInfo, Connection, fs, NamedPackageDir, SfdxProject } from '@salesforce/core';
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
@@ -177,6 +177,18 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
+   * Read files found by globs
+   */
+  public async readGlobs(globs: string[]): Promise<Dictionary<string>> {
+    const files = await this.doGlob(globs);
+    const returnValue = {};
+    for (const file of files) {
+      returnValue[file] = await fs.readFile(file, 'UTF-8');
+    }
+    return returnValue;
+  }
+
+  /**
    * Read the org's sourcePathInfos.json
    */
   public async readSourcePathInfos(): Promise<AnyJson> {
@@ -207,6 +219,28 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
+   * Write file
+   */
+  public async writeFile(filename: string, contents: string): Promise<void> {
+    return fs.writeFile(filename, contents);
+  }
+
+  /**
+   * Create a package.xml
+   */
+  public async createPackageXml(xml: string): Promise<string> {
+    const packageXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    ${xml}
+    <version>51.0</version>
+</Package>
+    `;
+    const packageXmlPath = path.join(this.session.project.dir, 'package.xml');
+    await fs.writeFile(packageXmlPath, packageXml);
+    return packageXmlPath;
+  }
+
+  /**
    * Delete the org's sourcePathInfos.json
    */
   public async deleteSourcePathInfos(): Promise<void> {
@@ -226,6 +260,16 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public async deleteMaxRevision(): Promise<void> {
     const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
     return fs.unlink(maxRevisionPath);
+  }
+
+  /**
+   * Delete the files found by the given globs
+   */
+  public async deleteGlobs(globs: string[]): Promise<void> {
+    const files = await this.doGlob(globs);
+    for (const file of files) {
+      await fs.unlink(file);
+    }
   }
 
   /**
@@ -405,6 +449,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       : [
           // TODO: remove this config:set call
           'sfdx config:set apiVersion=50.0 --global',
+          'sfdx config:set restDeploy=false --global',
           'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
         ];
     return await TestSession.create({
