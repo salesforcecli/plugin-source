@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, getBoolean } from '@salesforce/ts-types';
+import { asString, asArray, getBoolean, JsonCollection } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { SourceCommand } from '../../../sourceCommand';
 
@@ -92,11 +92,17 @@ export class Deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<DeployResult> {
-    if (this.flags.validatedeployrequestid) {
-      // TODO: return this.doDeployRecentValidation();
-      throw Error('NOT IMPLEMENTED YET');
+  public async run(): Promise<DeployResult | JsonCollection> {
+    if (this.flags.validateddeployrequestid) {
+      const conn = this.org.getConnection();
+      // I believe the below can be removed once core is published, not just linked
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+      return await conn.deployRecentValidation({
+        id: this.flags.validateddeployrequestid as string,
+        rest: !this.flags.soapdeploy,
+      });
     }
+
     const hookEmitter = Lifecycle.getInstance();
     const cs = await this.createComponentSet({
       sourcepath: asArray<string>(this.flags.sourcepath),
@@ -109,9 +115,6 @@ export class Deploy extends SourceCommand {
 
     const results = await cs
       .deploy({
-        apiOptions: {
-          rest: !this.flags.soapdeploy,
-        },
         usernameOrConnection: this.org.getUsername(),
         apiOptions: {
           ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),

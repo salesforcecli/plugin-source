@@ -12,6 +12,7 @@
       "manifest",
       "metadata",
       "runtests",
+      "soapdeploy",
       "sourcepath",
       "targetusername",
       "testlevel",
