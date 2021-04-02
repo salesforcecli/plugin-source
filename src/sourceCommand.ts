@@ -65,10 +65,10 @@ export abstract class SourceCommand extends SfdxCommand {
       logger.debug(`Building ComponentSet from metadata: ${options.metadata.toString()}`);
 
       // Build a Set of metadata entries
-      const compSet = new ComponentSet();
+      const filter = new ComponentSet();
       options.metadata.forEach((entry) => {
         const splitEntry = entry.split(':');
-        compSet.add({
+        filter.add({
           type: splitEntry[0],
           fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
         });
@@ -76,10 +76,8 @@ export abstract class SourceCommand extends SfdxCommand {
 
       // Search the packages directories for matching metadata
       const packageDirs = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
-      for (const packageDir of packageDirs) {
-        logger.debug(`Searching for matching metadata in packageDir: ${packageDir}`);
-        setAggregator.push(...compSet.resolveSourceComponents(packageDir, { filter: compSet }));
-      }
+      logger.debug(`Searching for matching metadata in packageDirs: ${packageDirs.toString()}`);
+      setAggregator.push(...ComponentSet.fromSource({ inclusiveFilter: filter, fsPaths: packageDirs }));
     }
 
     const componentSet = new ComponentSet(setAggregator);

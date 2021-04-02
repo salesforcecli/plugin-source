@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
@@ -114,8 +112,8 @@ export class Deploy extends SourceCommand {
           rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
           checkOnly: getBoolean(this.flags, 'checkonly', false),
           runTests: asArray<string>(this.flags.runtests),
-          // @ts-ignore testLevel isn't on the apiOptions type yet
-          testLevel: asString(this.flags.testlevel, 'NoTestRun'),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          testLevel: this.flags.testlevel,
         },
       })
       .start();
