@@ -7,18 +7,18 @@
 import * as os from 'os';
 
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages, SfdxError, SfdxProjectJson } from '@salesforce/core';
+import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
 import { blue } from 'chalk';
-import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export class retrieve extends SourceCommand {
+export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -32,7 +32,7 @@ export class retrieve extends SourceCommand {
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
-      min: SourceCommand.MINIMUM_SRC_WAIT_MINUTES,
+      min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
     }),
     manifest: flags.filepath({
@@ -53,30 +53,27 @@ export class retrieve extends SourceCommand {
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async run(): Promise<any> {
+  public async run(): Promise<RetrieveResult> {
     const hookEmitter = Lifecycle.getInstance();
 
-    const proj = await SfdxProjectJson.create({});
-    const packages = await proj.getPackageDirectories();
-    const defaultPackage = packages.find((pkg) => pkg.default);
+    const defaultPackagePath = this.project.getDefaultPackage().fullPath;
 
     const cs = await this.createComponentSet({
-      // safe to cast from the flags as an array of strings
       packagenames: asArray<string>(this.flags.packagenames),
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
       metadata: asArray<string>(this.flags.metadata),
+      apiversion: asString(this.flags.apiversion),
     });
 
-    // emit pre retrieve event
-    // needs to be a path to the temp dir package.xml
+    // Emit the preretrieve event, which needs the package.xml from the ComponentSet
     await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
 
     const mdapiResult = await cs
       .retrieve({
         usernameOrConnection: this.org.getUsername(),
         merge: true,
-        output: (this.flags.sourcepath as string) ?? defaultPackage.path,
+        output: defaultPackagePath,
         packageNames: asArray<string>(this.flags.packagenames),
       })
       .start();
@@ -94,7 +91,7 @@ export class retrieve extends SourceCommand {
       this.printTable(results, true);
     }
 
-    return results;
+    return mdapiResult;
   }
 
   /**

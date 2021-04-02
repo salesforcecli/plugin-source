@@ -4,13 +4,14 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
 import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray } from '@salesforce/ts-types';
+import { asString, asArray, getBoolean } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { SourceCommand } from '../../../sourceCommand';
 
@@ -30,7 +31,7 @@ export class Deploy extends SourceCommand {
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
-      min: Duration.minutes(SourceCommand.MINIMUM_SRC_WAIT_MINUTES),
+      min: Duration.minutes(0), // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.wait'),
     }),
     testlevel: flags.enum({
@@ -90,6 +91,7 @@ export class Deploy extends SourceCommand {
   public async run(): Promise<DeployResult> {
     if (this.flags.validatedeployrequestid) {
       // TODO: return this.doDeployRecentValidation();
+      throw Error('NOT IMPLEMENTED YET');
     }
     const hookEmitter = Lifecycle.getInstance();
 
@@ -97,6 +99,7 @@ export class Deploy extends SourceCommand {
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
       metadata: asArray<string>(this.flags.metadata),
+      apiversion: asString(this.flags.apiversion),
     });
 
     await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
@@ -104,6 +107,14 @@ export class Deploy extends SourceCommand {
     const results = await cs
       .deploy({
         usernameOrConnection: this.org.getUsername(),
+        apiOptions: {
+          ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
+          rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
+          checkOnly: getBoolean(this.flags, 'checkonly', false),
+          runTests: asArray<string>(this.flags.runtests),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          testLevel: this.flags.testlevel,
+        },
       })
       .start();
     await hookEmitter.emit('postdeploy', results);
@@ -121,7 +132,7 @@ export class Deploy extends SourceCommand {
       // sort by filename then fullname
       const failures = result.getFileResponses().sort((i, j) => {
         if (i.filePath === j.filePath) {
-          // if the have the same directoryName then sort by fullName
+          // if they have the same directoryName then sort by fullName
           return i.fullName < j.fullName ? 1 : -1;
         }
         return i.filePath < j.filePath ? 1 : -1;
@@ -177,7 +188,7 @@ export class Deploy extends SourceCommand {
     this.printComponentFailures(result);
     // TODO: this.printTestResults(result); <- this has WI @W-8903671@
     if (result.response.success && this.flags.checkonly) {
-      this.log(messages.getMessage('checkOnlySuccess'));
+      this.ux.log(messages.getMessage('checkOnlySuccess'));
     }
 
     return result;
