@@ -10,7 +10,7 @@
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
 import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
@@ -158,8 +158,7 @@ describe('SourceCommand', () => {
 
     it('should create ComponentSet from wildcarded metadata (ApexClass)', async () => {
       componentSet.add(apexClassComponent);
-      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
-      resolveStub.returns(componentSet);
+      fromSourceStub.returns(componentSet);
       const packageDir1 = path.resolve('force-app');
       getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
       const options = {
@@ -169,19 +168,19 @@ describe('SourceCommand', () => {
       };
 
       const compSet = await command.callCreateComponentSet(options);
-      expect(resolveStub.calledOnce).to.equal(true);
-      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      expect(fromSourceStub.calledOnce).to.equal(true);
+      const fromSourceArgs = fromSourceStub.firstCall.args[0] as FromSourceOptions;
+      expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: '*' });
-      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
     it('should create ComponentSet from specific metadata (ApexClass:MyClass)', async () => {
       componentSet.add(apexClassComponent);
-      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
-      resolveStub.returns(componentSet);
+      fromSourceStub.returns(componentSet);
       const packageDir1 = path.resolve('force-app');
       getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
       const options = {
@@ -191,11 +190,12 @@ describe('SourceCommand', () => {
       };
 
       const compSet = await command.callCreateComponentSet(options);
-      expect(resolveStub.calledOnce).to.equal(true);
-      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      expect(fromSourceStub.calledOnce).to.equal(true);
+      const fromSourceArgs = fromSourceStub.firstCall.args[0] as FromSourceOptions;
+      expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: 'MyClass' });
-      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
@@ -203,8 +203,7 @@ describe('SourceCommand', () => {
     it('should create ComponentSet from multiple metadata (ApexClass:MyClass,CustomObject)', async () => {
       componentSet.add(apexClassComponent);
       componentSet.add(customObjectComponent);
-      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
-      resolveStub.returns(componentSet);
+      fromSourceStub.returns(componentSet);
       const packageDir1 = path.resolve('force-app');
       getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }]);
       const options = {
@@ -214,12 +213,13 @@ describe('SourceCommand', () => {
       };
 
       const compSet = await command.callCreateComponentSet(options);
-      expect(resolveStub.calledOnce).to.equal(true);
-      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
+      expect(fromSourceStub.calledOnce).to.equal(true);
+      const fromSourceArgs = fromSourceStub.firstCall.args[0] as FromSourceOptions;
+      expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: 'MyClass' });
       filter.add({ type: 'CustomObject', fullName: '*' });
-      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
+      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(customObjectComponent)).to.equal(true);
@@ -227,12 +227,9 @@ describe('SourceCommand', () => {
 
     it('should create ComponentSet from metadata and multiple package directories', async () => {
       componentSet.add(apexClassComponent);
-      const componentSet2 = new ComponentSet();
       const apexClassComponent2 = { type: 'ApexClass', fullName: 'MyClass2' };
-      componentSet2.add(apexClassComponent2);
-      const resolveStub = stubMethod(sandbox, ComponentSet.prototype, 'resolveSourceComponents');
-      resolveStub.onFirstCall().returns(componentSet);
-      resolveStub.onSecondCall().returns(componentSet2);
+      componentSet.add(apexClassComponent2);
+      fromSourceStub.returns(componentSet);
       const packageDir1 = path.resolve('force-app');
       const packageDir2 = path.resolve('my-app');
       getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }, { fullPath: packageDir2 }]);
@@ -243,13 +240,12 @@ describe('SourceCommand', () => {
       };
 
       const compSet = await command.callCreateComponentSet(options);
-      expect(resolveStub.callCount).to.equal(2);
-      expect(resolveStub.firstCall.args[0]).to.equal(packageDir1);
-      expect(resolveStub.secondCall.args[0]).to.equal(packageDir2);
+      expect(fromSourceStub.calledOnce).to.equal(true);
+      const fromSourceArgs = fromSourceStub.firstCall.args[0] as FromSourceOptions;
+      expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1, packageDir2]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: '*' });
-      expect(resolveStub.firstCall.args[1]).to.deep.equal({ filter });
-      expect(resolveStub.secondCall.args[1]).to.deep.equal({ filter });
+      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);

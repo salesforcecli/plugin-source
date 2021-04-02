@@ -85,7 +85,7 @@ describe('force:source:deploy', () => {
         rollbackOnError: true,
         checkOnly: false,
         runTests: undefined,
-        testLevel: 'NoTestRun',
+        testLevel: undefined,
       },
     };
     if (overrides?.apiOptions) {
