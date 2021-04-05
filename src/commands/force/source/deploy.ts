@@ -30,7 +30,7 @@ export class Deploy extends SourceCommand {
     }),
     soapdeploy: flags.boolean({
       default: false,
-      description: messages.getMessage('flags.checkonly'),
+      description: messages.getMessage('flags.soapDeploy'),
     }),
     wait: flags.minutes({
       char: 'w',
@@ -95,9 +95,7 @@ export class Deploy extends SourceCommand {
   public async run(): Promise<DeployResult | JsonCollection> {
     if (this.flags.validateddeployrequestid) {
       const conn = this.org.getConnection();
-      // I believe the below can be removed once core is published, not just linked
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
-      return await conn.deployRecentValidation({
+      return conn.deployRecentValidation({
         id: this.flags.validateddeployrequestid as string,
         rest: !this.flags.soapdeploy,
       });

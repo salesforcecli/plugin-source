@@ -24,7 +24,8 @@
     "runTests": "tests to run if --testlevel RunSpecifiedTests",
     "ignoreErrors": "ignore any errors and do not roll back deployment",
     "ignoreWarnings": "whether a warning will allow a deployment to complete successfully",
-    "validateDeployRequestId": "request ID of the validated deployment to run a Quick Deploy"
+    "validateDeployRequestId": "request ID of the validated deployment to run a Quick Deploy",
+    "soapDeploy": "deploy metadata with SOAP API instead of REST API"
   },
   "checkOnlySuccess": "\nSuccessfully validated the deployment"
 }
