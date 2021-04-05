@@ -7,7 +7,7 @@
   "dependencies": {
     "@oclif/config": "^1",
     "@salesforce/command": "^3.1.0",
-    "@salesforce/core": "^2.20.5",
+    "@salesforce/core": "^2.20.8",
     "@salesforce/source-deploy-retrieve": "1.1.21",
     "chalk": "^4.1.0",
     "tslib": "^2"
