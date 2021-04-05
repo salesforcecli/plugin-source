@@ -738,7 +738,7 @@
   resolved "https://registry.yarnpkg.com/@salesforce/schemas/-/schemas-1.0.4.tgz#e75ea97102f028bb1773523ca4e783e89a381ff7"
   integrity sha512-JatCrSuWbr4aWJlkJ9CVCUucZvY1pfKfO/m1AHxaWix5kUQykA+oI1zQRKjelOy2IbDmz09cBCEGjMrMp3u+dA==
 
-"@salesforce/source-deploy-retrieve@^1.1.19":
+"@salesforce/source-deploy-retrieve@1.1.21":
   version "1.1.21"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-1.1.21.tgz#afb3b7dfe5b79ce1b3b9a016433fba9e3d83e0c7"
   integrity sha512-+2nJh/GsSGE6bUolrcV6zA+RAutGIKjzS6IS7uFwHrpy0r7NCElgjRL/EkfahMgKxuVJDg8nQiVzWzi108AgPw==
