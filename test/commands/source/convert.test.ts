@@ -10,7 +10,6 @@ import { Dictionary } from '@salesforce/ts-types';
 import { DeployResult, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { SfdxProjectJson } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
 import { FlagOptions } from '../../../src/sourceCommand';
 
@@ -19,7 +18,7 @@ describe('force:source:convert', () => {
   let deployStub: sinon.SinonStub;
 
   const defaultDir = join('my', 'default', 'package');
-  const secondDir = join('new', 'package', 'directory');
+  const myApp = join('new', 'package', 'directory');
 
   const sandbox = sinon.createSandbox();
   const packageXml = 'package.xml';
@@ -35,6 +34,12 @@ describe('force:source:convert', () => {
       },
       logger: {
         debug: () => {},
+      },
+      project: {
+        getPackagePath: () => myApp,
+        getDefaultPackage: () => {
+          return { path: defaultDir };
+        },
       },
       createComponentSet: createComponentSetStub,
     }) as Promise<DeployResult>;
@@ -54,22 +59,7 @@ describe('force:source:convert', () => {
   };
 
   beforeEach(() => {
-    sandbox.stub(SfdxProjectJson, 'create').resolves(SfdxProjectJson.prototype);
     sandbox.stub(MetadataConverter.prototype, 'convert').resolves({ packagePath: 'temp' });
-    sandbox.stub(SfdxProjectJson.prototype, 'getPackageDirectoriesSync').returns([
-      {
-        fullPath: defaultDir,
-        default: true,
-        name: 'force-app',
-        path: defaultDir,
-      },
-      {
-        fullPath: secondDir,
-        path: secondDir,
-        default: false,
-        name: 'rootdir',
-      },
-    ]);
     createComponentSetStub = sandbox.stub().returns({
       deploy: deployStub,
       getPackageXml: () => packageXml,
@@ -93,7 +83,7 @@ describe('force:source:convert', () => {
   });
 
   it('should should override sourcepath with rootdir', async () => {
-    const sourcepath = [secondDir];
+    const sourcepath = [myApp];
     const result = await run({ sourcepath, rootdir: 'rootdir', json: true });
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({ sourcepath });
@@ -126,6 +116,6 @@ describe('force:source:convert', () => {
   it('should call root dir with rootdir flag', async () => {
     const result = await run({ rootdir: 'rootdir', json: true });
     expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ sourcepath: [secondDir] });
+    ensureCreateComponentSetArgs({ sourcepath: [myApp] });
   });
 });
