@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { resolve } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxProjectJson } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { asArray, asString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
@@ -57,15 +57,14 @@ export class Convert extends SourceCommand {
 
   public async run(): Promise<ConvertResult> {
     let path: string[];
-    const proj = await SfdxProjectJson.create({});
 
     if (this.flags.rootdir) {
-      path = [proj.getPackageDirectoriesSync().find((pkg) => pkg.name === this.flags.rootdir)?.path];
+      path = [this.project.getPackagePath(this.flags.rootdir)];
     }
 
     // no options passed, convert the default package (usually force-app)
     if (!this.flags.sourcepath && !this.flags.metadata && !this.flags.manifest && !path?.length) {
-      path = [proj.getPackageDirectoriesSync().find((pkg) => pkg.default)?.path];
+      path = [this.project.getDefaultPackage().path];
     }
 
     const cs = await this.createComponentSet({
