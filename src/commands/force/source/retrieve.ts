@@ -16,6 +16,7 @@ import {
   ComponentSet,
   MetadataApiRetrieveStatus,
   RetrieveResult,
+  MetadataConverter,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
 import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
@@ -102,13 +103,19 @@ export class retrieve extends SourceCommand {
     const results = mdapiResult.response;
 
     await this.emitIfListening('postretrieve', async () => {
+      const converter = new MetadataConverter();
+      const converted = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
+        outputDirectory: 'temp',
+        type: 'directory',
+      });
       const data = {};
-      asArray<FileProperties>(results.fileProperties).forEach((entry) => {
+      converted.converted.forEach((entry) => {
         data[entry.fullName] = {
-          mdapiFilePath: [entry.fileName],
+          mdapiFilePath: [entry.content],
         };
       });
       await this.hookEmitter.emit('postretrieve', data);
+      fs.rmdirSync('temp');
     });
 
     await this.emitIfListening('postsourceupdate', async () => {

@@ -45,7 +45,7 @@ export class Deploy extends SourceCommand {
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
-      min: Duration.minutes(SourceCommand.MINIMUM_SRC_WAIT_MINUTES),
+      min: Duration.minutes(0),
       description: messages.getMessage('flags.wait'),
     }),
     testlevel: flags.enum({
