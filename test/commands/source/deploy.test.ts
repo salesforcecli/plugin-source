@@ -5,9 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { DeployResult, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  DeployResult,
+  MetadataApiDeployOptions,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
 import { Dictionary } from '@salesforce/ts-types';
 import { Lifecycle } from '@salesforce/core';
 import { Deploy } from '../../../src/commands/force/source/deploy';
@@ -44,6 +50,7 @@ describe('force:source:deploy', () => {
         getUsername: () => username,
       },
       createComponentSet: createComponentSetStub,
+      emitIfListening: lifecycleEmitStub,
     }) as Promise<DeployResult>;
   };
 
@@ -100,11 +107,7 @@ describe('force:source:deploy', () => {
     const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
     expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({
-      packageXmlPath: packageXml,
-    });
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
-    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults);
   };
 
   it('should pass along sourcepath', async () => {
@@ -170,5 +173,60 @@ describe('force:source:deploy', () => {
       },
     });
     ensureHookArgs();
+  });
+
+  it('will correctly massage data', () => {
+    const xml1 = join('first', 'path', 'to', 'my', 'xml');
+    const xml2 = join('second', 'path', 'to', 'my', 'xml');
+    const cls1 = join('first', 'path', 'to', 'my', 'cls');
+    const cls2 = join('second', 'path', 'to', 'my', 'cls');
+    const cs = new ComponentSet();
+    sandbox.stub(cs, 'toArray').returns(([
+      { name: 'MyClass', fullName: 'test1', type: { name: 'ApexClass' }, content: cls1, xml: xml1 },
+      { name: 'MySecondClass', fullName: 'test2', type: { name: 'ApexClass' }, content: cls2, xml: xml2 },
+    ] as unknown) as SourceComponent[]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const res = Deploy.prototype.massageHookData(cs);
+    expect(res).to.deep.equal({
+      MyClass: {
+        mdapiFilePath: 'first/path/to/my/xml',
+        workspaceElements: [
+          {
+            deleteSupported: true,
+            fullName: 'test1',
+            metadataName: 'ApexClass',
+            sourcePath: 'first/path/to/my/xml',
+            state: 'n',
+          },
+          {
+            deleteSupported: true,
+            fullName: 'test1',
+            metadataName: 'ApexClass',
+            sourcePath: 'first/path/to/my/cls',
+            state: 'n',
+          },
+        ],
+      },
+      MySecondClass: {
+        mdapiFilePath: 'second/path/to/my/xml',
+        workspaceElements: [
+          {
+            deleteSupported: true,
+            fullName: 'test2',
+            metadataName: 'ApexClass',
+            sourcePath: 'second/path/to/my/xml',
+            state: 'n',
+          },
+          {
+            deleteSupported: true,
+            fullName: 'test2',
+            metadataName: 'ApexClass',
+            sourcePath: 'second/path/to/my/cls',
+            state: 'n',
+          },
+        ],
+      },
+    });
   });
 });

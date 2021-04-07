@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { fs, Lifecycle, SfdxError, Logger } from '@salesforce/core';
+import { fs, SfdxError, Logger, Lifecycle } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
 export type FlagOptions = {

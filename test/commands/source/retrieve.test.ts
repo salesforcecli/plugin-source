@@ -5,9 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { RetrieveResult, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, RetrieveOptions, ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Dictionary } from '@salesforce/ts-types';
 import { Lifecycle } from '@salesforce/core';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
@@ -51,6 +52,7 @@ describe('force:source:retrieve', () => {
       project: {
         getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
       },
+      emitIfListening: lifecycleEmitStub,
       createComponentSet: createComponentSetStub,
     }) as Promise<RetrieveResult>;
   };
@@ -101,13 +103,10 @@ describe('force:source:retrieve', () => {
   // Ensure Lifecycle hooks are called properly
   const ensureHookArgs = () => {
     const failureMsg = 'Lifecycle.emit() should be called for preretrieve and postretrieve';
-    expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
+    expect(lifecycleEmitStub.calledThrice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({
-      packageXmlPath: packageXml,
-    });
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
-    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults.response);
+    expect(lifecycleEmitStub.thirdCall.args[0]).to.equal('postsourceupdate');
   };
 
   it('should pass along sourcepath', async () => {
@@ -155,5 +154,58 @@ describe('force:source:retrieve', () => {
     ensureCreateComponentSetArgs({ manifest, packagenames });
     ensureRetrieveArgs({ packageNames: packagenames });
     ensureHookArgs();
+  });
+
+  it('will correctly massage data', () => {
+    const xml1 = join('first', 'path', 'to', 'my', 'xml');
+    const xml2 = join('second', 'path', 'to', 'my', 'xml');
+    const cls1 = join('first', 'path', 'to', 'my', 'cls');
+    const cls2 = join('second', 'path', 'to', 'my', 'cls');
+    const cs = new ComponentSet();
+    sandbox.stub(cs, 'toArray').returns(([
+      { fullName: 'test1', type: { name: 'ApexClass' }, content: cls1, xml: xml1 },
+      { fullName: 'test2', type: { name: 'ApexClass' }, content: cls2, xml: xml2 },
+    ] as unknown) as SourceComponent[]);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const res = Retrieve.prototype.massageHookData(cs);
+    expect(res).to.deep.equal({
+      test1: {
+        workspaceElements: [
+          {
+            deleteSupported: true,
+            filePath: 'first/path/to/my/xml',
+            fullName: 'test1',
+            state: 'c',
+            type: 'ApexClass',
+          },
+          {
+            deleteSupported: true,
+            filePath: 'first/path/to/my/cls',
+            fullName: 'test1',
+            state: 'c',
+            type: 'ApexClass',
+          },
+        ],
+      },
+      test2: {
+        workspaceElements: [
+          {
+            deleteSupported: true,
+            filePath: 'second/path/to/my/xml',
+            fullName: 'test2',
+            state: 'c',
+            type: 'ApexClass',
+          },
+          {
+            deleteSupported: true,
+            filePath: 'second/path/to/my/cls',
+            fullName: 'test2',
+            state: 'c',
+            type: 'ApexClass',
+          },
+        ],
+      },
+    });
   });
 });

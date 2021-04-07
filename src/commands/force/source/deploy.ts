@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ComponentSet, DeployResult, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray } from '@salesforce/ts-types';
+import { asString, asArray, getBoolean, JsonCollection } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { SourceCommand } from '../../../sourceCommand';
 
@@ -42,10 +42,14 @@ export class Deploy extends SourceCommand {
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
     }),
+    soapdeploy: flags.boolean({
+      default: false,
+      description: messages.getMessage('flags.soapDeploy'),
+    }),
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
-      min: Duration.minutes(0),
+      min: Duration.minutes(0), // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.wait'),
     }),
     testlevel: flags.enum({
@@ -102,15 +106,20 @@ export class Deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<DeployResult> {
-    if (this.flags.validatedeployrequestid) {
-      // TODO: return this.doDeployRecentValidation();
+  public async run(): Promise<DeployResult | JsonCollection> {
+    if (this.flags.validateddeployrequestid) {
+      const conn = this.org.getConnection();
+      return conn.deployRecentValidation({
+        id: this.flags.validateddeployrequestid as string,
+        rest: !this.flags.soapdeploy,
+      });
     }
 
     const cs = await this.createComponentSet({
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
       metadata: asArray<string>(this.flags.metadata),
+      apiversion: asString(this.flags.apiversion),
     });
 
     await this.emitIfListening('predeploy', async () => {
@@ -120,6 +129,14 @@ export class Deploy extends SourceCommand {
     const results = await cs
       .deploy({
         usernameOrConnection: this.org.getUsername(),
+        apiOptions: {
+          ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
+          rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
+          checkOnly: getBoolean(this.flags, 'checkonly', false),
+          runTests: asArray<string>(this.flags.runtests),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          testLevel: this.flags.testlevel,
+        },
       })
       .start();
 
@@ -173,7 +190,7 @@ export class Deploy extends SourceCommand {
       // sort by filename then fullname
       const failures = result.getFileResponses().sort((i, j) => {
         if (i.filePath === j.filePath) {
-          // if the have the same directoryName then sort by fullName
+          // if they have the same directoryName then sort by fullName
           return i.fullName < j.fullName ? 1 : -1;
         }
         return i.filePath < j.filePath ? 1 : -1;
@@ -229,7 +246,7 @@ export class Deploy extends SourceCommand {
     this.printComponentFailures(result);
     // TODO: this.printTestResults(result); <- this has WI @W-8903671@
     if (result.response.success && this.flags.checkonly) {
-      this.log(messages.getMessage('checkOnlySuccess'));
+      this.ux.log(messages.getMessage('checkOnlySuccess'));
     }
 
     return result;

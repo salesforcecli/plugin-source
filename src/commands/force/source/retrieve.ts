@@ -39,7 +39,7 @@ type RetrieveHook = {
   };
 };
 
-export class retrieve extends SourceCommand {
+export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
