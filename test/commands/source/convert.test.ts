@@ -36,7 +36,6 @@ describe('force:source:convert', () => {
         debug: () => {},
       },
       project: {
-        getPackagePath: () => myApp,
         getDefaultPackage: () => {
           return { path: defaultDir };
         },
@@ -48,7 +47,7 @@ describe('force:source:convert', () => {
   // Ensure SourceCommand.createComponentSet() args
   const ensureCreateComponentSetArgs = (overrides?: Partial<FlagOptions>) => {
     const defaultArgs = {
-      sourcepath: undefined,
+      sourcepath: [],
       manifest: undefined,
       metadata: undefined,
     };
@@ -82,13 +81,6 @@ describe('force:source:convert', () => {
     ensureCreateComponentSetArgs({ sourcepath });
   });
 
-  it('should should override sourcepath with rootdir', async () => {
-    const sourcepath = [myApp];
-    const result = await run({ sourcepath, rootdir: 'rootdir', json: true });
-    expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ sourcepath });
-  });
-
   it('should call default package dir if no args', async () => {
     const result = await run({ json: true });
     expect(result).to.deep.equal({ location: resolve('temp') });
@@ -114,8 +106,28 @@ describe('force:source:convert', () => {
   });
 
   it('should call root dir with rootdir flag', async () => {
-    const result = await run({ rootdir: 'rootdir', json: true });
+    const result = await run({ rootdir: myApp, json: true });
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({ sourcepath: [myApp] });
+  });
+
+  describe('rootdir should be overwritten by any other flag', () => {
+    it('sourcepath', async () => {
+      const result = await run({ rootdir: myApp, sourcepath: [defaultDir], json: true });
+      expect(result).to.deep.equal({ location: resolve('temp') });
+      ensureCreateComponentSetArgs({ sourcepath: [defaultDir] });
+    });
+
+    it('metadata', async () => {
+      const result = await run({ rootdir: myApp, metadata: ['ApexClass', 'CustomObject'], json: true });
+      expect(result).to.deep.equal({ location: resolve('temp') });
+      ensureCreateComponentSetArgs({ metadata: ['ApexClass', 'CustomObject'] });
+    });
+
+    it('package', async () => {
+      const result = await run({ rootdir: myApp, manifest: packageXml, json: true });
+      expect(result).to.deep.equal({ location: resolve('temp') });
+      ensureCreateComponentSetArgs({ manifest: packageXml });
+    });
   });
 });

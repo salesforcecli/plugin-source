@@ -56,19 +56,26 @@ export class Convert extends SourceCommand {
   };
 
   public async run(): Promise<ConvertResult> {
-    let path: string[];
+    const paths: string[] = [];
 
-    if (this.flags.rootdir) {
-      path = [this.project.getPackagePath(this.flags.rootdir)];
+    if (this.flags.sourcepath) {
+      paths.push(...this.flags.sourcepath);
+    }
+
+    // rootdir behaves exclusively to sourcepath, metadata, and manifest... to maintain backwards compatibility
+    // we will check here, instead of adding the exclusive option to the flag definition so we don't break scripts
+    if (this.flags.rootdir && !this.flags.sourcepath && !this.flags.metadata && !this.flags.manifest) {
+      // only rootdir option passed
+      paths.push(this.flags.rootdir);
     }
 
     // no options passed, convert the default package (usually force-app)
-    if (!this.flags.sourcepath && !this.flags.metadata && !this.flags.manifest && !path?.length) {
-      path = [this.project.getDefaultPackage().path];
+    if (!this.flags.sourcepath && !this.flags.metadata && !this.flags.manifest && !this.flags.rootdir) {
+      paths.push(this.project.getDefaultPackage().path);
     }
 
     const cs = await this.createComponentSet({
-      sourcepath: asArray<string>(path || this.flags.sourcepath),
+      sourcepath: paths,
       manifest: asString(this.flags.manifest),
       metadata: asArray<string>(this.flags.metadata),
     });
