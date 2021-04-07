@@ -1,0 +1,16 @@
+{
+  "description": "convert source into Metadata API format",
+  "examples": [
+    "$ sfdx force:source:convert -r path/to/source",
+    "$ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'"
+  ],
+  "flags": {
+    "rootdir": "a source directory other than the default package to convert",
+    "outputdir": "output directory to store the Metadata API–formatted files in",
+    "packagename": "name of the package to associate with the metadata-formatted files",
+    "manifest": "file path to manifest (package.xml) of metadata types to convert.",
+    "sourcepath": "comma-separated list of paths to the local source files to convert",
+    "metadata": "comma-separated list of metadata component names to convert"
+  },
+  "success": "Source was successfully converted to Metadata API format and written to the location: %s"
+}
