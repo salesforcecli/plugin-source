@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/salesforcecli/plugin-source/compare/v0.0.5...v0.0.6) (2021-04-09)
+
+
+### Bug Fixes
+
+* add progress bar to deploy ([#65](https://github.com/salesforcecli/plugin-source/issues/65)) ([df2f5e0](https://github.com/salesforcecli/plugin-source/commit/df2f5e0de2dea2d509d4b0a3c0ceae8cc75411b9))
+
 ### [0.0.5](https://github.com/salesforcecli/plugin-source/compare/v0.0.4...v0.0.5) (2021-04-07)
 
 
