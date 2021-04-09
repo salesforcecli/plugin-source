@@ -740,7 +740,7 @@
 
 "@salesforce/source-deploy-retrieve@1.1.21":
   version "1.1.21"
-  resolved "https://registry.npmjs.org/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-1.1.21.tgz#afb3b7dfe5b79ce1b3b9a016433fba9e3d83e0c7"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-1.1.21.tgz#afb3b7dfe5b79ce1b3b9a016433fba9e3d83e0c7"
   integrity sha512-+2nJh/GsSGE6bUolrcV6zA+RAutGIKjzS6IS7uFwHrpy0r7NCElgjRL/EkfahMgKxuVJDg8nQiVzWzi108AgPw==
   dependencies:
     "@salesforce/core" "2.13.0"

@@ -38,6 +38,11 @@
     ]
   },
   {
+    "command": "force:source:deploy:cancel",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
+  },
+  {
     "command": "force:source:retrieve",
     "plugin": "@salesforce/plugin-source",
     "flags": [

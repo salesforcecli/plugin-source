@@ -91,7 +91,12 @@
         "external": true,
         "subtopics": {
           "source": {
-            "description": "commands to interact with source formatted metadata"
+            "description": "commands to interact with source formatted metadata",
+            "subtopics": {
+              "deploy": {
+                "description": "interact with an active deploy request"
+              }
+            }
           }
         }
       }

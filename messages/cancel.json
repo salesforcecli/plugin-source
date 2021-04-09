@@ -1,0 +1,12 @@
+{
+  "description": "cancel a source deployment",
+  "examples": [
+    "$ sfdx force:source:deploy:cancel",
+    "$ sfdx force:source:deploy:cancel -w 2",
+    "$ sfdx force:source:deploy:cancel -i <jobid>"
+  ],
+  "flags": {
+    "wait": "wait time for command to finish in minutes",
+    "jobid": "job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if not specified"
+  }
+}

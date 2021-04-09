@@ -135,6 +135,9 @@ export class Deploy extends SourceCommand {
 
     await hookEmitter.emit('postdeploy', results);
 
+    const file = this.getConfig();
+    await file.write({ [SourceCommand.STASH_KEY]: { jobid: results.response.id } });
+
     // skip a lot of steps that would do nothing
     if (!this.flags.json) {
       this.print(results);
