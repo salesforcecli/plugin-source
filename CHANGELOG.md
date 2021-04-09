@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/salesforcecli/plugin-source/compare/v0.0.6...v0.0.7) (2021-04-09)
+
+
+### Bug Fixes
+
+* add deploy:cancel ([#66](https://github.com/salesforcecli/plugin-source/issues/66)) ([1e673a2](https://github.com/salesforcecli/plugin-source/commit/1e673a28943d306f85baa1728e9f438b570cc0e3))
+
 ### [0.0.6](https://github.com/salesforcecli/plugin-source/compare/v0.0.5...v0.0.6) (2021-04-09)
 
 
