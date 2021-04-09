@@ -9,14 +9,18 @@ import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
+import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString, asArray, getBoolean, JsonCollection } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
+import cli from 'cli-ux';
+import { env } from '@salesforce/kit';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
+
+type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export class Deploy extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -111,19 +115,24 @@ export class Deploy extends SourceCommand {
 
     await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
 
-    const results = await cs
-      .deploy({
-        usernameOrConnection: this.org.getUsername(),
-        apiOptions: {
-          ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
-          rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
-          checkOnly: getBoolean(this.flags, 'checkonly', false),
-          runTests: asArray<string>(this.flags.runtests),
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          testLevel: this.flags.testlevel,
-        },
-      })
-      .start();
+    const deploy = cs.deploy({
+      usernameOrConnection: this.org.getUsername(),
+      apiOptions: {
+        ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
+        rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
+        checkOnly: getBoolean(this.flags, 'checkonly', false),
+        runTests: asArray<string>(this.flags.runtests),
+        testLevel: this.flags.testlevel as TestLevel,
+      },
+    });
+
+    // if SFDX_USE_PROGRESS_BAR is true and no --json flag use progress bar, if not, skip
+    if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
+      this.progress(deploy);
+    }
+
+    const results = await deploy.start();
+
     await hookEmitter.emit('postdeploy', results);
 
     const file = this.getConfig();
@@ -135,6 +144,51 @@ export class Deploy extends SourceCommand {
     }
 
     return results;
+  }
+
+  private progress(deploy: MetadataApiDeploy): void {
+    // cli.progress doesn't have typings
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const progressBar = cli.progress({
+      format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
+      barCompleteChar: '\u2588',
+      barIncompleteChar: '\u2591',
+      linewrap: true,
+    });
+    let printOnce = true;
+    deploy.onUpdate((data) => {
+      // the numCompTot. isn't computed right away, wait to start until we know how many we have
+      if (data.numberComponentsTotal && printOnce) {
+        this.ux.log(`Job ID | ${data.id}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
+        printOnce = false;
+      }
+
+      // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
+      if (data.numberTestsTotal) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+      progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
+    });
+
+    deploy.onFinish(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      progressBar.stop();
+    });
+
+    deploy.onCancel(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      progressBar.stop();
+    });
+
+    deploy.onError(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      progressBar.stop();
+    });
   }
 
   private printComponentFailures(result: DeployResult): void {

@@ -10,6 +10,7 @@
     "@salesforce/core": "^2.20.8",
     "@salesforce/source-deploy-retrieve": "1.1.21",
     "chalk": "^4.1.0",
+    "cli-ux": "^5.5.1",
     "tslib": "^2"
   },
   "devDependencies": {
