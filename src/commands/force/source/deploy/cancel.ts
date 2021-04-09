@@ -41,11 +41,15 @@ export class Cancel extends SourceCommand {
       id = asString((stash.get(SourceCommand.STASH_KEY) as { jobid: string }).jobid);
     }
 
+    // first cancel the deploy
     // TODO: update to use SDRL we can just do this for now
     // this is the toolbelt implementation
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-    return (await this.org.getConnection().metadata['_invoke']('cancelDeploy', {
+    await this.org.getConnection().metadata['_invoke']('cancelDeploy', {
       id,
-    })) as DeployResult;
+    });
+
+    // then print the status of the cancelled deploy
+    return this.deployReport(id);
   }
 }

@@ -8,7 +8,6 @@
 import { Messages } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
-import { asString } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../../sourceCommand';
 
@@ -32,18 +31,6 @@ export class Report extends SourceCommand {
   };
 
   public async run(): Promise<DeployResult> {
-    let id = asString(this.flags.jobid);
-    if (!id) {
-      const stash = this.getConfig();
-      stash.readSync();
-      id = asString((stash.get(SourceCommand.STASH_KEY) as { jobid: string }).jobid);
-    }
-
-    this.ux.log(`Job ID | ${id}`);
-
-    // TODO: replace with SDRL implementation
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return await this.org.getConnection().metadata.checkDeployStatus(id);
+    return await this.deployReport(this.flags.jobid);
   }
 }

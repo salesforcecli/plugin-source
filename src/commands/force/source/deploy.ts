@@ -13,7 +13,6 @@ import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retri
 import { Duration } from '@salesforce/kit';
 import { asString, asArray, getBoolean, JsonCollection } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
-import cli from 'cli-ux';
 import { env } from '@salesforce/kit';
 import { SourceCommand } from '../../../sourceCommand';
 
@@ -126,7 +125,7 @@ export class Deploy extends SourceCommand {
       },
     });
 
-    // if SFDX_USE_PROGRESS_BAR is true and no --json flag use progress bar, if not, skip
+    // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
     if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
       this.progress(deploy);
     }
@@ -147,47 +146,34 @@ export class Deploy extends SourceCommand {
   }
 
   private progress(deploy: MetadataApiDeploy): void {
-    // cli.progress doesn't have typings
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const progressBar = cli.progress({
-      format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
-      barCompleteChar: '\u2588',
-      barIncompleteChar: '\u2591',
-      linewrap: true,
-    });
     let printOnce = true;
     deploy.onUpdate((data) => {
       // the numCompTot. isn't computed right away, wait to start until we know how many we have
       if (data.numberComponentsTotal && printOnce) {
         this.ux.log(`Job ID | ${data.id}`);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-        progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
+        this.progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
         printOnce = false;
       }
 
       // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
       if (data.numberTestsTotal) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-        progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
+        this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-      progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
+      this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
     });
 
+    // any thing else should stop the progress bar
     deploy.onFinish(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      progressBar.stop();
+      this.progressBar.stop();
     });
 
     deploy.onCancel(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      progressBar.stop();
+      this.progressBar.stop();
     });
 
     deploy.onError(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      progressBar.stop();
+      this.progressBar.stop();
     });
   }
 

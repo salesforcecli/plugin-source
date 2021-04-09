@@ -10,15 +10,20 @@
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
-import { ComponentSet, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
 import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
+import { deployReport } from './deployReport';
 
 describe('SourceCommand', () => {
   const sandbox = sinon.createSandbox();
 
   class SourceCommandTest extends SourceCommand {
+    public callDeployProgress(id?: string): Promise<DeployResult> {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+      return this.deployReport(id);
+    }
     public async run() {}
     public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
       return this.createComponentSet(options);
@@ -295,6 +300,58 @@ describe('SourceCommand', () => {
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);
+    });
+  });
+
+  describe('deployReport', () => {
+    const command = new SourceCommandTest([''], null);
+    const pb = command.progressBar;
+    let pbStart: sinon.SinonStub;
+    let pbStop: sinon.SinonStub;
+    let pbUpdate: sinon.SinonStub;
+    // @ts-ignore
+    command.ux = { log: () => {} };
+    // @ts-ignore
+    command.org = {
+      // @ts-ignore
+      getConnection: () => {
+        return {
+          metadata: {
+            checkDeployStatus: () => deployReport,
+          },
+        };
+      },
+    };
+    // @ts-ignore
+    command.flags = [];
+
+    beforeEach(() => {
+      pbStop = sandbox.stub(pb, 'stop');
+      pbStart = sandbox.stub(pb, 'start');
+      pbUpdate = sandbox.stub(pb, 'update');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should "print" the progress bar', async () => {
+      // @ts-ignore
+      command.flags.json = false;
+      const res = await command.callDeployProgress();
+      expect(pbStart.callCount).to.equal(1);
+      expect(pbStop.callCount).to.equal(1);
+      expect(pbUpdate.callCount).to.equal(1);
+      expect(res).to.deep.equal(deployReport);
+    });
+
+    it('should NOT "print" the progress bar because of --json', async () => {
+      // @ts-ignore
+      command.flags.json = true;
+      const res = await command.callDeployProgress();
+      expect(pbStart.callCount).to.equal(0);
+      expect(pbStop.callCount).to.equal(0);
+      expect(res).to.deep.equal(deployReport);
     });
   });
 });

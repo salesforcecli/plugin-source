@@ -6,9 +6,12 @@
  */
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError, Logger, ConfigFile } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
+import cli from 'cli-ux';
+import { asString } from '@salesforce/ts-types';
+import { env } from '@salesforce/kit';
 
 export type FlagOptions = {
   packagenames?: string[];
@@ -18,12 +21,47 @@ export type FlagOptions = {
   apiversion?: string;
 };
 
+type ProgressBar = {
+  start: (num: number) => void;
+  update: (num: number) => void;
+  updateTotal: (num: number) => void;
+  setTotal: (num: number) => void;
+  stop: () => void;
+};
+
 export abstract class SourceCommand extends SfdxCommand {
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
   public static STASH_KEY = 'SOURCE_DEPLOY';
+  public progressBar = cli.progress({
+    format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+    linewrap: true,
+  }) as ProgressBar;
 
   public getConfig(): ConfigFile<{ isGlobal: true; filename: 'stash.json' }> {
     return new ConfigFile({ isGlobal: true, filename: 'stash.json' });
+  }
+
+  public async deployReport(id?: string): Promise<DeployResult> {
+    if (!id) {
+      const stash = this.getConfig();
+      stash.readSync();
+      id = asString((stash.get(SourceCommand.STASH_KEY) as { jobid: string }).jobid);
+    }
+
+    this.ux.log(`Job ID | ${id}`);
+
+    const res = await this.org.getConnection().metadata.checkDeployStatus(id, true);
+    if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
+      this.progressBar.start(res.numberTestsTotal + res.numberComponentsTotal);
+      this.progressBar.update(res.numberTestsCompleted + res.numberComponentsDeployed);
+      this.progressBar.stop();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return res;
   }
 
   /**
