@@ -20,7 +20,7 @@ describe('force:source:deploy', () => {
 
   // TODO: When output work items have been done we can test result output
   //       that more closely matches actual output.
-  const stubbedResults = 'the stubbed results';
+  const stubbedResults = { response: { id: '0Af1k00000r2BfKCAU' } };
 
   // Stubs
   let createComponentSetStub: sinon.SinonStub;
@@ -44,6 +44,9 @@ describe('force:source:deploy', () => {
         getUsername: () => username,
       },
       createComponentSet: createComponentSetStub,
+      getConfig: () => {
+        return { write: () => {} };
+      },
     }) as Promise<DeployResult>;
   };
 
