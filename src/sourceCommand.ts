@@ -45,9 +45,13 @@ export abstract class SourceCommand extends SfdxCommand {
 
   public async deployReport(id?: string): Promise<DeployResult> {
     if (!id) {
-      const stash = this.getConfig();
-      stash.readSync();
-      id = asString((stash.get(SourceCommand.STASH_KEY) as { jobid: string }).jobid);
+      try {
+        const stash = this.getConfig();
+        stash.readSync();
+        id = asString((stash.get(SourceCommand.STASH_KEY) as { jobid: string }).jobid);
+      } catch (e) {
+        throw SfdxError.wrap(e);
+      }
     }
 
     this.ux.log(`Job ID | ${id}`);

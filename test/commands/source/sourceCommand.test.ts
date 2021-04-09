@@ -338,7 +338,7 @@ describe('SourceCommand', () => {
     it('should "print" the progress bar', async () => {
       // @ts-ignore
       command.flags.json = false;
-      const res = await command.callDeployProgress();
+      const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
       expect(pbStart.callCount).to.equal(1);
       expect(pbStop.callCount).to.equal(1);
       expect(pbUpdate.callCount).to.equal(1);
@@ -348,7 +348,7 @@ describe('SourceCommand', () => {
     it('should NOT "print" the progress bar because of --json', async () => {
       // @ts-ignore
       command.flags.json = true;
-      const res = await command.callDeployProgress();
+      const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
       expect(pbStart.callCount).to.equal(0);
       expect(pbStop.callCount).to.equal(0);
       expect(res).to.deep.equal(deployReport);
