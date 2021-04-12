@@ -127,6 +127,7 @@ export class Deploy extends SourceCommand {
 
     // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
     if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
+      this.initProgressBar();
       this.progress(deploy);
     }
 

@@ -48,6 +48,7 @@ describe('force:source:deploy', () => {
       getConfig: () => {
         return { write: () => {} };
       },
+      initProgressBar: () => {},
       progress: progressStub,
       print: () => {},
     }) as Promise<DeployResult>;

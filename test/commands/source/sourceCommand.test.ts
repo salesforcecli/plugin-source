@@ -304,11 +304,8 @@ describe('SourceCommand', () => {
   });
 
   describe('deployReport', () => {
-    const command = new SourceCommandTest([''], null);
-    const pb = command.progressBar;
-    let pbStart: sinon.SinonStub;
-    let pbStop: sinon.SinonStub;
-    let pbUpdate: sinon.SinonStub;
+    const command: SourceCommandTest = new SourceCommandTest([''], null);
+    let initProgressBarSpy: sinon.SinonSpy;
     // @ts-ignore
     command.ux = { log: () => {} };
     // @ts-ignore
@@ -326,9 +323,7 @@ describe('SourceCommand', () => {
     command.flags = [];
 
     beforeEach(() => {
-      pbStop = sandbox.stub(pb, 'stop');
-      pbStart = sandbox.stub(pb, 'start');
-      pbUpdate = sandbox.stub(pb, 'update');
+      initProgressBarSpy = sandbox.spy(command, 'initProgressBar');
     });
 
     afterEach(() => {
@@ -336,22 +331,30 @@ describe('SourceCommand', () => {
     });
 
     it('should "print" the progress bar', async () => {
-      // @ts-ignore
-      command.flags.json = false;
       const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(pbStart.callCount).to.equal(1);
-      expect(pbStop.callCount).to.equal(1);
-      expect(pbUpdate.callCount).to.equal(1);
+      expect(initProgressBarSpy.called).to.be.true;
       expect(res).to.deep.equal(deployReport);
     });
 
     it('should NOT "print" the progress bar because of --json', async () => {
       // @ts-ignore
       command.flags.json = true;
+      expect(initProgressBarSpy.called).to.be.false;
+
       const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(pbStart.callCount).to.equal(0);
-      expect(pbStop.callCount).to.equal(0);
       expect(res).to.deep.equal(deployReport);
+    });
+
+    it('should NOT "print" the progress bar because of env var', async () => {
+      try {
+        process.env.SFDX_USE_PROGRESS_BAR = 'false';
+        const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
+        expect(initProgressBarSpy.called).to.be.false;
+
+        expect(res).to.deep.equal(deployReport);
+      } finally {
+        delete process.env.SFDX_USE_PROGRESS_BAR;
+      }
     });
   });
 });
