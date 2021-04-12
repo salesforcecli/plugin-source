@@ -21,7 +21,7 @@ export type FlagOptions = {
   apiversion?: string;
 };
 
-type ProgressBar = {
+export type ProgressBar = {
   start: (num: number) => void;
   update: (num: number) => void;
   updateTotal: (num: number) => void;

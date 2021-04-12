@@ -13,7 +13,8 @@ import { assert, expect } from 'chai';
 import { ComponentSet, DeployResult, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
-import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
+import cli from 'cli-ux';
+import { FlagOptions, ProgressBar, SourceCommand } from '../../../src/sourceCommand';
 import { deployReport } from './deployReport';
 
 describe('SourceCommand', () => {
@@ -304,8 +305,19 @@ describe('SourceCommand', () => {
   });
 
   describe('deployReport', () => {
+    const pb: ProgressBar = cli.progress({
+      format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
+      barCompleteChar: '\u2588',
+      barIncompleteChar: '\u2591',
+      linewrap: true,
+    }) as ProgressBar;
+    let pbStart: sinon.SinonStub;
+    let pbStop: sinon.SinonStub;
+    let pbUpdate: sinon.SinonStub;
+    let initProgressBarStub: sinon.SinonStub;
+
     const command: SourceCommandTest = new SourceCommandTest([''], null);
-    let initProgressBarSpy: sinon.SinonSpy;
+
     // @ts-ignore
     command.ux = { log: () => {} };
     // @ts-ignore
@@ -323,7 +335,12 @@ describe('SourceCommand', () => {
     command.flags = [];
 
     beforeEach(() => {
-      initProgressBarSpy = sandbox.spy(command, 'initProgressBar');
+      initProgressBarStub = sandbox.stub(command, 'initProgressBar').callsFake(() => {
+        command.progressBar = pb;
+      });
+      pbStart = sandbox.stub(pb, 'start');
+      pbUpdate = sandbox.stub(pb, 'update');
+      pbStop = sandbox.stub(pb, 'stop');
     });
 
     afterEach(() => {
@@ -332,14 +349,17 @@ describe('SourceCommand', () => {
 
     it('should "print" the progress bar', async () => {
       const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(initProgressBarSpy.called).to.be.true;
       expect(res).to.deep.equal(deployReport);
+      expect(initProgressBarStub.called).to.be.true;
+      expect(pbStart.callCount).to.equal(1);
+      expect(pbStop.callCount).to.equal(1);
+      expect(pbUpdate.callCount).to.equal(1);
     });
 
     it('should NOT "print" the progress bar because of --json', async () => {
       // @ts-ignore
       command.flags.json = true;
-      expect(initProgressBarSpy.called).to.be.false;
+      expect(initProgressBarStub.called).to.be.false;
 
       const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
       expect(res).to.deep.equal(deployReport);
@@ -349,7 +369,7 @@ describe('SourceCommand', () => {
       try {
         process.env.SFDX_USE_PROGRESS_BAR = 'false';
         const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-        expect(initProgressBarSpy.called).to.be.false;
+        expect(initProgressBarStub.called).to.be.false;
 
         expect(res).to.deep.equal(deployReport);
       } finally {
