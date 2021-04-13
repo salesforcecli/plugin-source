@@ -18,7 +18,7 @@ import { SourceCommand } from '../../../sourceCommand';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export class Retrieve extends SourceCommand {
+export class Retrieve2 extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;

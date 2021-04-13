@@ -27,5 +27,5 @@
     "validateDeployRequestId": "request ID of the validated deployment to run a Quick Deploy",
     "soapDeploy": "deploy metadata with SOAP API instead of REST API"
   },
-  "checkOnlySuccess": "\nSuccessfully validated the deployment"
+  "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output."
 }
