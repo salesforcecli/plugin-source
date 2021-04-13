@@ -8,7 +8,7 @@ import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError, Logger, ConfigFile } from '@salesforce/core';
-import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/common';
+import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/resolve';
 import cli from 'cli-ux';
 import { asString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
@@ -111,11 +111,12 @@ export abstract class SourceCommand extends SfdxCommand {
     if (options.manifest) {
       this.logger.debug(`Building ComponentSet from manifest: ${options.manifest}`);
       const packageDirs = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
-      for (const packageDir of packageDirs) {
-        this.logger.debug(`Searching in packageDir: ${packageDir} for matching metadata`);
-        const compSet = await ComponentSet.fromManifestFile(options.manifest, { resolve: packageDir });
-        setAggregator.push(...compSet);
-      }
+      this.logger.debug(`Searching in packageDir: ${packageDirs.join(', ')} for matching metadata`);
+      const compSet = await ComponentSet.fromManifest({
+        manifestPath: options.manifest,
+        resolveSourcePaths: packageDirs,
+      });
+      setAggregator.push(...compSet);
     }
 
     // Resolve metadata entries with source in package directories.
@@ -134,8 +135,12 @@ export abstract class SourceCommand extends SfdxCommand {
 
       // Search the packages directories for matching metadata
       const packageDirs = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
-      this.logger.debug(`Searching for matching metadata in packageDirs: ${packageDirs.toString()}`);
-      setAggregator.push(...ComponentSet.fromSource({ inclusiveFilter: filter, fsPaths: packageDirs }));
+      this.logger.debug(`Searching for matching metadata in packageDirs: ${packageDirs.join(', ')}`);
+
+      const fromSource = ComponentSet.fromSource({ fsPaths: packageDirs, include: filter });
+      // If no matching metadata is found, default to the original component set
+      const finalized = fromSource.size > 0 ? fromSource : filter;
+      setAggregator.push(...finalized);
     }
 
     const componentSet = new ComponentSet(setAggregator);
