@@ -156,6 +156,12 @@ export class Deploy extends SourceCommand {
    * this will map the component set data into the backwards compatible hook format
    * for the predeploy hook
    *
+   * NOTE: This has bugs.  The mdapiFilePath needs to be the path to the metadata
+   * formatted file, not the source format. Also, not all entries will have content
+   * and some entries don't have xml. Types that have children need to have the
+   * child elements added. Lastly, the ComponentSet used for the deploy needs to
+   * use the hook-modified file versions.
+   *
    * @param cs component set to map
    */
   private massageHookData(cs: ComponentSet): DeployHook {

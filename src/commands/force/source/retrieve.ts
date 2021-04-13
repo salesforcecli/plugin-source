@@ -104,8 +104,9 @@ export class Retrieve extends SourceCommand {
 
     await this.emitIfListening('postretrieve', async () => {
       const converter = new MetadataConverter();
+      const tempConvertedSourceDir = path.join(os.tmpdir(), 'convertedRetrievedSource');
       const converted = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
-        outputDirectory: 'temp',
+        outputDirectory: tempConvertedSourceDir,
         type: 'directory',
       });
       const data = {};
@@ -115,7 +116,14 @@ export class Retrieve extends SourceCommand {
         };
       });
       await this.hookEmitter.emit('postretrieve', data);
-      fs.rmdirSync('temp');
+      try {
+        fs.rmdirSync(tempConvertedSourceDir, { recursive: true });
+      } catch (err: unknown) {
+        const errMessage = (err as Error)?.message || 'unknown';
+        this.logger.debug(
+          `Could not delete the converted metadata temp dir for postretrieve hook due to:\n${errMessage}`
+        );
+      }
     });
 
     await this.emitIfListening('postsourceupdate', async () => {
