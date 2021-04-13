@@ -20,10 +20,11 @@ describe('force:source:deploy', () => {
 
   // TODO: When output work items have been done we can test result output
   //       that more closely matches actual output.
-  const stubbedResults = 'the stubbed results';
+  const stubbedResults = { response: { id: '0Af1k00000r2BfKCAU' } };
 
   // Stubs
   let createComponentSetStub: sinon.SinonStub;
+  let progressStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
   let startStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
@@ -44,12 +45,19 @@ describe('force:source:deploy', () => {
         getUsername: () => username,
       },
       createComponentSet: createComponentSetStub,
+      getConfig: () => {
+        return { write: () => {} };
+      },
+      initProgressBar: () => {},
+      progress: progressStub,
+      print: () => {},
     }) as Promise<DeployResult>;
   };
 
   beforeEach(() => {
     startStub = sandbox.stub().returns(stubbedResults);
     deployStub = sandbox.stub().returns({ start: startStub });
+    progressStub = sandbox.stub();
     createComponentSetStub = sandbox.stub().returns({
       deploy: deployStub,
       getPackageXml: () => packageXml,
@@ -107,6 +115,10 @@ describe('force:source:deploy', () => {
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults);
   };
 
+  const ensureProgressBar = (callCount: number) => {
+    expect(progressStub.callCount).to.equal(callCount);
+  };
+
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
     const result = await run({ sourcepath, json: true });
@@ -114,6 +126,7 @@ describe('force:source:deploy', () => {
     ensureCreateComponentSetArgs({ sourcepath });
     ensureDeployArgs();
     ensureHookArgs();
+    ensureProgressBar(0);
   });
 
   it('should pass along metadata', async () => {
@@ -123,6 +136,7 @@ describe('force:source:deploy', () => {
     ensureCreateComponentSetArgs({ metadata });
     ensureDeployArgs();
     ensureHookArgs();
+    ensureProgressBar(0);
   });
 
   it('should pass along manifest', async () => {
@@ -132,6 +146,7 @@ describe('force:source:deploy', () => {
     ensureCreateComponentSetArgs({ manifest });
     ensureDeployArgs();
     ensureHookArgs();
+    ensureProgressBar(0);
   });
 
   it('should pass along apiversion', async () => {
@@ -142,6 +157,7 @@ describe('force:source:deploy', () => {
     ensureCreateComponentSetArgs({ apiversion, manifest });
     ensureDeployArgs();
     ensureHookArgs();
+    ensureProgressBar(0);
   });
 
   it('should pass along all deploy options', async () => {
@@ -170,5 +186,42 @@ describe('force:source:deploy', () => {
       },
     });
     ensureHookArgs();
+    ensureProgressBar(0);
+  });
+
+  it('should NOT call progress bar because of environment variable', async () => {
+    try {
+      process.env.SFDX_USE_PROGRESS_BAR = 'false';
+      const sourcepath = ['somepath'];
+      const result = await run({ sourcepath });
+      expect(result).to.deep.equal(stubbedResults);
+      ensureCreateComponentSetArgs({ sourcepath });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    } finally {
+      delete process.env.SFDX_USE_PROGRESS_BAR;
+    }
+  });
+
+  it('should NOT call progress bar because of --json', async () => {
+    const sourcepath = ['somepath'];
+    const result = await run({ sourcepath, json: true });
+    expect(result).to.deep.equal(stubbedResults);
+    expect(progressStub.called).to.be.false;
+    ensureCreateComponentSetArgs({ sourcepath });
+    ensureDeployArgs();
+    ensureHookArgs();
+    ensureProgressBar(0);
+  });
+
+  it('should call progress bar', async () => {
+    const sourcepath = ['somepath'];
+    const result = await run({ sourcepath });
+    expect(result).to.deep.equal(stubbedResults);
+    ensureCreateComponentSetArgs({ sourcepath });
+    ensureDeployArgs();
+    ensureHookArgs();
+    ensureProgressBar(1);
   });
 });

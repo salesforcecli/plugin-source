@@ -1,15 +1,16 @@
 {
   "name": "@salesforce/plugin-source",
   "description": "Commands to interact with source formatted metadata",
-  "version": "0.0.4",
+  "version": "0.0.9",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
     "@oclif/config": "^1",
     "@salesforce/command": "^3.1.0",
     "@salesforce/core": "^2.20.8",
-    "@salesforce/source-deploy-retrieve": "1.1.21",
+    "@salesforce/source-deploy-retrieve": "^2",
     "chalk": "^4.1.0",
+    "cli-ux": "^5.5.1",
     "tslib": "^2"
   },
   "devDependencies": {
@@ -90,7 +91,12 @@
         "external": true,
         "subtopics": {
           "source": {
-            "description": "commands to interact with source formatted metadata"
+            "description": "commands to interact with source formatted metadata",
+            "subtopics": {
+              "deploy": {
+                "description": "interact with an active deploy request"
+              }
+            }
           }
         }
       }
@@ -114,7 +120,7 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 1",
+    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {

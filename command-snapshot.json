@@ -1,5 +1,21 @@
 [
   {
+    "command": "force:source:convert",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "json",
+      "loglevel",
+      "manifest",
+      "metadata",
+      "outputdir",
+      "packagename",
+      "rootdir",
+      "sourcepath",
+      "targetusername"
+    ]
+  },
+  {
     "command": "force:source:deploy",
     "plugin": "@salesforce/plugin-source",
     "flags": [
@@ -20,6 +36,16 @@
       "verbose",
       "wait"
     ]
+  },
+  {
+    "command": "force:source:deploy:cancel",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
+  },
+  {
+    "command": "force:source:deploy:report",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
   },
   {
     "command": "force:source:retrieve",

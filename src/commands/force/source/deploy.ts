@@ -8,9 +8,10 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { ConfigAggregator, Lifecycle, Messages } from '@salesforce/core';
+import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, asNumber, getBoolean, JsonCollection } from '@salesforce/ts-types';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
+import { asString, asArray, asNumber, getBoolean } from '@salesforce/ts-types';
+import { env } from '@salesforce/kit';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   DeployResultFormatter,
@@ -20,6 +21,8 @@ import {
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
+
+type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export class Deploy extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -98,13 +101,14 @@ export class Deploy extends SourceCommand {
   public async run(): Promise<DeployCommandResult | DeployCommandAsynResult> {
     let deployResult;
 
+    const hookEmitter = Lifecycle.getInstance();
+
     if (this.flags.validateddeployrequestid) {
       deployResult = await this.deployRecentValidation();
     } else if (asNumber(this.flags.wait) === 0) {
       // This is an async deploy.  We just kick off the request.
       throw Error('NOT IMPLEMENTED YET');
     } else {
-      const hookEmitter = Lifecycle.getInstance();
       const cs = await this.createComponentSet({
         sourcepath: asArray<string>(this.flags.sourcepath),
         manifest: asString(this.flags.manifest),
@@ -114,30 +118,73 @@ export class Deploy extends SourceCommand {
 
       await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
 
-      deployResult = await cs
-        .deploy({
-          usernameOrConnection: this.org.getUsername(),
-          apiOptions: {
-            ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
-            rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
-            checkOnly: getBoolean(this.flags, 'checkonly', false),
-            runTests: asArray<string>(this.flags.runtests),
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            testLevel: this.flags.testlevel,
-          },
-        })
-        .start();
-      await hookEmitter.emit('postdeploy', deployResult);
+      const deploy = cs.deploy({
+        usernameOrConnection: this.org.getUsername(),
+        apiOptions: {
+          ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
+          rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
+          checkOnly: getBoolean(this.flags, 'checkonly', false),
+          runTests: asArray<string>(this.flags.runtests),
+          testLevel: this.flags.testlevel as TestLevel,
+        },
+      });
+
+      // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
+      if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
+        this.initProgressBar();
+        this.progress(deploy);
+      }
+
+      deployResult = await deploy.start();
     }
+
+    await hookEmitter.emit('postdeploy', deployResult);
+
+    const file = this.getConfig();
+    await file.write({ [SourceCommand.STASH_KEY]: { jobid: deployResult.response.id } });
 
     return this.formatResult(deployResult);
   }
 
-  private async deployRecentValidation(): Promise<JsonCollection> {
+  private async deployRecentValidation(): Promise<DeployResult> {
     const conn = this.org.getConnection();
-    return conn.deployRecentValidation({
-      id: asString(this.flags.validateddeployrequestid),
-      rest: await this.isRestDeploy(),
+    const id = asString(this.flags.validateddeployrequestid);
+    const rest = await this.isRestDeploy();
+    await conn.deployRecentValidation({ id, rest });
+    return this.deployReport(id);
+  }
+
+  private progress(deploy: MetadataApiDeploy): void {
+    let printOnce = true;
+    deploy.onUpdate((data) => {
+      // the numCompTot. isn't computed right away, wait to start until we know how many we have
+      if (data.numberComponentsTotal && printOnce) {
+        this.ux.log(`Job ID | ${data.id}`);
+        this.progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
+        printOnce = false;
+      }
+
+      // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
+      if (data.numberTestsTotal) {
+        this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
+      }
+
+      this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
+    });
+
+    // any thing else should stop the progress bar
+    deploy.onFinish((data) => {
+      // the final tick of `onUpdate` is actually fired with `onFinish`
+      this.progressBar.update(data.response.numberComponentsDeployed + data.response.numberTestsCompleted);
+      this.progressBar.stop();
+    });
+
+    deploy.onCancel(() => {
+      this.progressBar.stop();
+    });
+
+    deploy.onError(() => {
+      this.progressBar.stop();
     });
   }
 

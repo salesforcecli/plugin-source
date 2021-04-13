@@ -10,15 +10,21 @@
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
-import { ComponentSet, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
-import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
+import cli from 'cli-ux';
+import { FlagOptions, ProgressBar, SourceCommand } from '../../../src/sourceCommand';
+import { deployReport } from './deployReport';
 
 describe('SourceCommand', () => {
   const sandbox = sinon.createSandbox();
 
   class SourceCommandTest extends SourceCommand {
+    public callDeployProgress(id?: string): Promise<DeployResult> {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+      return this.deployReport(id);
+    }
     public async run() {}
     public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
       return this.createComponentSet(options);
@@ -55,7 +61,7 @@ describe('SourceCommand', () => {
     beforeEach(() => {
       fileExistsSyncStub = stubMethod(sandbox, fsCore, 'fileExistsSync');
       fromSourceStub = stubMethod(sandbox, ComponentSet, 'fromSource');
-      fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifestFile');
+      fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifest');
       getUniquePackageDirectoriesStub = stubMethod(sandbox, SfdxProject.prototype, 'getUniquePackageDirectories');
       componentSet = new ComponentSet();
     });
@@ -173,7 +179,7 @@ describe('SourceCommand', () => {
       expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: '*' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
@@ -195,7 +201,7 @@ describe('SourceCommand', () => {
       expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: 'MyClass' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
@@ -219,7 +225,7 @@ describe('SourceCommand', () => {
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: 'MyClass' });
       filter.add({ type: 'CustomObject', fullName: '*' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(customObjectComponent)).to.equal(true);
@@ -245,7 +251,7 @@ describe('SourceCommand', () => {
       expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1, packageDir2]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: '*' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);
@@ -264,19 +270,19 @@ describe('SourceCommand', () => {
 
       const compSet = await command.callCreateComponentSet(options);
       expect(fromManifestStub.calledOnce).to.equal(true);
-      expect(fromManifestStub.firstCall.args[0]).to.equal(options.manifest);
-      expect(fromManifestStub.firstCall.args[1]).to.deep.equal({ resolve: packageDir1 });
+      expect(fromManifestStub.firstCall.args[0]).to.deep.equal({
+        manifestPath: options.manifest,
+        resolveSourcePaths: [packageDir1],
+      });
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
     it('should create ComponentSet from manifest and multiple package', async () => {
       componentSet.add(apexClassComponent);
-      const componentSet2 = new ComponentSet();
       const apexClassComponent2 = { type: 'ApexClass', fullName: 'MyClass2' };
-      componentSet2.add(apexClassComponent2);
+      componentSet.add(apexClassComponent2);
       fromManifestStub.onFirstCall().resolves(componentSet);
-      fromManifestStub.onSecondCall().resolves(componentSet2);
       const packageDir1 = path.resolve('force-app');
       const packageDir2 = path.resolve('my-app');
       getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }, { fullPath: packageDir2 }]);
@@ -287,14 +293,88 @@ describe('SourceCommand', () => {
       };
 
       const compSet = await command.callCreateComponentSet(options);
-      expect(fromManifestStub.callCount).to.equal(2);
-      expect(fromManifestStub.firstCall.args[0]).to.equal(options.manifest);
-      expect(fromManifestStub.firstCall.args[1]).to.deep.equal({ resolve: packageDir1 });
-      expect(fromManifestStub.secondCall.args[0]).to.equal(options.manifest);
-      expect(fromManifestStub.secondCall.args[1]).to.deep.equal({ resolve: packageDir2 });
+      expect(fromManifestStub.callCount).to.equal(1);
+      expect(fromManifestStub.firstCall.args[0]).to.deep.equal({
+        manifestPath: options.manifest,
+        resolveSourcePaths: [packageDir1, packageDir2],
+      });
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);
+    });
+  });
+
+  describe('deployReport', () => {
+    const pb: ProgressBar = cli.progress({
+      format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
+      barCompleteChar: '\u2588',
+      barIncompleteChar: '\u2591',
+      linewrap: true,
+    }) as ProgressBar;
+    let pbStart: sinon.SinonStub;
+    let pbStop: sinon.SinonStub;
+    let pbUpdate: sinon.SinonStub;
+    let initProgressBarStub: sinon.SinonStub;
+
+    const command: SourceCommandTest = new SourceCommandTest([''], null);
+
+    // @ts-ignore
+    command.ux = { log: () => {} };
+    // @ts-ignore
+    command.org = {
+      // @ts-ignore
+      getConnection: () => {
+        return {
+          metadata: {
+            checkDeployStatus: () => deployReport,
+          },
+        };
+      },
+    };
+    // @ts-ignore
+    command.flags = [];
+
+    beforeEach(() => {
+      initProgressBarStub = sandbox.stub(command, 'initProgressBar').callsFake(() => {
+        command.progressBar = pb;
+      });
+      pbStart = sandbox.stub(pb, 'start');
+      pbUpdate = sandbox.stub(pb, 'update');
+      pbStop = sandbox.stub(pb, 'stop');
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it('should "print" the progress bar', async () => {
+      const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
+      expect(res).to.deep.equal(deployReport);
+      expect(initProgressBarStub.called).to.be.true;
+      expect(pbStart.callCount).to.equal(1);
+      expect(pbStop.callCount).to.equal(1);
+      expect(pbUpdate.callCount).to.equal(1);
+    });
+
+    it('should NOT "print" the progress bar because of --json', async () => {
+      // @ts-ignore
+      command.flags.json = true;
+      expect(initProgressBarStub.called).to.be.false;
+
+      const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
+      expect(res).to.deep.equal(deployReport);
+    });
+
+    it('should NOT "print" the progress bar because of env var', async () => {
+      try {
+        process.env.SFDX_USE_PROGRESS_BAR = 'false';
+        const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
+        expect(initProgressBarStub.called).to.be.false;
+
+        expect(res).to.deep.equal(deployReport);
+      } finally {
+        delete process.env.SFDX_USE_PROGRESS_BAR;
+      }
     });
   });
 });
