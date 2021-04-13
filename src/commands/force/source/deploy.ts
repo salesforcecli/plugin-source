@@ -165,7 +165,9 @@ export class Deploy extends SourceCommand {
     });
 
     // any thing else should stop the progress bar
-    deploy.onFinish(() => {
+    deploy.onFinish((data) => {
+      // the final tick of `onUpdate` is actually fired with `onFinish`
+      this.progressBar.update(data.response.numberComponentsDeployed + data.response.numberTestsCompleted);
       this.progressBar.stop();
     });
 
