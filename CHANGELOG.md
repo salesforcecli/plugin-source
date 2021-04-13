@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/salesforcecli/plugin-source/compare/v0.0.7...v0.0.8) (2021-04-13)
+
+
+### Features
+
+* support split custom labels ([#62](https://github.com/salesforcecli/plugin-source/issues/62)) ([ab290a7](https://github.com/salesforcecli/plugin-source/commit/ab290a78fcdb5e4d8da2fbdcfc3e49e783e848ac))
+
 ### [0.0.7](https://github.com/salesforcecli/plugin-source/compare/v0.0.6...v0.0.7) (2021-04-09)
 
 
