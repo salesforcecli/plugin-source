@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, getBoolean, JsonCollection } from '@salesforce/ts-types';
+import { asString, asArray, getBoolean } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { env } from '@salesforce/kit';
 import { SourceCommand } from '../../../sourceCommand';
@@ -95,13 +95,16 @@ export class Deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<DeployResult | JsonCollection> {
+  public async run(): Promise<DeployResult> {
     if (this.flags.validateddeployrequestid) {
+      const id = asString(this.flags.validateddeployrequestid);
+
       const conn = this.org.getConnection();
-      return conn.deployRecentValidation({
-        id: this.flags.validateddeployrequestid as string,
+      await conn.deployRecentValidation({
+        id,
         rest: !this.flags.soapdeploy,
       });
+      return this.deployReport(id);
     }
 
     const hookEmitter = Lifecycle.getInstance();
