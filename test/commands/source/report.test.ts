@@ -9,10 +9,10 @@ import { Dictionary } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
+import { Report } from '../../../src/commands/force/source/deploy/report';
 import { deployReport } from './deployReport';
 
-describe('force:source:cancel', () => {
+describe('force:source:report', () => {
   const jobid = '0Af1k00000r2BebCAE';
   const sandbox = sinon.createSandbox();
 
@@ -23,17 +23,20 @@ describe('force:source:cancel', () => {
     // TODO: fix this test for SDRL
     // Run the command
     // all the stubs will change with SDRL implementation, just call it good for now
-    return Cancel.prototype.run.call({
+    return Report.prototype.run.call({
       flags: Object.assign({}, flags),
       getConfig: () => {
         return { readSync: () => {}, get: () => jobid };
+      },
+      ux: {
+        log: () => {},
       },
       deployReport: () => deployReport,
       org: {
         getConnection: () => {
           return {
             metadata: {
-              _invoke: () => {
+              checkDeployStatus: () => {
                 return {
                   id: id || jobid,
                 };
