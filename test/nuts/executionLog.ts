@@ -47,7 +47,8 @@ export class ExecutionLog {
    * Return the most recent entry for a command
    */
   public getLatest(cmd: string): ExecutionLog.Details {
-    return this.log.get(cmd).reverse()[0];
+    const sorted = this.log.get(cmd).sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+    return sorted[0];
   }
 
   private async querySourceMembers(): Promise<SourceMember[]> {

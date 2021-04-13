@@ -55,7 +55,7 @@ describe('SourceCommand', () => {
     beforeEach(() => {
       fileExistsSyncStub = stubMethod(sandbox, fsCore, 'fileExistsSync');
       fromSourceStub = stubMethod(sandbox, ComponentSet, 'fromSource');
-      fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifestFile');
+      fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifest');
       getUniquePackageDirectoriesStub = stubMethod(sandbox, SfdxProject.prototype, 'getUniquePackageDirectories');
       componentSet = new ComponentSet();
     });
@@ -173,7 +173,7 @@ describe('SourceCommand', () => {
       expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: '*' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
@@ -195,7 +195,7 @@ describe('SourceCommand', () => {
       expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: 'MyClass' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
@@ -219,7 +219,7 @@ describe('SourceCommand', () => {
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: 'MyClass' });
       filter.add({ type: 'CustomObject', fullName: '*' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(customObjectComponent)).to.equal(true);
@@ -245,7 +245,7 @@ describe('SourceCommand', () => {
       expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1, packageDir2]);
       const filter = new ComponentSet();
       filter.add({ type: 'ApexClass', fullName: '*' });
-      expect(fromSourceArgs).to.have.deep.property('inclusiveFilter', filter);
+      expect(fromSourceArgs).to.have.deep.property('include', filter);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);
@@ -264,19 +264,19 @@ describe('SourceCommand', () => {
 
       const compSet = await command.callCreateComponentSet(options);
       expect(fromManifestStub.calledOnce).to.equal(true);
-      expect(fromManifestStub.firstCall.args[0]).to.equal(options.manifest);
-      expect(fromManifestStub.firstCall.args[1]).to.deep.equal({ resolve: packageDir1 });
+      expect(fromManifestStub.firstCall.args[0]).to.deep.equal({
+        manifestPath: options.manifest,
+        resolveSourcePaths: [packageDir1],
+      });
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
     it('should create ComponentSet from manifest and multiple package', async () => {
       componentSet.add(apexClassComponent);
-      const componentSet2 = new ComponentSet();
       const apexClassComponent2 = { type: 'ApexClass', fullName: 'MyClass2' };
-      componentSet2.add(apexClassComponent2);
+      componentSet.add(apexClassComponent2);
       fromManifestStub.onFirstCall().resolves(componentSet);
-      fromManifestStub.onSecondCall().resolves(componentSet2);
       const packageDir1 = path.resolve('force-app');
       const packageDir2 = path.resolve('my-app');
       getUniquePackageDirectoriesStub.returns([{ fullPath: packageDir1 }, { fullPath: packageDir2 }]);
@@ -287,11 +287,11 @@ describe('SourceCommand', () => {
       };
 
       const compSet = await command.callCreateComponentSet(options);
-      expect(fromManifestStub.callCount).to.equal(2);
-      expect(fromManifestStub.firstCall.args[0]).to.equal(options.manifest);
-      expect(fromManifestStub.firstCall.args[1]).to.deep.equal({ resolve: packageDir1 });
-      expect(fromManifestStub.secondCall.args[0]).to.equal(options.manifest);
-      expect(fromManifestStub.secondCall.args[1]).to.deep.equal({ resolve: packageDir2 });
+      expect(fromManifestStub.callCount).to.equal(1);
+      expect(fromManifestStub.firstCall.args[0]).to.deep.equal({
+        manifestPath: options.manifest,
+        resolveSourcePaths: [packageDir1, packageDir2],
+      });
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);

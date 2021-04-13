@@ -113,7 +113,7 @@ describe('force:source:retrieve', () => {
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
     const result = await run({ sourcepath, json: true });
-    expect(result).to.deep.equal(stubbedResults);
+    expect(result).to.deep.equal(stubbedResults.getFileResponses());
     ensureCreateComponentSetArgs({ sourcepath });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -122,7 +122,7 @@ describe('force:source:retrieve', () => {
   it('should pass along metadata', async () => {
     const metadata = ['ApexClass:MyClass'];
     const result = await run({ metadata, json: true });
-    expect(result).to.deep.equal(stubbedResults);
+    expect(result).to.deep.equal(stubbedResults.getFileResponses());
     ensureCreateComponentSetArgs({ metadata });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -131,7 +131,7 @@ describe('force:source:retrieve', () => {
   it('should pass along manifest', async () => {
     const manifest = 'package.xml';
     const result = await run({ manifest, json: true });
-    expect(result).to.deep.equal(stubbedResults);
+    expect(result).to.deep.equal(stubbedResults.getFileResponses());
     ensureCreateComponentSetArgs({ manifest });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -141,7 +141,7 @@ describe('force:source:retrieve', () => {
     const manifest = 'package.xml';
     const apiversion = '50.0';
     const result = await run({ manifest, apiversion, json: true });
-    expect(result).to.deep.equal(stubbedResults);
+    expect(result).to.deep.equal(stubbedResults.getFileResponses());
     ensureCreateComponentSetArgs({ apiversion, manifest });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -151,7 +151,7 @@ describe('force:source:retrieve', () => {
     const manifest = 'package.xml';
     const packagenames = ['package1'];
     const result = await run({ manifest, packagenames, json: true });
-    expect(result).to.deep.equal(stubbedResults);
+    expect(result).to.deep.equal(stubbedResults.getFileResponses());
     ensureCreateComponentSetArgs({ manifest, packagenames });
     ensureRetrieveArgs({ packageNames: packagenames });
     ensureHookArgs();

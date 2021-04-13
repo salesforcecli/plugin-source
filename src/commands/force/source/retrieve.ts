@@ -11,8 +11,8 @@ import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
 import { blue } from 'chalk';
-import { MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { FileProperties } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
+import { FileProperties, FileResponse } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -52,8 +52,7 @@ export class Retrieve extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async run(): Promise<RetrieveResult> {
+  public async run(): Promise<FileResponse[]> {
     const hookEmitter = Lifecycle.getInstance();
 
     const defaultPackagePath = this.project.getDefaultPackage().fullPath;
@@ -85,13 +84,11 @@ export class Retrieve extends SourceCommand {
       throw new SfdxError(messages.getMessage('retrieveTimeout', [(this.flags.wait as Duration).minutes]));
     }
 
-    if (this.flags.json) {
-      this.ux.logJson(mdapiResult.getFileResponses());
-    } else {
+    if (!this.flags.json) {
       this.printTable(results, true);
     }
 
-    return mdapiResult;
+    return mdapiResult.getFileResponses();
   }
 
   /**
