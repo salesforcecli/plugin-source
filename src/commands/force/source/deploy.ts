@@ -8,7 +8,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString, asArray, getBoolean } from '@salesforce/ts-types';
@@ -106,8 +106,6 @@ export class Deploy extends SourceCommand {
       });
       return this.deployReport(id);
     }
-
-    const hookEmitter = Lifecycle.getInstance();
     const cs = await this.createComponentSet({
       sourcepath: asArray<string>(this.flags.sourcepath),
       manifest: asString(this.flags.manifest),
@@ -115,7 +113,7 @@ export class Deploy extends SourceCommand {
       apiversion: asString(this.flags.apiversion),
     });
 
-    await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
+    await this.lifecycle.emit('predeploy', cs.toArray());
 
     const deploy = cs.deploy({
       usernameOrConnection: this.org.getUsername(),
@@ -136,7 +134,7 @@ export class Deploy extends SourceCommand {
 
     const results = await deploy.start();
 
-    await hookEmitter.emit('postdeploy', results);
+    await this.lifecycle.emit('postdeploy', results);
 
     const file = this.getConfig();
     await file.write({ [SourceCommand.STASH_KEY]: { jobid: results.response.id } });

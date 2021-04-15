@@ -10,7 +10,7 @@ import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
-import { deployReport } from './deployReport';
+import { testConsts } from './testConsts';
 
 describe('force:source:cancel', () => {
   const jobid = '0Af1k00000r2BebCAE';
@@ -28,7 +28,7 @@ describe('force:source:cancel', () => {
       getConfig: () => {
         return { readSync: () => {}, get: () => jobid };
       },
-      deployReport: () => deployReport,
+      deployReport: () => testConsts,
       org: {
         getConnection: () => {
           return {
@@ -51,12 +51,12 @@ describe('force:source:cancel', () => {
 
   it('should read from ~/.sfdx/stash.json', async () => {
     const result = await run({ json: true });
-    expect(result).to.deep.equal(deployReport);
+    expect(result).to.deep.equal(testConsts);
   });
 
   it('should use the jobid flag', async () => {
     const jobIdFlag = '0Af1k00000r29C9CAI';
     const result = await run({ json: true, jobid: jobIdFlag }, jobIdFlag);
-    expect(result).to.deep.equal(deployReport);
+    expect(result).to.deep.equal(testConsts);
   });
 });

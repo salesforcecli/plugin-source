@@ -12,11 +12,11 @@ import { Dictionary } from '@salesforce/ts-types';
 import { Lifecycle } from '@salesforce/core';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { FlagOptions } from '../../../src/sourceCommand';
+import { sourceComponent } from './testConsts';
 
 describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
   const username = 'deploy-test@org.com';
-  const packageXml = 'package.xml';
 
   // TODO: When output work items have been done we can test result output
   //       that more closely matches actual output.
@@ -50,6 +50,9 @@ describe('force:source:deploy', () => {
       },
       initProgressBar: () => {},
       progress: progressStub,
+      lifecycle: {
+        emit: lifecycleEmitStub,
+      },
       print: () => {},
     }) as Promise<DeployResult>;
   };
@@ -60,7 +63,9 @@ describe('force:source:deploy', () => {
     progressStub = sandbox.stub();
     createComponentSetStub = sandbox.stub().returns({
       deploy: deployStub,
-      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [sourceComponent];
+      },
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
   });
@@ -108,9 +113,7 @@ describe('force:source:deploy', () => {
     const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
     expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({
-      packageXmlPath: packageXml,
-    });
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([sourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults);
   };
