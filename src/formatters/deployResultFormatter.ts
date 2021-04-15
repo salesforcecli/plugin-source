@@ -32,7 +32,7 @@ export interface DeployCommandResult extends MetadataApiDeployStatus {
 }
 
 // For async deploy command results it looks like this:
-export interface DeployCommandAsynResult extends DeployAsyncStatus {
+export interface DeployCommandAsyncResult extends DeployAsyncStatus {
   deployedSource: FileResponse[];
   outboundFiles: string[];
   deploys: DeployAsyncStatus[];
@@ -66,27 +66,18 @@ export class DeployResultFormatter implements ResultFormatter {
    *
    * 1. Standard synchronous deploy
    * 2. Asynchronous deploy (wait=0)
-   * 3. Checkonly deploy (checkonly=true)
    *
    * @returns a JSON formatted result matching the provided type.
    */
-  public getJson(): DeployCommandResult | DeployCommandAsynResult {
-    const json = this.result.response as any;
+  public getJson(): DeployCommandResult | DeployCommandAsyncResult {
+    const json = this.result.response as DeployCommandResult | DeployCommandAsyncResult;
+    json.deployedSource = this.fileResponses;
+    json.outboundFiles = []; // to match toolbelt version
+    json.deploys = [Object.assign({}, this.result.response)]; // to match toolbelt version
 
     if (this.isAsync()) {
       // json = this.result.response; // <-- TODO: ensure the response matches toolbelt
-      json.deployedSource = [];
-      json.outboundFiles = []; // to match toolbelt version
-      json.deploys = [Object.assign({}, this.result.response)]; // to match toolbelt version
-      return json as DeployCommandAsynResult;
-    }
-
-    if (this.isCheckOnly()) {
-      json.deployedSource = [];
-      json.outboundFiles = []; // to match toolbelt version
-      json.deploys = [Object.assign({}, this.result.response)]; // to match toolbelt version
-    } else {
-      json.deployedSource = this.fileResponses;
+      return json as DeployCommandAsyncResult;
     }
 
     return json as DeployCommandResult;
@@ -101,12 +92,6 @@ export class DeployResultFormatter implements ResultFormatter {
    * 4. Deploy with test results
    */
   public display(): void {
-    // Display the deploy ID
-    const deployId = this.result.response?.id;
-    if (deployId) {
-      this.ux.log(`Deploy ID: ${deployId}`);
-    }
-
     // Display check-only, non-verbose success
     if (this.isSuccess() && this.isCheckOnly() && !this.isVerbose()) {
       const componentsDeployed = this.result.response.numberComponentsDeployed;
@@ -206,12 +191,11 @@ export class DeployResultFormatter implements ResultFormatter {
   private displayTestResults(): void {
     if (this.isRunTestsEnabled()) {
       this.ux.log('');
-      // @ts-ignore
+      // @ts-ignore DeployResult does not have complete typings for this.
       const time = this.result.response.details.runTestResult.totalTime;
       if (this.isVerbose()) {
         this.ux.log('TBD: Show test successes, failures, and code coverage');
       } else {
-        // display test result summary
         this.ux.styledHeader(chalk.blue('Test Results Summary'));
         const { numberTestErrors, numberTestsCompleted, numberTestsTotal } = this.result.response;
         this.ux.log(`Passing: ${numberTestsCompleted}`);

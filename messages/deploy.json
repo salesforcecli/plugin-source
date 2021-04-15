@@ -11,7 +11,7 @@
     "$ sfdx force:source:deploy -x path/to/package.xml",
     "$ sfdx force:source:deploy -m ApexClass -l RunLocalTests",
     "$ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c",
-    "$ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`"
+    "$ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH"
   ],
   "flags": {
     "sourcePath": "comma-separated list of source file paths to deploy",
@@ -24,8 +24,9 @@
     "runTests": "tests to run if --testlevel RunSpecifiedTests",
     "ignoreErrors": "ignore any errors and do not roll back deployment",
     "ignoreWarnings": "whether a warning will allow a deployment to complete successfully",
-    "validateDeployRequestId": "request ID of the validated deployment to run a Quick Deploy",
+    "validateDeployRequestId": "deploy request ID of the validated deployment to run a Quick Deploy",
     "soapDeploy": "deploy metadata with SOAP API instead of REST API"
   },
-  "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output."
+  "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output.",
+  "MissingDeployId": "No deploy ID was provided or found in deploy history"
 }

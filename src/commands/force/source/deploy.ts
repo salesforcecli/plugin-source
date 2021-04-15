@@ -7,16 +7,16 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { ConfigAggregator, Lifecycle, Messages } from '@salesforce/core';
+import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, asNumber, getBoolean } from '@salesforce/ts-types';
+import { asString, asArray, getBoolean, isString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
-import { SourceCommand } from '../../../sourceCommand';
+import { DeployCommand } from '../../../deployCommand';
 import {
   DeployResultFormatter,
   DeployCommandResult,
-  DeployCommandAsynResult,
+  DeployCommandAsyncResult,
 } from '../../../formatters/deployResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -24,7 +24,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
-export class Deploy extends SourceCommand {
+export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -40,7 +40,7 @@ export class Deploy extends SourceCommand {
     }),
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(Deploy.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(0), // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.wait'),
     }),
@@ -98,16 +98,20 @@ export class Deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<DeployCommandResult | DeployCommandAsynResult> {
-    let deployResult;
+  private isAsync = false;
+
+  public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
+    let deployResult: DeployResult;
+
+    this.isAsync = (this.flags.wait as Duration).quantity === 0;
 
     const hookEmitter = Lifecycle.getInstance();
 
     if (this.flags.validateddeployrequestid) {
       deployResult = await this.deployRecentValidation();
-    } else if (asNumber(this.flags.wait) === 0) {
+    } else if (this.isAsync) {
       // This is an async deploy.  We just kick off the request.
-      throw Error('NOT IMPLEMENTED YET');
+      throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
     } else {
       const cs = await this.createComponentSet({
         sourcepath: asArray<string>(this.flags.sourcepath),
@@ -130,7 +134,7 @@ export class Deploy extends SourceCommand {
       });
 
       // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
-      if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
+      if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
         this.initProgressBar();
         this.progress(deploy);
       }
@@ -140,8 +144,14 @@ export class Deploy extends SourceCommand {
 
     await hookEmitter.emit('postdeploy', deployResult);
 
-    const file = this.getConfig();
-    await file.write({ [SourceCommand.STASH_KEY]: { jobid: deployResult.response.id } });
+    // console.dir(deployResult);
+
+    if (deployResult.response?.id) {
+      this.displayDeployId(deployResult.response.id);
+      const file = this.getStash();
+      this.logger.debug(`Stashing deploy ID: ${deployResult.response.id}`);
+      await file.write({ [DeployCommand.STASH_KEY]: { jobid: deployResult.response.id } });
+    }
 
     return this.formatResult(deployResult);
   }
@@ -150,18 +160,40 @@ export class Deploy extends SourceCommand {
     const conn = this.org.getConnection();
     const id = asString(this.flags.validateddeployrequestid);
     const rest = await this.isRestDeploy();
-    await conn.deployRecentValidation({ id, rest });
-    return this.deployReport(id);
+
+    // TODO: This is an async call so we need to poll unless `--wait 0`
+    //       See mdapiCheckStatusApi.ts in toolbelt for a polling impl,
+    //       although if we end up adding polling code in this plugin
+    //       it should be a simpler solution.
+    const response = await conn.deployRecentValidation({ id, rest });
+
+    if (!this.isAsync) {
+      // Remove this and add polling if we need to poll in the plugin.
+      throw Error('deployRecentValidation polling not yet implemented');
+    }
+
+    // This is the deploy ID of the deployRecentValidation response, not
+    // the already validated deploy ID (i.e., validateddeployrequestid).
+    let validatedDeployId: string;
+    if (isString(response)) {
+      // SOAP API
+      validatedDeployId = response;
+    } else {
+      // REST API
+      validatedDeployId = (response as { id: string }).id;
+    }
+
+    return this.deployReport(validatedDeployId);
   }
 
   private progress(deploy: MetadataApiDeploy): void {
-    let printOnce = true;
+    let started = false;
     deploy.onUpdate((data) => {
       // the numCompTot. isn't computed right away, wait to start until we know how many we have
-      if (data.numberComponentsTotal && printOnce) {
-        this.ux.log(`Job ID | ${data.id}`);
+      if (data.numberComponentsTotal && !started) {
+        this.displayDeployId(data.id);
         this.progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
-        printOnce = false;
+        started = true;
       }
 
       // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
@@ -188,44 +220,20 @@ export class Deploy extends SourceCommand {
     });
   }
 
-  private formatResult(deployResult: DeployResult): DeployCommandResult | DeployCommandAsynResult {
+  private formatResult(deployResult: DeployResult): DeployCommandResult | DeployCommandAsyncResult {
     // console.dir(deployResult);
 
     const formatterOptions = {
-      verbose: !!this.flags.verbose,
-      async: asNumber(this.flags.wait) === 0,
+      verbose: getBoolean(this.flags, 'verbose', false),
+      async: this.isAsync,
     };
     const formatter = new DeployResultFormatter(this.logger, this.ux, deployResult, formatterOptions);
 
     // Only display results to console when JSON flag is unset.
-    if (!this.flags.json) {
+    if (!this.isJsonOutput()) {
       formatter.display();
     }
 
     return formatter.getJson();
-  }
-
-  // REST is the default unless:
-  //   1. SOAP is specified with the soapdeploy flag on the command
-  //   2. The restDeploy SFDX config setting is explicitly false.
-  private async isRestDeploy(): Promise<boolean> {
-    if (getBoolean(this.flags, 'soapdeploy') === true) {
-      this.logger.debug('soapdeploy flag === true.  Using SOAP');
-      return false;
-    }
-
-    const aggregator = await ConfigAggregator.create();
-    const restDeployConfig = aggregator.getPropertyValue('restDeploy');
-    // aggregator property values are returned as strings
-    if (restDeployConfig === 'false') {
-      this.logger.debug('restDeploy SFDX config === false.  Using SOAP');
-      return false;
-    } else if (restDeployConfig === 'true') {
-      this.logger.debug('restDeploy SFDX config === true.  Using REST');
-    } else {
-      this.logger.debug('soapdeploy flag unset. restDeploy SFDX config unset.  Defaulting to REST');
-    }
-
-    return true;
   }
 }

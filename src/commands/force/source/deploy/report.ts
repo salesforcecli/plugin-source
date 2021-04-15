@@ -9,19 +9,19 @@ import { Messages } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
-import { SourceCommand } from '../../../../sourceCommand';
+import { DeployCommand } from '../../../../deployCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
 
-export class Report extends SourceCommand {
+export class Report extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(DeployCommand.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
     }),
