@@ -63,7 +63,6 @@ export class Retrieve extends SourceCommand {
       apiversion: asString(this.flags.apiversion),
     });
 
-    // Emit the preretrieve event, which needs the package.xml from the ComponentSet
     await this.lifecycle.emit('preretrieve', cs.toArray());
 
     const mdapiResult = await cs

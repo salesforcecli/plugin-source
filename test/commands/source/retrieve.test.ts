@@ -12,7 +12,7 @@ import { Dictionary } from '@salesforce/ts-types';
 import { Lifecycle } from '@salesforce/core';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { FlagOptions } from '../../../src/sourceCommand';
-import { sourceComponent } from './testConsts';
+import { exampleSourceComponent } from './testConsts';
 
 describe('force:source:retrieve', () => {
   const sandbox = sinon.createSandbox();
@@ -64,7 +64,7 @@ describe('force:source:retrieve', () => {
     createComponentSetStub = sandbox.stub().returns({
       retrieve: retrieveStub,
       toArray: () => {
-        return [sourceComponent];
+        return [exampleSourceComponent];
       },
       getPackageXml: () => packageXml,
     });
@@ -109,7 +109,7 @@ describe('force:source:retrieve', () => {
     const failureMsg = 'Lifecycle.emit() should be called for preretrieve and postretrieve';
     expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([sourceComponent]);
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults.response);
   };

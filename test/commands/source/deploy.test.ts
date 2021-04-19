@@ -12,7 +12,7 @@ import { Dictionary } from '@salesforce/ts-types';
 import { Lifecycle } from '@salesforce/core';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { FlagOptions } from '../../../src/sourceCommand';
-import { sourceComponent } from './testConsts';
+import { exampleSourceComponent } from './testConsts';
 
 describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
@@ -64,7 +64,7 @@ describe('force:source:deploy', () => {
     createComponentSetStub = sandbox.stub().returns({
       deploy: deployStub,
       toArray: () => {
-        return [sourceComponent];
+        return [exampleSourceComponent];
       },
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
@@ -113,7 +113,7 @@ describe('force:source:deploy', () => {
     const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
     expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([sourceComponent]);
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults);
   };

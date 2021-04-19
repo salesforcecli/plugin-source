@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-export const sourceComponent = {
+export const exampleSourceComponent = {
   name: 'GeocodingService',
   type: {
     id: 'apexclass',
@@ -24,7 +24,7 @@ export const sourceComponent = {
     '/Users/william.ruemmele/projects/scratches/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls',
 };
 
-export const testConsts = {
+export const exampleDeployResponse = {
   result: {
     canceledBy: '0051h000006BHOq',
     canceledByName: 'User User',
