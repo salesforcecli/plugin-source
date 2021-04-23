@@ -57,6 +57,29 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       });
     }
 
+    it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
+      /**
+       * NUT covering a specific bug in toolbelt
+       * 1. create LWC and CSS component (mycomponent)
+       * 2. deploy LWC
+       * 3. delete LWC locally
+       * 4. retrieve with -m LightningComponentBundle:mycomponent
+       * the -meta.xml file would be associated with the .css file, not the .js file
+       */
+      const lwcPath = path.join('force-app', 'main', 'default', 'lwc');
+      await nutshell.createLWC({
+        args: `-n mycomponent --type lwc -d ${lwcPath}`,
+      });
+      await nutshell.writeFile(`${path.join(lwcPath, 'mycomponent.css')}`, '{}');
+      // deploy the LWC
+      await nutshell.deploy({ args: '--sourcepath force-app' });
+      // delete the LWC locally
+      await nutshell.deleteGlobs([lwcPath]);
+      await nutshell.retrieve({ args: '--metadata LightningComponentBundle:mycomponent' });
+      // ensure that the mycomponent.js-meta.xml file exists
+      await nutshell.expect.fileToExist(`${path.join(lwcPath, 'mycomponent.js-meta.xml')}`);
+    });
+
     it('should throw an error if the metadata is not valid', async () => {
       const retrieve = await nutshell.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
       nutshell.expect.errorToHaveName(retrieve, 'UnsupportedType');

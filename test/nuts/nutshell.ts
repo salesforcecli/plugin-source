@@ -150,6 +150,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
+   * Create a Lightning Web Component
+   */
+  public async createLWC(
+    options: Partial<Nutshell.CommandOpts> = {}
+  ): Promise<Result<{ created: string[]; outputDir: string }>> {
+    return this.execute('sfdx force:lightning:component:create', options);
+  }
+
+  /**
    * Installs a package into the scratch org. This method uses shelljs instead of testkit because
    * we can't add plugin-package as a dev plugin yet.
    */
