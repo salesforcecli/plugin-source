@@ -15,7 +15,7 @@ import { stubMethod } from '@salesforce/ts-sinon';
 import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
 import cli from 'cli-ux';
 import { FlagOptions, ProgressBar, SourceCommand } from '../../../src/sourceCommand';
-import { deployReport } from './deployReport';
+import { exampleDeployResponse } from './testConsts';
 
 describe('SourceCommand', () => {
   const sandbox = sinon.createSandbox();
@@ -326,7 +326,7 @@ describe('SourceCommand', () => {
       getConnection: () => {
         return {
           metadata: {
-            checkDeployStatus: () => deployReport,
+            checkDeployStatus: () => exampleDeployResponse,
           },
         };
       },
@@ -349,7 +349,7 @@ describe('SourceCommand', () => {
 
     it('should "print" the progress bar', async () => {
       const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(res).to.deep.equal(deployReport);
+      expect(res).to.deep.equal(exampleDeployResponse);
       expect(initProgressBarStub.called).to.be.true;
       expect(pbStart.callCount).to.equal(1);
       expect(pbStop.callCount).to.equal(1);
@@ -362,7 +362,7 @@ describe('SourceCommand', () => {
       expect(initProgressBarStub.called).to.be.false;
 
       const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(res).to.deep.equal(deployReport);
+      expect(res).to.deep.equal(exampleDeployResponse);
     });
 
     it('should NOT "print" the progress bar because of env var', async () => {
@@ -371,7 +371,7 @@ describe('SourceCommand', () => {
         const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
         expect(initProgressBarStub.called).to.be.false;
 
-        expect(res).to.deep.equal(deployReport);
+        expect(res).to.deep.equal(exampleDeployResponse);
       } finally {
         delete process.env.SFDX_USE_PROGRESS_BAR;
       }

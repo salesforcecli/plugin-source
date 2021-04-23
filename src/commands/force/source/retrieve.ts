@@ -7,7 +7,7 @@
 import * as os from 'os';
 
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString } from '@salesforce/ts-types';
 import { blue } from 'chalk';
@@ -53,8 +53,6 @@ export class Retrieve extends SourceCommand {
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
 
   public async run(): Promise<FileResponse[]> {
-    const hookEmitter = Lifecycle.getInstance();
-
     const defaultPackagePath = this.project.getDefaultPackage().fullPath;
 
     const cs = await this.createComponentSet({
@@ -65,8 +63,7 @@ export class Retrieve extends SourceCommand {
       apiversion: asString(this.flags.apiversion),
     });
 
-    // Emit the preretrieve event, which needs the package.xml from the ComponentSet
-    await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
+    await this.lifecycle.emit('preretrieve', cs.toArray());
 
     const mdapiResult = await cs
       .retrieve({
@@ -78,7 +75,7 @@ export class Retrieve extends SourceCommand {
       .start();
 
     const results = mdapiResult.response;
-    await hookEmitter.emit('postretrieve', results);
+    await this.lifecycle.emit('postretrieve', results);
 
     if (results.status === 'InProgress') {
       throw new SfdxError(messages.getMessage('retrieveTimeout', [(this.flags.wait as Duration).minutes]));

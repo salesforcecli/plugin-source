@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
-import { fs, SfdxError, Logger, ConfigFile } from '@salesforce/core';
+import { fs, SfdxError, Logger, ConfigFile, Lifecycle } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/resolve';
 import cli from 'cli-ux';
 import { asString } from '@salesforce/ts-types';
@@ -34,6 +34,7 @@ export abstract class SourceCommand extends SfdxCommand {
   public static STASH_KEY = 'SOURCE_DEPLOY';
   public progressBar?: ProgressBar;
   public logger = Logger.childFromRoot(this.constructor.name);
+  public lifecycle = Lifecycle.getInstance();
 
   public getConfig(): ConfigFile<{ isGlobal: true; filename: 'stash.json' }> {
     return new ConfigFile({ isGlobal: true, filename: 'stash.json' });

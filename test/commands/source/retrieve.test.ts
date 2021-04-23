@@ -12,6 +12,7 @@ import { Dictionary } from '@salesforce/ts-types';
 import { Lifecycle } from '@salesforce/core';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { FlagOptions } from '../../../src/sourceCommand';
+import { exampleSourceComponent } from './testConsts';
 
 describe('force:source:retrieve', () => {
   const sandbox = sinon.createSandbox();
@@ -38,7 +39,6 @@ describe('force:source:retrieve', () => {
       flags: Object.assign({}, flags),
       ux: {
         log: () => {},
-        logJson: () => {},
         styledHeader: () => {},
         table: () => {},
       },
@@ -47,6 +47,9 @@ describe('force:source:retrieve', () => {
       },
       org: {
         getUsername: () => username,
+      },
+      lifecycle: {
+        emit: lifecycleEmitStub,
       },
       project: {
         getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
@@ -60,6 +63,9 @@ describe('force:source:retrieve', () => {
     retrieveStub = sandbox.stub().returns({ start: startStub });
     createComponentSetStub = sandbox.stub().returns({
       retrieve: retrieveStub,
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
       getPackageXml: () => packageXml,
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
@@ -103,9 +109,7 @@ describe('force:source:retrieve', () => {
     const failureMsg = 'Lifecycle.emit() should be called for preretrieve and postretrieve';
     expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({
-      packageXmlPath: packageXml,
-    });
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults.response);
   };
