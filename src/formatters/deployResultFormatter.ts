@@ -9,21 +9,17 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages } from '@salesforce/core';
+import { getBoolean, getString, getNumber } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { ResultFormatter } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
-
-export interface DeployFormatterOptions {
-  verbose?: boolean;
-  async?: boolean;
-}
 
 export interface DeployCommandResult extends MetadataApiDeployStatus {
   deployedSource: FileResponse[];
@@ -45,19 +41,14 @@ export interface DeployAsyncStatus {
   timedOut: boolean;
 }
 
-export class DeployResultFormatter implements ResultFormatter {
-  protected logger: Logger;
-  protected ux: UX;
+export class DeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
-  protected options: DeployFormatterOptions;
-  private fileResponses: FileResponse[];
+  protected fileResponses: FileResponse[];
 
-  public constructor(logger: Logger, ux: UX, result: DeployResult, options: DeployFormatterOptions) {
-    this.logger = logger;
-    this.ux = ux;
+  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: DeployResult) {
+    super(logger, ux, options);
     this.result = result;
-    this.fileResponses = result.getFileResponses ? result.getFileResponses() : [];
-    this.options = options;
+    this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
   }
 
   /**
@@ -94,9 +85,15 @@ export class DeployResultFormatter implements ResultFormatter {
   public display(): void {
     // Display check-only, non-verbose success
     if (this.isSuccess() && this.isCheckOnly() && !this.isVerbose()) {
-      const componentsDeployed = this.result.response.numberComponentsDeployed;
-      const testsCompleted = this.result.response.numberTestsCompleted;
-      this.ux.log(messages.getMessage('checkOnlySuccess', [componentsDeployed, testsCompleted]));
+      const componentsDeployed = this.getNumResult('numberComponentsDeployed');
+      const testsCompleted = this.getNumResult('numberTestsCompleted');
+      const checkOnlySuccessMsg = messages.getMessage('checkOnlySuccess', [componentsDeployed, testsCompleted]);
+      this.ux.log(checkOnlySuccessMsg);
+      return;
+    }
+    if (this.hasStatus(RequestStatus.Canceled)) {
+      const canceledByName = getString(this.result, 'response.canceledByName', 'unknown');
+      this.ux.log(`The deployment has been canceled by ${canceledByName}`);
       return;
     }
     this.displaySuccesses();
@@ -104,35 +101,27 @@ export class DeployResultFormatter implements ResultFormatter {
     this.displayTestResults();
   }
 
-  private isSuccess(): boolean {
-    return this.result.response.success;
+  protected hasStatus(status: RequestStatus): boolean {
+    return getString(this.result, 'response.status') === status;
   }
 
-  private hasStatus(status: RequestStatus): boolean {
-    return this.result.response.status === status;
+  protected hasComponents(): boolean {
+    return getNumber(this.result, 'components.size', 0) === 0;
   }
 
-  private hasComponents(): boolean {
-    return !!this.result.components?.size;
+  protected isRunTestsEnabled(): boolean {
+    return getBoolean(this.result, 'response.runTestsEnabled', false);
   }
 
-  private isAsync(): boolean {
-    return this.options.async;
+  protected isCheckOnly(): boolean {
+    return getBoolean(this.result, 'response.checkOnly', false);
   }
 
-  private isVerbose(): boolean {
-    return this.options.verbose;
+  protected getNumResult(field: string): number {
+    return getNumber(this.result, `response.${field}`, 0);
   }
 
-  private isRunTestsEnabled(): boolean {
-    return this.result.response.runTestsEnabled;
-  }
-
-  private isCheckOnly(): boolean {
-    return this.result.response.checkOnly;
-  }
-
-  private displaySuccesses(): void {
+  protected displaySuccesses(): void {
     if (this.isSuccess() && this.hasComponents()) {
       //  sort by type then filename then fullname
       const files = this.fileResponses.sort((i, j) => {
@@ -164,7 +153,7 @@ export class DeployResultFormatter implements ResultFormatter {
     }
   }
 
-  private displayFailures(): void {
+  protected displayFailures(): void {
     if (this.hasStatus(RequestStatus.Failed) && this.hasComponents()) {
       // sort by filename then fullname
       const failures = this.fileResponses.sort((i, j) => {
@@ -188,20 +177,17 @@ export class DeployResultFormatter implements ResultFormatter {
     }
   }
 
-  private displayTestResults(): void {
+  protected displayTestResults(): void {
     if (this.isRunTestsEnabled()) {
       this.ux.log('');
-      // @ts-ignore DeployResult does not have complete typings for this.
-      const time = this.result.response.details.runTestResult.totalTime;
       if (this.isVerbose()) {
         this.ux.log('TBD: Show test successes, failures, and code coverage');
       } else {
         this.ux.styledHeader(chalk.blue('Test Results Summary'));
-        const { numberTestErrors, numberTestsCompleted, numberTestsTotal } = this.result.response;
-        this.ux.log(`Passing: ${numberTestsCompleted}`);
-        this.ux.log(`Failing: ${numberTestErrors}`);
-        this.ux.log(`Total: ${numberTestsTotal}`);
-        this.ux.log(`Time: ${time}`);
+        this.ux.log(`Passing: ${this.getNumResult('numberTestsCompleted')}`);
+        this.ux.log(`Failing: ${this.getNumResult('numberTestErrors')}`);
+        this.ux.log(`Total: ${this.getNumResult('numberTestsTotal')}`);
+        this.ux.log(`Time: ${this.getNumResult('details.runTestResult.totalTime')}`);
       }
     }
   }

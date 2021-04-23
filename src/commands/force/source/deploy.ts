@@ -10,8 +10,9 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, getBoolean, isString } from '@salesforce/ts-types';
+import { asString, asArray, getBoolean, getString, isString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../deployCommand';
 import {
   DeployResultFormatter,
@@ -101,14 +102,22 @@ export class Deploy extends DeployCommand {
   private isAsync = false;
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
-    let deployResult: DeployResult;
+    await this.deploy();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
 
+  // There are 3 types of deploys:
+  //   1. synchronous - deploy metadata and wait for the deploy to complete.
+  //   2. asynchronous - deploy metadata and immediately return.
+  //   3. recent validation - deploy metadata that's already been validated by the org
+  protected async deploy(): Promise<void> {
     this.isAsync = (this.flags.wait as Duration).quantity === 0;
 
     const hookEmitter = Lifecycle.getInstance();
 
     if (this.flags.validateddeployrequestid) {
-      deployResult = await this.deployRecentValidation();
+      this.deployResult = await this.deployRecentValidation();
     } else if (this.isAsync) {
       // This is an async deploy.  We just kick off the request.
       throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
@@ -139,21 +148,43 @@ export class Deploy extends DeployCommand {
         this.progress(deploy);
       }
 
-      deployResult = await deploy.start();
+      this.deployResult = await deploy.start();
     }
 
-    await hookEmitter.emit('postdeploy', deployResult);
+    await hookEmitter.emit('postdeploy', this.deployResult);
 
-    // console.dir(deployResult);
+    // console.dir(this.deployResult, { depth: 8 });
 
-    if (deployResult.response?.id) {
-      this.displayDeployId(deployResult.response.id);
+    const deployId = getString(this.deployResult, 'response.id');
+    if (deployId) {
+      this.displayDeployId(deployId);
       const file = this.getStash();
-      this.logger.debug(`Stashing deploy ID: ${deployResult.response.id}`);
-      await file.write({ [DeployCommand.STASH_KEY]: { jobid: deployResult.response.id } });
+      // TODO: I think we should stash the ID as soon as we know it.
+      this.logger.debug(`Stashing deploy ID: ${deployId}`);
+      await file.write({ [DeployCommand.STASH_KEY]: { jobid: deployId } });
+    }
+  }
+
+  protected resolveSuccess(): void {
+    const status = getString(this.deployResult, 'response.status');
+    if (status !== RequestStatus.Succeeded) {
+      this.setExitCode(1);
+    }
+  }
+
+  protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
+    const formatterOptions = {
+      verbose: getBoolean(this.flags, 'verbose', false),
+      async: this.isAsync,
+    };
+    const formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
+    // Only display results to console when JSON flag is unset.
+    if (!this.isJsonOutput()) {
+      formatter.display();
     }
 
-    return this.formatResult(deployResult);
+    return formatter.getJson();
   }
 
   private async deployRecentValidation(): Promise<DeployResult> {
@@ -162,9 +193,7 @@ export class Deploy extends DeployCommand {
     const rest = await this.isRestDeploy();
 
     // TODO: This is an async call so we need to poll unless `--wait 0`
-    //       See mdapiCheckStatusApi.ts in toolbelt for a polling impl,
-    //       although if we end up adding polling code in this plugin
-    //       it should be a simpler solution.
+    //       See mdapiCheckStatusApi.ts for the toolbelt polling impl.
     const response = await conn.deployRecentValidation({ id, rest });
 
     if (!this.isAsync) {
@@ -183,7 +212,7 @@ export class Deploy extends DeployCommand {
       validatedDeployId = (response as { id: string }).id;
     }
 
-    return this.deployReport(validatedDeployId);
+    return this.report(validatedDeployId);
   }
 
   private progress(deploy: MetadataApiDeploy): void {
@@ -218,22 +247,5 @@ export class Deploy extends DeployCommand {
     deploy.onError(() => {
       this.progressBar.stop();
     });
-  }
-
-  private formatResult(deployResult: DeployResult): DeployCommandResult | DeployCommandAsyncResult {
-    // console.dir(deployResult);
-
-    const formatterOptions = {
-      verbose: getBoolean(this.flags, 'verbose', false),
-      async: this.isAsync,
-    };
-    const formatter = new DeployResultFormatter(this.logger, this.ux, deployResult, formatterOptions);
-
-    // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
-      formatter.display();
-    }
-
-    return formatter.getJson();
   }
 }

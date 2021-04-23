@@ -6,29 +6,30 @@
  */
 
 import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
-import { SfdxError, ConfigFile, ConfigAggregator } from '@salesforce/core';
+import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
 import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { asString, getBoolean } from '@salesforce/ts-types';
-import { env } from '@salesforce/kit';
+import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
+import { Duration } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 
 export abstract class DeployCommand extends SourceCommand {
   public static STASH_KEY = 'SOURCE_DEPLOY';
 
-  private deployIdDisplayed = false;
+  protected deployIdDisplayed = false;
 
-  public async deployReport(id?: string): Promise<DeployResult> {
+  protected deployResult: DeployResult;
+
+  /**
+   * Request a report of an in-progess or completed deployment.
+   *
+   * @param id the Deploy ID of a deployment request
+   * @returns DeployResult
+   */
+  public async report(id?: string): Promise<DeployResult> {
     const deployId = this.resolveDeployId(id);
-
     this.displayDeployId(deployId);
 
     const res = await this.org.getConnection().metadata.checkDeployStatus(deployId, true);
-    if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
-      this.initProgressBar();
-      this.progressBar.start(res.numberTestsTotal + res.numberComponentsTotal);
-      this.progressBar.update(res.numberTestsCompleted + res.numberComponentsDeployed);
-      this.progressBar.stop();
-    }
 
     const deployStatus = (res as unknown) as MetadataApiDeployStatus;
     return new DeployResult(deployStatus, new ComponentSet());
@@ -87,5 +88,24 @@ export abstract class DeployCommand extends SourceCommand {
     }
 
     return true;
+  }
+
+  protected async poll(deployId: string, options?: Partial<PollingClient.Options>): Promise<DeployResult> {
+    const defaultOptions: PollingClient.Options = {
+      frequency: options?.frequency ?? Duration.seconds(1),
+      timeout: options?.timeout ?? (this.flags.wait as Duration),
+      poll: async (): Promise<StatusResult> => {
+        const deployResult = await this.report(deployId);
+        return {
+          completed: getBoolean(deployResult, 'response.done'),
+          payload: (deployResult as unknown) as AnyJson,
+        };
+      },
+    };
+
+    const pollingOptions = { ...defaultOptions, ...options };
+
+    const pollingClient = await PollingClient.create(pollingOptions);
+    return (pollingClient.subscribe() as unknown) as Promise<DeployResult>;
   }
 }

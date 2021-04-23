@@ -8,10 +8,11 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString } from '@salesforce/ts-types';
+import { asString, getString } from '@salesforce/ts-types';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../../deployCommand';
+import { DeployCancelCommandResult, DeployCancelFormatter } from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
@@ -33,18 +34,36 @@ export class Cancel extends DeployCommand {
     }),
   };
 
-  public async run(): Promise<DeployResult> {
+  public async run(): Promise<DeployCancelCommandResult> {
+    await this.cancel();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
+
+  protected async cancel(): Promise<void> {
     const deployId = this.resolveDeployId(asString(this.flags.jobid));
 
-    // first cancel the deploy
-    // TODO: update to use SDRL we can just do this for now
-    // this is the toolbelt implementation
+    // TODO: update to use SDRL. This matches the toolbelt implementation.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
     await this.org.getConnection().metadata['_invoke']('cancelDeploy', {
       deployId,
     });
 
-    // then print the status of the cancelled deploy
-    return this.deployReport(deployId);
+    this.deployResult = await this.poll(deployId);
+  }
+
+  protected resolveSuccess(): void {
+    const status = getString(this.deployResult, 'response.status');
+    if (status !== RequestStatus.Canceled) {
+      this.setExitCode(1);
+    }
+  }
+
+  protected formatResult(): DeployCancelCommandResult {
+    const formatter = new DeployCancelFormatter(this.logger, this.ux, this.deployResult);
+    if (!this.isJsonOutput()) {
+      formatter.display();
+    }
+    return formatter.getJson();
   }
 }

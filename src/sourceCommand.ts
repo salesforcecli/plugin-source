@@ -48,10 +48,20 @@ export abstract class SourceCommand extends SfdxCommand {
   }
 
   /**
-   * will create one ComponentSet to be deployed/retrieved
-   * will combine from all options passed in
+   * Sets an exit code on the process that marks success or failure
+   * after successful command execution.
    *
-   * @param options: FlagOptions where to create ComponentSets from
+   * @param code The exit code to set on the process.
+   */
+  protected setExitCode(code: number): void {
+    process.exitCode = code;
+  }
+
+  /**
+   * Creates a ComponentSet to be deployed/retrieved based on all
+   * options passed in.
+   *
+   * @param options: FlagOptions for creating a ComponentSet
    */
   protected async createComponentSet(options: FlagOptions): Promise<ComponentSet> {
     const setAggregator: ComponentLike[] = [];
@@ -138,4 +148,18 @@ export abstract class SourceCommand extends SfdxCommand {
 
     return componentSet;
   }
+
+  /**
+   * Inspects the command response to determine success.
+   *
+   * NOTE: This is not about unexpected command errors such as timeouts,
+   * or command flag parsing errors, but a successful
+   * command execution's results. E.g., the deploy command
+   * ran successfully but had ApexClass compilation errors,
+   * so the deployment was unsuccessful.
+   */
+  protected abstract resolveSuccess(): void;
+
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  protected abstract formatResult(): any;
 }

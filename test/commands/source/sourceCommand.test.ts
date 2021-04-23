@@ -23,12 +23,14 @@ describe('SourceCommand', () => {
   class SourceCommandTest extends SourceCommand {
     public callDeployProgress(id?: string): Promise<DeployResult> {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
-      return this.deployReport(id);
+      return this.report(id);
     }
     public async run() {}
     public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
       return this.createComponentSet(options);
     }
+    public resolveSuccess() {}
+    public formatResult() {}
   }
 
   const apexClassComponent = {
