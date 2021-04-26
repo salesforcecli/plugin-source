@@ -58,6 +58,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     }
 
     it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
+      // this will fail with toolbelt powered sfdx, but should pass with SDRL powered sfdx
       /**
        * NUT covering a specific bug in toolbelt
        * 1. create LWC and CSS component (mycomponent)
@@ -67,10 +68,6 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
        * the -meta.xml file would be associated with the .css file, not the .js file
        */
       const lwcPath = path.join('force-app', 'main', 'default', 'lwc');
-      await nutshell.createLWC({
-        args: `-n mycomponent --type lwc -d ${lwcPath}`,
-      });
-      await nutshell.writeFile(`${path.join(lwcPath, 'mycomponent.css')}`, '{}');
       // deploy the LWC
       await nutshell.deploy({ args: '--sourcepath force-app' });
       // delete the LWC locally

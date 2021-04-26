@@ -9,7 +9,6 @@
 
 import * as path from 'path';
 import * as os from 'os';
-import { copyFile } from 'fs/promises';
 import * as fg from 'fast-glob';
 import { exec } from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
@@ -155,7 +154,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public async createLWC(
     options: Partial<Nutshell.CommandOpts> = {}
   ): Promise<Result<{ created: string[]; outputDir: string }>> {
-    return this.execute('sfdx force:lightning:component:create', options);
+    return this.execute('force:lightning:component:create', options);
   }
 
   /**
@@ -341,10 +340,10 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       const src = path.join(this.testMetadataFolder, file);
       this.debug(`addTestFiles: ${src} -> ${dest}`);
       try {
-        await copyFile(src, dest);
+        fs.copyFileSync(src, dest);
       } catch {
         await fs.mkdirp(path.dirname(dest));
-        await copyFile(src, dest);
+        fs.copyFileSync(src, dest);
       }
     }
     await this.trackFiles(this.testMetadataFiles);
