@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { asString, asArray, getBoolean, getString, isString } from '@salesforce/ts-types';
@@ -114,8 +114,6 @@ export class Deploy extends DeployCommand {
   protected async deploy(): Promise<void> {
     this.isAsync = (this.flags.wait as Duration).quantity === 0;
 
-    const hookEmitter = Lifecycle.getInstance();
-
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
     } else if (this.isAsync) {
@@ -129,7 +127,7 @@ export class Deploy extends DeployCommand {
         apiversion: asString(this.flags.apiversion),
       });
 
-      await hookEmitter.emit('predeploy', { packageXmlPath: cs.getPackageXml() });
+      await this.lifecycle.emit('predeploy', cs.toArray());
 
       const deploy = cs.deploy({
         usernameOrConnection: this.org.getUsername(),
@@ -151,7 +149,7 @@ export class Deploy extends DeployCommand {
       this.deployResult = await deploy.start();
     }
 
-    await hookEmitter.emit('postdeploy', this.deployResult);
+    await this.lifecycle.emit('postdeploy', this.deployResult);
 
     // console.dir(this.deployResult, { depth: 8 });
 

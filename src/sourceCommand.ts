@@ -8,7 +8,7 @@
 import * as path from 'path';
 import { SfdxCommand } from '@salesforce/command';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { fs, SfdxError } from '@salesforce/core';
+import { fs, SfdxError, Lifecycle } from '@salesforce/core';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/resolve';
 import { getBoolean } from '@salesforce/ts-types';
 import cli from 'cli-ux';
@@ -32,6 +32,7 @@ export type ProgressBar = {
 export abstract class SourceCommand extends SfdxCommand {
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
   public progressBar?: ProgressBar;
+  public lifecycle = Lifecycle.getInstance();
 
   public isJsonOutput(): boolean {
     return getBoolean(this.flags, 'json', false);

@@ -13,7 +13,7 @@ import cli from 'cli-ux';
 import { Dictionary } from '@salesforce/ts-types';
 import { ProgressBar } from '../../../src/sourceCommand';
 import { DeployCommand } from '../../../src/deployCommand';
-import { deployReport } from './deployReport';
+import { getDeployResult } from './deployResponses';
 
 // TODO: Rewrite tests for this since it no longer displays the progress bar.
 describe.skip('DeployCommand', () => {
@@ -50,7 +50,7 @@ describe.skip('DeployCommand', () => {
       getConnection: () => {
         return {
           metadata: {
-            checkDeployStatus: () => deployReport,
+            checkDeployStatus: () => getDeployResult('successSync'),
           },
         };
       },
@@ -72,7 +72,7 @@ describe.skip('DeployCommand', () => {
 
     it('should "print" the progress bar', async () => {
       const res = await command.report('0Af1h00000fCQgsCAG');
-      expect(res).to.deep.equal(deployReport);
+      expect(res).to.deep.equal(getDeployResult('successSync'));
       expect(initProgressBarStub.called).to.be.true;
       expect(pbStart.callCount).to.equal(1);
       expect(pbStop.callCount).to.equal(1);
@@ -84,7 +84,7 @@ describe.skip('DeployCommand', () => {
       expect(initProgressBarStub.called).to.be.false;
 
       const res = await command.report('0Af1h00000fCQgsCAG');
-      expect(res).to.deep.equal(deployReport);
+      expect(res).to.deep.equal(getDeployResult('successSync'));
     });
 
     it('should NOT "print" the progress bar because of env var', async () => {
@@ -93,7 +93,7 @@ describe.skip('DeployCommand', () => {
         const res = await command.report('0Af1h00000fCQgsCAG');
         expect(initProgressBarStub.called).to.be.false;
 
-        expect(res).to.deep.equal(deployReport);
+        expect(res).to.deep.equal(getDeployResult('successSync'));
       } finally {
         delete process.env.SFDX_USE_PROGRESS_BAR;
       }

@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Lifecycle, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { asArray, asString, getBoolean, getString } from '@salesforce/ts-types';
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -68,8 +68,6 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const hookEmitter = Lifecycle.getInstance();
-
     const cs = await this.createComponentSet({
       packagenames: asArray<string>(this.flags.packagenames),
       sourcepath: asArray<string>(this.flags.sourcepath),
@@ -78,8 +76,7 @@ export class Retrieve extends SourceCommand {
       apiversion: asString(this.flags.apiversion),
     });
 
-    // Emit the preretrieve event, which needs the package.xml from the ComponentSet
-    await hookEmitter.emit('preretrieve', { packageXmlPath: cs.getPackageXml() });
+    await this.lifecycle.emit('preretrieve', cs.toArray());
 
     this.retrieveResult = await cs
       .retrieve({
@@ -90,7 +87,7 @@ export class Retrieve extends SourceCommand {
       })
       .start();
 
-    await hookEmitter.emit('postretrieve', this.retrieveResult.response);
+    await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
   }
 
   protected resolveSuccess(): void {

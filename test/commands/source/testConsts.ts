@@ -4,7 +4,27 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-export const deployReport = {
+
+export const exampleSourceComponent = {
+  name: 'GeocodingService',
+  type: {
+    id: 'apexclass',
+    name: 'ApexClass',
+    suffix: 'cls',
+    directoryName: 'classes',
+    inFolder: false,
+    strictDirectoryName: false,
+    strategies: {
+      adapter: 'matchingContentFile',
+    },
+  },
+  xml:
+    '/Users/william.ruemmele/projects/scratches/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls-meta.xml',
+  content:
+    '/Users/william.ruemmele/projects/scratches/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls',
+};
+
+export const exampleDeployResponse = {
   result: {
     canceledBy: '0051h000006BHOq',
     canceledByName: 'User User',

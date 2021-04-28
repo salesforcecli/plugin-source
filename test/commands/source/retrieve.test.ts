@@ -16,6 +16,7 @@ import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { FlagOptions } from '../../../src/sourceCommand';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
 import { getRetrieveResult } from './retrieveResponses';
+import { exampleSourceComponent } from './testConsts';
 
 describe('force:source:retrieve', () => {
   const sandbox = sinon.createSandbox();
@@ -80,6 +81,9 @@ describe('force:source:retrieve', () => {
     retrieveStub = sandbox.stub().returns({ start: startStub });
     createComponentSetStub = stubMethod(sandbox, Retrieve.prototype, 'createComponentSet').returns({
       retrieve: retrieveStub,
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
       getPackageXml: () => packageXml,
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
@@ -123,9 +127,7 @@ describe('force:source:retrieve', () => {
     const failureMsg = 'Lifecycle.emit() should be called for preretrieve and postretrieve';
     expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({
-      packageXmlPath: packageXml,
-    });
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.response);
   };
