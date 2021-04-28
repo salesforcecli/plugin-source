@@ -6,42 +6,47 @@
  */
 
 import { join, resolve } from 'path';
-import { Dictionary } from '@salesforce/ts-types';
-import { DeployResult, MetadataConverter } from '@salesforce/source-deploy-retrieve';
+import { MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
+import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import { IConfig } from '@oclif/config';
+import { SfdxProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
 import { FlagOptions } from '../../../src/sourceCommand';
 
 describe('force:source:convert', () => {
+  const sandbox = sinon.createSandbox();
+
   let createComponentSetStub: sinon.SinonStub;
-  let deployStub: sinon.SinonStub;
 
   const defaultDir = join('my', 'default', 'package');
   const myApp = join('new', 'package', 'directory');
-
-  const sandbox = sinon.createSandbox();
   const packageXml = 'package.xml';
+  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
 
-  const run = async (flags: Dictionary<boolean | string | number | string[]> = {}): Promise<DeployResult> => {
-    // Run the command
-    return Convert.prototype.run.call({
-      flags: Object.assign({}, flags),
-      ux: {
-        log: () => {},
-        styledHeader: () => {},
-        table: () => {},
-      },
-      logger: {
-        debug: () => {},
-      },
-      project: {
-        getDefaultPackage: () => {
-          return { path: defaultDir };
-        },
-      },
-      createComponentSet: createComponentSetStub,
-    }) as Promise<DeployResult>;
+  class TestConvert extends Convert {
+    public async runIt() {
+      await this.init();
+      return this.run();
+    }
+    public setProject(project: SfdxProject) {
+      this.project = project;
+    }
+  }
+
+  const runConvertCmd = async (params: string[]) => {
+    const cmd = new TestConvert(params, oclifConfigStub);
+    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
+      const sfdxProjectStub = fromStub(
+        stubInterface<SfdxProject>(sandbox, {
+          getDefaultPackage: () => ({ path: defaultDir }),
+        })
+      );
+      cmd.setProject(sfdxProjectStub);
+    });
+    stubMethod(sandbox, cmd, 'assignOrg');
+    return cmd.runIt();
   };
 
   // Ensure SourceCommand.createComponentSet() args
@@ -59,8 +64,8 @@ describe('force:source:convert', () => {
 
   beforeEach(() => {
     sandbox.stub(MetadataConverter.prototype, 'convert').resolves({ packagePath: 'temp' });
-    createComponentSetStub = sandbox.stub().returns({
-      deploy: deployStub,
+    createComponentSetStub = stubMethod(sandbox, TestConvert.prototype, 'createComponentSet').returns({
+      deploy: sinon.stub(),
       getPackageXml: () => packageXml,
       getSourceComponents: () => {
         return {
@@ -75,57 +80,53 @@ describe('force:source:convert', () => {
   });
 
   it('should pass along sourcepath', async () => {
-    const sourcepath = ['somepath'];
-    const result = await run({ sourcepath, json: true });
+    const sourcepath = 'somepath';
+    const result = await runConvertCmd(['--sourcepath', sourcepath, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ sourcepath });
+    ensureCreateComponentSetArgs({ sourcepath: [sourcepath] });
   });
 
   it('should call default package dir if no args', async () => {
-    const result = await run({ json: true });
+    const result = await runConvertCmd(['--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({ sourcepath: [defaultDir] });
   });
 
   it('should call with metadata', async () => {
-    const result = await run({ metadata: ['ApexClass'], json: true });
+    const metadata = 'ApexClass';
+    const result = await runConvertCmd(['--metadata', metadata, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ metadata: ['ApexClass'] });
+    ensureCreateComponentSetArgs({ metadata: [metadata] });
   });
 
   it('should call with package.xml', async () => {
-    const result = await run({ json: true });
+    const result = await runConvertCmd(['--manifest', packageXml, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ sourcepath: [defaultDir] });
-  });
-
-  it('should call default package dir if no args', async () => {
-    const result = await run({ json: true });
-    expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ sourcepath: [defaultDir] });
+    ensureCreateComponentSetArgs({ manifest: packageXml });
   });
 
   it('should call root dir with rootdir flag', async () => {
-    const result = await run({ rootdir: myApp, json: true });
+    const result = await runConvertCmd(['--rootdir', myApp, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({ sourcepath: [myApp] });
   });
 
   describe('rootdir should be overwritten by any other flag', () => {
     it('sourcepath', async () => {
-      const result = await run({ rootdir: myApp, sourcepath: [defaultDir], json: true });
+      const result = await runConvertCmd(['--rootdir', myApp, '--sourcepath', defaultDir, '--json']);
       expect(result).to.deep.equal({ location: resolve('temp') });
       ensureCreateComponentSetArgs({ sourcepath: [defaultDir] });
     });
 
     it('metadata', async () => {
-      const result = await run({ rootdir: myApp, metadata: ['ApexClass', 'CustomObject'], json: true });
+      const metadata = 'ApexClass,CustomObject';
+      const result = await runConvertCmd(['--rootdir', myApp, '--metadata', metadata, '--json']);
       expect(result).to.deep.equal({ location: resolve('temp') });
-      ensureCreateComponentSetArgs({ metadata: ['ApexClass', 'CustomObject'] });
+      ensureCreateComponentSetArgs({ metadata: metadata.split(',') });
     });
 
     it('package', async () => {
-      const result = await run({ rootdir: myApp, manifest: packageXml, json: true });
+      const result = await runConvertCmd(['--rootdir', myApp, '--manifest', packageXml, '--json']);
       expect(result).to.deep.equal({ location: resolve('temp') });
       ensureCreateComponentSetArgs({ manifest: packageXml });
     });

@@ -7,11 +7,15 @@
 
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { RetrieveResult, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
-import { Dictionary } from '@salesforce/ts-types';
-import { Lifecycle } from '@salesforce/core';
+import { RetrieveOptions } from '@salesforce/source-deploy-retrieve';
+import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import { IConfig } from '@oclif/config';
+import { UX } from '@salesforce/command';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { FlagOptions } from '../../../src/sourceCommand';
+import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
+import { getRetrieveResult } from './retrieveResponses';
 
 describe('force:source:retrieve', () => {
   const sandbox = sinon.createSandbox();
@@ -19,11 +23,14 @@ describe('force:source:retrieve', () => {
   const packageXml = 'package.xml';
   const defaultPackagePath = 'defaultPackagePath';
 
-  // TODO: When output work items have been done we can test result output
-  //       that more closely matches actual output.
-  const stubbedResults = {
-    response: { status: 'Complete' },
-    getFileResponses: () => 'TBD',
+  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+
+  const retrieveResult = getRetrieveResult('success');
+  const expectedResults: RetrieveCommandResult = {
+    response: retrieveResult.response,
+    inboundFiles: retrieveResult.getFileResponses(),
+    packages: [],
+    warnings: [],
   };
 
   // Stubs
@@ -32,33 +39,46 @@ describe('force:source:retrieve', () => {
   let startStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
 
-  // Call the force:source:retrieve run method
-  const run = async (flags: Dictionary<boolean | string | number | string[]> = {}): Promise<RetrieveResult> => {
-    return Retrieve.prototype.run.call({
-      flags: Object.assign({}, flags),
-      ux: {
-        log: () => {},
-        logJson: () => {},
-        styledHeader: () => {},
-        table: () => {},
-      },
-      logger: {
-        debug: () => {},
-      },
-      org: {
-        getUsername: () => username,
-      },
-      project: {
-        getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
-      },
-      createComponentSet: createComponentSetStub,
-    }) as Promise<RetrieveResult>;
+  class TestRetrieve extends Retrieve {
+    public async runIt() {
+      await this.init();
+      return this.run();
+    }
+    public setOrg(org: Org) {
+      this.org = org;
+    }
+    public setProject(project: SfdxProject) {
+      this.project = project;
+    }
+  }
+
+  const runRetrieveCmd = async (params: string[]) => {
+    const cmd = new TestRetrieve(params, oclifConfigStub);
+    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
+      const sfdxProjectStub = fromStub(
+        stubInterface<SfdxProject>(sandbox, {
+          getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
+        })
+      );
+      cmd.setProject(sfdxProjectStub);
+    });
+    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
+      const orgStub = fromStub(
+        stubInterface<Org>(sandbox, {
+          getUsername: () => username,
+        })
+      );
+      cmd.setOrg(orgStub);
+    });
+    stubMethod(sandbox, UX.prototype, 'log');
+    stubMethod(sandbox, RetrieveResultFormatter.prototype, 'display');
+    return cmd.runIt();
   };
 
   beforeEach(() => {
-    startStub = sandbox.stub().returns(stubbedResults);
+    startStub = sandbox.stub().returns(retrieveResult);
     retrieveStub = sandbox.stub().returns({ start: startStub });
-    createComponentSetStub = sandbox.stub().returns({
+    createComponentSetStub = stubMethod(sandbox, Retrieve.prototype, 'createComponentSet').returns({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
     });
@@ -107,13 +127,13 @@ describe('force:source:retrieve', () => {
       packageXmlPath: packageXml,
     });
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
-    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(stubbedResults.response);
+    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.response);
   };
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
-    const result = await run({ sourcepath, json: true });
-    expect(result).to.deep.equal(stubbedResults.getFileResponses());
+    const result = await runRetrieveCmd(['--sourcepath', sourcepath[0], '--json']);
+    expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -121,8 +141,8 @@ describe('force:source:retrieve', () => {
 
   it('should pass along metadata', async () => {
     const metadata = ['ApexClass:MyClass'];
-    const result = await run({ metadata, json: true });
-    expect(result).to.deep.equal(stubbedResults.getFileResponses());
+    const result = await runRetrieveCmd(['--metadata', metadata[0], '--json']);
+    expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ metadata });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -130,8 +150,8 @@ describe('force:source:retrieve', () => {
 
   it('should pass along manifest', async () => {
     const manifest = 'package.xml';
-    const result = await run({ manifest, json: true });
-    expect(result).to.deep.equal(stubbedResults.getFileResponses());
+    const result = await runRetrieveCmd(['--manifest', manifest, '--json']);
+    expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ manifest });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -140,8 +160,8 @@ describe('force:source:retrieve', () => {
   it('should pass along apiversion', async () => {
     const manifest = 'package.xml';
     const apiversion = '50.0';
-    const result = await run({ manifest, apiversion, json: true });
-    expect(result).to.deep.equal(stubbedResults.getFileResponses());
+    const result = await runRetrieveCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
+    expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ apiversion, manifest });
     ensureRetrieveArgs();
     ensureHookArgs();
@@ -150,8 +170,8 @@ describe('force:source:retrieve', () => {
   it('should pass along packagenames', async () => {
     const manifest = 'package.xml';
     const packagenames = ['package1'];
-    const result = await run({ manifest, packagenames, json: true });
-    expect(result).to.deep.equal(stubbedResults.getFileResponses());
+    const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames[0], '--json']);
+    expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ manifest, packagenames });
     ensureRetrieveArgs({ packageNames: packagenames });
     ensureHookArgs();

@@ -10,24 +10,35 @@
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
-import { ComponentSet, DeployResult, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
-import { stubMethod } from '@salesforce/ts-sinon';
-import { fs as fsCore, SfdxError, SfdxProject } from '@salesforce/core';
-import cli from 'cli-ux';
-import { FlagOptions, ProgressBar, SourceCommand } from '../../../src/sourceCommand';
-import { deployReport } from './deployReport';
+import { ComponentSet, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
+import { stubInterface, stubMethod, fromStub } from '@salesforce/ts-sinon';
+import { Dictionary } from '@salesforce/ts-types';
+import { fs as fsCore, SfdxError, SfdxProject, Logger } from '@salesforce/core';
+import { FlagOptions, SourceCommand } from '../../../src/sourceCommand';
 
 describe('SourceCommand', () => {
   const sandbox = sinon.createSandbox();
 
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   class SourceCommandTest extends SourceCommand {
-    public callDeployProgress(id?: string): Promise<DeployResult> {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
-      return this.report(id);
-    }
+    protected logger = fromStub(
+      stubInterface<Logger>(sandbox, {
+        debug: () => {},
+        isDebugEnabled: () => false,
+      })
+    );
     public async run() {}
     public async callCreateComponentSet(options: FlagOptions): Promise<ComponentSet> {
       return this.createComponentSet(options);
+    }
+    public callSetExitCode(exitCode: number) {
+      this.setExitCode(exitCode);
+    }
+    public setCmdFlags(flags: Dictionary) {
+      this.flags = flags;
     }
     public resolveSuccess() {}
     public formatResult() {}
@@ -45,6 +56,33 @@ describe('SourceCommand', () => {
     content: undefined,
     xml: 'MyCustomObject__c.object-meta.xml',
   };
+
+  describe('isJsonOutput', () => {
+    it('should return true when json flag is set', () => {
+      const command = new SourceCommandTest([''], null);
+      command.setCmdFlags({ json: true });
+      expect(command.isJsonOutput()).to.equal(true);
+    });
+
+    it('should return false when json flag is unset', () => {
+      const command = new SourceCommandTest([''], null);
+      expect(command.isJsonOutput()).to.equal(false);
+    });
+  });
+
+  describe('setExitCode', () => {
+    const exitCode = process.exitCode;
+    it('should set process.exitCode', () => {
+      const testCode = 100;
+      const command = new SourceCommandTest([''], null);
+      command.callSetExitCode(testCode);
+      expect(process.exitCode).to.equal(testCode);
+    });
+
+    after(() => {
+      process.exitCode = exitCode;
+    });
+  });
 
   describe('createComponentSet', () => {
     const command = new SourceCommandTest([''], null);
@@ -66,10 +104,6 @@ describe('SourceCommand', () => {
       fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifest');
       getUniquePackageDirectoriesStub = stubMethod(sandbox, SfdxProject.prototype, 'getUniquePackageDirectories');
       componentSet = new ComponentSet();
-    });
-
-    afterEach(() => {
-      sandbox.restore();
     });
 
     it('should create ComponentSet from single sourcepath', async () => {
@@ -303,80 +337,6 @@ describe('SourceCommand', () => {
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);
-    });
-  });
-
-  describe('deployReport', () => {
-    const pb: ProgressBar = cli.progress({
-      format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
-      barCompleteChar: '\u2588',
-      barIncompleteChar: '\u2591',
-      linewrap: true,
-    }) as ProgressBar;
-    let pbStart: sinon.SinonStub;
-    let pbStop: sinon.SinonStub;
-    let pbUpdate: sinon.SinonStub;
-    let initProgressBarStub: sinon.SinonStub;
-
-    const command: SourceCommandTest = new SourceCommandTest([''], null);
-
-    // @ts-ignore
-    command.ux = { log: () => {} };
-    // @ts-ignore
-    command.org = {
-      // @ts-ignore
-      getConnection: () => {
-        return {
-          metadata: {
-            checkDeployStatus: () => deployReport,
-          },
-        };
-      },
-    };
-    // @ts-ignore
-    command.flags = [];
-
-    beforeEach(() => {
-      initProgressBarStub = sandbox.stub(command, 'initProgressBar').callsFake(() => {
-        command.progressBar = pb;
-      });
-      pbStart = sandbox.stub(pb, 'start');
-      pbUpdate = sandbox.stub(pb, 'update');
-      pbStop = sandbox.stub(pb, 'stop');
-    });
-
-    afterEach(() => {
-      sandbox.restore();
-    });
-
-    it('should "print" the progress bar', async () => {
-      const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(res).to.deep.equal(deployReport);
-      expect(initProgressBarStub.called).to.be.true;
-      expect(pbStart.callCount).to.equal(1);
-      expect(pbStop.callCount).to.equal(1);
-      expect(pbUpdate.callCount).to.equal(1);
-    });
-
-    it('should NOT "print" the progress bar because of --json', async () => {
-      // @ts-ignore
-      command.flags.json = true;
-      expect(initProgressBarStub.called).to.be.false;
-
-      const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-      expect(res).to.deep.equal(deployReport);
-    });
-
-    it('should NOT "print" the progress bar because of env var', async () => {
-      try {
-        process.env.SFDX_USE_PROGRESS_BAR = 'false';
-        const res = await command.callDeployProgress('0Af1h00000fCQgsCAG');
-        expect(initProgressBarStub.called).to.be.false;
-
-        expect(res).to.deep.equal(deployReport);
-      } finally {
-        delete process.env.SFDX_USE_PROGRESS_BAR;
-      }
     });
   });
 });
