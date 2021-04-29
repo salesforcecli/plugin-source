@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/salesforcecli/plugin-source/compare/v0.0.10...v0.0.11) (2021-04-29)
+
+
+### Bug Fixes
+
+* add NUT testing LWC bug ([#70](https://github.com/salesforcecli/plugin-source/issues/70)) ([d6cb456](https://github.com/salesforcecli/plugin-source/commit/d6cb456cdf127e7e896511b8af7606fce25973cb))
+
 ### [0.0.10](https://github.com/salesforcecli/plugin-source/compare/v0.0.9...v0.0.10) (2021-04-23)
 
 
