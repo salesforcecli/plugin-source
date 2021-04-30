@@ -9,7 +9,7 @@ import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { asString, getString } from '@salesforce/ts-types';
+import { getString } from '@salesforce/ts-types';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../../deployCommand';
 import { DeployCancelCommandResult, DeployCancelFormatter } from '../../../../formatters/deployCancelResultFormatter';
@@ -41,7 +41,7 @@ export class Cancel extends DeployCommand {
   }
 
   protected async cancel(): Promise<void> {
-    const deployId = this.resolveDeployId(asString(this.flags.jobid));
+    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
     // TODO: update to use SDRL. This matches the toolbelt implementation.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment

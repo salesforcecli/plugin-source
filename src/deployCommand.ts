@@ -13,7 +13,7 @@ import { Duration } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 
 export abstract class DeployCommand extends SourceCommand {
-  public static STASH_KEY = 'SOURCE_DEPLOY';
+  protected static readonly STASH_KEY = 'SOURCE_DEPLOY';
 
   protected deployIdDisplayed = false;
 

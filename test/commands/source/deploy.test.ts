@@ -5,16 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { Lifecycle, Org } from '@salesforce/core';
+import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
-import { FlagOptions } from '../../../src/sourceCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
+import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getDeployResult } from './deployResponses';
 import { exampleSourceComponent } from './testConsts';
 
@@ -22,6 +23,7 @@ describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
   const username = 'deploy-test@org.com';
   const packageXml = 'package.xml';
+  const defaultDir = join('my', 'default', 'package');
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
 
   const deployResult = getDeployResult('successSync');
@@ -31,7 +33,7 @@ describe('force:source:deploy', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  let createComponentSetStub: sinon.SinonStub;
+  let buildComponentSetStub: sinon.SinonStub;
   let progressStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
   let startStub: sinon.SinonStub;
@@ -45,11 +47,21 @@ describe('force:source:deploy', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
+    public setProject(project: SfdxProject) {
+      this.project = project;
+    }
   }
 
   const runDeployCmd = async (params: string[]) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject');
+    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
+      const sfdxProjectStub = fromStub(
+        stubInterface<SfdxProject>(sandbox, {
+          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
+        })
+      );
+      cmd.setProject(sfdxProjectStub);
+    });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(
         stubInterface<Org>(sandbox, {
@@ -67,7 +79,7 @@ describe('force:source:deploy', () => {
   beforeEach(() => {
     startStub = sandbox.stub().returns(deployResult);
     deployStub = sandbox.stub().returns({ start: startStub });
-    createComponentSetStub = stubMethod(sandbox, TestDeploy.prototype, 'createComponentSet').returns({
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: deployStub,
       getPackageXml: () => packageXml,
       toArray: () => {
@@ -81,8 +93,8 @@ describe('force:source:deploy', () => {
     sandbox.restore();
   });
 
-  // Ensure SourceCommand.createComponentSet() args
-  const ensureCreateComponentSetArgs = (overrides?: Partial<FlagOptions>) => {
+  // Ensure correct ComponentSetBuilder options
+  const ensureCreateComponentSetArgs = (overrides?: Partial<ComponentSetOptions>) => {
     const defaultArgs = {
       sourcepath: undefined,
       manifest: undefined,
@@ -91,8 +103,8 @@ describe('force:source:deploy', () => {
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
-    expect(createComponentSetStub.calledOnce).to.equal(true);
-    expect(createComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
+    expect(buildComponentSetStub.calledOnce).to.equal(true);
+    expect(buildComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
   };
 
   // Ensure ComponentSet.deploy() args
@@ -144,7 +156,12 @@ describe('force:source:deploy', () => {
     const metadata = ['ApexClass:MyClass'];
     const result = await runDeployCmd(['--metadata', metadata[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ metadata });
+    ensureCreateComponentSetArgs({
+      metadata: {
+        metadataEntries: metadata,
+        directoryPaths: [defaultDir],
+      },
+    });
     ensureDeployArgs();
     ensureHookArgs();
     ensureProgressBar(0);
@@ -154,7 +171,12 @@ describe('force:source:deploy', () => {
     const manifest = 'package.xml';
     const result = await runDeployCmd(['--manifest', manifest, '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ manifest });
+    ensureCreateComponentSetArgs({
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+      },
+    });
     ensureDeployArgs();
     ensureHookArgs();
     ensureProgressBar(0);
@@ -165,7 +187,13 @@ describe('force:source:deploy', () => {
     const apiversion = '50.0';
     const result = await runDeployCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ apiversion, manifest });
+    ensureCreateComponentSetArgs({
+      apiversion,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+      },
+    });
     ensureDeployArgs();
     ensureHookArgs();
     ensureProgressBar(0);
@@ -186,7 +214,12 @@ describe('force:source:deploy', () => {
     ]);
 
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ manifest });
+    ensureCreateComponentSetArgs({
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+      },
+    });
 
     // Ensure ComponentSet.deploy() overridden args
     ensureDeployArgs({

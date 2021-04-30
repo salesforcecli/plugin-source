@@ -10,10 +10,11 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, getBoolean, getString, isString } from '@salesforce/ts-types';
+import { getString, isString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../deployCommand';
+import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import {
   DeployResultFormatter,
   DeployCommandResult,
@@ -112,7 +113,7 @@ export class Deploy extends DeployCommand {
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
-    this.isAsync = (this.flags.wait as Duration).quantity === 0;
+    this.isAsync = this.getFlag<Duration>('wait').quantity === 0;
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
@@ -120,11 +121,17 @@ export class Deploy extends DeployCommand {
       // This is an async deploy.  We just kick off the request.
       throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
     } else {
-      const cs = await this.createComponentSet({
-        sourcepath: asArray<string>(this.flags.sourcepath),
-        manifest: asString(this.flags.manifest),
-        metadata: asArray<string>(this.flags.metadata),
-        apiversion: asString(this.flags.apiversion),
+      const cs = await ComponentSetBuilder.build({
+        apiversion: this.getFlag<string>('apiversion'),
+        sourcepath: this.getFlag<string[]>('sourcepath'),
+        manifest: this.flags.manifest && {
+          manifestPath: this.getFlag<string>('manifest'),
+          directoryPaths: this.getPackageDirs(),
+        },
+        metadata: this.flags.metadata && {
+          metadataEntries: this.getFlag<string[]>('metadata'),
+          directoryPaths: this.getPackageDirs(),
+        },
       });
 
       await this.lifecycle.emit('predeploy', cs.toArray());
@@ -132,11 +139,11 @@ export class Deploy extends DeployCommand {
       const deploy = cs.deploy({
         usernameOrConnection: this.org.getUsername(),
         apiOptions: {
-          ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
-          rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
-          checkOnly: getBoolean(this.flags, 'checkonly', false),
-          runTests: asArray<string>(this.flags.runtests),
-          testLevel: this.flags.testlevel as TestLevel,
+          ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+          rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
+          checkOnly: this.getFlag<boolean>('checkonly', false),
+          runTests: this.getFlag<string[]>('runtests'),
+          testLevel: this.getFlag<TestLevel>('testlevel'),
         },
       });
 
@@ -150,8 +157,6 @@ export class Deploy extends DeployCommand {
     }
 
     await this.lifecycle.emit('postdeploy', this.deployResult);
-
-    // console.dir(this.deployResult, { depth: 8 });
 
     const deployId = getString(this.deployResult, 'response.id');
     if (deployId) {
@@ -172,7 +177,7 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     const formatterOptions = {
-      verbose: getBoolean(this.flags, 'verbose', false),
+      verbose: this.getFlag<boolean>('verbose', false),
       async: this.isAsync,
     };
     const formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
@@ -187,7 +192,7 @@ export class Deploy extends DeployCommand {
 
   private async deployRecentValidation(): Promise<DeployResult> {
     const conn = this.org.getConnection();
-    const id = asString(this.flags.validateddeployrequestid);
+    const id = this.getFlag<string>('validateddeployrequestid');
     const rest = await this.isRestDeploy();
 
     // TODO: This is an async call so we need to poll unless `--wait 0`
@@ -245,5 +250,9 @@ export class Deploy extends DeployCommand {
     deploy.onError(() => {
       this.progressBar.stop();
     });
+  }
+
+  private getPackageDirs(): string[] {
+    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
   }
 }

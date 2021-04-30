@@ -9,11 +9,12 @@ import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { asArray, asString, getBoolean, getString } from '@salesforce/ts-types';
+import { getString } from '@salesforce/ts-types';
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 import { RetrieveResultFormatter, RetrieveCommandResult } from '../../../formatters/retrieveResultFormatter';
+import { ComponentSetBuilder } from '../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -68,12 +69,18 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const cs = await this.createComponentSet({
-      packagenames: asArray<string>(this.flags.packagenames),
-      sourcepath: asArray<string>(this.flags.sourcepath),
-      manifest: asString(this.flags.manifest),
-      metadata: asArray<string>(this.flags.metadata),
-      apiversion: asString(this.flags.apiversion),
+    const cs = await ComponentSetBuilder.build({
+      apiversion: this.getFlag<string>('apiversion'),
+      packagenames: this.getFlag<string[]>('packagenames'),
+      sourcepath: this.getFlag<string[]>('sourcepath'),
+      manifest: this.flags.manifest && {
+        manifestPath: this.getFlag<string>('manifest'),
+        directoryPaths: this.getPackageDirs(),
+      },
+      metadata: this.flags.metadata && {
+        metadataEntries: this.getFlag<string[]>('metadata'),
+        directoryPaths: this.getPackageDirs(),
+      },
     });
 
     await this.lifecycle.emit('preretrieve', cs.toArray());
@@ -83,7 +90,7 @@ export class Retrieve extends SourceCommand {
         usernameOrConnection: this.org.getUsername(),
         merge: true,
         output: this.project.getDefaultPackage().fullPath,
-        packageNames: asArray<string>(this.flags.packagenames),
+        packageNames: this.getFlag<string[]>('packagenames'),
       })
       .start();
 
@@ -99,8 +106,8 @@ export class Retrieve extends SourceCommand {
 
   protected formatResult(): RetrieveCommandResult {
     const formatterOptions = {
-      waitTime: (this.flags.wait as Duration).quantity,
-      verbose: getBoolean(this.flags, 'verbose', false),
+      waitTime: this.getFlag<Duration>('wait').quantity,
+      verbose: this.getFlag<boolean>('verbose', false),
     };
     const formatter = new RetrieveResultFormatter(this.logger, this.ux, formatterOptions, this.retrieveResult);
 
@@ -110,5 +117,9 @@ export class Retrieve extends SourceCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private getPackageDirs(): string[] {
+    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
   }
 }

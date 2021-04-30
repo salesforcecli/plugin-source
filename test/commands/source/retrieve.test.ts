@@ -13,8 +13,8 @@ import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
-import { FlagOptions } from '../../../src/sourceCommand';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
+import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getRetrieveResult } from './retrieveResponses';
 import { exampleSourceComponent } from './testConsts';
 
@@ -35,7 +35,7 @@ describe('force:source:retrieve', () => {
   };
 
   // Stubs
-  let createComponentSetStub: sinon.SinonStub;
+  let buildComponentSetStub: sinon.SinonStub;
   let retrieveStub: sinon.SinonStub;
   let startStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
@@ -59,6 +59,7 @@ describe('force:source:retrieve', () => {
       const sfdxProjectStub = fromStub(
         stubInterface<SfdxProject>(sandbox, {
           getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
+          getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
         })
       );
       cmd.setProject(sfdxProjectStub);
@@ -79,12 +80,12 @@ describe('force:source:retrieve', () => {
   beforeEach(() => {
     startStub = sandbox.stub().returns(retrieveResult);
     retrieveStub = sandbox.stub().returns({ start: startStub });
-    createComponentSetStub = stubMethod(sandbox, Retrieve.prototype, 'createComponentSet').returns({
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
       toArray: () => {
         return [exampleSourceComponent];
       },
-      getPackageXml: () => packageXml,
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
   });
@@ -94,7 +95,7 @@ describe('force:source:retrieve', () => {
   });
 
   // Ensure SourceCommand.createComponentSet() args
-  const ensureCreateComponentSetArgs = (overrides?: Partial<FlagOptions>) => {
+  const ensureCreateComponentSetArgs = (overrides?: Partial<ComponentSetOptions>) => {
     const defaultArgs = {
       packagenames: undefined,
       sourcepath: undefined,
@@ -104,8 +105,8 @@ describe('force:source:retrieve', () => {
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
-    expect(createComponentSetStub.calledOnce).to.equal(true);
-    expect(createComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
+    expect(buildComponentSetStub.calledOnce).to.equal(true);
+    expect(buildComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
   };
 
   // Ensure ComponentSet.retrieve() args
@@ -145,7 +146,12 @@ describe('force:source:retrieve', () => {
     const metadata = ['ApexClass:MyClass'];
     const result = await runRetrieveCmd(['--metadata', metadata[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ metadata });
+    ensureCreateComponentSetArgs({
+      metadata: {
+        metadataEntries: metadata,
+        directoryPaths: [defaultPackagePath],
+      },
+    });
     ensureRetrieveArgs();
     ensureHookArgs();
   });
@@ -154,7 +160,12 @@ describe('force:source:retrieve', () => {
     const manifest = 'package.xml';
     const result = await runRetrieveCmd(['--manifest', manifest, '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ manifest });
+    ensureCreateComponentSetArgs({
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultPackagePath],
+      },
+    });
     ensureRetrieveArgs();
     ensureHookArgs();
   });
@@ -164,7 +175,13 @@ describe('force:source:retrieve', () => {
     const apiversion = '50.0';
     const result = await runRetrieveCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ apiversion, manifest });
+    ensureCreateComponentSetArgs({
+      apiversion,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultPackagePath],
+      },
+    });
     ensureRetrieveArgs();
     ensureHookArgs();
   });
@@ -174,7 +191,13 @@ describe('force:source:retrieve', () => {
     const packagenames = ['package1'];
     const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ manifest, packagenames });
+    ensureCreateComponentSetArgs({
+      packagenames,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultPackagePath],
+      },
+    });
     ensureRetrieveArgs({ packageNames: packagenames });
     ensureHookArgs();
   });

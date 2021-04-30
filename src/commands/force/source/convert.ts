@@ -9,9 +9,10 @@ import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
-import { asArray, asString, getString } from '@salesforce/ts-types';
+import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
 import { ConvertResultFormatter, ConvertCommandResult } from '../../../formatters/convertResultFormatter';
+import { ComponentSetBuilder } from '../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'convert');
@@ -80,17 +81,23 @@ export class Convert extends SourceCommand {
       paths.push(this.project.getDefaultPackage().path);
     }
 
-    const cs = await this.createComponentSet({
+    const cs = await ComponentSetBuilder.build({
       sourcepath: paths,
-      manifest: asString(manifest),
-      metadata: asArray<string>(metadata),
+      manifest: manifest && {
+        manifestPath: this.getFlag<string>('manifest'),
+        directoryPaths: this.getPackageDirs(),
+      },
+      metadata: metadata && {
+        metadataEntries: this.getFlag<string[]>('metadata'),
+        directoryPaths: this.getPackageDirs(),
+      },
     });
 
     const converter = new MetadataConverter();
     this.convertResult = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
       type: 'directory',
-      outputDirectory: asString(this.flags.outputdir),
-      packageName: asString(this.flags.packagename),
+      outputDirectory: this.getFlag<string>('outputdir'),
+      packageName: this.getFlag<string>('packagename'),
     });
   }
 
@@ -107,5 +114,9 @@ export class Convert extends SourceCommand {
       formatter.display();
     }
     return formatter.getJson();
+  }
+
+  private getPackageDirs(): string[] {
+    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
   }
 }

@@ -9,7 +9,6 @@ import * as os from 'os';
 import { Messages } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
-import { asString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
@@ -43,7 +42,7 @@ export class Report extends DeployCommand {
   }
 
   protected async doReport(): Promise<void> {
-    const deployId = this.resolveDeployId(asString(this.flags.jobid));
+    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
     this.deployResult = await this.report(deployId);
   }
 

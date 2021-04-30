@@ -13,12 +13,12 @@ import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { SfdxProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
-import { FlagOptions } from '../../../src/sourceCommand';
+import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 
 describe('force:source:convert', () => {
   const sandbox = sinon.createSandbox();
 
-  let createComponentSetStub: sinon.SinonStub;
+  let buildComponentSetStub: sinon.SinonStub;
 
   const defaultDir = join('my', 'default', 'package');
   const myApp = join('new', 'package', 'directory');
@@ -41,6 +41,7 @@ describe('force:source:convert', () => {
       const sfdxProjectStub = fromStub(
         stubInterface<SfdxProject>(sandbox, {
           getDefaultPackage: () => ({ path: defaultDir }),
+          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
         })
       );
       cmd.setProject(sfdxProjectStub);
@@ -49,8 +50,8 @@ describe('force:source:convert', () => {
     return cmd.runIt();
   };
 
-  // Ensure SourceCommand.createComponentSet() args
-  const ensureCreateComponentSetArgs = (overrides?: Partial<FlagOptions>) => {
+  // Ensure correct ComponentSetBuilder options
+  const ensureCreateComponentSetArgs = (overrides?: Partial<ComponentSetOptions>) => {
     const defaultArgs = {
       sourcepath: [],
       manifest: undefined,
@@ -58,13 +59,13 @@ describe('force:source:convert', () => {
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
-    expect(createComponentSetStub.calledOnce).to.equal(true);
-    expect(createComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
+    expect(buildComponentSetStub.calledOnce).to.equal(true);
+    expect(buildComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
   };
 
   beforeEach(() => {
     sandbox.stub(MetadataConverter.prototype, 'convert').resolves({ packagePath: 'temp' });
-    createComponentSetStub = stubMethod(sandbox, TestConvert.prototype, 'createComponentSet').returns({
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: sinon.stub(),
       getPackageXml: () => packageXml,
       getSourceComponents: () => {
@@ -96,13 +97,23 @@ describe('force:source:convert', () => {
     const metadata = 'ApexClass';
     const result = await runConvertCmd(['--metadata', metadata, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ metadata: [metadata] });
+    ensureCreateComponentSetArgs({
+      metadata: {
+        metadataEntries: [metadata],
+        directoryPaths: [defaultDir],
+      },
+    });
   });
 
   it('should call with package.xml', async () => {
     const result = await runConvertCmd(['--manifest', packageXml, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
-    ensureCreateComponentSetArgs({ manifest: packageXml });
+    ensureCreateComponentSetArgs({
+      manifest: {
+        manifestPath: packageXml,
+        directoryPaths: [defaultDir],
+      },
+    });
   });
 
   it('should call root dir with rootdir flag', async () => {
@@ -122,13 +133,23 @@ describe('force:source:convert', () => {
       const metadata = 'ApexClass,CustomObject';
       const result = await runConvertCmd(['--rootdir', myApp, '--metadata', metadata, '--json']);
       expect(result).to.deep.equal({ location: resolve('temp') });
-      ensureCreateComponentSetArgs({ metadata: metadata.split(',') });
+      ensureCreateComponentSetArgs({
+        metadata: {
+          metadataEntries: metadata.split(','),
+          directoryPaths: [defaultDir],
+        },
+      });
     });
 
     it('package', async () => {
       const result = await runConvertCmd(['--rootdir', myApp, '--manifest', packageXml, '--json']);
       expect(result).to.deep.equal({ location: resolve('temp') });
-      ensureCreateComponentSetArgs({ manifest: packageXml });
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: packageXml,
+          directoryPaths: [defaultDir],
+        },
+      });
     });
   });
 });
