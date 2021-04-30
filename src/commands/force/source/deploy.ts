@@ -251,8 +251,4 @@ export class Deploy extends DeployCommand {
       this.progressBar.stop();
     });
   }
-
-  private getPackageDirs(): string[] {
-    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
-  }
 }

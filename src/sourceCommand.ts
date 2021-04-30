@@ -51,6 +51,10 @@ export abstract class SourceCommand extends SfdxCommand {
     process.exitCode = code;
   }
 
+  protected getPackageDirs(): string[] {
+    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+  }
+
   /**
    * Inspects the command response to determine success.
    *

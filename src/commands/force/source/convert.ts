@@ -115,8 +115,4 @@ export class Convert extends SourceCommand {
     }
     return formatter.getJson();
   }
-
-  private getPackageDirs(): string[] {
-    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
-  }
 }
