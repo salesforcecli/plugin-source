@@ -8,22 +8,23 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString } from '@salesforce/ts-types';
-import { SourceCommand } from '../../../../sourceCommand';
+import { getString } from '@salesforce/ts-types';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { DeployCommand } from '../../../../deployCommand';
+import { DeployCancelCommandResult, DeployCancelFormatter } from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
 
-export class Cancel extends SourceCommand {
+export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(DeployCommand.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
     }),
@@ -33,23 +34,36 @@ export class Cancel extends SourceCommand {
     }),
   };
 
-  public async run(): Promise<DeployResult> {
-    let id = asString(this.flags.jobid);
-    if (!id) {
-      const stash = this.getConfig();
-      stash.readSync();
-      id = asString((stash.get(SourceCommand.STASH_KEY) as { jobid: string }).jobid);
-    }
+  public async run(): Promise<DeployCancelCommandResult> {
+    await this.cancel();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
 
-    // first cancel the deploy
-    // TODO: update to use SDRL we can just do this for now
-    // this is the toolbelt implementation
+  protected async cancel(): Promise<void> {
+    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+
+    // TODO: update to use SDRL. This matches the toolbelt implementation.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
     await this.org.getConnection().metadata['_invoke']('cancelDeploy', {
-      id,
+      deployId,
     });
 
-    // then print the status of the cancelled deploy
-    return this.deployReport(id);
+    this.deployResult = await this.poll(deployId);
+  }
+
+  protected resolveSuccess(): void {
+    const status = getString(this.deployResult, 'response.status');
+    if (status !== RequestStatus.Canceled) {
+      this.setExitCode(1);
+    }
+  }
+
+  protected formatResult(): DeployCancelCommandResult {
+    const formatter = new DeployCancelFormatter(this.logger, this.ux, this.deployResult);
+    if (!this.isJsonOutput()) {
+      formatter.display();
+    }
+    return formatter.getJson();
   }
 }

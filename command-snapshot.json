@@ -59,6 +59,7 @@
       "packagenames",
       "sourcepath",
       "targetusername",
+      "verbose",
       "wait"
     ]
   }

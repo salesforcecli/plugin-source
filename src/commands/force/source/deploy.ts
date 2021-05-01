@@ -6,22 +6,27 @@
  */
 
 import * as os from 'os';
-import * as path from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { asString, asArray, getBoolean } from '@salesforce/ts-types';
-import * as chalk from 'chalk';
+import { getString, isString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
-import { SourceCommand } from '../../../sourceCommand';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { DeployCommand } from '../../../deployCommand';
+import { ComponentSetBuilder } from '../../../componentSetBuilder';
+import {
+  DeployResultFormatter,
+  DeployCommandResult,
+  DeployCommandAsyncResult,
+} from '../../../formatters/deployResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
-export class Deploy extends SourceCommand {
+export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -37,7 +42,7 @@ export class Deploy extends SourceCommand {
     }),
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(Deploy.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(0), // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.wait'),
     }),
@@ -95,66 +100,132 @@ export class Deploy extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  public async run(): Promise<DeployResult> {
+  private isAsync = false;
+
+  public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
+    await this.deploy();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
+
+  // There are 3 types of deploys:
+  //   1. synchronous - deploy metadata and wait for the deploy to complete.
+  //   2. asynchronous - deploy metadata and immediately return.
+  //   3. recent validation - deploy metadata that's already been validated by the org
+  protected async deploy(): Promise<void> {
+    this.isAsync = this.getFlag<Duration>('wait').quantity === 0;
+
     if (this.flags.validateddeployrequestid) {
-      const id = asString(this.flags.validateddeployrequestid);
-
-      const conn = this.org.getConnection();
-      await conn.deployRecentValidation({
-        id,
-        rest: !this.flags.soapdeploy,
+      this.deployResult = await this.deployRecentValidation();
+    } else if (this.isAsync) {
+      // This is an async deploy.  We just kick off the request.
+      throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
+    } else {
+      const cs = await ComponentSetBuilder.build({
+        apiversion: this.getFlag<string>('apiversion'),
+        sourcepath: this.getFlag<string[]>('sourcepath'),
+        manifest: this.flags.manifest && {
+          manifestPath: this.getFlag<string>('manifest'),
+          directoryPaths: this.getPackageDirs(),
+        },
+        metadata: this.flags.metadata && {
+          metadataEntries: this.getFlag<string[]>('metadata'),
+          directoryPaths: this.getPackageDirs(),
+        },
       });
-      return this.deployReport(id);
-    }
-    const cs = await this.createComponentSet({
-      sourcepath: asArray<string>(this.flags.sourcepath),
-      manifest: asString(this.flags.manifest),
-      metadata: asArray<string>(this.flags.metadata),
-      apiversion: asString(this.flags.apiversion),
-    });
 
-    await this.lifecycle.emit('predeploy', cs.toArray());
+      await this.lifecycle.emit('predeploy', cs.toArray());
 
-    const deploy = cs.deploy({
-      usernameOrConnection: this.org.getUsername(),
-      apiOptions: {
-        ignoreWarnings: getBoolean(this.flags, 'ignorewarnings', false),
-        rollbackOnError: !getBoolean(this.flags, 'ignoreerrors', false),
-        checkOnly: getBoolean(this.flags, 'checkonly', false),
-        runTests: asArray<string>(this.flags.runtests),
-        testLevel: this.flags.testlevel as TestLevel,
-      },
-    });
+      const deploy = cs.deploy({
+        usernameOrConnection: this.org.getUsername(),
+        apiOptions: {
+          ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+          rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
+          checkOnly: this.getFlag<boolean>('checkonly', false),
+          runTests: this.getFlag<string[]>('runtests'),
+          testLevel: this.getFlag<TestLevel>('testlevel'),
+        },
+      });
 
-    // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
-    if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.flags.json) {
-      this.initProgressBar();
-      this.progress(deploy);
+      // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
+      if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
+        this.initProgressBar();
+        this.progress(deploy);
+      }
+
+      this.deployResult = await deploy.start();
     }
 
-    const results = await deploy.start();
+    await this.lifecycle.emit('postdeploy', this.deployResult);
 
-    await this.lifecycle.emit('postdeploy', results);
+    const deployId = getString(this.deployResult, 'response.id');
+    if (deployId) {
+      this.displayDeployId(deployId);
+      const file = this.getStash();
+      // TODO: I think we should stash the ID as soon as we know it.
+      this.logger.debug(`Stashing deploy ID: ${deployId}`);
+      await file.write({ [DeployCommand.STASH_KEY]: { jobid: deployId } });
+    }
+  }
 
-    const file = this.getConfig();
-    await file.write({ [SourceCommand.STASH_KEY]: { jobid: results.response.id } });
+  protected resolveSuccess(): void {
+    const status = getString(this.deployResult, 'response.status');
+    if (status !== RequestStatus.Succeeded) {
+      this.setExitCode(1);
+    }
+  }
 
-    // skip a lot of steps that would do nothing
-    if (!this.flags.json) {
-      this.print(results);
+  protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
+    const formatterOptions = {
+      verbose: this.getFlag<boolean>('verbose', false),
+      async: this.isAsync,
+    };
+    const formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
+    // Only display results to console when JSON flag is unset.
+    if (!this.isJsonOutput()) {
+      formatter.display();
     }
 
-    return results;
+    return formatter.getJson();
+  }
+
+  private async deployRecentValidation(): Promise<DeployResult> {
+    const conn = this.org.getConnection();
+    const id = this.getFlag<string>('validateddeployrequestid');
+    const rest = await this.isRestDeploy();
+
+    // TODO: This is an async call so we need to poll unless `--wait 0`
+    //       See mdapiCheckStatusApi.ts for the toolbelt polling impl.
+    const response = await conn.deployRecentValidation({ id, rest });
+
+    if (!this.isAsync) {
+      // Remove this and add polling if we need to poll in the plugin.
+      throw Error('deployRecentValidation polling not yet implemented');
+    }
+
+    // This is the deploy ID of the deployRecentValidation response, not
+    // the already validated deploy ID (i.e., validateddeployrequestid).
+    let validatedDeployId: string;
+    if (isString(response)) {
+      // SOAP API
+      validatedDeployId = response;
+    } else {
+      // REST API
+      validatedDeployId = (response as { id: string }).id;
+    }
+
+    return this.report(validatedDeployId);
   }
 
   private progress(deploy: MetadataApiDeploy): void {
-    let printOnce = true;
+    let started = false;
     deploy.onUpdate((data) => {
       // the numCompTot. isn't computed right away, wait to start until we know how many we have
-      if (data.numberComponentsTotal && printOnce) {
-        this.ux.log(`Job ID | ${data.id}`);
+      if (data.numberComponentsTotal && !started) {
+        this.displayDeployId(data.id);
         this.progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
-        printOnce = false;
+        started = true;
       }
 
       // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
@@ -179,72 +250,5 @@ export class Deploy extends SourceCommand {
     deploy.onError(() => {
       this.progressBar.stop();
     });
-  }
-
-  private printComponentFailures(result: DeployResult): void {
-    if (result.response.status === 'Failed' && result.components) {
-      // sort by filename then fullname
-      const failures = result.getFileResponses().sort((i, j) => {
-        if (i.filePath === j.filePath) {
-          // if they have the same directoryName then sort by fullName
-          return i.fullName < j.fullName ? 1 : -1;
-        }
-        return i.filePath < j.filePath ? 1 : -1;
-      });
-      this.ux.log('');
-      this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
-      this.ux.table(failures, {
-        columns: [
-          { key: 'componentType', label: 'Type' },
-          { key: 'fileName', label: 'File' },
-          { key: 'fullName', label: 'Name' },
-          { key: 'problem', label: 'Problem' },
-        ],
-      });
-      this.ux.log('');
-    }
-  }
-
-  private printComponentSuccess(result: DeployResult): void {
-    if (result.response.success && result.components?.size) {
-      //  sort by type then filename then fullname
-      const files = result.getFileResponses().sort((i, j) => {
-        if (i.fullName === j.fullName) {
-          // same metadata type, according to above comment sort on filename
-          if (i.filePath === j.filePath) {
-            // same filename's according to comment sort by fullName
-            return i.fullName < j.fullName ? 1 : -1;
-          }
-          return i.filePath < j.filePath ? 1 : -1;
-        }
-        return i.type < j.type ? 1 : -1;
-      });
-      // get relative path for table output
-      files.forEach((file) => {
-        if (file.filePath) {
-          file.filePath = path.relative(process.cwd(), file.filePath);
-        }
-      });
-      this.ux.log('');
-      this.ux.styledHeader(chalk.blue('Deployed Source'));
-      this.ux.table(files, {
-        columns: [
-          { key: 'fullName', label: 'FULL NAME' },
-          { key: 'type', label: 'TYPE' },
-          { key: 'filePath', label: 'PROJECT PATH' },
-        ],
-      });
-    }
-  }
-
-  private print(result: DeployResult): DeployResult {
-    this.printComponentSuccess(result);
-    this.printComponentFailures(result);
-    // TODO: this.printTestResults(result); <- this has WI @W-8903671@
-    if (result.response.success && this.flags.checkonly) {
-      this.ux.log(messages.getMessage('checkOnlySuccess'));
-    }
-
-    return result;
   }
 }

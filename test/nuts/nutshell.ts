@@ -455,8 +455,6 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     const setupCommands = this.orgless
       ? []
       : [
-          // TODO: remove this config:set call
-          'sfdx config:set apiVersion=50.0 --global',
           'sfdx config:set restDeploy=false --global',
           'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
         ];

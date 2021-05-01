@@ -6,19 +6,16 @@
  */
 
 import * as os from 'os';
-import { resolve } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { MetadataConverter } from '@salesforce/source-deploy-retrieve';
-import { asArray, asString } from '@salesforce/ts-types';
+import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
+import { ConvertResultFormatter, ConvertCommandResult } from '../../../formatters/convertResultFormatter';
+import { ComponentSetBuilder } from '../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'convert');
-
-type ConvertResult = {
-  location: string;
-};
 
 export class Convert extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -55,42 +52,67 @@ export class Convert extends SourceCommand {
     }),
   };
 
-  public async run(): Promise<ConvertResult> {
+  protected convertResult: ConvertResult;
+
+  public async run(): Promise<ConvertCommandResult> {
+    await this.convert();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
+
+  protected async convert(): Promise<void> {
     const paths: string[] = [];
 
-    if (this.flags.sourcepath) {
-      paths.push(...this.flags.sourcepath);
+    const { sourcepath, metadata, manifest, rootdir } = this.flags;
+
+    if (sourcepath) {
+      paths.push(...sourcepath);
     }
 
     // rootdir behaves exclusively to sourcepath, metadata, and manifest... to maintain backwards compatibility
     // we will check here, instead of adding the exclusive option to the flag definition so we don't break scripts
-    if (this.flags.rootdir && !this.flags.sourcepath && !this.flags.metadata && !this.flags.manifest) {
+    if (rootdir && !sourcepath && !metadata && !manifest) {
       // only rootdir option passed
-      paths.push(this.flags.rootdir);
+      paths.push(rootdir);
     }
 
     // no options passed, convert the default package (usually force-app)
-    if (!this.flags.sourcepath && !this.flags.metadata && !this.flags.manifest && !this.flags.rootdir) {
+    if (!sourcepath && !metadata && !manifest && !rootdir) {
       paths.push(this.project.getDefaultPackage().path);
     }
 
-    const cs = await this.createComponentSet({
+    const cs = await ComponentSetBuilder.build({
       sourcepath: paths,
-      manifest: asString(this.flags.manifest),
-      metadata: asArray<string>(this.flags.metadata),
+      manifest: manifest && {
+        manifestPath: this.getFlag<string>('manifest'),
+        directoryPaths: this.getPackageDirs(),
+      },
+      metadata: metadata && {
+        metadataEntries: this.getFlag<string[]>('metadata'),
+        directoryPaths: this.getPackageDirs(),
+      },
     });
 
     const converter = new MetadataConverter();
-    const res = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
+    this.convertResult = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
       type: 'directory',
-      outputDirectory: asString(this.flags.outputdir),
-      packageName: asString(this.flags.packagename),
+      outputDirectory: this.getFlag<string>('outputdir'),
+      packageName: this.getFlag<string>('packagename'),
     });
+  }
 
-    this.ux.log(messages.getMessage('success', [res.packagePath]));
+  protected resolveSuccess(): void {
+    if (!getString(this.convertResult, 'packagePath')) {
+      this.setExitCode(1);
+    }
+  }
 
-    return {
-      location: resolve(res.packagePath),
-    };
+  protected formatResult(): ConvertCommandResult {
+    const formatter = new ConvertResultFormatter(this.logger, this.ux, this.convertResult);
+
+    if (!this.isJsonOutput()) {
+      formatter.display();
+    }
+    return formatter.getJson();
   }
 }

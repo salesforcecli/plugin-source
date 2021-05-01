@@ -11,10 +11,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.10](https://github.com/salesforcecli/plugin-source/compare/v0.0.9...v0.0.10) (2021-04-23)
 
-
 ### Bug Fixes
 
-* new hooks, updated tests ([#69](https://github.com/salesforcecli/plugin-source/issues/69)) ([81e1058](https://github.com/salesforcecli/plugin-source/commit/81e10581456ceccb4b3e07f3d1310bb18bef25ff))
+- new hooks, updated tests ([#69](https://github.com/salesforcecli/plugin-source/issues/69)) ([81e1058](https://github.com/salesforcecli/plugin-source/commit/81e10581456ceccb4b3e07f3d1310bb18bef25ff))
 
 ### [0.0.9](https://github.com/salesforcecli/plugin-source/compare/v0.0.8...v0.0.9) (2021-04-13)
 

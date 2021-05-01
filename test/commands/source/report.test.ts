@@ -12,7 +12,7 @@ import { expect } from 'chai';
 import { Report } from '../../../src/commands/force/source/deploy/report';
 import { exampleDeployResponse } from './testConsts';
 
-describe('force:source:report', () => {
+describe.skip('force:source:report', () => {
   const jobid = '0Af1k00000r2BebCAE';
   const sandbox = sinon.createSandbox();
 
