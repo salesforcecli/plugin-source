@@ -8,8 +8,8 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
-import { getBoolean, getString, getNumber } from '@salesforce/ts-types';
+import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { get, getBoolean, getString, getNumber } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
   FileResponse,
@@ -61,13 +61,13 @@ export class DeployResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): DeployCommandResult | DeployCommandAsyncResult {
-    const json = this.result.response as DeployCommandResult | DeployCommandAsyncResult;
+    const json = this.getResponse() as DeployCommandResult | DeployCommandAsyncResult;
     json.deployedSource = this.fileResponses;
     json.outboundFiles = []; // to match toolbelt version
-    json.deploys = [Object.assign({}, this.result.response)]; // to match toolbelt version
+    json.deploys = [Object.assign({}, this.getResponse())]; // to match toolbelt version
 
     if (this.isAsync()) {
-      // json = this.result.response; // <-- TODO: ensure the response matches toolbelt
+      // json = this.getResponse(); // <-- TODO: ensure the response matches toolbelt
       return json as DeployCommandAsyncResult;
     }
 
@@ -93,12 +93,16 @@ export class DeployResultFormatter extends ResultFormatter {
     }
     if (this.hasStatus(RequestStatus.Canceled)) {
       const canceledByName = getString(this.result, 'response.canceledByName', 'unknown');
-      this.ux.log(`The deployment has been canceled by ${canceledByName}`);
-      return;
+      throw new SfdxError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
     }
     this.displaySuccesses();
     this.displayFailures();
     this.displayTestResults();
+
+    // Throw a DeployFailed error unless the deployment was successful.
+    if (!this.isSuccess()) {
+      throw new SfdxError(messages.getMessage('deployFailed'), 'DeployFailed');
+    }
   }
 
   protected hasStatus(status: RequestStatus): boolean {
@@ -106,7 +110,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected hasComponents(): boolean {
-    return getNumber(this.result, 'components.size', 0) === 0;
+    return getNumber(this.result, 'components.size', 0) > 0;
   }
 
   protected isRunTestsEnabled(): boolean {
@@ -119,6 +123,10 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected getNumResult(field: string): number {
     return getNumber(this.result, `response.${field}`, 0);
+  }
+
+  protected getResponse(): MetadataApiDeployStatus {
+    return get(this.result, 'response', {}) as MetadataApiDeployStatus;
   }
 
   protected displaySuccesses(): void {
@@ -156,21 +164,24 @@ export class DeployResultFormatter extends ResultFormatter {
   protected displayFailures(): void {
     if (this.hasStatus(RequestStatus.Failed) && this.hasComponents()) {
       // sort by filename then fullname
-      const failures = this.fileResponses.sort((i, j) => {
-        if (i.filePath === j.filePath) {
-          // if they have the same directoryName then sort by fullName
-          return i.fullName < j.fullName ? 1 : -1;
-        }
-        return i.filePath < j.filePath ? 1 : -1;
-      });
+      const failures = this.fileResponses
+        .filter((fileResponse) => fileResponse.state === 'Failed')
+        .sort((i, j) => {
+          if (i.filePath === j.filePath) {
+            // if they have the same directoryName then sort by fullName
+            return i.fullName < j.fullName ? 1 : -1;
+          }
+          return i.filePath < j.filePath ? 1 : -1;
+        });
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
+      // TODO: do we really need the project path or file path in the table?
+      // Seems like we can just provide the full name and devs will know.
       this.ux.table(failures, {
         columns: [
-          { key: 'componentType', label: 'Type' },
-          { key: 'fileName', label: 'File' },
+          { key: 'problemType', label: 'Type' },
           { key: 'fullName', label: 'Name' },
-          { key: 'problem', label: 'Problem' },
+          { key: 'error', label: 'Problem' },
         ],
       });
       this.ux.log('');
