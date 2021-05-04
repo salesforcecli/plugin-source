@@ -101,6 +101,7 @@ export class Deploy extends DeployCommand {
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private isAsync = false;
+  private isRest = false;
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
     await this.deploy();
@@ -114,6 +115,8 @@ export class Deploy extends DeployCommand {
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
     this.isAsync = this.getFlag<Duration>('wait').quantity === 0;
+    this.isRest = await this.isRestDeploy();
+    this.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
@@ -193,11 +196,10 @@ export class Deploy extends DeployCommand {
   private async deployRecentValidation(): Promise<DeployResult> {
     const conn = this.org.getConnection();
     const id = this.getFlag<string>('validateddeployrequestid');
-    const rest = await this.isRestDeploy();
 
     // TODO: This is an async call so we need to poll unless `--wait 0`
     //       See mdapiCheckStatusApi.ts for the toolbelt polling impl.
-    const response = await conn.deployRecentValidation({ id, rest });
+    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
 
     if (!this.isAsync) {
       // Remove this and add polling if we need to poll in the plugin.
@@ -247,8 +249,9 @@ export class Deploy extends DeployCommand {
       this.progressBar.stop();
     });
 
-    deploy.onError(() => {
+    deploy.onError((error: Error) => {
       this.progressBar.stop();
+      throw error;
     });
   }
 }
