@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.14](https://github.com/salesforcecli/plugin-source/compare/v0.0.13...v0.0.14) (2021-05-04)
+
+
+### Bug Fixes
+
+* support hooks for deployRecentValidation and async deploys ([#75](https://github.com/salesforcecli/plugin-source/issues/75)) ([ac787f9](https://github.com/salesforcecli/plugin-source/commit/ac787f9f8238bd09d44878a6c9994384a5c567c7))
+
 ### [0.0.13](https://github.com/salesforcecli/plugin-source/compare/v0.0.12...v0.0.13) (2021-05-04)
 
 
