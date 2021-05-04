@@ -12,5 +12,6 @@
     "sourcepath": "comma-separated list of paths to the local source files to convert",
     "metadata": "comma-separated list of metadata component names to convert"
   },
-  "success": "Source was successfully converted to Metadata API format and written to the location: %s"
+  "success": "Source was successfully converted to Metadata API format and written to the location: %s",
+  "convertFailed": "Failed to convert source"
 }

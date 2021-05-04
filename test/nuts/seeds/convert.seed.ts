@@ -6,12 +6,29 @@
  */
 
 import * as path from 'path';
+import * as shelljs from 'shelljs';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
+
+// SDR does not output the package.xml in the same location as toolbelt
+// so we have to find it within the output dir, move it, and delete the
+// generated dir.
+const mvManifest = (dir: string) => {
+  const manifest = shelljs.find(dir).filter((file) => file.includes('/package.xml'));
+  if (!manifest?.length) {
+    throw Error(`Did not find package.xml within ${dir}`);
+  }
+  shelljs.mv(manifest[0], path.join(process.cwd()));
+  shelljs.rm('-rf', dir);
+};
+
+const isSourcePlugin = (): boolean => {
+  return EXECUTABLE.endsWith('/bin/run');
+};
 
 context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
@@ -30,15 +47,30 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   describe('--manifest flag', () => {
+    let convertDir: string;
+
     for (const testCase of REPO.convert.manifest) {
       it(`should convert ${testCase.toConvert}`, async () => {
+        // Generate a package.xml by converting via sourcepath
         await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out1` });
-        const packageXml = path.join('out1', 'package.xml');
+        const outputDir = path.join(process.cwd(), 'out1');
+        mvManifest(outputDir);
+        const packageXml = path.join(process.cwd(), 'package.xml');
 
         await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2` });
-        await nutshell.expect.directoryToHaveSomeFiles('out2');
-        await nutshell.expect.fileToExist(path.join('out2', 'package.xml'));
-        await nutshell.expect.filesToBeConverted('out2', testCase.toVerify);
+
+        convertDir = path.join(process.cwd(), 'out2');
+        if (isSourcePlugin()) {
+          const sdrConvertDirName = shelljs.ls(convertDir)[0];
+          convertDir = path.join(convertDir, sdrConvertDirName);
+        }
+        await nutshell.expect.directoryToHaveSomeFiles(convertDir);
+        await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
+        await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
+      });
+
+      afterEach(() => {
+        shelljs.rm('-rf', convertDir);
       });
     }
 
@@ -49,34 +81,56 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   describe('--metadata flag', () => {
+    let convertDir: string;
+
     for (const testCase of REPO.convert.metadata) {
       it(`should convert ${testCase.toConvert}`, async () => {
         await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out` });
-        await nutshell.expect.directoryToHaveSomeFiles('out');
-        await nutshell.expect.fileToExist(path.join('out', 'package.xml'));
-        await nutshell.expect.filesToBeConverted('out', testCase.toVerify);
+
+        convertDir = path.join(process.cwd(), 'out');
+        if (isSourcePlugin()) {
+          const sdrConvertDirName = shelljs.ls(convertDir)[0];
+          convertDir = path.join(convertDir, sdrConvertDirName);
+        }
+        await nutshell.expect.directoryToHaveSomeFiles(convertDir);
+        await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
+        await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
       });
     }
 
+    afterEach(() => {
+      shelljs.rm('-rf', convertDir);
+    });
+
     it('should throw an error if the metadata is not valid', async () => {
       const convert = await nutshell.convert({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(convert, 'UnsupportedType');
+      const expectedError = isSourcePlugin() ? 'RegistryError' : 'UnsupportedType';
+      nutshell.expect.errorToHaveName(convert, expectedError);
     });
   });
 
   describe('--sourcepath flag', () => {
+    let convertDir: string;
+
     for (const testCase of REPO.convert.sourcepath) {
       it(`should convert ${testCase.toConvert}`, async () => {
         await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out` });
-        await nutshell.expect.directoryToHaveSomeFiles('out');
-        await nutshell.expect.fileToExist(path.join('out', 'package.xml'));
-        await nutshell.expect.filesToBeConverted('out', testCase.toVerify);
+
+        convertDir = path.join(process.cwd(), 'out');
+        if (isSourcePlugin()) {
+          const sdrConvertDirName = shelljs.ls(convertDir)[0];
+          convertDir = path.join(convertDir, sdrConvertDirName);
+        }
+        await nutshell.expect.directoryToHaveSomeFiles(convertDir);
+        await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
+        await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
       });
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const convert = await nutshell.convert({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(convert, 'SourcePathInvalid');
+      const expectedError = isSourcePlugin() ? 'SfdxError' : 'SourcePathInvalid';
+      nutshell.expect.errorToHaveName(convert, expectedError);
     });
   });
 });
