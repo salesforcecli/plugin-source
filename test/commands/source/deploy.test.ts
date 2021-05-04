@@ -73,6 +73,7 @@ describe('force:source:deploy', () => {
     progressStub = stubMethod(sandbox, cmd, 'progress');
     stubMethod(sandbox, UX.prototype, 'log');
     stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
+    stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
     return cmd.runIt();
   };
 
@@ -258,5 +259,21 @@ describe('force:source:deploy', () => {
     ensureDeployArgs();
     ensureHookArgs();
     ensureProgressBar(1);
+  });
+
+  it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
+    await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
+    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+  });
+
+  it('should emit predeploy hooks for async deploys', async () => {
+    const sourcepath = ['somepath'];
+    try {
+      await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
+    } catch (e) {
+      // once async deploys supported remove the try/catch
+      expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
+    }
+    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
   });
 });
