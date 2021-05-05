@@ -371,7 +371,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   protected async init(): Promise<void> {
-    if (!Nutshell.Env.getString('TESTKIT_HUB_USERNAME')) {
+    if (!Nutshell.Env.getString('TESTKIT_HUB_USERNAME') && !Nutshell.Env.getString('TESTKIT_AUTH_URL')) {
       ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
       ensureString(Nutshell.Env.getString('TESTKIT_JWT_CLIENT_ID'));
       ensureString(Nutshell.Env.getString('TESTKIT_HUB_INSTANCE'));
