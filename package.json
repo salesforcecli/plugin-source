@@ -120,7 +120,7 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/convert.*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:convert": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/convert.*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "version": "oclif-dev readme"
   },
