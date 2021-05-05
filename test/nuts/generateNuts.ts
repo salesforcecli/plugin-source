@@ -47,7 +47,7 @@ async function generateNut(
 
 async function generateNuts(): Promise<void> {
   const generatedDir = path.resolve(__dirname, 'generated');
-  fs.rmSync(generatedDir, { force: true, recursive: true });
+  await fs.rmdir(generatedDir, { recursive: true });
   await fs.mkdirp(generatedDir);
   const seeds = await getSeedFiles();
   for (const seed of seeds) {

@@ -27,7 +27,7 @@ const mvManifest = (dir: string) => {
 };
 
 const isSourcePlugin = (): boolean => {
-  return EXECUTABLE.endsWith('/bin/run');
+  return EXECUTABLE.endsWith(`${path.sep}bin${path.sep}run`);
 };
 
 context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
