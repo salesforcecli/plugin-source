@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { MetadataConverter, ConvertResult, ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
 import { ConvertResultFormatter, ConvertCommandResult } from '../../../formatters/convertResultFormatter';
@@ -54,6 +54,7 @@ export class Convert extends SourceCommand {
 
   protected convertResult: ConvertResult;
 
+  private cs: ComponentSet;
   public async run(): Promise<ConvertCommandResult> {
     await this.convert();
     this.resolveSuccess();
@@ -81,7 +82,7 @@ export class Convert extends SourceCommand {
       paths.push(this.project.getDefaultPackage().path);
     }
 
-    const cs = await ComponentSetBuilder.build({
+    this.cs = await ComponentSetBuilder.build({
       sourcepath: paths,
       manifest: manifest && {
         manifestPath: this.getFlag<string>('manifest'),
@@ -94,7 +95,7 @@ export class Convert extends SourceCommand {
     });
 
     const converter = new MetadataConverter();
-    this.convertResult = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
+    this.convertResult = await converter.convert(this.cs.getSourceComponents().toArray(), 'metadata', {
       type: 'directory',
       outputDirectory: this.getFlag<string>('outputdir'),
       packageName: this.getFlag<string>('packagename'),
@@ -105,6 +106,7 @@ export class Convert extends SourceCommand {
     if (!getString(this.convertResult, 'packagePath')) {
       this.setExitCode(1);
     }
+    this.setTelemetryData('source:convert', this.cs);
   }
 
   protected formatResult(): ConvertCommandResult {

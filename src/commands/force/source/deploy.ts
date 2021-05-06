@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
@@ -100,6 +100,7 @@ export class Deploy extends DeployCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
+  private cs: ComponentSet;
   private isAsync = false;
   private isRest = false;
 
@@ -122,7 +123,7 @@ export class Deploy extends DeployCommand {
       this.deployResult = await this.deployRecentValidation();
     } else {
       // the deployment involves a component set
-      const cs = await ComponentSetBuilder.build({
+      this.cs = await ComponentSetBuilder.build({
         apiversion: this.getFlag<string>('apiversion'),
         sourcepath: this.getFlag<string[]>('sourcepath'),
         manifest: this.flags.manifest && {
@@ -135,12 +136,12 @@ export class Deploy extends DeployCommand {
         },
       });
       // fire predeploy event for sync and async deploys
-      await this.lifecycle.emit('predeploy', cs.toArray());
+      await this.lifecycle.emit('predeploy', this.cs.toArray());
       if (this.isAsync) {
         // This is an async deploy.  We just kick off the request.
         throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
       } else {
-        const deploy = cs.deploy({
+        const deploy = this.cs.deploy({
           usernameOrConnection: this.org.getUsername(),
           apiOptions: {
             ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
@@ -177,6 +178,9 @@ export class Deploy extends DeployCommand {
     const status = getString(this.deployResult, 'response.status');
     if (status !== RequestStatus.Succeeded) {
       this.setExitCode(1);
+    }
+    if (!this.flags.validateddeployrequestid) {
+      this.setTelemetryData('source:deploy', this.cs);
     }
   }
 

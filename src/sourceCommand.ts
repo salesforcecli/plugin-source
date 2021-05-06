@@ -7,8 +7,10 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle } from '@salesforce/core';
-import { get, getBoolean } from '@salesforce/ts-types';
+import { get, getBoolean, JsonMap } from '@salesforce/ts-types';
 import cli from 'cli-ux';
+import { TelemetryGlobal } from '@salesforce/plugin-telemetry/lib/telemetryGlobal';
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 
 export type ProgressBar = {
   start: (num: number) => void;
@@ -17,11 +19,38 @@ export type ProgressBar = {
   setTotal: (num: number) => void;
   stop: () => void;
 };
+declare const global: TelemetryGlobal;
 
 export abstract class SourceCommand extends SfdxCommand {
   public static DEFAULT_SRC_WAIT_MINUTES = 33;
   public progressBar?: ProgressBar;
   public lifecycle = Lifecycle.getInstance();
+  public telemetryData: JsonMap;
+
+  public exit(code?: number): never {
+    if (global.cliTelemetry && global.cliTelemetry.record && this.telemetryData) {
+      global.cliTelemetry.record(this.telemetryData);
+    }
+    return super.exit(code);
+  }
+
+  public setTelemetryData(operation: string, cs: ComponentSet): void {
+    let components = cs.toArray();
+    const totalNumberOfPackages: number = this.project.getUniquePackageDirectories().length;
+    const isTruncated: boolean = components.length >= 8000;
+    if (isTruncated) {
+      components = components.slice(0, 7975);
+    }
+    this.telemetryData = {
+      eventName: 'SOURCE_COMMAND',
+      operation,
+      type: 'EVENT',
+      plugin: 'plugin-source',
+      totalNumberOfPackages,
+      components: components.join(','),
+      isTruncated,
+    };
+  }
 
   public isJsonOutput(): boolean {
     return getBoolean(this.flags, 'json', false);

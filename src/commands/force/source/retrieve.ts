@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 import { RetrieveResultFormatter, RetrieveCommandResult } from '../../../formatters/retrieveResultFormatter';
@@ -61,6 +61,7 @@ export class Retrieve extends SourceCommand {
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected retrieveResult: RetrieveResult;
+  private cs: ComponentSet;
 
   public async run(): Promise<RetrieveCommandResult> {
     await this.retrieve();
@@ -69,7 +70,7 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const cs = await ComponentSetBuilder.build({
+    this.cs = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
       packagenames: this.getFlag<string[]>('packagenames'),
       sourcepath: this.getFlag<string[]>('sourcepath'),
@@ -83,9 +84,9 @@ export class Retrieve extends SourceCommand {
       },
     });
 
-    await this.lifecycle.emit('preretrieve', cs.toArray());
+    await this.lifecycle.emit('preretrieve', this.cs.toArray());
 
-    this.retrieveResult = await cs
+    this.retrieveResult = await this.cs
       .retrieve({
         usernameOrConnection: this.org.getUsername(),
         merge: true,
@@ -102,6 +103,7 @@ export class Retrieve extends SourceCommand {
     if (status !== RequestStatus.Succeeded) {
       this.setExitCode(1);
     }
+    this.setTelemetryData('source:retrieve', this.cs);
   }
 
   protected formatResult(): RetrieveCommandResult {

@@ -14,6 +14,7 @@ import { IConfig } from '@oclif/config';
 import { SfdxProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
+import { exampleSourceComponent } from './testConsts';
 
 describe('force:source:convert', () => {
   const sandbox = sinon.createSandbox();
@@ -67,6 +68,9 @@ describe('force:source:convert', () => {
     sandbox.stub(MetadataConverter.prototype, 'convert').resolves({ packagePath: 'temp' });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: sinon.stub(),
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
       getPackageXml: () => packageXml,
       getSourceComponents: () => {
         return {
