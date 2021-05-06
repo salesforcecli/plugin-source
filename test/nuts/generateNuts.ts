@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable no-console */
-
 import * as path from 'path';
 import * as os from 'os';
 import { fs } from '@salesforce/core';
@@ -63,7 +61,6 @@ async function generateNuts(): Promise<void> {
     const seedName = path.basename(seed).replace('.seed.ts', '');
     const seedContents = await fs.readFile(seed, 'UTF-8');
     for (const executable of EXECUTABLES.filter((e) => !e.skip)) {
-      console.dir(executable);
       const hasRepo = /const\sREPO\s=\s/.test(seedContents);
       if (hasRepo) {
         for (const repo of [...TEST_REPOS_MAP.values()].filter((r) => !r.skip)) {
@@ -74,9 +71,6 @@ async function generateNuts(): Promise<void> {
       }
     }
   }
-  // output generated files
-  const nutFiles = await fs.readdir(generatedDir);
-  nutFiles.forEach((nf) => console.log(nf));
 }
 
 void generateNuts();

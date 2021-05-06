@@ -20,7 +20,10 @@ const EXECUTABLE = '%EXECUTABLE%';
 // so we have to find it within the output dir, move it, and delete the
 // generated dir.
 const mvManifest = (dir: string) => {
-  const manifest = shelljs.find(dir).filter((file) => file.includes(`${path.sep}package.xml`));
+  const manifest = shelljs.find(dir).filter((file) => {
+    console.log(file);
+    return file.endsWith('package.xml');
+  });
   if (!manifest?.length) {
     throw Error(`Did not find package.xml within ${dir}`);
   }
@@ -76,7 +79,9 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       });
 
       afterEach(() => {
-        shelljs.rm('-rf', convertDir);
+        if (convertDir) {
+          shelljs.rm('-rf', convertDir);
+        }
       });
     }
 
