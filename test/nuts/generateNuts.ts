@@ -58,7 +58,7 @@ async function generateNuts(): Promise<void> {
     const seedName = path.basename(seed).replace('.seed.ts', '');
     const seedContents = await fs.readFile(seed, 'UTF-8');
     for (const executable of EXECUTABLES.filter((e) => !e.skip)) {
-      const hasRepo = /const\sREPO\s=\s(.*?)\n/.test(seedContents);
+      const hasRepo = /const\sREPO\s=\s/.test(seedContents);
       console.log('hasRepo =', hasRepo);
       if (hasRepo) {
         console.dir(TEST_REPOS_MAP, { depth: 8 });
