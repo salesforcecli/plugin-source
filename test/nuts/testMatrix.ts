@@ -22,7 +22,7 @@ export const EXECUTABLES = [
   },
   {
     path: path.join(process.cwd(), 'bin', 'run'), // path to the plugin's bin/run executable
-    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', false),
+    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', true),
   },
 ];
 
@@ -93,9 +93,9 @@ const testRepos: RepoConfig[] = [
       sourcepath: [
         { toConvert: 'force-app,my-app', toVerify: ['**/force.cls', '**/my.cls'] },
         { toConvert: '"force-app, my-app"', toVerify: ['**/force.cls', '**/my.cls'] },
-        { toConvert: path.join('force-app', 'main', 'default', 'objects'), toVerify: ['objects/MyObj__c.object'] },
-        { toConvert: path.join('my-app', 'objects'), toVerify: ['objects/MyObj__c.object'] },
-        { toConvert: path.join('my-app', 'apex', 'my.cls-meta.xml'), toVerify: ['**/my.cls-meta.xml'] },
+        { toConvert: 'force-app/main/default/objects', toVerify: ['objects/MyObj__c.object'] },
+        { toConvert: 'my-app/objects', toVerify: ['objects/MyObj__c.object'] },
+        { toConvert: 'my-app/apex/my.cls-meta.xml', toVerify: ['**/my.cls-meta.xml'] },
       ],
       metadata: [{ toConvert: 'CustomObject', toVerify: ['objects/MyObj__c.object'] }],
       manifest: [
@@ -224,27 +224,17 @@ const testRepos: RepoConfig[] = [
     convert: {
       sourcepath: [
         { toConvert: 'force-app', toVerify: ['**/*'] },
-        { toConvert: path.join('force-app', 'main', 'default', 'classes'), toVerify: ['classes/*'] },
+        { toConvert: 'force-app/main/default/classes', toVerify: ['classes/*'] },
         {
-          toConvert: `${path.join('force-app', 'main', 'default', 'classes')},${path.join(
-            'force-app',
-            'main',
-            'default',
-            'objects'
-          )}`,
+          toConvert: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['classes/*', 'objects/*'],
         },
         {
-          toConvert: `"${path.join('force-app', 'main', 'default', 'classes')}, ${path.join(
-            'force-app',
-            'main',
-            'default',
-            'permissionsets'
-          )}"`,
+          toConvert: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
           toVerify: ['classes/*', 'permissionsets/*'],
         },
         {
-          toConvert: path.join('force-app', 'main', 'default', 'permissionsets', 'dreamhouse.permissionset-meta.xml'),
+          toConvert: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           toVerify: ['permissionsets/dreamhouse.permissionset'],
         },
       ],
@@ -270,22 +260,12 @@ const testRepos: RepoConfig[] = [
       manifest: [
         { toConvert: 'force-app', toVerify: ['f**/*'] },
         {
-          toConvert: `${path.join('force-app', 'main', 'default', 'classes')},${path.join(
-            'force-app',
-            'main',
-            'default',
-            'objects'
-          )}`,
+          toConvert: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['classes/*', 'objects/*'],
         },
         {
-          toConvert: `"${path.join('force-app', 'main', 'default', 'objects')}, ${path.join(
-            'force-app',
-            'main',
-            'default',
-            'permissionsets',
-            'dreamhouse.permissionset-meta.xml'
-          )}"`,
+          toConvert:
+            '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
           toVerify: ['objects/*', 'permissionsets/dreamhouse.permissionset'],
         },
       ],

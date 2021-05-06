@@ -139,9 +139,9 @@ export class Assertions {
    * Expects files to exist in convert output directory
    */
   public async filesToBeConverted(directory: string, globs: string[]): Promise<void> {
-    console.log('directory:', directory, 'globs:', globs.toString());
+    console.log('directory=', directory, 'globs=', globs.toString());
     const fullGlobs = globs.map((glob) => [directory, glob].join('/'));
-    console.log('fullGlobs =', fullGlobs.toString());
+    console.log('fullGlobs=', fullGlobs.toString());
     const convertedFiles = await fg(fullGlobs);
     console.log('convertedFiles=', convertedFiles.toString());
     expect(convertedFiles.length, 'files to be converted').to.be.greaterThan(0);
