@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/* eslint-disable no-console */
+
 import * as path from 'path';
 import { expect, use } from 'chai';
 import * as chaiEach from 'chai-each';
@@ -137,8 +139,11 @@ export class Assertions {
    * Expects files to exist in convert output directory
    */
   public async filesToBeConverted(directory: string, globs: string[]): Promise<void> {
+    console.log('directory:', directory, 'globs:', globs.toString());
     const fullGlobs = globs.map((glob) => [directory, glob].join('/'));
+    console.log('fullGlobs =', fullGlobs.toString());
     const convertedFiles = await fg(fullGlobs);
+    console.log('convertedFiles=', convertedFiles.toString());
     expect(convertedFiles.length, 'files to be converted').to.be.greaterThan(0);
   }
 
