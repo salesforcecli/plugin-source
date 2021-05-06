@@ -20,10 +20,7 @@ const EXECUTABLE = '%EXECUTABLE%';
 // so we have to find it within the output dir, move it, and delete the
 // generated dir.
 const mvManifest = (dir: string) => {
-  const manifest = shelljs.find(dir).filter((file) => {
-    console.log(file);
-    return file.endsWith('package.xml');
-  });
+  const manifest = shelljs.find(dir).filter((file) => file.endsWith('package.xml'));
   if (!manifest?.length) {
     throw Error(`Did not find package.xml within ${dir}`);
   }
@@ -57,22 +54,18 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.convert.manifest) {
       it(`should convert ${testCase.toConvert}`, async () => {
         // Generate a package.xml by converting via sourcepath
-        const res = await nutshell.convert({
+        await nutshell.convert({
           args: `--sourcepath ${testCase.toConvert} --outputdir out1`,
           exitCode: 0,
         });
-        console.dir(res);
         const outputDir = path.join(process.cwd(), 'out1');
         mvManifest(outputDir);
         const packageXml = path.join(process.cwd(), 'package.xml');
 
-        await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2` });
+        const res = await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2`, exitCode: 0 });
 
-        convertDir = path.join(process.cwd(), 'out2');
-        if (isSourcePlugin()) {
-          const sdrConvertDirName = shelljs.ls(convertDir)[0];
-          convertDir = path.join(convertDir, sdrConvertDirName);
-        }
+        console.dir(res);
+        convertDir = res.result?.location as string;
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
         await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -96,13 +89,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     for (const testCase of REPO.convert.metadata) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out` });
+        const res = await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out`, exitCode: 0 });
 
-        convertDir = path.join(process.cwd(), 'out');
-        if (isSourcePlugin()) {
-          const sdrConvertDirName = shelljs.ls(convertDir)[0];
-          convertDir = path.join(convertDir, sdrConvertDirName);
-        }
+        console.dir(res);
+        convertDir = res.result?.location as string;
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
         await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -110,7 +100,9 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     }
 
     afterEach(() => {
-      shelljs.rm('-rf', convertDir);
+      if (convertDir) {
+        shelljs.rm('-rf', convertDir);
+      }
     });
 
     it('should throw an error if the metadata is not valid', async () => {
@@ -125,18 +117,21 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     for (const testCase of REPO.convert.sourcepath) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out` });
+        const res = await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out`, exitCode: 0 });
 
-        convertDir = path.join(process.cwd(), 'out');
-        if (isSourcePlugin()) {
-          const sdrConvertDirName = shelljs.ls(convertDir)[0];
-          convertDir = path.join(convertDir, sdrConvertDirName);
-        }
+        console.dir(res);
+        convertDir = res.result?.location as string;
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
         await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
       });
     }
+
+    afterEach(() => {
+      if (convertDir) {
+        shelljs.rm('-rf', convertDir);
+      }
+    });
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const convert = await nutshell.convert({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
