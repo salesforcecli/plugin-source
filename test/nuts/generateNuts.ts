@@ -7,6 +7,7 @@
 
 import * as path from 'path';
 import { fs } from '@salesforce/core';
+import { rm } from 'shelljs';
 import { EXECUTABLES, TEST_REPOS_MAP, RepoConfig } from './testMatrix';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
@@ -47,7 +48,7 @@ async function generateNut(
 
 async function generateNuts(): Promise<void> {
   const generatedDir = path.resolve(__dirname, 'generated');
-  await fs.rmdir(generatedDir, { recursive: true });
+  rm('-rf', generatedDir);
   await fs.mkdirp(generatedDir);
   const seeds = await getSeedFiles();
   for (const seed of seeds) {
