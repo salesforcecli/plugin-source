@@ -8,6 +8,7 @@
 /* eslint-disable no-console */
 
 import * as path from 'path';
+import * as os from 'os';
 import { fs } from '@salesforce/core';
 import { EXECUTABLES, TEST_REPOS_MAP, RepoConfig } from './testMatrix';
 
@@ -36,11 +37,16 @@ async function generateNut(
 ): Promise<void> {
   const repoName = parseRepoName(repo);
   const executableName = path.basename(executable);
-  console.log(`Generating NUT: ${generatedDir}${path.sep}${seedName}.${repoName}.${executableName}.nut.ts`);
   const nutFileName = repoName
     ? `${seedName}.${repoName}.${executableName}.nut.ts`
     : `${seedName}.${executableName}.nut.ts`;
   const nutFilePath = path.join(generatedDir, nutFileName);
+
+  // On windows the executable path is being changed to
+  // single backslashes so ensure proper path.sep.
+  if (os.platform() === 'win32') {
+    executable = executable.replace(/\\/g, '\\\\');
+  }
   const contents = seedContents
     .replace(/%REPO_URL%/g, repo?.gitUrl)
     .replace(/%EXECUTABLE%/g, executable)
