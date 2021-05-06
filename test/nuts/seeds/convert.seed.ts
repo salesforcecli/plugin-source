@@ -55,7 +55,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.convert.manifest) {
       it(`should convert ${testCase.toConvert}`, async () => {
         // Generate a package.xml by converting via sourcepath
-        const toConvert = testCase.toConvert.replace('/', path.sep);
+        const toConvert = path.normalize(testCase.toConvert);
         console.log('--manifest sourcepath toConvert=', toConvert);
         await nutshell.convert({
           args: `--sourcepath ${toConvert} --outputdir out1`,
@@ -122,7 +122,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     for (const testCase of REPO.convert.sourcepath) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        const toConvert = testCase.toConvert.replace('/', path.sep);
+        const toConvert = path.normalize(testCase.toConvert);
         console.log('--sourcepath toConvert=', toConvert);
         const res = await nutshell.convert({ args: `--sourcepath ${toConvert} --outputdir out`, exitCode: 0 });
 
