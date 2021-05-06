@@ -9,6 +9,7 @@
 
 import * as path from 'path';
 import * as shelljs from 'shelljs';
+import { asString } from '@salesforce/ts-types';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
@@ -67,8 +68,8 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         const res = await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2`, exitCode: 0 });
 
         console.dir(res);
-        convertDir = res.result?.location as string;
-        shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
+        convertDir = asString(res.result?.location).replace(path.sep, '/');
+        // shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
         await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -95,8 +96,8 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         const res = await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out`, exitCode: 0 });
 
         console.dir(res);
-        convertDir = res.result?.location as string;
-        shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
+        convertDir = asString(res.result?.location).replace(path.sep, '/');
+        // shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
         await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -126,8 +127,8 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         const res = await nutshell.convert({ args: `--sourcepath ${toConvert} --outputdir out`, exitCode: 0 });
 
         console.dir(res);
-        convertDir = res.result?.location as string;
-        shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
+        convertDir = asString(res.result?.location).replace(path.sep, '/');
+        // shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
         await nutshell.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await nutshell.expect.filesToBeConverted(convertDir, testCase.toVerify);
