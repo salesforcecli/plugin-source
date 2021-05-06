@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/* eslint-disable no-console */
+
 import * as path from 'path';
 import * as shelljs from 'shelljs';
 import { Nutshell } from '../nutshell';
@@ -52,7 +54,11 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.convert.manifest) {
       it(`should convert ${testCase.toConvert}`, async () => {
         // Generate a package.xml by converting via sourcepath
-        await nutshell.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out1` });
+        const res = await nutshell.convert({
+          args: `--sourcepath ${testCase.toConvert} --outputdir out1`,
+          exitCode: 0,
+        });
+        console.dir(res);
         const outputDir = path.join(process.cwd(), 'out1');
         mvManifest(outputDir);
         const packageXml = path.join(process.cwd(), 'package.xml');
