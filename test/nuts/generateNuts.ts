@@ -34,6 +34,7 @@ async function generateNut(
   executable: string,
   repo?: RepoConfig
 ): Promise<void> {
+  console.dir(repo, { depth: 8 });
   const repoName = parseRepoName(repo);
   const executableName = path.basename(executable);
   console.log(`Generating NUT: ${generatedDir}${path.sep}${seedName}.${repoName}.${executableName}.nut.ts`);
@@ -58,7 +59,9 @@ async function generateNuts(): Promise<void> {
     const seedContents = await fs.readFile(seed, 'UTF-8');
     for (const executable of EXECUTABLES.filter((e) => !e.skip)) {
       const hasRepo = /const\sREPO\s=\s(.*?)\n/.test(seedContents);
+      console.log('hasRepo =', hasRepo);
       if (hasRepo) {
+        console.dir(TEST_REPOS_MAP, { depth: 8 });
         for (const repo of [...TEST_REPOS_MAP.values()].filter((r) => !r.skip)) {
           await generateNut(generatedDir, seedName, seedContents, executable.path, repo);
         }
