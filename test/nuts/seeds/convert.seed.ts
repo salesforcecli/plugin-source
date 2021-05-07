@@ -67,7 +67,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
         const res = await nutshell.convert({ args: `--manifest ${packageXml} --outputdir out2`, exitCode: 0 });
 
-        convertDir = asString(res.result?.location);
+        convertDir = path.relative(process.cwd(), asString(res.result?.location));
         console.log('convertDir=', convertDir);
         const convertDirForVerification = convertDir.split(path.sep).join('/');
         console.log('convertDirForVerification=', convertDirForVerification);
@@ -97,7 +97,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       it(`should convert ${testCase.toConvert}`, async () => {
         const res = await nutshell.convert({ args: `--metadata ${testCase.toConvert} --outputdir out`, exitCode: 0 });
 
-        convertDir = asString(res.result?.location);
+        convertDir = path.relative(process.cwd(), asString(res.result?.location));
         console.log('convertDir=', convertDir);
         const convertDirForVerification = convertDir.split(path.sep).join('/');
         console.log('convertDirForVerification=', convertDirForVerification);
@@ -130,7 +130,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         console.log('--sourcepath toConvert=', toConvert);
         const res = await nutshell.convert({ args: `--sourcepath ${toConvert} --outputdir out`, exitCode: 0 });
 
-        convertDir = asString(res.result?.location);
+        convertDir = path.relative(process.cwd(), asString(res.result?.location));
         console.log('convertDir=', convertDir);
         const convertDirForVerification = convertDir.split(path.sep).join('/');
         console.log('convertDirForVerification=', convertDirForVerification);
