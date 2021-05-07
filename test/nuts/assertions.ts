@@ -137,6 +137,7 @@ export class Assertions {
    * Expects files to exist in convert output directory
    */
   public async filesToBeConverted(directory: string, globs: string[]): Promise<void> {
+    directory = directory.split(path.sep).join('/');
     const fullGlobs = globs.map((glob) => [directory, glob].join('/'));
     const convertedFiles = await fg(fullGlobs);
     expect(convertedFiles.length, 'files to be converted').to.be.greaterThan(0);

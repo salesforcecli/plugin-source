@@ -7,7 +7,7 @@
 
 import { resolve } from 'path';
 import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
+import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { ConvertResult } from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter } from './resultFormatter';
 
@@ -36,8 +36,7 @@ export class ConvertResultFormatter extends ResultFormatter {
     if (this.isSuccess()) {
       this.ux.log(messages.getMessage('success', [this.result.packagePath]));
     } else {
-      // TODO: make this better
-      this.ux.log('Failed to convert source');
+      throw new SfdxError(messages.getMessage('convertFailed'), 'ConvertFailed');
     }
   }
 }
