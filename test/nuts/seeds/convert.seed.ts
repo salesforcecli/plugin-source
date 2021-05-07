@@ -69,7 +69,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
         convertDir = asString(res.result?.location);
         console.log('convertDir=', convertDir);
-        const convertDirForVerification = convertDir.replace(path.sep, '/');
+        const convertDirForVerification = convertDir.split(path.sep).join('/');
         console.log('convertDirForVerification=', convertDirForVerification);
         // shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
         await nutshell.expect.directoryToHaveSomeFiles(convertDirForVerification);
@@ -99,7 +99,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
         convertDir = asString(res.result?.location);
         console.log('convertDir=', convertDir);
-        const convertDirForVerification = convertDir.replace(path.sep, '/');
+        const convertDirForVerification = convertDir.split(path.sep).join('/');
         console.log('convertDirForVerification=', convertDirForVerification);
         // shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
@@ -132,7 +132,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
         convertDir = asString(res.result?.location);
         console.log('convertDir=', convertDir);
-        const convertDirForVerification = convertDir.replace(path.sep, '/');
+        const convertDirForVerification = convertDir.split(path.sep).join('/');
         console.log('convertDirForVerification=', convertDirForVerification);
         // shelljs.find(convertDir).forEach((file) => console.log('convertDir file:', file));
         await nutshell.expect.directoryToHaveSomeFiles(convertDir);
