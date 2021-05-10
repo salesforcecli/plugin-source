@@ -18,8 +18,7 @@ export const exampleSourceComponent = {
       adapter: 'matchingContentFile',
     },
   },
-  xml:
-    '/Users/william.ruemmele/projects/scratches/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls-meta.xml',
+  xml: '/Users/william.ruemmele/projects/scratches/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls-meta.xml',
   content:
     '/Users/william.ruemmele/projects/scratches/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls',
 };

@@ -107,7 +107,7 @@ const testRepos: RepoConfig[] = [
   },
   {
     skip: false,
-    gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
+    gitUrl: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     deploy: {
       sourcepath: [
         { toDeploy: 'force-app', toVerify: ['force-app/main/default/**/*'] },
@@ -128,12 +128,12 @@ const testRepos: RepoConfig[] = [
       metadata: [
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
-          toDeploy: 'CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/objects/Bot_Command__c/*'],
+          toDeploy: 'CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toDeploy: 'ApexClass,CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Bot_Command__c/*'],
+          toDeploy: 'ApexClass,CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
           toDeploy: 'ApexClass:BotController,CustomObject',
@@ -185,12 +185,12 @@ const testRepos: RepoConfig[] = [
       metadata: [
         { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
-          toRetrieve: 'CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/objects/Bot_Command__c/*'],
+          toRetrieve: 'CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toRetrieve: 'ApexClass,CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Bot_Command__c/*'],
+          toRetrieve: 'ApexClass,CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
           toRetrieve: 'ApexClass:BotController,CustomObject',
@@ -241,12 +241,12 @@ const testRepos: RepoConfig[] = [
       metadata: [
         { toConvert: 'ApexClass', toVerify: ['classes/*'] },
         {
-          toConvert: 'CustomObject:Bot_Command__c',
-          toVerify: ['objects/Bot_Command__c.object'],
+          toConvert: 'CustomObject:Broker__c',
+          toVerify: ['objects/Broker__c.object'],
         },
         {
-          toConvert: 'ApexClass,CustomObject:Bot_Command__c',
-          toVerify: ['classes/*', 'objects/Bot_Command__c.object'],
+          toConvert: 'ApexClass,CustomObject:Broker__c',
+          toVerify: ['classes/*', 'objects/Broker__c.object'],
         },
         {
           toConvert: 'ApexClass:BotController,CustomObject',

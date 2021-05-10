@@ -11,9 +11,10 @@ import { Nutshell } from '../nutshell';
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
 
-const PACKAGE = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
+const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
+const SKUID = { id: '04t4A000000cESSQA2', name: 'Skuid' };
 
-context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
+context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
@@ -22,7 +23,7 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
-    nutshell.installPackage(PACKAGE.id);
+    nutshell.installPackage(ELECTRON.id);
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 
@@ -32,19 +33,25 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      await nutshell.retrieve({ args: `--packagenames "${PACKAGE.name}"` });
-      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
+      await nutshell.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
+      await nutshell.expect.packagesToBeRetrieved([ELECTRON.name]);
+    });
+
+    it('should retrieve two installed packages', async () => {
+      nutshell.installPackage(SKUID.id);
+      await nutshell.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
+      await nutshell.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
       await nutshell.retrieve({
-        args: `--packagenames "${PACKAGE.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
+        args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
       });
-      await nutshell.expect.packagesToBeRetrieved([PACKAGE.name]);
+      await nutshell.expect.packagesToBeRetrieved([ELECTRON.name]);
       await nutshell.expect.filesToExist([
-        `${PACKAGE.name}/**/brandingSets/*`,
-        `${PACKAGE.name}/**/contentassets/*`,
-        `${PACKAGE.name}/**/lightningExperienceThemes/*`,
+        `${ELECTRON.name}/**/brandingSets/*`,
+        `${ELECTRON.name}/**/contentassets/*`,
+        `${ELECTRON.name}/**/lightningExperienceThemes/*`,
       ]);
     });
   });

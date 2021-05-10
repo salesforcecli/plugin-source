@@ -6,12 +6,29 @@
  */
 
 import * as path from 'path';
+import * as shelljs from 'shelljs';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
+
+const isSourcePlugin = (): boolean => {
+  return EXECUTABLE.endsWith(`${path.sep}bin${path.sep}run`);
+};
+
+// SDR does not output the package.xml in the same location as toolbelt
+// so we have to find it within the output dir, move it, and delete the
+// generated dir.
+const mvManifest = (dir: string) => {
+  const manifest = shelljs.find(dir).filter((file) => file.endsWith('package.xml'));
+  if (!manifest?.length) {
+    throw Error(`Did not find package.xml within ${dir}`);
+  }
+  shelljs.mv(manifest[0], path.join(process.cwd()));
+  shelljs.rm('-rf', dir);
+};
 
 context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
@@ -31,20 +48,24 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   describe('--manifest flag', () => {
-    // for (const testCase of REPO.retrieve.manifest) {
-    //   it(`should retrieve ${testCase.toRetrieve}`, async () => {
-    //     await nutshell.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir out` });
-    //     const packageXml = path.join('out', 'package.xml');
-    //
-    //     await nutshell.modifyLocalGlobs(testCase.toVerify);
-    //     await nutshell.retrieve({ args: `--manifest ${packageXml}` });
-    //     await nutshell.expect.filesToBeChanged(testCase.toVerify);
-    //   });
-    // }
+    for (const testCase of REPO.retrieve.manifest) {
+      const toRetrieve = path.normalize(testCase.toRetrieve);
+      it(`should retrieve ${toRetrieve} with manifest`, async () => {
+        await nutshell.convert({ args: `--sourcepath ${toRetrieve} --outputdir out` });
+        const outputDir = path.join(process.cwd(), 'out');
+        mvManifest(outputDir);
+        const packageXml = path.join(process.cwd(), 'package.xml');
+
+        await nutshell.modifyLocalGlobs(testCase.toVerify);
+        await nutshell.retrieve({ args: `--manifest ${packageXml}` });
+        await nutshell.expect.filesToBeChanged(testCase.toVerify);
+      });
+    }
 
     it('should throw an error if the package.xml is not valid', async () => {
       const retrieve = await nutshell.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      nutshell.expect.errorToHaveName(retrieve, 'InvalidManifestError');
+      const expectedError = isSourcePlugin() ? 'Error' : 'InvalidManifestError';
+      nutshell.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 
@@ -59,7 +80,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     // the LWC is in plugin-source/test/nuts/metadata and is only deployed to dreamhouse projects
     // this sufficiently tests this metadata is WAD
-    if (REPO.gitUrl.includes('dreamhouse')) {
+    if (REPO.gitUrl.includes('dreamhouse') && isSourcePlugin()) {
       it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
         // this will fail with toolbelt powered sfdx, but should pass with SDRL powered sfdx
         /**
@@ -72,7 +93,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
          */
         const lwcPath = path.join('force-app', 'main', 'default', 'lwc');
         // deploy the LWC
-        await nutshell.deploy({ args: '--sourcepath force-app' });
+        await nutshell.deploy({ args: `--sourcepath ${lwcPath}` });
         // delete the LWC locally
         await nutshell.deleteGlobs([lwcPath]);
         await nutshell.retrieve({ args: '--metadata LightningComponentBundle:mycomponent' });
@@ -83,22 +104,25 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the metadata is not valid', async () => {
       const retrieve = await nutshell.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(retrieve, 'UnsupportedType');
+      const expectedError = isSourcePlugin() ? 'RegistryError' : 'UnsupportedType';
+      nutshell.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.retrieve.sourcepath) {
-      it(`should retrieve ${testCase.toRetrieve}`, async () => {
+      const toRetrieve = path.normalize(testCase.toRetrieve);
+      it(`should retrieve ${toRetrieve}`, async () => {
         await nutshell.modifyLocalGlobs(testCase.toVerify);
-        await nutshell.retrieve({ args: `--sourcepath ${testCase.toRetrieve}` });
+        await nutshell.retrieve({ args: `--sourcepath ${toRetrieve}` });
         await nutshell.expect.filesToBeChanged(testCase.toVerify);
       });
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const retrieve = await nutshell.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(retrieve, 'UnexpectedFileFound');
+      const expectedError = isSourcePlugin() ? 'SfdxError' : 'UnexpectedFileFound';
+      nutshell.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 });
