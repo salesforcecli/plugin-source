@@ -6,6 +6,7 @@
  */
 
 import * as path from 'path';
+import * as os from 'os';
 import { fs } from '@salesforce/core';
 import { EXECUTABLES, TEST_REPOS_MAP, RepoConfig } from './testMatrix';
 
@@ -38,6 +39,12 @@ async function generateNut(
     ? `${seedName}.${repoName}.${executableName}.nut.ts`
     : `${seedName}.${executableName}.nut.ts`;
   const nutFilePath = path.join(generatedDir, nutFileName);
+
+  // On windows the executable path is being changed to
+  // single backslashes so ensure proper path.sep.
+  if (os.platform() === 'win32') {
+    executable = executable.replace(/\\/g, '\\\\');
+  }
   const contents = seedContents
     .replace(/%REPO_URL%/g, repo?.gitUrl)
     .replace(/%EXECUTABLE%/g, executable)
@@ -47,14 +54,14 @@ async function generateNut(
 
 async function generateNuts(): Promise<void> {
   const generatedDir = path.resolve(__dirname, 'generated');
-  await fs.rmdir(generatedDir, { recursive: true });
+  fs.rmSync(generatedDir, { force: true, recursive: true });
   await fs.mkdirp(generatedDir);
   const seeds = await getSeedFiles();
   for (const seed of seeds) {
     const seedName = path.basename(seed).replace('.seed.ts', '');
     const seedContents = await fs.readFile(seed, 'UTF-8');
     for (const executable of EXECUTABLES.filter((e) => !e.skip)) {
-      const hasRepo = /const\sREPO\s=\s(.*?)\n/.test(seedContents);
+      const hasRepo = /const\sREPO\s=\s/.test(seedContents);
       if (hasRepo) {
         for (const repo of [...TEST_REPOS_MAP.values()].filter((r) => !r.skip)) {
           await generateNut(generatedDir, seedName, seedContents, executable.path, repo);

@@ -22,7 +22,7 @@ export const EXECUTABLES = [
   },
   {
     path: path.join(process.cwd(), 'bin', 'run'), // path to the plugin's bin/run executable
-    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', false),
+    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', true),
   },
 ];
 

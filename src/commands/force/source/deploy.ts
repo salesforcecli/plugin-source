@@ -120,10 +120,8 @@ export class Deploy extends DeployCommand {
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
-    } else if (this.isAsync) {
-      // This is an async deploy.  We just kick off the request.
-      throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
     } else {
+      // the deployment involves a component set
       const cs = await ComponentSetBuilder.build({
         apiversion: this.getFlag<string>('apiversion'),
         sourcepath: this.getFlag<string[]>('sourcepath'),
@@ -136,27 +134,31 @@ export class Deploy extends DeployCommand {
           directoryPaths: this.getPackageDirs(),
         },
       });
-
+      // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', cs.toArray());
+      if (this.isAsync) {
+        // This is an async deploy.  We just kick off the request.
+        throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
+      } else {
+        const deploy = cs.deploy({
+          usernameOrConnection: this.org.getUsername(),
+          apiOptions: {
+            ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+            rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
+            checkOnly: this.getFlag<boolean>('checkonly', false),
+            runTests: this.getFlag<string[]>('runtests'),
+            testLevel: this.getFlag<TestLevel>('testlevel'),
+          },
+        });
 
-      const deploy = cs.deploy({
-        usernameOrConnection: this.org.getUsername(),
-        apiOptions: {
-          ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
-          rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
-          checkOnly: this.getFlag<boolean>('checkonly', false),
-          runTests: this.getFlag<string[]>('runtests'),
-          testLevel: this.getFlag<TestLevel>('testlevel'),
-        },
-      });
+        // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
+        if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
+          this.initProgressBar();
+          this.progress(deploy);
+        }
 
-      // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
-      if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
-        this.initProgressBar();
-        this.progress(deploy);
+        this.deployResult = await deploy.start();
       }
-
-      this.deployResult = await deploy.start();
     }
 
     await this.lifecycle.emit('postdeploy', this.deployResult);
