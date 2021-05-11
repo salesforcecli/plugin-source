@@ -44,7 +44,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   after(async () => {
-    await nutshell?.clean();
+    // await nutshell?.clean();
   });
 
   describe('--manifest flag', () => {
@@ -85,20 +85,21 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         // this will fail with toolbelt powered sfdx, but should pass with SDRL powered sfdx
         /**
          * NUT covering a specific bug in toolbelt
-         * 1. create LWC and CSS component (mycomponent)
+         * 1. create LWC and CSS component (daysOnMarket)
          * 2. deploy LWC
          * 3. delete LWC locally
-         * 4. retrieve with -m LightningComponentBundle:mycomponent
+         * 4. retrieve with -m LightningComponentBundle:daysOnMarket
          * the -meta.xml file would be associated with the .css file, not the .js file
          */
+        await nutshell.addTestFiles();
         const lwcPath = path.join('force-app', 'main', 'default', 'lwc');
         // deploy the LWC
         await nutshell.deploy({ args: `--sourcepath ${lwcPath}` });
         // delete the LWC locally
         await nutshell.deleteGlobs([lwcPath]);
-        await nutshell.retrieve({ args: '--metadata LightningComponentBundle:mycomponent' });
+        await nutshell.retrieve({ args: '--metadata LightningComponentBundle:daysOnMarket' });
         // ensure that the mycomponent.js-meta.xml file exists
-        await nutshell.expect.fileToExist(`${path.join(lwcPath, 'mycomponent.js-meta.xml')}`);
+        await nutshell.expect.fileToExist(`${path.join(lwcPath, 'daysOnMarket.js-meta.xml')}`);
       });
     }
 
