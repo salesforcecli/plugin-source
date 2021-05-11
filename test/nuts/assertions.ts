@@ -15,7 +15,7 @@ import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
 import { ApexClass, ApexTestResult, Context, SourceMember, SourceState, StatusResult } from './types';
 import { ExecutionLog } from './executionLog';
-import { FileTracker, countFiles } from './fileTracker';
+import { countFiles, FileTracker } from './fileTracker';
 
 use(chaiEach);
 
@@ -384,14 +384,19 @@ export class Assertions {
   private async retrieveApexClasses(classNames?: string[]): Promise<ApexClass[]> {
     const query = 'SELECT Name,Id FROM ApexClass';
     const result = await this.connection.tooling.query<ApexClass>(query, { autoFetch: true, maxFetch: 50000 });
-    const apexClasses = classNames ? result.records.filter((r) => classNames.includes(r.Name)) : result.records;
-    return apexClasses;
+    return classNames ? result.records.filter((r) => classNames.includes(r.Name)) : result.records;
   }
 
   private async doGlob(globs: string[], assert = true): Promise<string[]> {
     const files: string[] = [];
-    for (const glob of globs) {
-      const fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
+    for (let glob of globs) {
+      let fullGlob: string;
+      if (glob.startsWith('!')) {
+        glob = glob.substr(1);
+        fullGlob = glob.startsWith(this.projectDir) ? `!${glob}` : [`!${this.projectDir}`, glob].join('/');
+      } else {
+        fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
+      }
       this.debug(`Finding files using glob: ${fullGlob}`);
       const globResults = await fg(fullGlob);
       this.debug('Found: %O', globResults);

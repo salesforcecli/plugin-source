@@ -50,7 +50,8 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--manifest flag', () => {
     for (const testCase of REPO.retrieve.manifest) {
       const toRetrieve = path.normalize(testCase.toRetrieve);
-      it(`should retrieve ${toRetrieve} with manifest`, async () => {
+      it(`should retrieve ${toRetrieve}`, async () => {
+        // generate package.xml to use with the --manifest param
         await nutshell.convert({ args: `--sourcepath ${toRetrieve} --outputdir out` });
         const outputDir = path.join(process.cwd(), 'out');
         mvManifest(outputDir);
@@ -91,7 +92,6 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
          * 4. retrieve with -m LightningComponentBundle:daysOnMarket
          * the -meta.xml file would be associated with the .css file, not the .js file
          */
-        await nutshell.addTestFiles();
         const lwcPath = path.join('force-app', 'main', 'default', 'lwc');
         // deploy the LWC
         await nutshell.deploy({ args: `--sourcepath ${lwcPath}` });
@@ -99,7 +99,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         await nutshell.deleteGlobs([lwcPath]);
         await nutshell.retrieve({ args: '--metadata LightningComponentBundle:daysOnMarket' });
         // ensure that the mycomponent.js-meta.xml file exists
-        await nutshell.expect.fileToExist(`${path.join(lwcPath, 'daysOnMarket.js-meta.xml')}`);
+        await nutshell.expect.fileToExist(`${path.join(lwcPath, 'daysOnMarket', 'daysOnMarket.js-meta.xml')}`);
       });
     }
 

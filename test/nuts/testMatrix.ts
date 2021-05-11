@@ -32,7 +32,7 @@ export const EXECUTABLES = [
  */
 const testRepos: RepoConfig[] = [
   {
-    skip: false,
+    skip: true,
     gitUrl: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
     deploy: {
       sourcepath: [
@@ -167,7 +167,10 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
+        // {
+        //   toRetrieve: 'force-app',
+        //   toVerify: ['force-app/**/*', '!force-app/test', '!force-app/**/lwc/**/__tests__/**'],
+        // },
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -206,7 +209,7 @@ const testRepos: RepoConfig[] = [
         },
       ],
       manifest: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
+        // { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
