@@ -180,7 +180,17 @@ export class Deploy extends DeployCommand {
       this.setExitCode(1);
     }
     if (!this.flags.validateddeployrequestid) {
-      this.setTelemetryData('source:deploy', this.cs);
+      this.setTelemetryDataFromCS('source:deploy', this.cs, {
+        rest: this.isRest,
+        async: this.isAsync,
+        flags: this.flags,
+      });
+    } else {
+      this.setTelemetryData('source:deploy', {
+        rest: this.isRest,
+        async: this.isAsync,
+        flags: this.flags,
+      });
     }
   }
 

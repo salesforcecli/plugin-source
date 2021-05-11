@@ -106,7 +106,7 @@ export class Convert extends SourceCommand {
     if (!getString(this.convertResult, 'packagePath')) {
       this.setExitCode(1);
     }
-    this.setTelemetryData('source:convert', this.cs);
+    this.setTelemetryDataFromCS('source:convert', this.cs, { flags: this.flags });
   }
 
   protected formatResult(): ConvertCommandResult {

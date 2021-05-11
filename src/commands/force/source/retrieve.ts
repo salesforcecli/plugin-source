@@ -103,7 +103,7 @@ export class Retrieve extends SourceCommand {
     if (status !== RequestStatus.Succeeded) {
       this.setExitCode(1);
     }
-    this.setTelemetryData('source:retrieve', this.cs);
+    this.setTelemetryDataFromCS('source:retrieve', this.cs, { flags: this.flags });
   }
 
   protected formatResult(): RetrieveCommandResult {

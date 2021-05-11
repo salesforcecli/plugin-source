@@ -7,7 +7,7 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle } from '@salesforce/core';
-import { get, getBoolean, JsonMap } from '@salesforce/ts-types';
+import { AnyJson, get, getBoolean, JsonMap } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 import { TelemetryGlobal } from '@salesforce/plugin-telemetry/lib/telemetryGlobal';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
@@ -34,7 +34,7 @@ export abstract class SourceCommand extends SfdxCommand {
     return super.exit(code);
   }
 
-  public setTelemetryData(operation: string, cs: ComponentSet): void {
+  public setTelemetryDataFromCS(operation: string, cs: ComponentSet, data?: AnyJson): void {
     let components = cs.toArray();
     const totalNumberOfPackages: number = this.project.getUniquePackageDirectories().length;
     const isTruncated: boolean = components.length >= 8000;
@@ -49,6 +49,14 @@ export abstract class SourceCommand extends SfdxCommand {
       totalNumberOfPackages,
       components: components.join(','),
       isTruncated,
+      information: data,
+    };
+  }
+  public setTelemetryData(operation: string, data: AnyJson): void {
+    this.telemetryData = {
+      eventName: 'SOURCE_COMMAND',
+      operation,
+      information: data,
     };
   }
 
