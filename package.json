@@ -121,8 +121,9 @@
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
     "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/convert.*.nut.ts\" \"**/retrieve.*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:convert": "PLUGIN_SOURCE_TEST_BIN_RUN=true PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:retrieve": "PLUGIN_SOURCE_TEST_BIN_RUN=true PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:convert": "PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {
