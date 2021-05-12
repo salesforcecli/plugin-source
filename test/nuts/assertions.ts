@@ -59,10 +59,14 @@ export class Assertions {
   /**
    * Expect all files found by globs to be changed according to the file history provided by FileTracker
    */
-  public async filesToBeChanged(globs: string[]): Promise<void> {
-    const files = await this.doGlob(globs);
-    const fileHistories = files
+  public async filesToBeChanged(globs: string[], ignore: string[] = []): Promise<void> {
+    const all = await this.doGlob(globs);
+    // don't assert a result if nothing is to be ignored
+    const toIgnore = await this.doGlob(ignore, false);
+    const toTrack = all.filter((file) => !toIgnore.includes(file));
+    const fileHistories = toTrack
       .filter((f) => !f.endsWith('.resource-meta.xml'))
+      .filter((f) => !f.endsWith('.resource'))
       .map((f) => this.fileTracker.getLatest(f))
       .filter((f) => !!f);
     const allChanged = fileHistories.every((f) => f.changedFromPrevious);
@@ -72,9 +76,11 @@ export class Assertions {
   /**
    * Expect all files found by globs to NOT be changed according to the file history provided by FileTracker
    */
-  public async filesToNotBeChanged(globs: string[]): Promise<void> {
-    const files = await this.doGlob(globs);
-    const fileHistories = files
+  public async filesToNotBeChanged(globs: string[], ignore: string[] = []): Promise<void> {
+    const all = await this.doGlob(globs);
+    const toIgnore = await this.doGlob(ignore, false);
+    const toTrack = all.filter((file) => !toIgnore.includes(file));
+    const fileHistories = toTrack
       .filter((f) => !f.endsWith('.resource-meta.xml'))
       .map((f) => this.fileTracker.getLatest(f))
       .filter((f) => !!f);

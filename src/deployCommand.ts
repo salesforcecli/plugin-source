@@ -31,7 +31,7 @@ export abstract class DeployCommand extends SourceCommand {
 
     const res = await this.org.getConnection().metadata.checkDeployStatus(deployId, true);
 
-    const deployStatus = res as unknown as MetadataApiDeployStatus;
+    const deployStatus = (res as unknown) as MetadataApiDeployStatus;
     return new DeployResult(deployStatus, new ComponentSet());
   }
 
@@ -98,7 +98,7 @@ export abstract class DeployCommand extends SourceCommand {
         const deployResult = await this.report(deployId);
         return {
           completed: getBoolean(deployResult, 'response.done'),
-          payload: deployResult as unknown as AnyJson,
+          payload: (deployResult as unknown) as AnyJson,
         };
       },
     };
@@ -106,6 +106,6 @@ export abstract class DeployCommand extends SourceCommand {
     const pollingOptions = { ...defaultOptions, ...options };
 
     const pollingClient = await PollingClient.create(pollingOptions);
-    return pollingClient.subscribe() as unknown as Promise<DeployResult>;
+    return (pollingClient.subscribe() as unknown) as Promise<DeployResult>;
   }
 }

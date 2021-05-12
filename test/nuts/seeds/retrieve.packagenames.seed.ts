@@ -14,7 +14,7 @@ const EXECUTABLE = '%EXECUTABLE%';
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const SKUID = { id: '04t4A000000cESSQA2', name: 'Skuid' };
 
-context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
+context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {

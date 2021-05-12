@@ -44,7 +44,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   after(async () => {
-    // await nutshell?.clean();
+    await nutshell?.clean();
   });
 
   describe('--manifest flag', () => {
@@ -59,7 +59,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
         await nutshell.modifyLocalGlobs(testCase.toVerify);
         await nutshell.retrieve({ args: `--manifest ${packageXml}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify);
+        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
@@ -75,11 +75,11 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
         await nutshell.modifyLocalGlobs(testCase.toVerify);
         await nutshell.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify);
+        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
-    // the LWC is in plugin-source/test/nuts/metadata and is only deployed to dreamhouse projects
+    // the LWC is in the dreamhouse-lwc repo and is only deployed to dreamhouse projects
     // this sufficiently tests this metadata is WAD
     if (REPO.gitUrl.includes('dreamhouse') && isSourcePlugin()) {
       it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
@@ -116,7 +116,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       it(`should retrieve ${toRetrieve}`, async () => {
         await nutshell.modifyLocalGlobs(testCase.toVerify);
         await nutshell.retrieve({ args: `--sourcepath ${toRetrieve}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify);
+        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 

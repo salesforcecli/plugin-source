@@ -32,7 +32,7 @@ export const EXECUTABLES = [
  */
 const testRepos: RepoConfig[] = [
   {
-    skip: true,
+    skip: false,
     gitUrl: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
     deploy: {
       sourcepath: [
@@ -167,10 +167,11 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        // {
-        //   toRetrieve: 'force-app',
-        //   toVerify: ['force-app/**/*', '!force-app/test', '!force-app/**/lwc/**/__tests__/**'],
-        // },
+        {
+          toRetrieve: 'force-app',
+          toVerify: ['force-app/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -209,7 +210,11 @@ const testRepos: RepoConfig[] = [
         },
       ],
       manifest: [
-        // { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
+        {
+          toRetrieve: 'force-app',
+          toVerify: ['force-app/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
@@ -314,6 +319,7 @@ type DeployTestCase = {
 type RetrieveTestCase = {
   toRetrieve: string; // the string to be passed into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were retrieved from the org
+  toIgnore?: GlobPattern[];
 };
 
 type ConvertTestCase = {

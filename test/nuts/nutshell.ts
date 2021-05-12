@@ -215,7 +215,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    */
   public async readMaxRevision(): Promise<{ sourceMembers: JsonMap }> {
     const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
-    return fs.readJson(maxRevisionPath) as unknown as { sourceMembers: JsonMap };
+    return (fs.readJson(maxRevisionPath) as unknown) as { sourceMembers: JsonMap };
   }
 
   /**
