@@ -65,11 +65,18 @@ export class Assertions {
     const toIgnore = await this.doGlob(ignore, false);
     const toTrack = all.filter((file) => !toIgnore.includes(file));
     const fileHistories = toTrack
+      // StaticResource types are inconsistently changed
       .filter((f) => !f.endsWith('.resource-meta.xml'))
       .filter((f) => !f.endsWith('.resource'))
       .map((f) => this.fileTracker.getLatest(f))
       .filter((f) => !!f);
     const allChanged = fileHistories.every((f) => f.changedFromPrevious);
+    fileHistories.filter((f) => {
+      if (!f.changedFromPrevious) {
+        // eslint-disable-next-line no-console
+        console.log('NOT CHANGED', f);
+      }
+    });
     expect(allChanged, 'all files to be changed').to.be.true;
   }
 
@@ -403,6 +410,9 @@ export class Assertions {
       } else {
         fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
       }
+      // eslint-disable-next-line no-console
+      console.log('fg', fullGlob);
+
       this.debug(`Finding files using glob: ${fullGlob}`);
       const globResults = await fg(fullGlob);
       this.debug('Found: %O', globResults);
