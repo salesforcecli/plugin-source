@@ -412,7 +412,7 @@ export class Assertions {
       }
       // eslint-disable-next-line no-console
       console.log('fg pre', fullGlob);
-      fullGlob = fullGlob.replace(path.sep, '/');
+      fullGlob = fullGlob.split(path.sep).join('/');
       // eslint-disable-next-line no-console
       console.log('fg', fullGlob);
 
