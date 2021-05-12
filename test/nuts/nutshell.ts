@@ -485,6 +485,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       } else {
         g = g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/');
       }
+      console.log('fullGlobs pre', g);
       return g.replace(path.sep, '/');
     });
     console.log('fullGlobs', fullGlobs);

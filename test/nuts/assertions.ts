@@ -410,6 +410,8 @@ export class Assertions {
       } else {
         fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
       }
+      // eslint-disable-next-line no-console
+      console.log('fg pre', fullGlob);
       fullGlob = fullGlob.replace(path.sep, '/');
       // eslint-disable-next-line no-console
       console.log('fg', fullGlob);
