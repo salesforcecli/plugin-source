@@ -403,7 +403,11 @@ export class Assertions {
   private async doGlob(globs: string[], assert = true): Promise<string[]> {
     const files: string[] = [];
     for (let glob of globs) {
-      let fullGlob: string;
+      // eslint-disable-next-line no-console
+      console.log('glob', glob);
+      let fullGlob = glob.replace(/\\/g, '/');
+      // eslint-disable-next-line no-console
+      console.log('glob post', glob);
       if (glob.startsWith('!')) {
         glob = glob.substr(1);
         fullGlob = glob.startsWith(this.projectDir) ? `!${glob}` : [`!${this.projectDir}`, glob].join('/');
@@ -411,10 +415,7 @@ export class Assertions {
         fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
       }
       // eslint-disable-next-line no-console
-      console.log('fg pre', fullGlob);
-      fullGlob = fullGlob.split(path.sep).join('/');
-      // eslint-disable-next-line no-console
-      console.log('fg', fullGlob);
+      console.log('fullGlob', fullGlob);
 
       this.debug(`Finding files using glob: ${fullGlob}`);
       const globResults = await fg(fullGlob);
