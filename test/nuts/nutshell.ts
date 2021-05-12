@@ -479,12 +479,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   private async doGlob(globs: string[]): Promise<string[]> {
+    const dir = this.session.project.dir.replace(/\\/g, '/');
     const fullGlobs = globs.map((g) => {
       g = g.replace(/\\/g, '/');
+      console.log('g', g);
+      console.log('dir', dir);
       if (g.startsWith('!')) {
-        g = g.substr(1).startsWith(this.session.project.dir) ? `!${g}` : [`!${this.session.project.dir}`, g].join('/');
+        g = g.substr(1).startsWith(dir) ? `!${g}` : [`!${dir}`, g].join('/');
       } else {
-        g = g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/');
+        g = g.startsWith(dir) ? g : [dir, g].join('/');
       }
       console.log('fullGlobs pre', g);
       return g;
