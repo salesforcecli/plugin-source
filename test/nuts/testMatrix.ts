@@ -86,7 +86,11 @@ const testRepos: RepoConfig[] = [
       manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
-        { toRetrieve: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        {
+          toRetrieve: 'force-app,my-app,foo-bar',
+          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
       ],
     },
     convert: {
