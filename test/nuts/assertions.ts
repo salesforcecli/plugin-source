@@ -64,14 +64,22 @@ export class Assertions {
     // don't assert a result if nothing is to be ignored
     const toIgnore = await this.doGlob(ignore, false);
     const toTrack = all.filter((file) => !toIgnore.includes(file));
+    // eslint-disable-next-line no-console
+    console.log('toIgnore', toIgnore[0], ' ', toIgnore[1]);
+    // eslint-disable-next-line no-console
+    console.log('file', all[0], ' ', all[1]);
+    // eslint-disable-next-line no-console
+    console.log('toTrack', toTrack[0], ' ', toTrack[1]);
+    // eslint-disable-next-line no-console
+    console.log('fileTracker', this.fileTracker.get(toTrack[0]), ' ', this.fileTracker.get(path.normalize(toTrack[0])));
     const fileHistories = toTrack
       // StaticResource types are inconsistently changed
       .filter((f) => !f.endsWith('.resource-meta.xml'))
       .filter((f) => !f.endsWith('.resource'))
-      .map((f) => this.fileTracker.getLatest(f))
+      .map((f) => this.fileTracker.getLatest(path.normalize(f)))
       .filter((f) => !!f);
     const allChanged = fileHistories.every((f) => f.changedFromPrevious);
-    fileHistories.filter((f) => {
+    fileHistories.forEach((f) => {
       if (!f.changedFromPrevious) {
         // eslint-disable-next-line no-console
         console.log('NOT CHANGED', f);
