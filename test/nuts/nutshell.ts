@@ -297,7 +297,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     const allFiles = await this.doGlob(globs);
 
     for (const file of allFiles) {
-      await this.modifyLocalFile(file);
+      await this.modifyLocalFile(path.normalize(file));
     }
   }
 
