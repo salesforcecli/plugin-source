@@ -92,15 +92,23 @@ export class Assertions {
   /**
    * Finds all files in project based on the provided globs and expects them to be updated on the server
    */
-  public async filesToBeDeployed(globs: string[], deployCommand = 'force:source:deploy'): Promise<void> {
-    await this.filesToBeUpdated(globs, deployCommand);
+  public async filesToBeDeployed(
+    globs: string[],
+    ignore: string[] = [],
+    deployCommand = 'force:source:deploy'
+  ): Promise<void> {
+    await this.filesToBeUpdated(globs, ignore, deployCommand);
   }
 
   /**
    * Finds all files in project based on the provided globs and expects them to NOT be updated on the server
    */
-  public async filesToNotBeDeployed(globs: string[], deployCommand = 'force:source:deploy'): Promise<void> {
-    await this.filesToNotBeUpdated(globs, deployCommand);
+  public async filesToNotBeDeployed(
+    globs: string[],
+    ignore: string[] = [],
+    deployCommand = 'force:source:deploy'
+  ): Promise<void> {
+    await this.filesToNotBeUpdated(globs, ignore, deployCommand);
   }
 
   /**
@@ -190,7 +198,7 @@ export class Assertions {
    * Expect all given files to be be updated in the org
    */
   public async filesToBePushed(globs: string[]): Promise<void> {
-    await this.filesToBeUpdated(globs, 'force:source:push');
+    await this.filesToBeUpdated(globs, [], 'force:source:push');
   }
 
   /**
@@ -310,9 +318,9 @@ export class Assertions {
     expect(result[prop], `${prop} to have value that does not equal ${value.toString()}`).to.not.equal(value);
   }
 
-  private async filesToBeUpdated(globs: string[], command: string): Promise<void> {
+  private async filesToBeUpdated(globs: string[], ignore: string[] = [], command: string): Promise<void> {
     const { sourceMembers } = this.executionLog.getLatest(command);
-    const latestSourceMembers = await this.retrieveSourceMembers(globs);
+    const latestSourceMembers = await this.retrieveSourceMembers(globs, ignore);
 
     for (const sourceMember of latestSourceMembers) {
       const assertionMessage = `expect RevisionCounter for ${sourceMember.MemberName} (${sourceMember.MemberType}) to be incremented`;
@@ -323,9 +331,9 @@ export class Assertions {
     }
   }
 
-  private async filesToNotBeUpdated(globs: string[], command: string): Promise<void> {
+  private async filesToNotBeUpdated(globs: string[], ignore: string[] = [], command: string): Promise<void> {
     const { sourceMembers } = this.executionLog.getLatest(command);
-    const latestSourceMembers = await this.retrieveSourceMembers(globs);
+    const latestSourceMembers = await this.retrieveSourceMembers(globs, ignore);
     if (!latestSourceMembers.length) {
       // Not finding any source members based on the globs means that there is no SourceMember for those files
       // which we're assuming means that it hasn't been deployed to the org yet.
@@ -354,15 +362,17 @@ export class Assertions {
     expect(someAreNotUpdated, 'expect some SourceMembers to not be updated').to.be.true;
   }
 
-  private async retrieveSourceMembers(globs: string[]): Promise<SourceMember[]> {
+  private async retrieveSourceMembers(globs: string[], ignore: string[] = []): Promise<SourceMember[]> {
     const query = 'SELECT Id,MemberName,MemberType,RevisionCounter FROM SourceMember';
     const result = await this.connection.tooling.query<SourceMember>(query, {
       autoFetch: true,
       maxFetch: 50000,
     });
-    const filesToExpect = await this.doGlob(globs);
+    const all = await this.doGlob(globs);
+    const ignoreFiles = await this.doGlob(ignore, false);
+    const toTrack = all.filter((file) => !ignoreFiles.includes(file));
     const membersMap = new Map<string, Set<string>>();
-    for (const file of filesToExpect) {
+    for (const file of toTrack) {
       const components = this.metadataResolver.getComponentsFromPath(file);
       for (const component of components) {
         const metadataType = component.type.name;

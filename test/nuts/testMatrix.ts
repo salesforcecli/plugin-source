@@ -96,6 +96,7 @@ const testRepos: RepoConfig[] = [
     convert: {
       sourcepath: [
         { toConvert: 'force-app,my-app', toVerify: ['**/force.cls', '**/my.cls'] },
+        { toConvert: 'force-app,my-app,foo-bar', toVerify: ['**/force.cls', '**/my.cls', '**/FooBar.cls'] },
         { toConvert: '"force-app, my-app"', toVerify: ['**/force.cls', '**/my.cls'] },
         { toConvert: 'force-app/main/default/objects', toVerify: ['objects/MyObj__c.object'] },
         { toConvert: 'my-app/objects', toVerify: ['objects/MyObj__c.object'] },
@@ -114,7 +115,11 @@ const testRepos: RepoConfig[] = [
     gitUrl: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     deploy: {
       sourcepath: [
-        { toDeploy: 'force-app', toVerify: ['force-app/main/default/**/*'] },
+        {
+          toDeploy: 'force-app',
+          toVerify: ['force-app/main/default/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         { toDeploy: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/**/*'] },
         {
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -140,20 +145,24 @@ const testRepos: RepoConfig[] = [
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toDeploy: 'ApexClass:BotController,CustomObject',
-          toVerify: ['force-app/main/default/classes/BotController.cls', 'force-app/main/default/objects/*'],
+          toDeploy: 'ApexClass:PropertyController,CustomObject',
+          toVerify: ['force-app/main/default/classes/PropertyController.cls', 'force-app/main/default/objects/*'],
         },
         {
-          toDeploy: '"ApexClass:BotController, CustomObject, PermissionSet"',
+          toDeploy: '"ApexClass:PropertyController, CustomObject, PermissionSet"',
           toVerify: [
-            'force-app/main/default/classes/BotController.cls',
+            'force-app/main/default/classes/PropertyController.cls',
             'force-app/main/default/objects/*',
             'force-app/main/default/permissionsets/*',
           ],
         },
       ],
       manifest: [
-        { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
+        {
+          toDeploy: 'force-app',
+          toVerify: ['force-app/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         {
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
@@ -201,13 +210,13 @@ const testRepos: RepoConfig[] = [
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toRetrieve: 'ApexClass:BotController,CustomObject',
-          toVerify: ['force-app/main/default/classes/BotController.cls', 'force-app/main/default/objects/*__c/*'],
+          toRetrieve: 'ApexClass:PropertyController,CustomObject',
+          toVerify: ['force-app/main/default/classes/PropertyController.cls', 'force-app/main/default/objects/*__c/*'],
         },
         {
-          toRetrieve: '"ApexClass:BotController, CustomObject, PermissionSet"',
+          toRetrieve: '"ApexClass:PropertyController, CustomObject, PermissionSet"',
           toVerify: [
-            'force-app/main/default/classes/BotController.cls',
+            'force-app/main/default/classes/PropertyController.cls',
             'force-app/main/default/objects/*__c/*',
             'force-app/main/default/permissionsets/*',
           ],
@@ -261,12 +270,12 @@ const testRepos: RepoConfig[] = [
           toVerify: ['classes/*', 'objects/Broker__c.object'],
         },
         {
-          toConvert: 'ApexClass:BotController,CustomObject',
-          toVerify: ['classes/BotController.cls', 'objects/*__c.object'],
+          toConvert: 'ApexClass:PropertyController,CustomObject',
+          toVerify: ['classes/PropertyController.cls', 'objects/*__c.object'],
         },
         {
-          toConvert: '"ApexClass:BotController, CustomObject, PermissionSet"',
-          toVerify: ['classes/BotController.cls', 'objects/*__c.object', 'permissionsets/*'],
+          toConvert: '"ApexClass:PropertyController, CustomObject, PermissionSet"',
+          toVerify: ['classes/PropertyController.cls', 'objects/*__c.object', 'permissionsets/*'],
         },
       ],
       manifest: [
@@ -318,12 +327,13 @@ export type RepoConfig = {
 type DeployTestCase = {
   toDeploy: string; // the string to be passed into the source:deploy command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were deployed to the org
+  toIgnore?: GlobPattern[]; // the glob patterns used to ignore certain files when asserting, useful for LWC __tests__ dir which is never moved to the org
 };
 
 type RetrieveTestCase = {
   toRetrieve: string; // the string to be passed into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were retrieved from the org
-  toIgnore?: GlobPattern[];
+  toIgnore?: GlobPattern[]; // the glob patterns used to ignore certain files when asserting, useful for LWC __tests__ dir which is never moved to the org
 };
 
 type ConvertTestCase = {
