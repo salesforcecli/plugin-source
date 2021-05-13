@@ -71,12 +71,6 @@ export class Assertions {
       .map((f) => this.fileTracker.getLatest(path.normalize(f)))
       .filter((f) => !!f);
     const allChanged = fileHistories.every((f) => f.changedFromPrevious);
-    fileHistories.forEach((f) => {
-      if (!f.changedFromPrevious) {
-        // eslint-disable-next-line no-console
-        console.log('NOT CHANGED', f);
-      }
-    });
     expect(allChanged, 'all files to be changed').to.be.true;
   }
 
