@@ -40,7 +40,13 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       nut: __filename,
     });
     await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    try {
+      await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+      await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    }
   });
 
   after(async () => {

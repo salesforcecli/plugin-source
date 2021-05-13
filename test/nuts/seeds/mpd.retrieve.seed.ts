@@ -11,7 +11,7 @@ import { Nutshell } from '../nutshell';
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
+context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
