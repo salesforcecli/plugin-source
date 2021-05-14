@@ -63,12 +63,12 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        {
-          toRetrieve: 'force-app,my-app,foo-bar',
-          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
-          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
-        },
-        { toRetrieve: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        // {
+        //   toRetrieve: 'force-app,my-app,foo-bar',
+        //   toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+        //   toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        // },
+        // { toRetrieve: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
         { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
         { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
         { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
@@ -90,11 +90,11 @@ const testRepos: RepoConfig[] = [
       manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
-        {
-          toRetrieve: 'force-app,my-app,foo-bar',
-          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
-          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
-        },
+        // {
+        //   toRetrieve: 'force-app,my-app,foo-bar',
+        //   toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+        //   toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        // },
       ],
     },
     convert: {
