@@ -57,7 +57,7 @@ const testRepos: RepoConfig[] = [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
         { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
         { toDeploy: 'foo-bar', toVerify: ['foo-bar/**/*'] },
-        { toDeploy: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        // { toDeploy: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
       ],
       testlevel: { specifiedTests: ['MyTest'] },
     },
@@ -159,7 +159,7 @@ const testRepos: RepoConfig[] = [
       ],
       manifest: [
         {
-          toDeploy: 'force-app',
+          toDeploy: 'force-app/',
           toVerify: ['force-app/**/*'],
           toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
         },

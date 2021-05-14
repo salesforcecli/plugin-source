@@ -22,8 +22,6 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
-    await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 
   after(async () => {
@@ -40,9 +38,8 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         nutshell.findAndMoveManifest(outputDir);
         const packageXml = path.join(process.cwd(), 'package.xml');
 
-        await nutshell.modifyLocalGlobs(testCase.toVerify);
         await nutshell.deploy({ args: `--manifest ${packageXml}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        await nutshell.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
 
