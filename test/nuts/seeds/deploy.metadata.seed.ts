@@ -4,17 +4,14 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
-import * as path from 'path';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
-import { Result } from '../types';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
@@ -31,14 +28,13 @@ context.skip('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', ()
 
   it('should deploy the entire project', async () => {
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
-    await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs);
+    await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs, ['force-app/test/**/*']);
   });
 
   describe('--metadata flag', () => {
     for (const testCase of REPO.deploy.metadata) {
-      const toDeploy = path.normalize(testCase.toDeploy);
-      it(`should deploy ${toDeploy}`, async () => {
-        await nutshell.deploy({ args: `--metadata ${toDeploy}` });
+      it(`should deploy ${testCase.toDeploy}`, async () => {
+        await nutshell.deploy({ args: `--metadata ${testCase.toDeploy}` });
         await nutshell.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
@@ -50,13 +46,7 @@ context.skip('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', ()
     });
 
     it('should not deploy metadata outside of a package directory', async () => {
-      let apex: Result<{ created: string[] }>;
-      try {
-        // process.env.TESTKIT_EXECUTABLE_PATH = shelljs.which('sfdx');
-        apex = await nutshell.createApexClass({ args: '--outputdir NotAPackage --classname ShouldNotBeDeployed' });
-      } finally {
-        // delete process.env.TESTKIT_EXECUTABLE_PATH;
-      }
+      const apex = await nutshell.createApexClass({ args: '--outputdir NotAPackage --classname ShouldNotBeDeployed' });
 
       await nutshell.deploy({ args: '--metadata ApexClass' });
       await nutshell.expect.filesToNotBeDeployed(apex.result.created);
