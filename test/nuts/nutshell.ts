@@ -18,6 +18,7 @@ import { AuthInfo, Connection, fs, NamedPackageDir, SfdxProject } from '@salesfo
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
+import * as shelljs from 'shelljs';
 import { Result, StatusResult } from './types';
 import { Assertions } from './assertions';
 import { ExecutionLog } from './executionLog';
@@ -368,6 +369,22 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       }
     }
     await this.writeMaxRevision(maxRevision);
+  }
+
+  public isSourcePlugin(): boolean {
+    return this.executable.endsWith(`${path.sep}bin${path.sep}run`);
+  }
+
+  // SDR does not output the package.xml in the same location as toolbelt
+  // so we have to find it within the output dir, move it, and delete the
+  // generated dir.
+  public findAndMoveManifest(dir: string): void {
+    const manifest = shelljs.find(dir).filter((file) => file.endsWith('package.xml'));
+    if (!manifest?.length) {
+      throw Error(`Did not find package.xml within ${dir}`);
+    }
+    shelljs.mv(manifest[0], path.join(process.cwd()));
+    shelljs.rm('-rf', dir);
   }
 
   protected async init(): Promise<void> {
