@@ -139,9 +139,9 @@ export class DeployResultFormatter extends ResultFormatter {
             // same filename's according to comment sort by fullName
             return i.fullName < j.fullName ? 1 : -1;
           }
-          return i.filePath < j.filePath ? 1 : -1;
+          return i.filePath > j.filePath ? 1 : -1;
         }
-        return i.type < j.type ? 1 : -1;
+        return i.type > j.type ? 1 : -1;
       });
       // get relative path for table output
       files.forEach((file) => {

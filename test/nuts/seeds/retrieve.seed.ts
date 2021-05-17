@@ -64,7 +64,7 @@ context('Retrieve NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     // the LWC is in the dreamhouse-lwc repo and is only deployed to dreamhouse projects
     // this sufficiently tests this metadata is WAD
-    if (REPO.gitUrl.includes('dreamhouse') && nutshell.isSourcePlugin()) {
+    if (REPO.gitUrl.includes('dreamhouse') && nutshell && nutshell.isSourcePlugin()) {
       it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
         // this will fail with toolbelt powered sfdx, but should pass with SDRL powered sfdx
         /**

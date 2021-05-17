@@ -11,7 +11,7 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context.skip('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
