@@ -140,6 +140,10 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     return this.execute<StatusResult>('force:source:status', options);
   }
 
+  public setConfig(key: string, value: string, global: boolean): void {
+    exec(`sfdx config:set ${key}=${value} ${global ? '--global' : ''}`);
+  }
+
   /**
    * Create an apex class
    */
@@ -438,7 +442,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   private async execute<T = JsonMap>(cmd: string, options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<T>> {
     try {
       const { args, exitCode } = Object.assign({}, Nutshell.DefaultCmdOpts, options);
-      const command = [cmd, args, '--json'].join(' ');
+      const command = [cmd, args].join(' ');
       this.debug(`${command} (expecting exit code: ${exitCode})`);
       await this.fileTracker.updateAll(`PRE: ${command}`);
       await this.executionLog.add(command);

@@ -22,6 +22,7 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
       executable: EXECUTABLE,
       nut: __filename,
     });
+    nutshell.setConfig('restDeploy', 'false', true);
   });
 
   after(async () => {
