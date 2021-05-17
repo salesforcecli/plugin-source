@@ -176,7 +176,7 @@ const testRepos: RepoConfig[] = [
           ],
         },
       ],
-      testlevel: { specifiedTests: ['BotTest'] },
+      testlevel: { specifiedTests: ['TestSampleDataController'] },
     },
     retrieve: {
       sourcepath: [

@@ -167,6 +167,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   /**
+   * assigns a permission set to the default user in the scratch org
+   *
+   * @param permset the permset name to assign
+   */
+  public assignPermissionSet(permset: string): void {
+    exec(`sfdx force:user:permset:assign -n ${permset} --json 2> /dev/null`, { silent: true });
+  }
+
+  /**
    * Adds given files to FileTracker for tracking
    */
   public async trackFiles(files: string[]): Promise<void> {
