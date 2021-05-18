@@ -29,6 +29,7 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.deploy.sourcepath) {
+      process.env.SFDX_MDAPI_TEMP_DIR = `output_${Date.now()}`;
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
         await nutshell.deploy({ args: `--sourcepath ${toDeploy}` });
