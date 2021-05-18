@@ -7,6 +7,7 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as shelljs from 'shelljs';
 import { fs } from '@salesforce/core';
 import { EXECUTABLES, RepoConfig, TEST_REPOS_MAP } from './testMatrix';
 
@@ -53,7 +54,7 @@ async function generateNut(
 
 async function generateNuts(): Promise<void> {
   const generatedDir = path.resolve(__dirname, 'generated');
-  fs.rmSync(generatedDir, { force: true, recursive: true });
+  shelljs.rm('-rf', generatedDir);
   await fs.mkdirp(generatedDir);
   const seeds = await getSeedFiles();
   for (const seed of seeds) {
