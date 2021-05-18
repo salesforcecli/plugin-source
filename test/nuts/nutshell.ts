@@ -56,15 +56,15 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   public testMetadataFiles: string[];
 
   private connection: Nullable<Connection>;
-  private debug: Debugger;
-  private executable: Nullable<string>;
+  private readonly debug: Debugger;
+  private readonly executable: Nullable<string>;
   private fileTracker: FileTracker;
-  private repository: string;
+  private readonly repository: string;
   private session: TestSession;
   private username: string;
-  private orgless: boolean;
+  private readonly orgless: boolean;
   private executionLog: ExecutionLog;
-  private nut: string;
+  private readonly nut: string;
   private metadataResolver: MetadataResolver;
 
   public constructor(options: Nutshell.Options) {
@@ -138,10 +138,6 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    */
   public async status(options: Partial<Nutshell.CommandOpts> = {}): Promise<Result<StatusResult>> {
     return this.execute<StatusResult>('force:source:status', options);
-  }
-
-  public setConfig(key: string, value: string, global: boolean): void {
-    exec(`sfdx config:set ${key}=${value} ${global ? '--global' : ''}`);
   }
 
   /**

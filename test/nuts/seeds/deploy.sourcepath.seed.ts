@@ -15,14 +15,12 @@ const EXECUTABLE = '%EXECUTABLE%';
 
 context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
-
   before(async () => {
     nutshell = await Nutshell.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
     });
-    nutshell.setConfig('restDeploy', 'false', true);
   });
 
   after(async () => {
