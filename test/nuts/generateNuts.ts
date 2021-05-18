@@ -8,18 +8,17 @@
 import * as path from 'path';
 import * as os from 'os';
 import { fs } from '@salesforce/core';
-import { EXECUTABLES, TEST_REPOS_MAP, RepoConfig } from './testMatrix';
+import { EXECUTABLES, RepoConfig, TEST_REPOS_MAP } from './testMatrix';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
 
 async function getSeedFiles(): Promise<string[]> {
   const seedDir = path.join(__dirname, 'seeds');
   const files = await fs.readdir(seedDir);
-  const seeds = files
+  return files
     .filter((f) => f.endsWith('.seed.ts'))
     .filter((f) => f.includes(SEED_FILTER))
     .map((f) => path.resolve(path.join(seedDir, f)));
-  return seeds;
 }
 
 function parseRepoName(repo?: RepoConfig): string {
