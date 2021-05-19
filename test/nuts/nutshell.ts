@@ -493,11 +493,6 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       status: number;
       result: [{ key: string; value: string }];
     };
-    console.log('res1', execCmd<Array<{ key: string; value: string }>>('config:get defaultusername --json').jsonOutput);
-    console.log('res2', execCmd<Array<{ key: string; value: string }>>('config:get defaultusername --json').jsonError);
-    console.log('res3', execCmd<Array<{ key: string; value: string }>>('config:get defaultusername').shellOutput);
-    // const result = execCmd<Array<{ key: string; value: string }>>('config:get defaultusername --json').jsonOutput
-    //   ?.result;
     return result.result.find((r) => r.key === 'defaultusername')?.value;
   }
 
