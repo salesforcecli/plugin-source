@@ -389,7 +389,13 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
 
   protected async init(): Promise<void> {
     if (!Nutshell.Env.getString('TESTKIT_HUB_USERNAME') && !Nutshell.Env.getString('TESTKIT_AUTH_URL')) {
-      ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
+      const jwtKey = ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
+      if (!jwtKey) {
+        const err = Error('must set on of : TESTKIT_HUB_USERNAME, TESTKIT_AUTH_RUL, or TESTKIT_JWT_KEY');
+        err.name = 'InvalidTestEnvironment';
+        throw err;
+      }
+      ensureString(jwtKey);
       ensureString(Nutshell.Env.getString('TESTKIT_JWT_CLIENT_ID'));
       ensureString(Nutshell.Env.getString('TESTKIT_HUB_INSTANCE'));
     }
