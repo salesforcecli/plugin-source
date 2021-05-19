@@ -479,7 +479,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       ? []
       : [
           'sfdx config:set restDeploy=false --global',
-          'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+          `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
         ];
     return await TestSession.create({
       project: { gitClone: this.repository },
