@@ -30,8 +30,8 @@ workflows:
       - release-management/release-package:
           sign: true
           github-release: true
-          requires:
-            - node-latest
+          #          requires:
+          #            - node-latest
           filters:
             branches:
               only: main
