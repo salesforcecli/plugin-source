@@ -63,16 +63,24 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        // {
-        //   toRetrieve: 'force-app,my-app,foo-bar',
-        //   toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
-        //   toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
-        // },
-        // { toRetrieve: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        {
+          toRetrieve: 'force-app,my-app,foo-bar',
+          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
+        {
+          toRetrieve: '"force-app, my-app, foo-bar"',
+          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
         { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
         { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
         { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
-        { toRetrieve: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
+        {
+          toRetrieve: 'foo-bar/app/lwc',
+          toVerify: ['foo-bar/app/lwc/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
       ],
       metadata: [
         {
