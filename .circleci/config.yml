@@ -9,28 +9,29 @@ workflows:
           filters:
             branches:
               ignore: main
-      #      - release-management/test-package:
-      #          name: node-latest
-      #          node_version: latest
-      #      - release-management/test-package:
-      #          name: node-12
+      - release-management/test-package:
+          name: node-latest
+          node_version: latest
+      - release-management/test-package:
+          name: node-12
       - release-management/test-nut:
           name: nuts-on-linux
-          sfdx_version: latest
           node_version: maintenance
-      #          requires:
-      #            - node-latest
+          sfdx_version: latest
+          requires:
+            - node-latest
       - release-management/test-nut:
           name: nuts-on-windows
           sfdx_version: latest
+          node_version: maintenance
           os: windows
-      #          requires:
-      #            - node-latest
+          requires:
+            - node-latest
       - release-management/release-package:
           sign: true
           github-release: true
-          #          requires:
-          #            - node-latest
+          requires:
+            - node-latest
           filters:
             branches:
               only: main
