@@ -489,6 +489,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   private getDefaultUsername(): string {
+    exec('sfdx config:list --json');
     const result = execCmd<Array<{ key: string; value: string }>>('config:get defaultusername --json').jsonOutput
       .result;
     return result.find((r) => r.key === 'defaultusername')?.value;
