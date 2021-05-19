@@ -120,7 +120,7 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/retrieve.*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/retrieve.*.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:convert": "PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
