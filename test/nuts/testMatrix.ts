@@ -35,12 +35,12 @@ const testRepos: RepoConfig[] = [
     gitUrl: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
     deploy: {
       sourcepath: [
-        { toDeploy: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] },
+        // { toDeploy: 'force-app,my-app', toVerify: ['force-app/**/*', 'my-app/**/*'] }, // redundant to below
         { toDeploy: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
         { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/**/*'] },
-        { toDeploy: 'my-app/objects', toVerify: ['my-app/objects/**/*'] },
+        // { toDeploy: 'my-app/objects', toVerify: ['my-app/objects/**/*'] }, //redundant to above
         { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
-        { toDeploy: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
+        // { toDeploy: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
       ],
       metadata: [
         { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'] },
@@ -54,8 +54,9 @@ const testRepos: RepoConfig[] = [
       ],
       manifest: [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
-        { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
-        { toDeploy: 'foo-bar', toVerify: ['foo-bar/**/*'] },
+        // the following are redundant
+        // { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
+        // { toDeploy: 'foo-bar', toVerify: ['foo-bar/**/*'] },
         // TODO: talk to Bryan about MPD deploy - this test is NOT passing for the plugin but passing for sfdx
         // { toDeploy: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
       ],
@@ -68,14 +69,15 @@ const testRepos: RepoConfig[] = [
           toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
           toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
         },
-        {
-          toRetrieve: '"force-app, my-app, foo-bar"',
-          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
-          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
-        },
+        // identical to above
+        // {
+        //   toRetrieve: '"force-app, my-app, foo-bar"',
+        //   toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+        //   toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        // },
         { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
-        { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
-        { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
+        // { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
+        // { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
         {
           toRetrieve: 'foo-bar/app/lwc',
           toVerify: ['foo-bar/app/lwc/**/*'],
@@ -97,7 +99,7 @@ const testRepos: RepoConfig[] = [
       ],
       manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
-        { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
+        // { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
         {
           toRetrieve: 'force-app,my-app,foo-bar',
           toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
@@ -132,14 +134,14 @@ const testRepos: RepoConfig[] = [
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
         },
-        {
-          toDeploy: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/permissionsets/*'],
-        },
-        {
-          toDeploy: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
-          toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
-        },
+        // {
+        //   toDeploy: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
+        //   toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/permissionsets/*'],
+        // },
+        // {
+        //   toDeploy: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
+        //   toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
+        // },
       ],
       metadata: [
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
@@ -151,18 +153,18 @@ const testRepos: RepoConfig[] = [
           toDeploy: 'ApexClass,CustomObject:Broker__c',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
-        {
-          toDeploy: 'ApexClass:GeocodingService,CustomObject',
-          toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*'],
-        },
-        {
-          toDeploy: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
-          toVerify: [
-            'force-app/main/default/classes/GeocodingService.cls',
-            'force-app/main/default/objects/*',
-            'force-app/main/default/permissionsets/*',
-          ],
-        },
+        // {
+        //   toDeploy: 'ApexClass:GeocodingService,CustomObject',
+        //   toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*'],
+        // },
+        // {
+        //   toDeploy: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
+        //   toVerify: [
+        //     'force-app/main/default/classes/GeocodingService.cls',
+        //     'force-app/main/default/objects/*',
+        //     'force-app/main/default/permissionsets/*',
+        //   ],
+        // },
       ],
       manifest: [
         {
@@ -197,14 +199,14 @@ const testRepos: RepoConfig[] = [
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*__c/*'],
         },
-        {
-          toRetrieve: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/permissionsets/*'],
-        },
-        {
-          toRetrieve: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
-          toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
-        },
+        // {
+        //   toRetrieve: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
+        //   toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/permissionsets/*'],
+        // },
+        // {
+        //   toRetrieve: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
+        //   toVerify: ['force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml'],
+        // },
       ],
       metadata: [
         { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
@@ -216,10 +218,10 @@ const testRepos: RepoConfig[] = [
           toRetrieve: 'ApexClass,CustomObject:Broker__c',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
-        {
-          toRetrieve: 'ApexClass:GeocodingService,CustomObject',
-          toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*__c/*'],
-        },
+        // {
+        //   toRetrieve: 'ApexClass:GeocodingService,CustomObject',
+        //   toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*__c/*'],
+        // },
         {
           toRetrieve: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
           toVerify: [

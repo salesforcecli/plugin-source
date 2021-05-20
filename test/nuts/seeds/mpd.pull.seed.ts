@@ -10,7 +10,7 @@ import { Nutshell } from '../nutshell';
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
 
-context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
+context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
@@ -20,7 +20,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
       nut: __filename,
     });
     await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.push();
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 
   after(async () => {

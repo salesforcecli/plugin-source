@@ -45,14 +45,15 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the metadata is not valid', async () => {
       const deploy = await nutshell.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = nutshell.isSourcePlugin() ? 'RegistryError' : 'InvalidManifestError';
+      const expectedError = nutshell.isSourcePlugin() ? 'RegistryError' : 'UnsupportedType';
       nutshell.expect.errorToHaveName(deploy, expectedError);
     });
 
     it('should not deploy metadata outside of a package directory', async () => {
-      const apex = await nutshell.createApexClass({ args: '--outputdir NotAPackage --classname ShouldNotBeDeployed' });
+      await nutshell.createApexClass({ args: '--outputdir NotAPackage --classname ShouldNotBeDeployed' });
       await nutshell.deploy({ args: '--metadata ApexClass' });
-      await nutshell.expect.filesToNotBeDeployed(apex.result.created);
+      // this is a glob, so no need for path.join
+      await nutshell.expect.filesToNotBeDeployed(['NotAPackage/**/*']);
     });
   });
 });
