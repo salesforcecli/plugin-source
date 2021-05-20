@@ -21,6 +21,9 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
+    // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await nutshell.assignPermissionSet({ args: '--permsetname dreamhouse' });
   });
 
   after(async () => {
@@ -29,20 +32,21 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   it('should deploy the entire project', async () => {
     await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
-    await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs);
+    await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs, ['force-app/test/**/*']);
   });
 
   describe('--metadata flag', () => {
     for (const testCase of REPO.deploy.metadata) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
         await nutshell.deploy({ args: `--metadata ${testCase.toDeploy}` });
-        await nutshell.expect.filesToBeDeployed(testCase.toVerify);
+        await nutshell.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the metadata is not valid', async () => {
       const deploy = await nutshell.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(deploy, 'UnsupportedType');
+      const expectedError = nutshell.isSourcePlugin() ? 'RegistryError' : 'InvalidManifestError';
+      nutshell.expect.errorToHaveName(deploy, expectedError);
     });
 
     it('should not deploy metadata outside of a package directory', async () => {

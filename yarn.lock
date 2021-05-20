@@ -620,7 +620,7 @@
     mkdirp "1.0.4"
     sfdx-faye "^1.0.9"
 
-"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.16.3", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.3", "@salesforce/core@^2.20.8", "@salesforce/core@^2.3.0":
+"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.16.3", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.3", "@salesforce/core@^2.20.5", "@salesforce/core@^2.20.8", "@salesforce/core@^2.3.0":
   version "2.20.11"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.20.11.tgz#29aee659be2b85a88827cdfb6cc6a89bfea9b825"
   integrity sha512-v0wEGse0ws0yMlfuM569q1PhUMCOYvpXFEFvgXPUdE8OQT8h3/+AlIgQU7I9sEyIg9hzN1nl5UAtIyNllPyPXw==
@@ -724,6 +724,16 @@
     "@oclif/config" "^1.17.0"
     "@salesforce/command" "^3.0.5"
     "@salesforce/core" "^2.15.2"
+    tslib "^2"
+
+"@salesforce/plugin-user@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-1.3.0.tgz#0b70a3ce3edfeb3c9ea0cc36a1983bb705176687"
+  integrity sha512-a7tU2cMQcA8bKxn/YB/BW6VhSgIhYAwyRXU5mqXdoJU42PEWAy9k8weMRJKwimfDGGzviAIomeKNJnw3XGP6KA==
+  dependencies:
+    "@oclif/config" "^1.17.0"
+    "@salesforce/command" "^3.1.0"
+    "@salesforce/core" "^2.20.5"
     tslib "^2"
 
 "@salesforce/prettier-config@^0.0.2":

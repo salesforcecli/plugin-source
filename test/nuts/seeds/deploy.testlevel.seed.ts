@@ -21,6 +21,9 @@ context('Deploy testlevel NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => 
       executable: EXECUTABLE,
       nut: __filename,
     });
+    // running tests requires a special permission in the 'dreamhouse' permission set
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await nutshell.assignPermissionSet({ args: '--permsetname dreamhouse' });
   });
 
   after(async () => {

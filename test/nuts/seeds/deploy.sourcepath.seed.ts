@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as path from 'path';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
@@ -29,15 +30,17 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.deploy.sourcepath) {
-      it(`should deploy ${testCase.toDeploy}`, async () => {
-        await nutshell.deploy({ args: `--sourcepath ${testCase.toDeploy}` });
-        await nutshell.expect.filesToBeDeployed(testCase.toVerify);
+      const toDeploy = path.normalize(testCase.toDeploy);
+      it(`should deploy ${toDeploy}`, async () => {
+        await nutshell.deploy({ args: `--sourcepath ${toDeploy}` });
+        await nutshell.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const deploy = await nutshell.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      nutshell.expect.errorToHaveName(deploy, 'SourcePathInvalid');
+      const expectedError = nutshell.isSourcePlugin() ? 'SfdxError' : 'SourcePathInvalid';
+      nutshell.expect.errorToHaveName(deploy, expectedError);
     });
   });
 });

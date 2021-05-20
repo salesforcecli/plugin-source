@@ -12,7 +12,7 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context.skip('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let nutshell: Nutshell;
 
   before(async () => {
@@ -43,7 +43,7 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
       const report = await nutshell.deployReport({ args: `-i ${deploy.result.id}` });
       nutshell.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
-      await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs, 'force:source:deploy:report');
+      await nutshell.expect.filesToBeDeployed(nutshell.packageGlobs, [], 'force:source:deploy:report');
     });
 
     it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {

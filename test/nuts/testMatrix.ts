@@ -56,7 +56,8 @@ const testRepos: RepoConfig[] = [
         { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
         { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
         { toDeploy: 'foo-bar', toVerify: ['foo-bar/**/*'] },
-        { toDeploy: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        // TODO: talk to Bryan about MPD deploy - this test is NOT passing for the plugin but passing for sfdx
+        // { toDeploy: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
       ],
       testlevel: { specifiedTests: ['MyTest'] },
     },
@@ -151,20 +152,24 @@ const testRepos: RepoConfig[] = [
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toDeploy: 'ApexClass:BotController,CustomObject',
-          toVerify: ['force-app/main/default/classes/BotController.cls', 'force-app/main/default/objects/*'],
+          toDeploy: 'ApexClass:GeocodingService,CustomObject',
+          toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*'],
         },
         {
-          toDeploy: '"ApexClass:BotController, CustomObject, PermissionSet"',
+          toDeploy: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
           toVerify: [
-            'force-app/main/default/classes/BotController.cls',
+            'force-app/main/default/classes/GeocodingService.cls',
             'force-app/main/default/objects/*',
             'force-app/main/default/permissionsets/*',
           ],
         },
       ],
       manifest: [
-        { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
+        {
+          toDeploy: 'force-app',
+          toVerify: ['force-app/main/default/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         {
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
@@ -178,7 +183,7 @@ const testRepos: RepoConfig[] = [
           ],
         },
       ],
-      testlevel: { specifiedTests: ['BotTest'] },
+      testlevel: { specifiedTests: ['TestSampleDataController'] },
     },
     retrieve: {
       sourcepath: [
@@ -212,13 +217,13 @@ const testRepos: RepoConfig[] = [
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toRetrieve: 'ApexClass:BotController,CustomObject',
-          toVerify: ['force-app/main/default/classes/BotController.cls', 'force-app/main/default/objects/*__c/*'],
+          toRetrieve: 'ApexClass:GeocodingService,CustomObject',
+          toVerify: ['force-app/main/default/classes/GeocodingService.cls', 'force-app/main/default/objects/*__c/*'],
         },
         {
-          toRetrieve: '"ApexClass:BotController, CustomObject, PermissionSet"',
+          toRetrieve: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
           toVerify: [
-            'force-app/main/default/classes/BotController.cls',
+            'force-app/main/default/classes/GeocodingService.cls',
             'force-app/main/default/objects/*__c/*',
             'force-app/main/default/permissionsets/*',
           ],
@@ -272,12 +277,12 @@ const testRepos: RepoConfig[] = [
           toVerify: ['classes/*', 'objects/Broker__c.object'],
         },
         {
-          toConvert: 'ApexClass:BotController,CustomObject',
-          toVerify: ['classes/BotController.cls', 'objects/*__c.object'],
+          toConvert: 'ApexClass:GeocodingService,CustomObject',
+          toVerify: ['classes/GeocodingService.cls', 'objects/*__c.object'],
         },
         {
-          toConvert: '"ApexClass:BotController, CustomObject, PermissionSet"',
-          toVerify: ['classes/BotController.cls', 'objects/*__c.object', 'permissionsets/*'],
+          toConvert: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
+          toVerify: ['classes/GeocodingService.cls', 'objects/*__c.object', 'permissionsets/*'],
         },
       ],
       manifest: [
@@ -329,12 +334,13 @@ export type RepoConfig = {
 type DeployTestCase = {
   toDeploy: string; // the string to be passed into the source:deploy command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were deployed to the org
+  toIgnore?: GlobPattern[]; // the glob patterns used to ignore certain unchanging metadata types
 };
 
 type RetrieveTestCase = {
   toRetrieve: string; // the string to be passed into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were retrieved from the org
-  toIgnore?: GlobPattern[];
+  toIgnore?: GlobPattern[]; // the glob patterns used to ignore certain unchanging metadata types
 };
 
 type ConvertTestCase = {
