@@ -1,0 +1,26 @@
+{
+  "description": "edit a Lightning Page with Lightning App Builder\nOpens the specified Lightning Page in Lightning App Builder. Lightning Page files have the suffix .flexipage-meta.xml, and are stored in the flexipages directory. If you specify a different type of file, this command opens your org’s home page.",
+  "examples": [
+    "$ sfdx force:source:open -f path/to/source",
+    "$ sfdx force:source:open -r -f path/to/source",
+    "$ sfdx force:source:open -f path/to/source -u my-user@my-org.com"
+  ],
+  "flags": {
+    "sourcefile": "(required) file to edit",
+    "urlonly": "generate a navigation URL; don’t launch the editor",
+    "targetusername": "username or alias for the target org; overrides default target org",
+    "apiversion": "override the api version used for api requests made by this command",
+    "sourcepath": "comma-separated list of paths to the local source files to convert",
+    "metadata": "comma-separated list of metadata component names to convert"
+  },
+  "SourceOpenDescription": "edit a Lightning Page with Lightning App Builder",
+  "SourceOpenLongDescription": "Opens the specified Lightning Page in Lightning App Builder. Lightning Page \n files have the suffix .flexipage-meta.xml, and are stored in the flexipages directory. If you specify a \n different type of file, this command opens your org’s home page.",
+  "SourceOpenHelp": "The file opens in your default browser. \n If no browser-based editor is available for the selected file, this command opens your org’s home page. \n To generate a URL for the browser-based editor but not open the editor, use --urlonly. \n\n Examples:\n   $ sfdx force:source:open -f Property_Record_Page.flexipage-meta.xml \n   $ sfdx force:source:open -f Property_Record_Page.flexipage-meta.xml -r",
+  "SourceOpenFileDescription": "file to edit",
+  "SourceOpenFileLongDescription": "File to edit.",
+  "SourceOpenPathDescription": "generate a navigation URL; don’t launch the editor",
+  "SourceOpenPathLongDescription": "Generate a navigation URL path, but don’t launch a browser-based editor.",
+  "SourceOpenCommandHumanSuccess": "Access org %s as user %s with the following URL: %s",
+  "SourceOpenCommandHumanError": "An error occurred while opening the Salesforce org: %s",
+  "SourceOpenCommandUnpushedError": "no metadata in Salesforce org (consider running source:push)"
+}
