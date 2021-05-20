@@ -16,7 +16,7 @@ const env = new Env();
  */
 export const EXECUTABLES = [
   {
-    path: 'sfdx', // the full path to the sfdx executable
+    path: 'sfdx',
     skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', true),
   },
   {
