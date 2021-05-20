@@ -15,7 +15,7 @@ import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { debug, Debugger } from 'debug';
 import { ApexClass, ApexTestResult, Context, SourceMember, SourceState, StatusResult } from './types';
 import { ExecutionLog } from './executionLog';
-import { FileTracker, countFiles } from './fileTracker';
+import { countFiles, FileTracker } from './fileTracker';
 
 use(chaiEach);
 
@@ -59,11 +59,16 @@ export class Assertions {
   /**
    * Expect all files found by globs to be changed according to the file history provided by FileTracker
    */
-  public async filesToBeChanged(globs: string[]): Promise<void> {
-    const files = await this.doGlob(globs);
-    const fileHistories = files
+  public async filesToBeChanged(globs: string[], ignore: string[] = []): Promise<void> {
+    const all = await this.doGlob(globs);
+    // don't assert a result if nothing is to be ignored
+    const toIgnore = await this.doGlob(ignore, false);
+    const toTrack = all.filter((file) => !toIgnore.includes(file));
+    const fileHistories = toTrack
+      // StaticResource types are inconsistently changed
       .filter((f) => !f.endsWith('.resource-meta.xml'))
-      .map((f) => this.fileTracker.getLatest(f))
+      .filter((f) => !f.endsWith('.resource'))
+      .map((f) => this.fileTracker.getLatest(path.normalize(f)))
       .filter((f) => !!f);
     const allChanged = fileHistories.every((f) => f.changedFromPrevious);
     expect(allChanged, 'all files to be changed').to.be.true;
@@ -72,9 +77,11 @@ export class Assertions {
   /**
    * Expect all files found by globs to NOT be changed according to the file history provided by FileTracker
    */
-  public async filesToNotBeChanged(globs: string[]): Promise<void> {
-    const files = await this.doGlob(globs);
-    const fileHistories = files
+  public async filesToNotBeChanged(globs: string[], ignore: string[] = []): Promise<void> {
+    const all = await this.doGlob(globs);
+    const toIgnore = await this.doGlob(ignore, false);
+    const toTrack = all.filter((file) => !toIgnore.includes(file));
+    const fileHistories = toTrack
       .filter((f) => !f.endsWith('.resource-meta.xml'))
       .map((f) => this.fileTracker.getLatest(f))
       .filter((f) => !!f);
@@ -384,14 +391,22 @@ export class Assertions {
   private async retrieveApexClasses(classNames?: string[]): Promise<ApexClass[]> {
     const query = 'SELECT Name,Id FROM ApexClass';
     const result = await this.connection.tooling.query<ApexClass>(query, { autoFetch: true, maxFetch: 50000 });
-    const apexClasses = classNames ? result.records.filter((r) => classNames.includes(r.Name)) : result.records;
-    return apexClasses;
+    return classNames ? result.records.filter((r) => classNames.includes(r.Name)) : result.records;
   }
 
   private async doGlob(globs: string[], assert = true): Promise<string[]> {
     const files: string[] = [];
-    for (const glob of globs) {
-      const fullGlob = glob.startsWith(this.projectDir) ? glob : [this.projectDir, glob].join('/');
+    const dir = this.projectDir.replace(/\\/g, '/');
+
+    for (let glob of globs) {
+      let fullGlob = glob.replace(/\\/g, '/');
+      if (glob.startsWith('!')) {
+        glob = glob.substr(1);
+        fullGlob = glob.startsWith(dir) ? `!${glob}` : [`!${dir}`, glob].join('/');
+      } else {
+        fullGlob = glob.startsWith(dir) ? glob : [dir, glob].join('/');
+      }
+
       this.debug(`Finding files using glob: ${fullGlob}`);
       const globResults = await fg(fullGlob);
       this.debug('Found: %O', globResults);

@@ -6,7 +6,6 @@
  */
 
 import * as path from 'path';
-import { which } from 'shelljs';
 import { Env, set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
 
@@ -17,7 +16,7 @@ const env = new Env();
  */
 export const EXECUTABLES = [
   {
-    path: which('sfdx').stdout, // the full path to the sfdx executable
+    path: 'sfdx',
     skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', true),
   },
   {
@@ -63,12 +62,24 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        { toRetrieve: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
-        { toRetrieve: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        {
+          toRetrieve: 'force-app,my-app,foo-bar',
+          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
+        {
+          toRetrieve: '"force-app, my-app, foo-bar"',
+          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
         { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
         { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
         { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
-        { toRetrieve: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
+        {
+          toRetrieve: 'foo-bar/app/lwc',
+          toVerify: ['foo-bar/app/lwc/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
       ],
       metadata: [
         {
@@ -86,7 +97,11 @@ const testRepos: RepoConfig[] = [
       manifest: [
         { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
         { toRetrieve: 'my-app', toVerify: ['my-app/**/*'] },
-        { toRetrieve: 'force-app,my-app,foo-bar', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+        {
+          toRetrieve: 'force-app,my-app,foo-bar',
+          toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+          toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
+        },
       ],
     },
     convert: {
@@ -107,7 +122,7 @@ const testRepos: RepoConfig[] = [
   },
   {
     skip: false,
-    gitUrl: 'https://github.com/trailheadapps/dreamhouse-sfdx.git',
+    gitUrl: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     deploy: {
       sourcepath: [
         { toDeploy: 'force-app', toVerify: ['force-app/main/default/**/*'] },
@@ -128,12 +143,12 @@ const testRepos: RepoConfig[] = [
       metadata: [
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
-          toDeploy: 'CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/objects/Bot_Command__c/*'],
+          toDeploy: 'CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toDeploy: 'ApexClass,CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Bot_Command__c/*'],
+          toDeploy: 'ApexClass,CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
           toDeploy: 'ApexClass:BotController,CustomObject',
@@ -167,7 +182,11 @@ const testRepos: RepoConfig[] = [
     },
     retrieve: {
       sourcepath: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
+        {
+          toRetrieve: 'force-app',
+          toVerify: ['force-app/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
@@ -185,12 +204,12 @@ const testRepos: RepoConfig[] = [
       metadata: [
         { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
-          toRetrieve: 'CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/objects/Bot_Command__c/*'],
+          toRetrieve: 'CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/objects/Broker__c/*'],
         },
         {
-          toRetrieve: 'ApexClass,CustomObject:Bot_Command__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Bot_Command__c/*'],
+          toRetrieve: 'ApexClass,CustomObject:Broker__c',
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
         },
         {
           toRetrieve: 'ApexClass:BotController,CustomObject',
@@ -206,7 +225,11 @@ const testRepos: RepoConfig[] = [
         },
       ],
       manifest: [
-        { toRetrieve: 'force-app', toVerify: ['force-app/**/*'] },
+        {
+          toRetrieve: 'force-app',
+          toVerify: ['force-app/**/*'],
+          toIgnore: ['force-app/test/**/*', 'force-app/**/lwc/**/__tests__/**/*'],
+        },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
@@ -241,12 +264,12 @@ const testRepos: RepoConfig[] = [
       metadata: [
         { toConvert: 'ApexClass', toVerify: ['classes/*'] },
         {
-          toConvert: 'CustomObject:Bot_Command__c',
-          toVerify: ['objects/Bot_Command__c.object'],
+          toConvert: 'CustomObject:Broker__c',
+          toVerify: ['objects/Broker__c.object'],
         },
         {
-          toConvert: 'ApexClass,CustomObject:Bot_Command__c',
-          toVerify: ['classes/*', 'objects/Bot_Command__c.object'],
+          toConvert: 'ApexClass,CustomObject:Broker__c',
+          toVerify: ['classes/*', 'objects/Broker__c.object'],
         },
         {
           toConvert: 'ApexClass:BotController,CustomObject',
@@ -311,6 +334,7 @@ type DeployTestCase = {
 type RetrieveTestCase = {
   toRetrieve: string; // the string to be passed into the source:retrieve command execution. Do not include the flag name (e.g. --sourcepath)
   toVerify: GlobPattern[]; // the glob patterns used to determine if the expected source files were retrieved from the org
+  toIgnore?: GlobPattern[];
 };
 
 type ConvertTestCase = {

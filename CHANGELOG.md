@@ -6,26 +6,23 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.0.14](https://github.com/salesforcecli/plugin-source/compare/v0.0.13...v0.0.14) (2021-05-04)
 
-
 ### Bug Fixes
 
-* support hooks for deployRecentValidation and async deploys ([#75](https://github.com/salesforcecli/plugin-source/issues/75)) ([ac787f9](https://github.com/salesforcecli/plugin-source/commit/ac787f9f8238bd09d44878a6c9994384a5c567c7))
+- support hooks for deployRecentValidation and async deploys ([#75](https://github.com/salesforcecli/plugin-source/issues/75)) ([ac787f9](https://github.com/salesforcecli/plugin-source/commit/ac787f9f8238bd09d44878a6c9994384a5c567c7))
 
 ### [0.0.13](https://github.com/salesforcecli/plugin-source/compare/v0.0.12...v0.0.13) (2021-05-04)
 
-
 ### Bug Fixes
 
-* deploy output fixes ([#74](https://github.com/salesforcecli/plugin-source/issues/74)) ([d1bb8be](https://github.com/salesforcecli/plugin-source/commit/d1bb8be605458aea81503c1e5bc6974fe03c0ec6))
+- deploy output fixes ([#74](https://github.com/salesforcecli/plugin-source/issues/74)) ([d1bb8be](https://github.com/salesforcecli/plugin-source/commit/d1bb8be605458aea81503c1e5bc6974fe03c0ec6))
 
 ### [0.0.12](https://github.com/salesforcecli/plugin-source/compare/v0.0.11...v0.0.12) (2021-05-01)
 
 ### [0.0.11](https://github.com/salesforcecli/plugin-source/compare/v0.0.10...v0.0.11) (2021-04-29)
 
-
 ### Bug Fixes
 
-* add NUT testing LWC bug ([#70](https://github.com/salesforcecli/plugin-source/issues/70)) ([d6cb456](https://github.com/salesforcecli/plugin-source/commit/d6cb456cdf127e7e896511b8af7606fce25973cb))
+- add NUT testing LWC bug ([#70](https://github.com/salesforcecli/plugin-source/issues/70)) ([d6cb456](https://github.com/salesforcecli/plugin-source/commit/d6cb456cdf127e7e896511b8af7606fce25973cb))
 
 ### [0.0.10](https://github.com/salesforcecli/plugin-source/compare/v0.0.9...v0.0.10) (2021-04-23)
 

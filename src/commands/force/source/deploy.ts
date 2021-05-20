@@ -116,7 +116,7 @@ export class Deploy extends DeployCommand {
   protected async deploy(): Promise<void> {
     this.isAsync = this.getFlag<Duration>('wait').quantity === 0;
     this.isRest = await this.isRestDeploy();
-    this.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
+    this.ux.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();

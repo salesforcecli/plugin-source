@@ -18,6 +18,7 @@ import { AuthInfo, Connection, fs, NamedPackageDir, SfdxProject } from '@salesfo
 import { AsyncCreatable } from '@salesforce/kit';
 import { debug, Debugger } from 'debug';
 import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
+import * as shelljs from 'shelljs';
 import { Result, StatusResult } from './types';
 import { Assertions } from './assertions';
 import { ExecutionLog } from './executionLog';
@@ -215,7 +216,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
    */
   public async readMaxRevision(): Promise<{ sourceMembers: JsonMap }> {
     const maxRevisionPath = path.join(this.session.project.dir, '.sfdx', 'orgs', this.username, 'maxRevision.json');
-    return (fs.readJson(maxRevisionPath) as unknown) as { sourceMembers: JsonMap };
+    return fs.readJson(maxRevisionPath) as unknown as { sourceMembers: JsonMap };
   }
 
   /**
@@ -297,7 +298,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     const allFiles = await this.doGlob(globs);
 
     for (const file of allFiles) {
-      await this.modifyLocalFile(file);
+      await this.modifyLocalFile(path.normalize(file));
     }
   }
 
@@ -370,9 +371,31 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
     await this.writeMaxRevision(maxRevision);
   }
 
+  public isSourcePlugin(): boolean {
+    return this.executable.endsWith(`${path.sep}bin${path.sep}run`);
+  }
+
+  // SDR does not output the package.xml in the same location as toolbelt
+  // so we have to find it within the output dir, move it, and delete the
+  // generated dir.
+  public findAndMoveManifest(dir: string): void {
+    const manifest = shelljs.find(dir).filter((file) => file.endsWith('package.xml'));
+    if (!manifest?.length) {
+      throw Error(`Did not find package.xml within ${dir}`);
+    }
+    shelljs.mv(manifest[0], path.join(process.cwd()));
+    shelljs.rm('-rf', dir);
+  }
+
   protected async init(): Promise<void> {
     if (!Nutshell.Env.getString('TESTKIT_HUB_USERNAME') && !Nutshell.Env.getString('TESTKIT_AUTH_URL')) {
-      ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
+      const jwtKey = ensureString(Nutshell.Env.getString('TESTKIT_JWT_KEY'));
+      if (!jwtKey) {
+        const err = Error('must set on of : TESTKIT_HUB_USERNAME, TESTKIT_AUTH_RUL, or TESTKIT_JWT_KEY');
+        err.name = 'InvalidTestEnvironment';
+        throw err;
+      }
+      ensureString(jwtKey);
       ensureString(Nutshell.Env.getString('TESTKIT_JWT_CLIENT_ID'));
       ensureString(Nutshell.Env.getString('TESTKIT_HUB_INSTANCE'));
     }
@@ -456,7 +479,7 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
       ? []
       : [
           'sfdx config:set restDeploy=false --global',
-          'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+          `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
         ];
     return await TestSession.create({
       project: { gitClone: this.repository },
@@ -479,9 +502,16 @@ export class Nutshell extends AsyncCreatable<Nutshell.Options> {
   }
 
   private async doGlob(globs: string[]): Promise<string[]> {
-    const fullGlobs = globs.map((g) =>
-      g.startsWith(this.session.project.dir) ? g : [this.session.project.dir, g].join('/')
-    );
+    const dir = this.session.project.dir.replace(/\\/g, '/');
+    const fullGlobs = globs.map((g) => {
+      g = g.replace(/\\/g, '/');
+      if (g.startsWith('!')) {
+        g = g.substr(1).startsWith(dir) ? `!${g}` : [`!${dir}`, g].join('/');
+      } else {
+        g = g.startsWith(dir) ? g : [dir, g].join('/');
+      }
+      return g;
+    });
     return fg(fullGlobs);
   }
 }
