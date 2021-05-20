@@ -6,7 +6,6 @@
  */
 
 import * as path from 'path';
-import { which } from 'shelljs';
 import { Env, set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
 
@@ -17,7 +16,7 @@ const env = new Env();
  */
 export const EXECUTABLES = [
   {
-    path: which('sfdx').stdout, // the full path to the sfdx executable
+    path: 'sfdx', // the full path to the sfdx executable
     skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', true),
   },
   {

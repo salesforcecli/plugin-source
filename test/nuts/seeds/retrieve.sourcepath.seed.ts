@@ -29,7 +29,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () 
   });
 
   after(async () => {
-    await nutshell?.clean();
+    // await nutshell?.clean();
   });
 
   describe('--sourcepath flag', () => {
