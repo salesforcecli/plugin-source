@@ -6,6 +6,7 @@
  */
 
 import * as path from 'path';
+import { exec } from 'shelljs';
 import { Nutshell } from '../nutshell';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
@@ -23,7 +24,8 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () 
       nut: __filename,
     });
     await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    exec(`sfdx force:source:deploy --sourcepath ${nutshell.packageNames.join(',')}`);
+    // await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
   });
 
   after(async () => {
