@@ -147,7 +147,7 @@ export class Deploy extends DeployCommand {
             rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
             checkOnly: this.getFlag<boolean>('checkonly', false),
             runTests: this.getFlag<string[]>('runtests'),
-            testLevel: this.getFlag<TestLevel>('testlevel'),
+            testLevel: this.getFlag<TestLevel>('testlevel', 'NoTestRun'),
           },
         });
 

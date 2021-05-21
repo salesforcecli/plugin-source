@@ -22,6 +22,9 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
+    // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
+    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await nutshell.assignPermissionSet({ args: '--permsetname dreamhouse' });
   });
 
   after(async () => {
@@ -30,9 +33,13 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
   describe('--manifest flag', () => {
     for (const testCase of REPO.deploy.manifest) {
-      it(`should deploy ${testCase.toDeploy}`, async () => {
-        await nutshell.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
-        const packageXml = path.join('out', 'package.xml');
+      const toDeploy = path.normalize(testCase.toDeploy);
+      it(`should deploy ${toDeploy}`, async () => {
+        // generate package.xml to use with the --manifest param
+        await nutshell.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
+        const outputDir = path.join(process.cwd(), 'out');
+        nutshell.findAndMoveManifest(outputDir);
+        const packageXml = path.join(process.cwd(), 'package.xml');
 
         await nutshell.deploy({ args: `--manifest ${packageXml}` });
         await nutshell.expect.filesToBeDeployed(testCase.toVerify);
@@ -41,7 +48,8 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the package.xml is not valid', async () => {
       const deploy = await nutshell.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      nutshell.expect.errorToHaveName(deploy, 'InvalidManifestError');
+      const expectedError = nutshell.isSourcePlugin() ? 'Error' : 'InvalidManifestError';
+      nutshell.expect.errorToHaveName(deploy, expectedError);
     });
   });
 });
