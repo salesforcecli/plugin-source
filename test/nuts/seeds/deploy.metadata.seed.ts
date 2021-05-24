@@ -30,11 +30,6 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     await testkit?.clean();
   });
 
-  it('should deploy the entire project', async () => {
-    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
-    await testkit.expect.filesToBeDeployed(testkit.packageGlobs, ['force-app/test/**/*']);
-  });
-
   describe('--metadata flag', () => {
     for (const testCase of REPO.deploy.metadata) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
