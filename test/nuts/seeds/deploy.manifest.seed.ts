@@ -39,7 +39,7 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
         const outputDir = path.join(process.cwd(), 'out');
         testkit.findAndMoveManifest(outputDir);
-        const packageXml = path.join('out', 'package.xml');
+        const packageXml = path.join(process.cwd(), 'package.xml');
 
         await testkit.deploy({ args: `--manifest ${packageXml}` });
         await testkit.expect.filesToBeDeployed(testCase.toVerify);
