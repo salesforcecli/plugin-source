@@ -6,28 +6,28 @@
  */
 
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+context('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
     });
-    await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await testkit.trackGlobs(testkit.packageGlobs);
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('--manifest flag', () => {
@@ -35,21 +35,21 @@ context.skip('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', 
       const toRetrieve = path.normalize(testCase.toRetrieve);
       it(`should retrieve ${toRetrieve}`, async () => {
         // generate package.xml to use with the --manifest param
-        await nutshell.convert({ args: `--sourcepath ${toRetrieve} --outputdir out` });
+        await testkit.convert({ args: `--sourcepath ${toRetrieve} --outputdir out` });
         const outputDir = path.join(process.cwd(), 'out');
-        nutshell.findAndMoveManifest(outputDir);
+        testkit.findAndMoveManifest(outputDir);
         const packageXml = path.join(process.cwd(), 'package.xml');
 
-        await nutshell.modifyLocalGlobs(testCase.toVerify);
-        await nutshell.retrieve({ args: `--manifest ${packageXml}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        await testkit.modifyLocalGlobs(testCase.toVerify);
+        await testkit.retrieve({ args: `--manifest ${packageXml}` });
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the package.xml is not valid', async () => {
-      const retrieve = await nutshell.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      const expectedError = nutshell.isSourcePlugin() ? 'Error' : 'InvalidManifestError';
-      nutshell.expect.errorToHaveName(retrieve, expectedError);
+      const retrieve = await testkit.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
+      const expectedError = testkit.isLocalExecutable() ? 'Error' : 'InvalidManifestError';
+      testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 });

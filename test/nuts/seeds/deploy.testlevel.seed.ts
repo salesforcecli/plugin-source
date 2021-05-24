@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -13,54 +13,57 @@ const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
 context('Deploy testlevel NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
     });
-    // running tests requires a special permission in the 'dreamhouse' permission set
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
-    await nutshell.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
+
+    if (REPO.gitUrl.includes('dreamhouse')) {
+      // running tests requires a special permission in the 'dreamhouse' permission set
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    }
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('--testlevel', () => {
     it('should run no tests (NoTestRun)', async () => {
-      await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel NoTestRun`,
+      await testkit.deploy({
+        args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel NoTestRun`,
       });
-      await nutshell.expect.noApexTestsToBeRun();
+      await testkit.expect.noApexTestsToBeRun();
     });
 
     it('should run tests locally (RunLocalTests)', async () => {
-      await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunLocalTests`,
+      await testkit.deploy({
+        args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests`,
       });
-      await nutshell.expect.apexTestsToBeRun();
+      await testkit.expect.apexTestsToBeRun();
     });
 
     it('should run tests in org (RunAllTestsInOrg)', async () => {
-      await nutshell.deploy({
-        args: `--sourcepath ${nutshell.packageNames.join(',')} --testlevel RunAllTestsInOrg`,
+      await testkit.deploy({
+        args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunAllTestsInOrg`,
       });
-      await nutshell.expect.apexTestsToBeRun();
+      await testkit.expect.apexTestsToBeRun();
     });
 
     it('should run specified tests (RunSpecifiedTests)', async () => {
-      const packageNames = nutshell.packageNames.join(',');
+      const packageNames = testkit.packageNames.join(',');
       const tests = REPO.deploy.testlevel.specifiedTests.join(',');
       // NOTE: we cannot do a --checkonly deployment here because we need the ApexClasses to exist in the
       // org in order to programmatically map the specified test to the test results
-      await nutshell.deploy({
+      await testkit.deploy({
         args: `--sourcepath ${packageNames} --testlevel RunSpecifiedTests --runtests ${tests} --ignoreerrors`,
       });
-      await nutshell.expect.specificApexTestsToBeRun(REPO.deploy.testlevel.specifiedTests);
+      await testkit.expect.specificApexTestsToBeRun(REPO.deploy.testlevel.specifiedTests);
     });
   });
 });

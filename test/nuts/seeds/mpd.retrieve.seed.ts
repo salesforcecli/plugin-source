@@ -6,35 +6,35 @@
  */
 
 import { Dictionary } from '@salesforce/ts-types';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
       executable: EXECUTABLE,
       nut: __filename,
     });
-    await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await testkit.trackGlobs(testkit.packageGlobs);
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('CustomObjects', () => {
     it('should put CustomObjects and CustomFields into appropriate package directory', async () => {
       const objectsAndFields = ['force-app/main/default/objects/MyObj__c/*', 'my-app/objects/MyObj__c/fields/*'];
-      await nutshell.modifyLocalGlobs(objectsAndFields);
-      await nutshell.retrieve({ args: '--metadata CustomObject' });
-      await nutshell.expect.filesToBeChanged(objectsAndFields);
-      await nutshell.expect.filesToNotExist([
+      await testkit.modifyLocalGlobs(objectsAndFields);
+      await testkit.retrieve({ args: '--metadata CustomObject' });
+      await testkit.expect.filesToBeChanged(objectsAndFields);
+      await testkit.expect.filesToNotExist([
         'force-app/main/default/objects/MyObj__c/fields/*',
         'my-app/objects/MyObj__c/MyObj__c.object.xml',
       ]);
@@ -50,23 +50,23 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
     let originalState: Dictionary<string>;
 
     before(async () => {
-      originalState = await nutshell.readGlobs([forceAppLabels, myAppLabels]);
+      originalState = await testkit.readGlobs([forceAppLabels, myAppLabels]);
     });
 
     beforeEach(async () => {
       for (const [filename, contents] of Object.entries(originalState)) {
-        await nutshell.writeFile(filename, contents);
+        await testkit.writeFile(filename, contents);
       }
     });
 
     describe('--metadata CustomLabels', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
-        await nutshell.modifyLocalGlobs([forceAppLabels, myAppLabels]);
-        await nutshell.retrieve({ args: '--metadata CustomLabels' });
+        await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
+        await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -75,11 +75,11 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
       it('should put new labels into CustomLabels file in default package', async () => {
         // Delete local labels to simulate having new labels created in the org
-        await nutshell.deleteGlobs([myAppLabels]);
-        await nutshell.retrieve({ args: '--metadata CustomLabels' });
+        await testkit.deleteGlobs([myAppLabels]);
+        await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels]);
-        await nutshell.expect.filesToContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToContainString(
           forceAppLabels,
           '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_1</fullName>',
@@ -89,11 +89,11 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
       it('should put new labels into existing CustomLabels file', async () => {
         // Delete local labels to simulate having new labels created in the org
-        await nutshell.deleteGlobs([forceAppLabels]);
-        await nutshell.retrieve({ args: '--metadata CustomLabels' });
+        await testkit.deleteGlobs([forceAppLabels]);
+        await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await nutshell.expect.filesToBeChanged([myAppLabels]);
-        await nutshell.expect.filesToContainString(
+        await testkit.expect.filesToBeChanged([myAppLabels]);
+        await testkit.expect.filesToContainString(
           myAppLabels,
           '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_1</fullName>',
@@ -103,11 +103,11 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
       it('should put all labels into default CustomLabels file when no labels exist locally', async () => {
         // Delete local labels to simulate having new labels created in the org
-        await nutshell.deleteGlobs([forceAppLabels, myAppLabels]);
-        await nutshell.retrieve({ args: '--metadata CustomLabels' });
+        await testkit.deleteGlobs([forceAppLabels, myAppLabels]);
+        await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels]);
-        await nutshell.expect.filesToContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToContainString(
           forceAppLabels,
           '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_1</fullName>',
@@ -118,16 +118,16 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--metadata CustomLabel:force_app_Label_1', () => {
       it('should put individual label into appropriate CustomLabels file', async () => {
-        await nutshell.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
+        await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels]);
-        await nutshell.expect.filesToNotBeChanged([myAppLabels]);
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToNotBeChanged([myAppLabels]);
+        await testkit.expect.filesToNotContainString(
           forceAppLabels,
           '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
         );
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -136,12 +136,12 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
       it('should put individual label into default CustomLabels file when no labels exist locally', async () => {
         // Delete local labels to simulate having new labels created in the org
-        await nutshell.deleteGlobs([forceAppLabels, myAppLabels]);
-        await nutshell.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
+        await testkit.deleteGlobs([forceAppLabels, myAppLabels]);
+        await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels]);
-        await nutshell.expect.filesToContainString(forceAppLabels, '<fullName>force_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToContainString(forceAppLabels, '<fullName>force_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           forceAppLabels,
           '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -151,12 +151,12 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
-        await nutshell.modifyLocalGlobs([forceAppLabels, myAppLabels]);
-        await nutshell.retrieve({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
+        await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
+        await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -166,14 +166,14 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--sourcepath force-app', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
-        await nutshell.modifyLocalGlobs([forceAppLabels]);
-        await nutshell.retrieve({ args: '--sourcepath force-app' });
+        await testkit.modifyLocalGlobs([forceAppLabels]);
+        await testkit.retrieve({ args: '--sourcepath force-app' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels]);
-        await nutshell.expect.filesToNotBeChanged([myAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToNotBeChanged([myAppLabels]);
 
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -183,14 +183,14 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--sourcepath my-app', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
-        await nutshell.modifyLocalGlobs([myAppLabels]);
-        await nutshell.retrieve({ args: '--sourcepath my-app' });
+        await testkit.modifyLocalGlobs([myAppLabels]);
+        await testkit.retrieve({ args: '--sourcepath my-app' });
 
-        await nutshell.expect.filesToBeChanged([myAppLabels]);
-        await nutshell.expect.filesToNotBeChanged([forceAppLabels]);
+        await testkit.expect.filesToBeChanged([myAppLabels]);
+        await testkit.expect.filesToNotBeChanged([forceAppLabels]);
 
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -200,12 +200,12 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--sourcepath force-app,my-app', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
-        await nutshell.modifyLocalGlobs([forceAppLabels, myAppLabels]);
-        await nutshell.retrieve({ args: '--sourcepath force-app,my-app' });
+        await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
+        await testkit.retrieve({ args: '--sourcepath force-app,my-app' });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -215,14 +215,14 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--manifest (all labels)', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
-        await nutshell.modifyLocalGlobs([forceAppLabels, myAppLabels]);
+        await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
         const xml = '<types><members>CustomLabels</members><name>CustomLabels</name></types>';
-        const packageXml = await nutshell.createPackageXml(xml);
-        await nutshell.retrieve({ args: `--manifest ${packageXml}` });
+        const packageXml = await testkit.createPackageXml(xml);
+        await testkit.retrieve({ args: `--manifest ${packageXml}` });
 
-        await nutshell.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
@@ -233,10 +233,10 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
     describe('--manifest (individual labels)', () => {
       it('should put labels into appropriate CustomLabels file', async () => {
         const xml = '<types><members>force_app_Label_1</members><name>CustomLabel</name></types>';
-        const packageXml = await nutshell.createPackageXml(xml);
-        await nutshell.retrieve({ args: `--manifest ${packageXml}` });
-        await nutshell.expect.filesToContainString(forceAppLabels, '<fullName>force_app_Label_1</fullName>');
-        await nutshell.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        const packageXml = await testkit.createPackageXml(xml);
+        await testkit.retrieve({ args: `--manifest ${packageXml}` });
+        await testkit.expect.filesToContainString(forceAppLabels, '<fullName>force_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
       });
     });
   });

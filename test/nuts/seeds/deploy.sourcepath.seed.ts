@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -14,10 +14,10 @@ const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
 context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
@@ -25,22 +25,22 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.deploy.sourcepath) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await nutshell.deploy({ args: `--sourcepath ${toDeploy}` });
-        await nutshell.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
+        await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
+        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
-      const deploy = await nutshell.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = nutshell.isSourcePlugin() ? 'SfdxError' : 'SourcePathInvalid';
-      nutshell.expect.errorToHaveName(deploy, expectedError);
+      const deploy = await testkit.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
+      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'SourcePathInvalid';
+      testkit.expect.errorToHaveName(deploy, expectedError);
     });
   });
 });

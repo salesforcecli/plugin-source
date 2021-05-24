@@ -6,42 +6,42 @@
  */
 
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+context('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
     });
-    await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await testkit.trackGlobs(testkit.packageGlobs);
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('--metadata flag', () => {
     for (const testCase of REPO.retrieve.metadata) {
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
-        await nutshell.modifyLocalGlobs(testCase.toVerify);
-        await nutshell.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        await testkit.modifyLocalGlobs(testCase.toVerify);
+        await testkit.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     // the LWC is in the dreamhouse-lwc repo and is only deployed to dreamhouse projects
     // this sufficiently tests this metadata is WAD
-    if (REPO.gitUrl.includes('dreamhouse') && nutshell && nutshell.isSourcePlugin()) {
+    if (REPO.gitUrl.includes('dreamhouse') && testkit && testkit.isLocalExecutable()) {
       it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
         // this will fail with toolbelt powered sfdx, but should pass with SDRL powered sfdx
         /**
@@ -54,19 +54,19 @@ context.skip('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', 
          */
         const lwcPath = path.join('force-app', 'main', 'default', 'lwc');
         // deploy the LWC
-        await nutshell.deploy({ args: `--sourcepath ${lwcPath}` });
+        await testkit.deploy({ args: `--sourcepath ${lwcPath}` });
         // delete the LWC locally
-        await nutshell.deleteGlobs([lwcPath]);
-        await nutshell.retrieve({ args: '--metadata LightningComponentBundle:daysOnMarket' });
+        await testkit.deleteGlobs([lwcPath]);
+        await testkit.retrieve({ args: '--metadata LightningComponentBundle:daysOnMarket' });
         // ensure that the mycomponent.js-meta.xml file exists
-        await nutshell.expect.fileToExist(`${path.join(lwcPath, 'daysOnMarket', 'daysOnMarket.js-meta.xml')}`);
+        await testkit.expect.fileToExist(`${path.join(lwcPath, 'daysOnMarket', 'daysOnMarket.js-meta.xml')}`);
       });
     }
 
     it('should throw an error if the metadata is not valid', async () => {
-      const retrieve = await nutshell.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = nutshell.isSourcePlugin() ? 'RegistryError' : 'UnsupportedType';
-      nutshell.expect.errorToHaveName(retrieve, expectedError);
+      const retrieve = await testkit.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
+      const expectedError = testkit.isLocalExecutable() ? 'RegistryError' : 'UnsupportedType';
+      testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 });

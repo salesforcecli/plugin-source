@@ -6,44 +6,44 @@
  */
 
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
     });
-    await nutshell.trackGlobs(nutshell.packageGlobs);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    await testkit.trackGlobs(testkit.packageGlobs);
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('--sourcepath flag', () => {
     for (const testCase of REPO.retrieve.sourcepath) {
       const toRetrieve = path.normalize(testCase.toRetrieve);
       it(`should retrieve ${toRetrieve}`, async () => {
-        await nutshell.modifyLocalGlobs(testCase.toVerify);
-        await nutshell.retrieve({ args: `--sourcepath ${toRetrieve}` });
-        await nutshell.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        await testkit.modifyLocalGlobs(testCase.toVerify);
+        await testkit.retrieve({ args: `--sourcepath ${toRetrieve}` });
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
-      const retrieve = await nutshell.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = nutshell.isSourcePlugin() ? 'SfdxError' : 'UnexpectedFileFound';
-      nutshell.expect.errorToHaveName(retrieve, expectedError);
+      const retrieve = await testkit.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
+      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnexpectedFileFound';
+      testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 });

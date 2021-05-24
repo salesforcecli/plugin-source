@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
@@ -15,40 +15,40 @@ const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const SKUID = { id: '04t4A000000cESSQA2', name: 'Skuid' };
 
 context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
       executable: EXECUTABLE,
       nut: __filename,
     });
-    nutshell.installPackage(ELECTRON.id);
-    await nutshell.deploy({ args: `--sourcepath ${nutshell.packageNames.join(',')}` });
+    testkit.installPackage(ELECTRON.id);
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
-    await nutshell?.clean();
+    await testkit?.clean();
   });
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      await nutshell.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
-      await nutshell.expect.packagesToBeRetrieved([ELECTRON.name]);
+      await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
+      await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });
 
     it('should retrieve two installed packages', async () => {
-      nutshell.installPackage(SKUID.id);
-      await nutshell.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
-      await nutshell.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
+      testkit.installPackage(SKUID.id);
+      await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
+      await testkit.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      await nutshell.retrieve({
+      await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
       });
-      await nutshell.expect.packagesToBeRetrieved([ELECTRON.name]);
-      await nutshell.expect.filesToExist([
+      await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
+      await testkit.expect.filesToExist([
         `${ELECTRON.name}/**/brandingSets/*`,
         `${ELECTRON.name}/**/contentassets/*`,
         `${ELECTRON.name}/**/lightningExperienceThemes/*`,
