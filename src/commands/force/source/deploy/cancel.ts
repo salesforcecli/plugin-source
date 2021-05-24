@@ -13,6 +13,7 @@ import { getString } from '@salesforce/ts-types';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../../deployCommand';
 import { DeployCancelCommandResult, DeployCancelFormatter } from '../../../../formatters/deployCancelResultFormatter';
+import { MetadataApiDeploy } from '../../../../../../source-deploy-retrieve';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
@@ -43,11 +44,7 @@ export class Cancel extends DeployCommand {
   protected async cancel(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
-    // TODO: update to use SDRL. This matches the toolbelt implementation.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-    await this.org.getConnection().metadata['_invoke']('cancelDeploy', {
-      deployId,
-    });
+    await MetadataApiDeploy.cancel({ deployId, usernameOrConnection: this.org.getUsername() });
 
     this.deployResult = await this.poll(deployId);
   }

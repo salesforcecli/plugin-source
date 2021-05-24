@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
 import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
@@ -29,7 +29,7 @@ export abstract class DeployCommand extends SourceCommand {
     const deployId = this.resolveDeployId(id);
     this.displayDeployId(deployId);
 
-    const res = await this.org.getConnection().metadata.checkDeployStatus(deployId, true);
+    const res = MetadataApiDeploy.report({ deployId, usernameOrConnection: this.org.getConnection() });
 
     const deployStatus = res as unknown as MetadataApiDeployStatus;
     return new DeployResult(deployStatus, new ComponentSet());
