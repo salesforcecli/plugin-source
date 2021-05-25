@@ -7,7 +7,6 @@
 
 import { ComponentSet, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
-import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
@@ -29,10 +28,9 @@ export abstract class DeployCommand extends SourceCommand {
     const deployId = this.resolveDeployId(id);
     this.displayDeployId(deployId);
 
-    const res = MetadataApiDeploy.report({ deployId, usernameOrConnection: this.org.getConnection() });
+    const res = await MetadataApiDeploy.report({ deployId, usernameOrConnection: this.org.getConnection() });
 
-    const deployStatus = res as unknown as MetadataApiDeployStatus;
-    return new DeployResult(deployStatus, new ComponentSet());
+    return new DeployResult(res, new ComponentSet());
   }
 
   protected getStash(): ConfigFile<{ isGlobal: true; filename: 'stash.json' }> {
