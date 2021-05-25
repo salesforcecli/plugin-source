@@ -250,6 +250,7 @@ describe('ComponentSetBuilder', () => {
       const compSet = await ComponentSetBuilder.build(options);
       expect(fromManifestStub.calledOnce).to.equal(true);
       expect(fromManifestStub.firstCall.args[0]).to.deep.equal({
+        forceAddWildcards: true,
         manifestPath: options.manifest.manifestPath,
         resolveSourcePaths: [packageDir1],
       });
@@ -276,6 +277,7 @@ describe('ComponentSetBuilder', () => {
       const compSet = await ComponentSetBuilder.build(options);
       expect(fromManifestStub.callCount).to.equal(1);
       expect(fromManifestStub.firstCall.args[0]).to.deep.equal({
+        forceAddWildcards: true,
         manifestPath: options.manifest.manifestPath,
         resolveSourcePaths: [packageDir1, packageDir2],
       });
