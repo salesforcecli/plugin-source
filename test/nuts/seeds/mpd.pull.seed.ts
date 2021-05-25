@@ -26,8 +26,10 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
   after(async () => {
     try {
       await testkit?.clean();
-    } catch {
+    } catch (e) {
       // if the it fails to clean, don't throw so NUTs will pass
+      // eslint-disable-next-line no-console
+      console.log('Clean Failed: ', e);
     }
   });
 
