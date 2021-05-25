@@ -28,7 +28,7 @@ export abstract class DeployCommand extends SourceCommand {
     const deployId = this.resolveDeployId(id);
     this.displayDeployId(deployId);
 
-    const res = await MetadataApiDeploy.report({ deployId, usernameOrConnection: this.org.getConnection() });
+    const res = await MetadataApiDeploy.report({ deployId, usernameOrConnection: this.org.getUsername() });
 
     return new DeployResult(res, new ComponentSet());
   }

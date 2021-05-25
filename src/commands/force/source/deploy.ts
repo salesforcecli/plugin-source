@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
-import { getString, isString } from '@salesforce/ts-types';
+import { getString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../deployCommand';
@@ -196,30 +196,18 @@ export class Deploy extends DeployCommand {
   }
 
   private async deployRecentValidation(): Promise<DeployResult> {
-    const conn = this.org.getConnection();
+    // const conn = this.org.getConnection();
     const id = this.getFlag<string>('validateddeployrequestid');
 
-    // TODO: This is an async call so we need to poll unless `--wait 0`
-    //       See mdapiCheckStatusApi.ts for the toolbelt polling impl.
-    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
+    const deploy = await MetadataApiDeploy.deployRecentlyValidatedId({
+      usernameOrConnection: this.org.getUsername(),
+      id,
+      rest: this.isRest,
+    });
 
-    if (!this.isAsync) {
-      // Remove this and add polling if we need to poll in the plugin.
-      throw Error('deployRecentValidation polling not yet implemented');
-    }
+    const validatedDeployId = await deploy.start();
 
-    // This is the deploy ID of the deployRecentValidation response, not
-    // the already validated deploy ID (i.e., validateddeployrequestid).
-    let validatedDeployId: string;
-    if (isString(response)) {
-      // SOAP API
-      validatedDeployId = response;
-    } else {
-      // REST API
-      validatedDeployId = (response as { id: string }).id;
-    }
-
-    return this.report(validatedDeployId);
+    return this.report(validatedDeployId.response.id);
   }
 
   private progress(deploy: MetadataApiDeploy): void {
