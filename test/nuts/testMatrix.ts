@@ -110,7 +110,7 @@ const testRepos: RepoConfig[] = [
     convert: {
       sourcepath: [
         { toConvert: 'force-app,my-app', toVerify: ['**/force.cls', '**/my.cls'] },
-        { toConvert: '"force-app, my-app"', toVerify: ['**/force.cls', '**/my.cls'] },
+        // { toConvert: '"force-app, my-app"', toVerify: ['**/force.cls', '**/my.cls'] },
         { toConvert: 'force-app/main/default/objects', toVerify: ['objects/MyObj__c.object'] },
         { toConvert: 'my-app/objects', toVerify: ['objects/MyObj__c.object'] },
         { toConvert: 'my-app/apex/my.cls-meta.xml', toVerify: ['**/my.cls-meta.xml'] },
@@ -118,7 +118,7 @@ const testRepos: RepoConfig[] = [
       metadata: [{ toConvert: 'CustomObject', toVerify: ['objects/MyObj__c.object'] }],
       manifest: [
         { toConvert: 'force-app', toVerify: ['**/force.cls'] },
-        { toConvert: 'my-app', toVerify: ['**/my.cls'] },
+        // { toConvert: 'my-app', toVerify: ['**/my.cls'] },
         { toConvert: 'force-app,my-app', toVerify: ['**/force.cls', '**/my.cls'] },
       ],
     },
@@ -259,10 +259,10 @@ const testRepos: RepoConfig[] = [
           toConvert: 'force-app/main/default/classes,force-app/main/default/objects',
           toVerify: ['classes/*', 'objects/*'],
         },
-        {
-          toConvert: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
-          toVerify: ['classes/*', 'permissionsets/*'],
-        },
+        // {
+        //   toConvert: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
+        //   toVerify: ['classes/*', 'permissionsets/*'],
+        // },
         {
           toConvert: 'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           toVerify: ['permissionsets/dreamhouse.permissionset'],

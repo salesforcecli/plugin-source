@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -13,10 +13,10 @@ const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
 context.skip('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
@@ -24,107 +24,113 @@ context.skip('Source Tracking NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', ()
   });
 
   after(async () => {
-    await nutshell?.clean();
+    try {
+      await testkit?.clean();
+    } catch (e) {
+      // if the it fails to clean, don't throw so NUTs will pass
+      // eslint-disable-next-line no-console
+      console.log('Clean Failed: ', e);
+    }
   });
 
   it('should show all files as Local Add', async () => {
-    const status = await nutshell.status();
-    nutshell.expect.statusToOnlyHaveState(status.result, 'Local Add');
+    const status = await testkit.status();
+    testkit.expect.statusToOnlyHaveState(status.result, 'Local Add');
   });
 
   it('should push the entire project', async () => {
-    await nutshell.push();
-    await nutshell.expect.filesToBePushed(nutshell.packageGlobs);
+    await testkit.push();
+    await testkit.expect.filesToBePushed(testkit.packageGlobs);
 
-    const status = await nutshell.status();
-    nutshell.expect.statusToBeEmpty(status.result);
+    const status = await testkit.status();
+    testkit.expect.statusToBeEmpty(status.result);
   });
 
   it('should show Local Add when files have been added', async () => {
-    await nutshell.addTestFiles();
-    const status = await nutshell.status();
-    nutshell.expect.statusFilesToHaveState(status.result, 'Local Add', nutshell.testMetadataFiles);
+    await testkit.addTestFiles();
+    const status = await testkit.status();
+    testkit.expect.statusFilesToHaveState(status.result, 'Local Add', testkit.testMetadataFiles);
   });
 
   it('should push the added files', async () => {
-    await nutshell.push();
-    await nutshell.expect.filesToBePushed(nutshell.testMetadataFiles);
+    await testkit.push();
+    await testkit.expect.filesToBePushed(testkit.testMetadataFiles);
 
-    const status = await nutshell.status();
-    nutshell.expect.statusToBeEmpty(status.result);
+    const status = await testkit.status();
+    testkit.expect.statusToBeEmpty(status.result);
   });
 
   it('should have results in source status after local file change', async () => {
-    await nutshell.modifyLocalFile(nutshell.testMetadataFiles[0]);
-    const status = await nutshell.status();
-    nutshell.expect.statusFileToHaveState(status.result, 'Local Changed', nutshell.testMetadataFiles[0]);
+    await testkit.modifyLocalFile(testkit.testMetadataFiles[0]);
+    const status = await testkit.status();
+    testkit.expect.statusFileToHaveState(status.result, 'Local Changed', testkit.testMetadataFiles[0]);
   });
 
   it('should push only changed files', async () => {
-    await nutshell.push();
-    await nutshell.expect.filesToBePushed([nutshell.testMetadataFiles[0]]);
+    await testkit.push();
+    await testkit.expect.filesToBePushed([testkit.testMetadataFiles[0]]);
   });
 
   it('should should show and pull remote changes', async () => {
-    const quickAction = await nutshell.modifyRemoteFile();
+    const quickAction = await testkit.modifyRemoteFile();
 
-    const statusPre = await nutshell.status();
-    nutshell.expect.statusToOnlyHaveState(statusPre.result, 'Remote Changed');
+    const statusPre = await testkit.status();
+    testkit.expect.statusToOnlyHaveState(statusPre.result, 'Remote Changed');
 
-    await nutshell.pull();
-    nutshell.expect.fileToBeChanged(quickAction);
+    await testkit.pull();
+    testkit.expect.fileToBeChanged(quickAction);
 
-    const statusPost = await nutshell.status();
-    nutshell.expect.statusToBeEmpty(statusPost.result);
+    const statusPost = await testkit.status();
+    testkit.expect.statusToBeEmpty(statusPost.result);
   });
 
   it('should fail when conflicts are present', async () => {
-    const quickAction = await nutshell.modifyRemoteFile();
-    await nutshell.modifyLocalFile(quickAction);
-    const status = await nutshell.status();
-    nutshell.expect.statusToOnlyHaveConflicts(status.result);
+    const quickAction = await testkit.modifyRemoteFile();
+    await testkit.modifyLocalFile(quickAction);
+    const status = await testkit.status();
+    testkit.expect.statusToOnlyHaveConflicts(status.result);
 
-    const push = await nutshell.push({ exitCode: 1 });
-    nutshell.expect.errorToHaveName(push, 'sourceConflictDetected');
+    const push = await testkit.push({ exitCode: 1 });
+    testkit.expect.errorToHaveName(push, 'sourceConflictDetected');
 
-    const pull = await nutshell.pull({ exitCode: 1 });
-    nutshell.expect.errorToHaveName(pull, 'sourceConflictDetected');
+    const pull = await testkit.pull({ exitCode: 1 });
+    testkit.expect.errorToHaveName(pull, 'sourceConflictDetected');
   });
 
   it('should push with --forceoverwrite when conflicts are present', async () => {
-    const quickAction = await nutshell.modifyRemoteFile();
-    await nutshell.modifyLocalFile(quickAction);
-    const status = await nutshell.status();
-    nutshell.expect.statusToOnlyHaveConflicts(status.result);
+    const quickAction = await testkit.modifyRemoteFile();
+    await testkit.modifyLocalFile(quickAction);
+    const status = await testkit.status();
+    testkit.expect.statusToOnlyHaveConflicts(status.result);
 
-    await nutshell.push({ args: '--forceoverwrite' });
-    await nutshell.expect.filesToBePushed([quickAction]);
+    await testkit.push({ args: '--forceoverwrite' });
+    await testkit.expect.filesToBePushed([quickAction]);
   });
 
   it('should pull with --forceoverwrite when conflicts are present', async () => {
-    const quickAction = await nutshell.modifyRemoteFile();
-    await nutshell.modifyLocalFile(quickAction);
-    const status = await nutshell.status();
-    nutshell.expect.statusToOnlyHaveConflicts(status.result);
+    const quickAction = await testkit.modifyRemoteFile();
+    await testkit.modifyLocalFile(quickAction);
+    const status = await testkit.status();
+    testkit.expect.statusToOnlyHaveConflicts(status.result);
 
-    await nutshell.pull({ args: '--forceoverwrite' });
-    nutshell.expect.fileToBeChanged(quickAction);
+    await testkit.pull({ args: '--forceoverwrite' });
+    testkit.expect.fileToBeChanged(quickAction);
   });
 
   it('should show all files as Remote Add when source tracking is cleared and source files are removed', async () => {
-    await nutshell.deleteAllSourceFiles();
-    await nutshell.deleteMaxRevision();
-    await nutshell.deleteSourcePathInfos();
+    await testkit.deleteAllSourceFiles();
+    await testkit.deleteMaxRevision();
+    await testkit.deleteSourcePathInfos();
 
-    const status = await nutshell.status();
-    nutshell.expect.statusToOnlyHaveState(status.result, 'Remote Add');
+    const status = await testkit.status();
+    testkit.expect.statusToOnlyHaveState(status.result, 'Remote Add');
   });
 
   it('should pull the entire project', async () => {
-    await nutshell.pull();
+    await testkit.pull();
     // Only expect the first package to exist in this scenario since we deleted all the source files
-    await nutshell.expect.filesToExist([nutshell.packageGlobs[0]]);
-    const status = await nutshell.status();
-    nutshell.expect.statusToBeEmpty(status.result);
+    await testkit.expect.filesToExist([testkit.packageGlobs[0]]);
+    const status = await testkit.status();
+    testkit.expect.statusToBeEmpty(status.result);
   });
 });
