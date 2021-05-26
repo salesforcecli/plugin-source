@@ -44,7 +44,7 @@ export class Cancel extends DeployCommand {
   protected async cancel(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
-    await MetadataApiDeploy.cancel({ deployId, usernameOrConnection: this.org.getUsername() });
+    await MetadataApiDeploy.cancel(deployId, this.org.getUsername());
 
     this.deployResult = await this.poll(deployId);
   }

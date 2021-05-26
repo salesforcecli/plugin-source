@@ -196,15 +196,22 @@ export class Deploy extends DeployCommand {
   }
 
   private async deployRecentValidation(): Promise<DeployResult> {
-    // const conn = this.org.getConnection();
     const id = this.getFlag<string>('validateddeployrequestid');
 
-    const deploy = await MetadataApiDeploy.deployRecentlyValidatedId({
-      usernameOrConnection: this.org.getUsername(),
-      id,
-      rest: this.isRest,
-    });
+    const deploy = await MetadataApiDeploy.deployRecentlyValidatedId(id, this.org.getUsername(), this.isRest);
 
+    if (this.isAsync) {
+      // TODO: add async messaging with Steve's async deploy changes
+      this.ux.log('ASYNC quick deploy in progress');
+    } else {
+      // TODO: add the sync polling from Steve's PR to SDR
+    }
+
+    // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
+    if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
+      this.initProgressBar();
+      this.progress(deploy);
+    }
     const validatedDeployId = await deploy.start();
 
     return this.report(validatedDeployId.response.id);
