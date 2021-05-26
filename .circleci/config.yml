@@ -17,6 +17,7 @@ workflows:
       - release-management/test-nut:
           name: nuts-on-linux
           node_version: lts
+          size: large
           sfdx_version: latest
           requires:
             - node-latest

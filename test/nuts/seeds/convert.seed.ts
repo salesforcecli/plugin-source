@@ -48,9 +48,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
           args: `--sourcepath ${toConvert} --outputdir out1`,
           exitCode: 0,
         });
-        const outputDir = path.join(process.cwd(), 'out1');
-        testkit.findAndMoveManifest(outputDir);
-        const packageXml = path.join(process.cwd(), 'package.xml');
+        const packageXml = path.join(process.cwd(), 'out1', 'package.xml');
 
         const res = await testkit.convert({ args: `--manifest ${packageXml} --outputdir out2`, exitCode: 0 });
 
