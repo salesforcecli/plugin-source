@@ -97,6 +97,7 @@ export class Convert extends SourceCommand {
       type: 'directory',
       outputDirectory: this.getFlag<string>('outputdir'),
       packageName: this.getFlag<string>('packagename'),
+      genUniqueDir: false,
     });
   }
 
