@@ -13,7 +13,7 @@ import { getString } from '@salesforce/ts-types';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../../deployCommand';
 import { DeployCancelCommandResult, DeployCancelFormatter } from '../../../../formatters/deployCancelResultFormatter';
-import { MetadataApiDeploy } from '../../../../../../source-deploy-retrieve';
+import { ComponentSet, MetadataApiDeploy } from '../../../../../../source-deploy-retrieve';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
@@ -43,8 +43,13 @@ export class Cancel extends DeployCommand {
 
   protected async cancel(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+    const deploy = new MetadataApiDeploy({
+      components: new ComponentSet(),
+      usernameOrConnection: this.org.getUsername(),
+      id: deployId,
+    });
 
-    await MetadataApiDeploy.cancel(deployId, this.org.getUsername());
+    deploy.cancel();
 
     this.deployResult = await this.poll(deployId);
   }

@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { env } from '@salesforce/kit';
@@ -198,13 +198,18 @@ export class Deploy extends DeployCommand {
   private async deployRecentValidation(): Promise<DeployResult> {
     const id = this.getFlag<string>('validateddeployrequestid');
 
-    const deploy = await MetadataApiDeploy.deployRecentlyValidatedId(id, this.org.getUsername(), this.isRest);
-
+    // const deploy = await MetadataApiDeploy.deployRecentlyValidatedId(id, this.org.getUsername(), this.isRest);
+    const deploy = new MetadataApiDeploy({
+      id,
+      usernameOrConnection: this.org.getUsername(),
+      components: new ComponentSet(),
+    });
     if (this.isAsync) {
       // TODO: add async messaging with Steve's async deploy changes
       this.ux.log('ASYNC quick deploy in progress');
     } else {
       // TODO: add the sync polling from Steve's PR to SDR
+      this.ux.log('SYNC quick deploy in progress');
     }
 
     // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
@@ -212,7 +217,7 @@ export class Deploy extends DeployCommand {
       this.initProgressBar();
       this.progress(deploy);
     }
-    const validatedDeployId = await deploy.start();
+    const validatedDeployId = await deploy.start(10);
 
     return this.report(validatedDeployId.response.id);
   }
