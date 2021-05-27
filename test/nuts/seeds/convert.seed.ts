@@ -45,7 +45,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         // Generate a package.xml by converting via sourcepath
         const toConvert = path.normalize(testCase.toConvert);
         await testkit.convert({
-          args: `--sourcepath ${toConvert} --outputdir out1`,
+          args: `--sourcepath ${toConvert} --outputdir out`,
           exitCode: 0,
         });
         const outputDir = path.join(process.cwd(), 'out');
