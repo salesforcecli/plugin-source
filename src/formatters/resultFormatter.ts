@@ -11,7 +11,6 @@ import { getBoolean, getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
-  async?: boolean;
   waitTime?: number;
 }
 
@@ -30,10 +29,6 @@ export abstract class ResultFormatter {
   // exit code on the process, which is done before formatting.
   public isSuccess(): boolean {
     return getNumber(process, 'exitCode', 0) === 0;
-  }
-
-  public isAsync(): boolean {
-    return getBoolean(this.options, 'async', false);
   }
 
   public isVerbose(): boolean {

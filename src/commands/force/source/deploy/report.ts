@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { Messages } from '@salesforce/core';
+import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
 import { DeployCommand } from '../../../../deployCommand';
@@ -14,6 +14,7 @@ import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
 } from '../../../../formatters/deployReportResultFormatter';
+import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
@@ -33,6 +34,9 @@ export class Report extends DeployCommand {
       char: 'i',
       description: messages.getMessage('flags.jobid'),
     }),
+    verbose: flags.builtin({
+      description: messages.getMessage('flags.verbose'),
+    }),
   };
 
   public async run(): Promise<DeployReportCommandResult> {
@@ -43,6 +47,20 @@ export class Report extends DeployCommand {
 
   protected async doReport(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+
+    // If the verbose flag is set, AND the command was executed from within
+    // an SFDX project, we need to build a ComponentSet so we have mapped
+    // source file output.
+    if (this.getFlag<boolean>('verbose')) {
+      let sourcepath: string[];
+      try {
+        this.project = await SfdxProject.resolve();
+        sourcepath = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+      } catch (err) {
+        // ignore the error. this was just to get improved command output.
+      }
+      this.componentSet = await ComponentSetBuilder.build({ sourcepath });
+    }
     this.deployResult = await this.report(deployId);
   }
 
@@ -54,7 +72,11 @@ export class Report extends DeployCommand {
   protected resolveSuccess(): void {}
 
   protected formatResult(): DeployReportCommandResult {
-    const formatter = new DeployReportResultFormatter(this.logger, this.ux, {}, this.deployResult);
+    const formatterOptions = {
+      verbose: this.getFlag<boolean>('verbose', false),
+    };
+    const formatter = new DeployReportResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
     if (!this.isJsonOutput()) {
       formatter.display();
     }

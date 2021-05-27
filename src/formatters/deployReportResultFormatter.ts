@@ -27,9 +27,11 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
         const deployErrors = `Errors: ${componentErrors}`;
         const tests = `Tests Complete: ${testsCompleted}/${testsTotal}`;
         const testErrs = `Errors: ${testErrors}`;
+        this.ux.log(`Status: ${this.result.response.status}`);
         this.ux.log(`${deploys} ${deployErrors}`);
         this.ux.log(`${tests} ${testErrs}`);
       } else {
+        this.ux.log(`Status: ${this.result.response.status}`);
         this.ux.log('No components deployed');
       }
       return;

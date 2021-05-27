@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { Messages, PollingClient } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -69,7 +69,7 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const cs = await ComponentSetBuilder.build({
+    this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
       packagenames: this.getFlag<string[]>('packagenames'),
       sourcepath: this.getFlag<string[]>('sourcepath'),
@@ -83,16 +83,21 @@ export class Retrieve extends SourceCommand {
       },
     });
 
-    await this.lifecycle.emit('preretrieve', cs.toArray());
+    await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
-    this.retrieveResult = await cs
-      .retrieve({
-        usernameOrConnection: this.org.getUsername(),
-        merge: true,
-        output: this.project.getDefaultPackage().fullPath,
-        packageNames: this.getFlag<string[]>('packagenames'),
-      })
-      .start();
+    const mdapiRetrieve = await this.componentSet.retrieve({
+      usernameOrConnection: this.org.getUsername(),
+      merge: true,
+      output: this.project.getDefaultPackage().fullPath,
+      packageNames: this.getFlag<string[]>('packagenames'),
+    });
+
+    const id = mdapiRetrieve.retrieveId;
+    const pollingOptions: Partial<PollingClient.Options> = {
+      frequency: Duration.seconds(1),
+      timeout: this.getFlag<Duration>('wait'),
+    };
+    this.retrieveResult = await mdapiRetrieve.pollStatus(id, pollingOptions);
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
   }

@@ -9,13 +9,17 @@ import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
 import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
-import { Duration } from '@salesforce/kit';
+import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 
 export abstract class DeployCommand extends SourceCommand {
   protected static readonly STASH_KEY = 'SOURCE_DEPLOY';
 
-  protected deployIdDisplayed = false;
+  protected displayDeployId = once((id: string) => {
+    if (!this.isJsonOutput()) {
+      this.ux.log(`Deploy ID: ${id}`);
+    }
+  });
 
   protected deployResult: DeployResult;
 
@@ -32,23 +36,26 @@ export abstract class DeployCommand extends SourceCommand {
     const res = await this.org.getConnection().metadata.checkDeployStatus(deployId, true);
 
     const deployStatus = res as unknown as MetadataApiDeployStatus;
-    return new DeployResult(deployStatus, new ComponentSet());
+    const componentSet = this.componentSet || new ComponentSet();
+    return new DeployResult(deployStatus, componentSet);
   }
 
-  protected getStash(): ConfigFile<{ isGlobal: true; filename: 'stash.json' }> {
-    return new ConfigFile({ isGlobal: true, filename: 'stash.json' });
+  protected setStash(deployId: string): void {
+    const file = this.getStash();
+    this.logger.debug(`Stashing deploy ID: ${deployId} in ${file.getPath()}`);
+    file.writeSync({ [DeployCommand.STASH_KEY]: { jobid: deployId } });
   }
 
   protected resolveDeployId(id: string): string {
     if (id) {
       return id;
     } else {
-      // try and read from the ~/.sfdx/stash.json file for the most recent deploy ID
       try {
-        this.logger.debug('Reading from ~/.sfdx/stash.json for the deploy id');
         const stash = this.getStash();
         stash.readSync(true);
-        return asString((stash.get(DeployCommand.STASH_KEY) as { jobid: string }).jobid);
+        const deployId = asString((stash.get(DeployCommand.STASH_KEY) as { jobid: string }).jobid);
+        this.logger.debug(`Using deploy ID: ${deployId} from ${stash.getPath()}`);
+        return deployId;
       } catch (err: unknown) {
         const error = err as Error & { code: string };
         if (error.code === 'ENOENT') {
@@ -56,13 +63,6 @@ export abstract class DeployCommand extends SourceCommand {
         }
         throw SfdxError.wrap(error);
       }
-    }
-  }
-
-  protected displayDeployId(id: string): void {
-    if (!this.isJsonOutput() && !this.deployIdDisplayed) {
-      this.ux.log(`Deploy ID: ${id}`);
-      this.deployIdDisplayed = true;
     }
   }
 
@@ -102,10 +102,12 @@ export abstract class DeployCommand extends SourceCommand {
         };
       },
     };
-
     const pollingOptions = { ...defaultOptions, ...options };
-
     const pollingClient = await PollingClient.create(pollingOptions);
     return pollingClient.subscribe() as unknown as Promise<DeployResult>;
+  }
+
+  private getStash(): ConfigFile<{ isGlobal: true; filename: 'stash.json' }> {
+    return new ConfigFile({ isGlobal: true, filename: 'stash.json' });
   }
 }

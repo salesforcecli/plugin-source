@@ -27,20 +27,6 @@ export interface DeployCommandResult extends MetadataApiDeployStatus {
   deploys: MetadataApiDeployStatus[];
 }
 
-// For async deploy command results it looks like this:
-export interface DeployCommandAsyncResult extends DeployAsyncStatus {
-  deployedSource: FileResponse[];
-  outboundFiles: string[];
-  deploys: DeployAsyncStatus[];
-}
-export interface DeployAsyncStatus {
-  done: boolean;
-  id: string;
-  state: 'Queued';
-  status: 'Queued';
-  timedOut: boolean;
-}
-
 export class DeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
   protected fileResponses: FileResponse[];
@@ -52,35 +38,26 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   /**
-   * Get the JSON output from the DeployResult. The returned JSON shape
-   * varies based on:
-   *
-   * 1. Standard synchronous deploy
-   * 2. Asynchronous deploy (wait=0)
+   * Get the JSON output from the DeployResult.
    *
    * @returns a JSON formatted result matching the provided type.
    */
-  public getJson(): DeployCommandResult | DeployCommandAsyncResult {
-    const json = this.getResponse() as DeployCommandResult | DeployCommandAsyncResult;
+  public getJson(): DeployCommandResult {
+    const json = this.getResponse() as DeployCommandResult;
     json.deployedSource = this.fileResponses;
     json.outboundFiles = []; // to match toolbelt version
     json.deploys = [Object.assign({}, this.getResponse())]; // to match toolbelt version
 
-    if (this.isAsync()) {
-      // json = this.getResponse(); // <-- TODO: ensure the response matches toolbelt
-      return json as DeployCommandAsyncResult;
-    }
-
-    return json as DeployCommandResult;
+    return json;
   }
 
   /**
    * Displays deploy results in human format.  Output can vary based on:
    *
-   * 1. Standard synchronous deploy (no tests run)
-   * 2. Asynchronous deploy (wait=0)
+   * 1. Verbose option
    * 3. Checkonly deploy (checkonly=true)
    * 4. Deploy with test results
+   * 5. Canceled status
    */
   public display(): void {
     // Display check-only, non-verbose success
@@ -109,8 +86,17 @@ export class DeployResultFormatter extends ResultFormatter {
     return getString(this.result, 'response.status') === status;
   }
 
-  protected hasComponents(): boolean {
+  protected hasMappedComponents(): boolean {
+    // These are components that have been mapped to local source
+    // by a ComponentSet.
     return getNumber(this.result, 'components.size', 0) > 0;
+  }
+
+  protected hasComponents(): boolean {
+    // These are components in the server response
+    const successes = getNumber(this.result, 'response.details.componentSuccesses.length', 0) > 0;
+    const failures = getNumber(this.result, 'response.details.componentFailures.length', 0) > 0;
+    return successes || failures;
   }
 
   protected isRunTestsEnabled(): boolean {
