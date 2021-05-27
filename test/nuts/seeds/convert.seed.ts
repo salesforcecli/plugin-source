@@ -43,20 +43,13 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.convert.manifest) {
       it(`should convert ${testCase.toConvert}`, async () => {
         // Generate a package.xml by converting via sourcepath
-        const toConvert = path.normalize(testCase.toConvert);
-        await testkit.convert({
-          args: `--sourcepath ${toConvert} --outputdir out`,
-          exitCode: 0,
-        });
-        const outputDir = path.join(process.cwd(), 'out');
-        testkit.findAndMoveManifest(outputDir);
-        const packageXml = path.join(process.cwd(), 'package.xml');
-        const res = await testkit.convert({ args: `--manifest ${packageXml} --outputdir out2`, exitCode: 0 });
+        await testkit.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out1` });
+        const packageXml = path.join('out1', 'package.xml');
 
-        convertDir = path.relative(process.cwd(), asString(res.result?.location));
-        await testkit.expect.directoryToHaveSomeFiles(convertDir);
-        await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
-        await testkit.expect.filesToBeConverted(convertDir, testCase.toVerify);
+        await testkit.convert({ args: `--manifest ${packageXml} --outputdir out2` });
+        await testkit.expect.directoryToHaveSomeFiles('out2');
+        await testkit.expect.fileToExist(path.join('out2', 'package.xml'));
+        await testkit.expect.filesToBeConverted('out2', testCase.toVerify);
       });
 
       afterEach(() => {
