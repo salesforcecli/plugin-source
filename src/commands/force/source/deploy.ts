@@ -217,9 +217,9 @@ export class Deploy extends DeployCommand {
       this.initProgressBar();
       this.progress(deploy);
     }
-    const validatedDeployId = await deploy.start(10);
+    const validatedDeployId = await deploy.deployRecentValidation(this.isRest);
 
-    return this.report(validatedDeployId.response.id);
+    return this.report(validatedDeployId);
   }
 
   private progress(deploy: MetadataApiDeploy): void {

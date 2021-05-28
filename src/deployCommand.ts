@@ -34,7 +34,7 @@ export abstract class DeployCommand extends SourceCommand {
       id: deployId,
     });
 
-    const res = await deploy.report();
+    const res = await deploy.checkStatus();
 
     return new DeployResult(res, new ComponentSet());
   }
