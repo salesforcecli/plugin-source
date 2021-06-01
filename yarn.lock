@@ -621,9 +621,9 @@
     sfdx-faye "^1.0.9"
 
 "@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.16.3", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.20.3", "@salesforce/core@^2.20.5", "@salesforce/core@^2.20.8", "@salesforce/core@^2.3.0":
-  version "2.20.11"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.20.11.tgz#29aee659be2b85a88827cdfb6cc6a89bfea9b825"
-  integrity sha512-v0wEGse0ws0yMlfuM569q1PhUMCOYvpXFEFvgXPUdE8OQT8h3/+AlIgQU7I9sEyIg9hzN1nl5UAtIyNllPyPXw==
+  version "2.23.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.23.1.tgz#0a489cfba0ba3318ad760f38587389404e79c2f2"
+  integrity sha512-qANGCrOxk1+BXIfniMLUfZcgCZmRid0k+jLSWcQsg5gziG79nwzntZs+AxqniyhiK00X1qmtKaA7H6n7gTD3qA==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.5.0"
