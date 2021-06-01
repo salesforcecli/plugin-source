@@ -22,5 +22,6 @@
   "SourceOpenPathLongDescription": "Generate a navigation URL path, but don’t launch a browser-based editor.",
   "SourceOpenCommandHumanSuccess": "Access org %s as user %s with the following URL: %s",
   "SourceOpenCommandHumanError": "An error occurred while opening the Salesforce org: %s",
-  "SourceOpenCommandUnpushedError": "no metadata in Salesforce org (consider running source:push)"
+  "SourceOpenCommandUnpushedError": "no metadata in Salesforce org (consider running source:push)",
+  "SourceOpenCommandTimeoutError": "timeout error"
 }
