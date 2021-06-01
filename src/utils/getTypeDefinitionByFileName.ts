@@ -8,7 +8,35 @@
 import * as path from 'path';
 import { fs, SfdxProject } from '@salesforce/core';
 
-export class TypeDefObj {
+/**
+ * The minimum configuration for a metadata entity subtype (eg. CustomField).
+ */
+export interface DecomposedSubtypeConfig {
+  metadataName: string; // Name of the metadata subtype (eg. CustomField)
+  ext: string; // The normal file extension (eg. field)
+  defaultDirectory: string; // The default directory (eg. fields)
+  hasStandardMembers: boolean; // Does this subtype have standard members (eg. CustomField)?
+  isAddressable: boolean; // Can this subtype be addressed individually by mdapi?
+}
+
+/**
+ * The minimum configuration for a decomposition. Each decomposed type has a single configuration associated
+ * with it in the metadata repository. This configuration (and any extension) drives the runtime behavior of
+ * decomposition.
+ */
+export interface DecompositionConfig {
+  metadataName: string; // Name of the aggregate metadata entity (eg. CustomObject)
+  isGlobal: boolean; // Is this a global (singleton) metadata entity (eg. CustomLabels)?
+  isEmptyContainer: boolean; // Is there anything left to represent once the subtypes are extracted?
+  decompositions: DecomposedSubtypeConfig[]; // List of subtype decomposition configurations. DO NOT leave undefined!
+  strategy: string; // Name of the strategy for decomposition of the raw metadata.
+  workspaceStrategy: string; // Name of the strategy for manifesting the decomposition in the workspace.
+  commitStrategy: string; // Name of the strategy for handling additions, deletions and updates.
+  contentStrategy: string;
+  useSparseComposition: boolean; // Like CustomObject, where (eg) fields can be combined into a CustomObject w/o any root data
+}
+
+export interface TypeDefObj {
   metadataName: string;
   ext: string;
   hasContent: boolean;
@@ -21,24 +49,20 @@ export class TypeDefObj {
   childXmlNames: string[];
   hasStandardMembers: boolean;
   deleteSupported: boolean;
-  decompositionConfig: any;
+  decompositionConfig: DecompositionConfig;
   hasVirtualSubtypes: boolean;
   inFolder: boolean;
   folderTypeDef: TypeDefObj;
   isGlobal: boolean;
   isEmptyContainer: boolean;
   parent: TypeDefObj;
-
-  constructor(metadataName) {
-    this.metadataName = metadataName;
-
-    // defaults
-    this.isAddressable = true;
-    this.isSourceTracked = true;
-  }
 }
 
 interface TypeDefObjs {
+  [key: string]: TypeDefObj;
+}
+
+interface ExtensionTypeDefObjs {
   [key: string]: TypeDefObj;
 }
 
@@ -46,34 +70,17 @@ interface TypeDefObjs {
 const METADATA_FILE_EXT = '-meta.xml';
 const LWC_FOLDER_NAME = 'lwc';
 
-export class MetadataRegistry {
-  // private readonly typeDefs: TypeDefObjs;
-  // private readonly typeDirectories: string[];
-  // private readonly lightningDefTypes;
-  // private readonly waveDefTypes;
-  // private lwcDefTypes;
-  // private typeDefsByExtension;
-  // private readonly metadataFileExt;
-  // private readonly projectPath: string;
-
-  // constructor() {
-  //   this.typeDefs = this.getMetadataTypeDefs();
-  //   this.typeDirectories = this.getTypeDirectories();
-  //   this.lightningDefTypes = _lightningDefTypes;
-  //   this.waveDefTypes = _waveDefTypes;
-  //   this.lwcDefTypes = _lwcDefTypes;
-  //   this.typeDefsByExtension = this.getTypeDefsByExtension();
-  //   this.metadataFileExt = METADATA_FILE_EXT;
-  //   this.projectPath = SfdxProject.resolveProjectPathSync();
-  // }
-}
-
 // A document must be co-resident with its metadata file.
 // A file from an exploded zip static resource must be within a directory that is co-resident with its metadata file.
-function getTypeDefinitionByFileNameWithNonStandardExtension(fileName, isDirectoryPathElement?, typeDefsToCheck?) {
+function getTypeDefinitionByFileNameWithNonStandardExtension(
+  fileName: string,
+  isDirectoryPathElement?: boolean,
+  typeDefsToCheck?: TypeDefObj[]
+): TypeDefObj {
   const typeDefs = getMetadataTypeDefs();
   const supportedTypeDefs = [typeDefs.Document, typeDefs.StaticResource];
-  const candidateTypeDefs = (typeDefsToCheck === undefined || typeDefsToCheck === null) ? supportedTypeDefs : typeDefsToCheck;
+  const candidateTypeDefs =
+    typeDefsToCheck === undefined || typeDefsToCheck === null ? supportedTypeDefs : typeDefsToCheck;
   let typeDef = getTypeDefinitionByFileNameWithCoresidentMetadataFile(fileName, candidateTypeDefs, false);
   if ((typeDef === undefined || typeDef === null) && candidateTypeDefs.includes(typeDefs.StaticResource)) {
     typeDef = getTypeDefinitionByFileNameWithCoresidentMetadataFile(
@@ -82,121 +89,130 @@ function getTypeDefinitionByFileNameWithNonStandardExtension(fileName, isDirecto
       true
     );
   }
-  if ((typeDef === undefined || typeDef === null)) {
-    typeDef = getTypeDefinitionByFileNameMatchingDefaultDirectory(
-      fileName,
-      isDirectoryPathElement,
-      candidateTypeDefs
-    );
+  if (typeDef === undefined || typeDef === null) {
+    typeDef = getTypeDefinitionByFileNameMatchingDefaultDirectory(fileName, isDirectoryPathElement, candidateTypeDefs);
   }
 
   return typeDef;
 }
 
-function getTypeDefinitionByFileNameWithCoresidentMetadataFile(fileName, typeDefsToCheck, recurse) {
+function getTypeDefinitionByFileNameWithCoresidentMetadataFile(
+  fileName: string,
+  typeDefsToCheck: TypeDefObj[],
+  recurse: boolean
+): TypeDefObj | null {
   const dir = path.dirname(fileName);
   if (isDirPathExpended(dir)) {
     return null;
   }
 
   const fullName = path.basename(fileName, path.extname(fileName));
-  const typeDef = typeDefsToCheck.find((typeDef) =>
-    fs.existsSync(path.join(dir, `${fullName}.${typeDef.ext}${this.metadataFileExt}`))
+  const typeDef = typeDefsToCheck.find((type) =>
+    fs.existsSync(path.join(dir, `${fullName}.${type.ext}${METADATA_FILE_EXT}`))
   );
   if (!(typeDef === undefined || typeDef === null)) {
     return typeDef;
   }
-  return recurse ? this.getTypeDefinitionByFileNameWithCoresidentMetadataFile(dir, typeDefsToCheck, true) : null;
+  return recurse ? getTypeDefinitionByFileNameWithCoresidentMetadataFile(dir, typeDefsToCheck, true) : null;
 }
 
-function getTypeDefinitionByFileNameMatchingDefaultDirectory(fileName, isDirectoryPathElement, typeDefsToCheck) {
+function getTypeDefinitionByFileNameMatchingDefaultDirectory(
+  fileName: string,
+  isDirectoryPathElement: boolean,
+  typeDefsToCheck: TypeDefObj[]
+): TypeDefObj | null {
+  const typeDefs = getMetadataTypeDefs();
   const dir = path.dirname(fileName);
   if (isDirPathExpended(dir)) {
     return null;
   }
 
-  if (typeDefsToCheck.includes(this.typeDefs.Document) && !isDirectoryPathElement) {
+  if (typeDefsToCheck.includes(typeDefs.Document) && !isDirectoryPathElement) {
     const pathElements = fileName.split(path.sep);
-    if (
-      pathElements.length >= 3 &&
-      pathElements[pathElements.length - 3] === this.typeDefs.Document.defaultDirectory
-    ) {
-      return this.typeDefs.Document;
+    if (pathElements.length >= 3 && pathElements[pathElements.length - 3] === typeDefs.Document.defaultDirectory) {
+      return typeDefs.Document;
     }
   }
 
-  if (typeDefsToCheck.includes(this.typeDefs.StaticResource)) {
+  if (typeDefsToCheck.includes(typeDefs.StaticResource)) {
     if (isDirectoryPathElement) {
-      if (path.basename(fileName) === this.typeDefs.StaticResource.defaultDirectory) {
-        return this.typeDefs.StaticResource;
+      if (path.basename(fileName) === typeDefs.StaticResource.defaultDirectory) {
+        return typeDefs.StaticResource;
       }
     }
-    return this.getTypeDefinitionByFileNameMatchingDefaultDirectory(dir, true, [this.typeDefs.StaticResource]);
+    return getTypeDefinitionByFileNameMatchingDefaultDirectory(dir, true, [typeDefs.StaticResource]);
   }
 
   return null;
 }
 
 function isDirPathExpended(dir: string): boolean {
-  return (dir === undefined || dir === dir) || dir === path.parse(dir).root || dir === '.';
+  return dir === undefined || dir === null || dir === path.parse(dir).root || dir === '.';
 }
 
-function getMetadataTypeDefs() {
+function getMetadataTypeDefs(): TypeDefObjs {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const metadataInfos = require(path.join(__dirname, '..', '..', 'metadata', 'metadataTypeInfos.json')) as {
     typeDefs: TypeDefObjs;
   };
   return metadataInfos.typeDefs;
 }
 
-  // Returns list of default directories for all metadata types
+// Returns list of default directories for all metadata types
 function getTypeDirectories(): string[] {
   const metadataTypeInfos = getMetadataTypeDefs();
   return Object.values(metadataTypeInfos).map((i) => i.defaultDirectory);
 }
 
-function getTypeDefsByExtension(typeDefs) {
-  const typeDefsByExtension = new Map();
-  Object.keys(typeDefs).forEach((metadataName) => {
-    const metadataTypeExtension = typeDefs[metadataName].ext;
-    typeDefsByExtension.set(metadataTypeExtension, typeDefs[metadataName]);
-  });
-  return typeDefsByExtension;
+function getTypeDefsByExtension(typeDefs: TypeDefObjs): ExtensionTypeDefObjs[] {
+  return Object.keys(typeDefs).map((metadataName) => ({
+    [typeDefs[metadataName].ext]: typeDefs[metadataName],
+  }));
 }
 
-/* given file extension, return type def */
-export default function getTypeDefinitionByFileName(filePath: string, useTrueExtType?: boolean) {
+function getTypeDef(filePath: string): TypeDefObj {
+  const typeDefs = getMetadataTypeDefs();
 
+  if (filePath.includes(`${path.sep}aura${path.sep}`)) {
+    return typeDefs.AuraDefinitionBundle;
+  }
+
+  if (filePath.includes(`${path.sep}waveTemplates${path.sep}`)) {
+    return typeDefs.WaveTemplateBundle;
+  }
+
+  if (filePath.includes(`${path.sep}${typeDefs.ExperienceBundle.defaultDirectory}${path.sep}`)) {
+    return typeDefs.ExperienceBundle;
+  }
+
+  if (filePath.includes(`${path.sep}${LWC_FOLDER_NAME}${path.sep}`)) {
+    return typeDefs.LightningComponentBundle;
+  }
+
+  if (filePath.includes(`${path.sep}${typeDefs.CustomSite.defaultDirectory}${path.sep}`)) {
+    return typeDefs.CustomSite;
+  }
+
+  // CustomObject file names are special, they are all named "object-meta.xml"
+  if (path.basename(filePath) === typeDefs.CustomObject.ext + METADATA_FILE_EXT) {
+    return typeDefs.CustomObject;
+  }
+  return;
+}
+/* given file extension, return type def */
+export default function getTypeDefinitionByFileName(filePath: string, useTrueExtType?: boolean): TypeDefObj {
   const projectPath = SfdxProject.resolveProjectPathSync();
   const typeDefs = getMetadataTypeDefs();
-  
+  let typeDef: TypeDefObj;
+
   let workspaceFilePath = filePath;
   if (filePath.startsWith(projectPath)) {
     workspaceFilePath = filePath.substring(SfdxProject.resolveProjectPathSync().length, filePath.length);
   }
 
-  if (workspaceFilePath.includes(`${path.sep}aura${path.sep}`)) {
-    return typeDefs.AuraDefinitionBundle;
-  }
-
-  if (workspaceFilePath.includes(`${path.sep}waveTemplates${path.sep}`)) {
-    return typeDefs.WaveTemplateBundle;
-  }
-
-  if (workspaceFilePath.includes(`${path.sep}${typeDefs.ExperienceBundle.defaultDirectory}${path.sep}`)) {
-    return typeDefs.ExperienceBundle;
-  }
-
-  if (workspaceFilePath.includes(`${path.sep}${LWC_FOLDER_NAME}${path.sep}`)) {
-    return typeDefs.LightningComponentBundle;
-  }
-
-  if (workspaceFilePath.includes(`${path.sep}${typeDefs.CustomSite.defaultDirectory}${path.sep}`)) {
-    return typeDefs.CustomSite;
-  }
-
-  // CustomObject file names are special, they are all named "object-meta.xml"
-  if (path.basename(workspaceFilePath) === typeDefs.CustomObject.ext + METADATA_FILE_EXT) {
-    return typeDefs.CustomObject;
+  typeDef = getTypeDef(filePath);
+  if (typeDef) {
+    return typeDef;
   }
 
   const typeDefWithNonStandardExtension = getTypeDefinitionByFileNameWithNonStandardExtension(workspaceFilePath);
@@ -211,7 +227,6 @@ export default function getTypeDefinitionByFileName(filePath: string, useTrueExt
   if (typeExtension === undefined || typeExtension === null) {
     return null;
   }
-  /*
 
   typeExtension = typeExtension.replace('.', '');
 
@@ -222,13 +237,13 @@ export default function getTypeDefinitionByFileName(filePath: string, useTrueExt
     .dirname(workspaceFilePath)
     .split(path.sep)
     .find((i) => !!i && typeDirectories.includes(i));
-  let typeDef: TypeDefObj;
+
   if (defaultDirectory) {
     typeDef = defs.find((def) => def.ext === typeExtension && def.defaultDirectory === defaultDirectory);
   }
   if (typeDef === undefined || typeDef === null) {
     const typeDefsByExtension = getTypeDefsByExtension(typeDefs);
-    typeDef = typeDefsByExtension.get(typeExtension);
+    typeDef = typeDefsByExtension[typeExtension] as TypeDefObj;
   }
 
   if (!(typeDef === undefined || typeDef === null)) {
@@ -243,5 +258,4 @@ export default function getTypeDefinitionByFileName(filePath: string, useTrueExt
     return typeDef;
   }
   return null;
-  */
 }

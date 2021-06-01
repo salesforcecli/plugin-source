@@ -30,6 +30,14 @@ export interface DnsLookupObject {
   family: number;
 }
 
+export interface FlexiPageRecord {
+  attributes: {
+    type: string;
+    url: string;
+  };
+  Id: string;
+}
+
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
 
@@ -60,22 +68,18 @@ export class Open extends SfdxCommand {
     }),
   };
 
-
   public async run(): Promise<OpenCommandResult> {
-    this.ux.warn('flags: ' + JSON.stringify(this.flags, null, 2));
     const type = getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile));
 
     if (type) {
+      this.ux.warn('Type Definition: ' + type.metadataName);
       if (type.metadataName === 'FlexiPage') {
-        // do work
-        this.ux.warn('Type Definition: ' + type.metadataName);
+        const url = await this.setUpOpenPath();
+        const urlObject = await this.open(url);
+        this.ux.styledObject(urlObject);
+        return urlObject;
       }
     }
-
-    const url = await this.setUpOpenPath();
-    const urlObject = await this.open(url);
-    this.ux.styledObject(urlObject);
-    return urlObject;
   }
 
   /* this is just temporal untill we find an http request library */
@@ -102,8 +106,8 @@ export class Open extends SfdxCommand {
     return await lookup(`${domain}.lightning.force.com`);
   }
 
-  private async getUrl(retURL: string): Promise<string> {
-    const frontDoor = await this.getOrgFrontDoor();
+  private getUrl(retURL: string): string {
+    const frontDoor = this.getOrgFrontDoor();
     return `${frontDoor}&retURL=${encodeURIComponent(decodeURIComponent(retURL))}`;
   }
 
@@ -114,19 +118,16 @@ export class Open extends SfdxCommand {
     return response && !response.includes('lightning/access/orgAccessDenied.jsp');
   }
 
-  private async getOrgFrontDoor(tryRefresh = true): Promise<string> {
-    if (tryRefresh) {
-      await this.org.refreshAuth();
-    }
+  private getOrgFrontDoor(): string {
     const connection = this.org.getConnection();
     const { accessToken, instanceUrl } = connection.getAuthInfoFields();
-    return `${instanceUrl.replace(new RegExp('\/$'), '')}/secur/frontdoor.jsp?sid=${accessToken}`;
+    return `${instanceUrl.replace(new RegExp('/$'), '')}/secur/frontdoor.jsp?sid=${accessToken}`;
   }
 
   private async open(src: string): Promise<UrlObject> {
     const connection = this.org.getConnection();
     const { username, orgId } = connection.getAuthInfoFields();
-    const url = await this.getUrl(src);
+    const url = this.getUrl(src);
     const act = (): UrlObject =>
       this.flags.urlonly ? { url, username, orgId } : openBrowser(url, { url, username, orgId });
     if (sfdc.isInternalUrl(url)) {
@@ -134,7 +135,8 @@ export class Open extends SfdxCommand {
     }
 
     try {
-      const domain = url.match(/https?\:\/\/([^.]*)/)[1];
+      const domainRegex = new RegExp(/https?:\/\/([^.]*)/);
+      const domain = domainRegex.exec(url)[1];
       const result = await this.checkLightningDomain(domain);
       if (result) {
         return act();
@@ -149,7 +151,7 @@ export class Open extends SfdxCommand {
     try {
       const queryResult = await connection.tooling.query(`SELECT id FROM flexipage WHERE DeveloperName='${flexipage}'`);
       if (queryResult.totalSize === 1 && queryResult.records) {
-        const record: any = queryResult.records[0];
+        const record = queryResult.records[0] as FlexiPageRecord;
         return record.Id;
       } else {
         return undefined;
