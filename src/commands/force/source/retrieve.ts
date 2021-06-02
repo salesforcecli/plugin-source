@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, PollingClient } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -91,13 +91,7 @@ export class Retrieve extends SourceCommand {
       output: this.project.getDefaultPackage().fullPath,
       packageNames: this.getFlag<string[]>('packagenames'),
     });
-
-    const id = mdapiRetrieve.retrieveId;
-    const pollingOptions: Partial<PollingClient.Options> = {
-      frequency: Duration.seconds(1),
-      timeout: this.getFlag<Duration>('wait'),
-    };
-    this.retrieveResult = await mdapiRetrieve.pollStatus(id, pollingOptions);
+    this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
   }

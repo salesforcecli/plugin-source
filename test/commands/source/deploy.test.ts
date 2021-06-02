@@ -104,7 +104,7 @@ describe('force:source:deploy', () => {
     pollStub = sandbox.stub().resolves(deployResult);
     deployStub = sandbox.stub().resolves({
       pollStatus: pollStub,
-      deployId: deployResult.response.id,
+      getId: () => deployResult.response.id,
     });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: deployStub,

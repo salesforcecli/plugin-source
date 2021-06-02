@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, PollingClient } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { AsyncResult, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
@@ -150,8 +150,8 @@ export class Deploy extends DeployCommand {
           testLevel: this.getFlag<TestLevel>('testlevel'),
         },
       });
-      this.asyncDeployResult = { id: deploy.deployId };
-      this.updateDeployId(deploy.deployId);
+      this.asyncDeployResult = { id: deploy.getId() };
+      this.updateDeployId(deploy.getId());
 
       if (!this.isAsync) {
         // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
@@ -159,12 +159,7 @@ export class Deploy extends DeployCommand {
           this.initProgressBar();
           this.progress(deploy);
         }
-
-        const pollingOptions: Partial<PollingClient.Options> = {
-          frequency: Duration.milliseconds(500),
-          timeout: waitDuration,
-        };
-        this.deployResult = await deploy.pollStatus(deploy.deployId, pollingOptions);
+        this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
       }
     }
 
@@ -238,14 +233,13 @@ export class Deploy extends DeployCommand {
       // the numCompTot. isn't computed right away, wait to start until we know how many we have
       if (data.numberComponentsTotal) {
         startProgressBar(data.numberComponentsTotal + data.numberTestsTotal);
+        this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
       }
 
       // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
-      if (data.numberTestsTotal) {
+      if (data.numberTestsTotal && data.numberComponentsTotal) {
         this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
       }
-
-      this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
     });
 
     // any thing else should stop the progress bar

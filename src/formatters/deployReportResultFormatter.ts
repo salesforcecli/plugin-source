@@ -6,12 +6,15 @@
  */
 
 import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { getString } from '@salesforce/ts-types';
 import { DeployResultFormatter } from './deployResultFormatter';
 
 export type DeployReportCommandResult = MetadataApiDeployStatus;
 
 export class DeployReportResultFormatter extends DeployResultFormatter {
   public display(): void {
+    const status = getString(this, 'result.response.status', 'unknown');
+    this.ux.log(`Status: ${status}`);
     if (!this.isVerbose()) {
       const componentsTotal = this.getNumResult('numberComponentsTotal');
       if (componentsTotal) {
@@ -27,11 +30,9 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
         const deployErrors = `Errors: ${componentErrors}`;
         const tests = `Tests Complete: ${testsCompleted}/${testsTotal}`;
         const testErrs = `Errors: ${testErrors}`;
-        this.ux.log(`Status: ${this.result.response.status}`);
         this.ux.log(`${deploys} ${deployErrors}`);
         this.ux.log(`${tests} ${testErrs}`);
       } else {
-        this.ux.log(`Status: ${this.result.response.status}`);
         this.ux.log('No components deployed');
       }
       return;
