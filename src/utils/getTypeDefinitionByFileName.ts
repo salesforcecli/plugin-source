@@ -11,7 +11,7 @@ import { fs, SfdxProject } from '@salesforce/core';
 /**
  * The minimum configuration for a metadata entity subtype (eg. CustomField).
  */
-export interface DecomposedSubtypeConfig {
+interface DecomposedSubtypeConfig {
   metadataName: string; // Name of the metadata subtype (eg. CustomField)
   ext: string; // The normal file extension (eg. field)
   defaultDirectory: string; // The default directory (eg. fields)
@@ -24,7 +24,7 @@ export interface DecomposedSubtypeConfig {
  * with it in the metadata repository. This configuration (and any extension) drives the runtime behavior of
  * decomposition.
  */
-export interface DecompositionConfig {
+interface DecompositionConfig {
   metadataName: string; // Name of the aggregate metadata entity (eg. CustomObject)
   isGlobal: boolean; // Is this a global (singleton) metadata entity (eg. CustomLabels)?
   isEmptyContainer: boolean; // Is there anything left to represent once the subtypes are extracted?
@@ -58,7 +58,7 @@ export interface TypeDefObj {
   parent: TypeDefObj;
 }
 
-interface TypeDefObjs {
+export interface TypeDefObjs {
   [key: string]: TypeDefObj;
 }
 
