@@ -214,7 +214,7 @@ export default function getTypeDefinitionByFileName(filePath: string, useTrueExt
 
   let workspaceFilePath = filePath;
   if (filePath.startsWith(projectPath)) {
-    workspaceFilePath = filePath.substring(SfdxProject.resolveProjectPathSync().length, filePath.length);
+    workspaceFilePath = filePath.substring(projectPath.length, filePath.length);
   }
 
   typeDef = getTypeDef(filePath);
