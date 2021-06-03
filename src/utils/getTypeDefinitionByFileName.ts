@@ -146,17 +146,24 @@ function getTypeDefinitionByFileNameMatchingDefaultDirectory(
   return null;
 }
 
-function isDirPathExpended(dir: string): boolean {
+function isDirPathExpended(dir?: string): boolean {
   return dir === undefined || dir === null || dir === path.parse(dir).root || dir === '.';
 }
 
-function getMetadataTypeDefs(): TypeDefObjs {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const metadataInfos = require(path.join(__dirname, '..', '..', 'metadata', 'metadataTypeInfos.json')) as {
+const getMetadataTypeDefs = (function (): () => TypeDefObjs {
+  let metadataInfos: {
     typeDefs: TypeDefObjs;
   };
-  return metadataInfos.typeDefs;
-}
+  return function (): TypeDefObjs {
+    const filePath = path.join(__dirname, '..', '..', 'metadata', 'metadataTypeInfos.json');
+    if (!metadataInfos) {
+      metadataInfos = (fs.readJsonSync(filePath) as unknown) as {
+        typeDefs: TypeDefObjs;
+      };
+    }
+    return metadataInfos.typeDefs;
+  };
+})();
 
 // Returns list of default directories for all metadata types
 function getTypeDirectories(): string[] {
