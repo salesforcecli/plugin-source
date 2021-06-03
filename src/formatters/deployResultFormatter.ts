@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
@@ -86,14 +85,14 @@ export class DeployResultFormatter extends ResultFormatter {
     return getString(this.result, 'response.status') === status;
   }
 
+  // Returns true if the components returned in the server response
+  // were mapped to local source in the ComponentSet.
   protected hasMappedComponents(): boolean {
-    // These are components that have been mapped to local source
-    // by a ComponentSet.
     return getNumber(this.result, 'components.size', 0) > 0;
   }
 
+  // Returns true if the server response contained components.
   protected hasComponents(): boolean {
-    // These are components in the server response
     const successes = getNumber(this.result, 'response.details.componentSuccesses.length', 0) > 0;
     const failures = getNumber(this.result, 'response.details.componentFailures.length', 0) > 0;
     return successes || failures;
@@ -117,27 +116,12 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected displaySuccesses(): void {
     if (this.isSuccess() && this.hasComponents()) {
-      //  sort by type then filename then fullname
-      const files = this.fileResponses.sort((i, j) => {
-        if (i.fullName === j.fullName) {
-          // same metadata type, according to above comment sort on filename
-          if (i.filePath === j.filePath) {
-            // same filename's according to comment sort by fullName
-            return i.fullName < j.fullName ? 1 : -1;
-          }
-          return i.filePath < j.filePath ? 1 : -1;
-        }
-        return i.type < j.type ? 1 : -1;
-      });
-      // get relative path for table output
-      files.forEach((file) => {
-        if (file.filePath) {
-          file.filePath = path.relative(process.cwd(), file.filePath);
-        }
-      });
+      this.sortFileResponses(this.fileResponses);
+      this.asRelativePaths(this.fileResponses);
+
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
-      this.ux.table(files, {
+      this.ux.table(this.fileResponses, {
         columns: [
           { key: 'fullName', label: 'FULL NAME' },
           { key: 'type', label: 'TYPE' },
@@ -149,16 +133,10 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected displayFailures(): void {
     if (this.hasStatus(RequestStatus.Failed) && this.hasComponents()) {
-      // sort by filename then fullname
-      const failures = this.fileResponses
-        .filter((fileResponse) => fileResponse.state === 'Failed')
-        .sort((i, j) => {
-          if (i.filePath === j.filePath) {
-            // if they have the same directoryName then sort by fullName
-            return i.fullName < j.fullName ? 1 : -1;
-          }
-          return i.filePath < j.filePath ? 1 : -1;
-        });
+      const failures = this.fileResponses.filter((f) => f.state === 'Failed');
+      this.sortFileResponses(failures);
+      this.asRelativePaths(failures);
+
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       // TODO: do we really need the project path or file path in the table?
