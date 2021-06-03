@@ -49,7 +49,7 @@ export class Cancel extends DeployCommand {
       id: deployId,
     });
 
-    deploy.cancel();
+    await deploy.cancel();
 
     this.deployResult = await this.poll(deployId);
   }
