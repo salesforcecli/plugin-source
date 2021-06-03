@@ -204,13 +204,6 @@ export class Deploy extends DeployCommand {
       usernameOrConnection: this.org.getUsername(),
       components: new ComponentSet(),
     });
-    if (this.isAsync) {
-      // TODO: add async messaging with Steve's async deploy changes
-      this.ux.log('ASYNC quick deploy in progress');
-    } else {
-      // TODO: add the sync polling from Steve's PR to SDR
-      this.ux.log('SYNC quick deploy in progress');
-    }
 
     // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
     if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
@@ -218,7 +211,12 @@ export class Deploy extends DeployCommand {
       this.progress(deploy);
     }
     const validatedDeployId = await deploy.deployRecentValidation(this.isRest);
-
+    if (this.isAsync) {
+      // TODO: add async messaging with Steve's async deploy changes
+      this.ux.log('ASYNC quick deploy in progress');
+    } else {
+      await this.poll(validatedDeployId);
+    }
     return this.report(validatedDeployId);
   }
 
