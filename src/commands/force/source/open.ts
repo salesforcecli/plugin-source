@@ -10,9 +10,9 @@ import * as path from 'path';
 import * as https from 'https';
 import * as dns from 'dns';
 import * as util from 'util';
-import { exec } from 'child_process';
+import * as open from 'open';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
-import { Messages, sfdc, SfdxError } from '@salesforce/core';
+import { Messages, sfdc, SfdxError, Org } from '@salesforce/core';
 import getTypeDefinitionByFileName from '../../../utils/getTypeDefinitionByFileName';
 
 export interface OpenCommandResult {
@@ -42,7 +42,7 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
 
 function openBrowser(url: string, options: UrlObject): UrlObject {
-  exec(`open ${url}`);
+  void open(url);
   return options;
 }
 
@@ -80,10 +80,14 @@ export class Open extends SfdxCommand {
         return urlObject;
       }
     }
+    const frontDoorUrl: string = await this.buildFrontdoorUrl();
+    const result = await this.open(frontDoorUrl);
+    this.ux.styledObject(result);
+    return result;
   }
 
   /* this is just temporal untill we find an http request library */
-  private readUrl(url): Promise<string> {
+  private readUrl(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
       https.get(url, (response) => {
         response.setEncoding('utf8');
@@ -106,30 +110,33 @@ export class Open extends SfdxCommand {
     return await lookup(`${domain}.lightning.force.com`);
   }
 
-  private getUrl(retURL: string): string {
-    const frontDoor = this.getOrgFrontDoor();
-    return `${frontDoor}&retURL=${encodeURIComponent(decodeURIComponent(retURL))}`;
+  private async getUrl(retURL: string): Promise<string> {
+    const frontDoorUrl: string = await this.buildFrontdoorUrl();
+    return `${frontDoorUrl}&retURL=${encodeURIComponent(decodeURIComponent(retURL))}`;
   }
 
   private async isSalesforceOneEnabled(): Promise<boolean> {
     const src = 'one/one.app';
-    const { url } = await this.open(src);
+    const { url } = await this.open(src, true);
     const response = await this.readUrl(url);
     return response && !response.includes('lightning/access/orgAccessDenied.jsp');
   }
 
-  private getOrgFrontDoor(): string {
+  private async buildFrontdoorUrl(): Promise<string> {
+    await this.org.refreshAuth(); // we need a live accessToken for the frontdoor url
     const connection = this.org.getConnection();
-    const { accessToken, instanceUrl } = connection.getAuthInfoFields();
-    return `${instanceUrl.replace(new RegExp('/$'), '')}/secur/frontdoor.jsp?sid=${accessToken}`;
+    const { accessToken } = connection;
+    const instanceUrl = this.org.getField(Org.Fields.INSTANCE_URL) as string;
+    const instanceUrlClean = instanceUrl.replace(/\/$/, '');
+    return `${instanceUrlClean}/secur/frontdoor.jsp?sid=${accessToken}`;
   }
 
-  private async open(src: string): Promise<UrlObject> {
+  private async open(src: string, urlonly?: boolean): Promise<UrlObject> {
     const connection = this.org.getConnection();
     const { username, orgId } = connection.getAuthInfoFields();
-    const url = this.getUrl(src);
+    const url = await this.getUrl(src);
     const act = (): UrlObject =>
-      this.flags.urlonly ? { url, username, orgId } : openBrowser(url, { url, username, orgId });
+      this.flags.urlonly || urlonly ? { url, username, orgId } : openBrowser(url, { url, username, orgId });
     if (sfdc.isInternalUrl(url)) {
       return act();
     }
