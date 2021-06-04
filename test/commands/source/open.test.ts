@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -16,8 +16,8 @@ const orgId = '000000000000000';
 const username = 'test@test.org';
 const testInstance = 'https://cs1.my.salesforce.com';
 const accessToken = 'testAccessToken';
-const sourcefile = '/home/dreamhouse-lwc/force-app/main/default/flexipages/MyPage.flexipage-meta.xml';
-const sourcefile2 = '/home/dreamhouse-lwc/force-app/main/default/layout/MyLayout.layout-meta.xml';
+const flexiPageSourcefile = '/home/dreamhouse-lwc/force-app/main/default/flexipages/MyPage.flexipage-meta.xml';
+const layouSourcefile = '/home/dreamhouse-lwc/force-app/main/default/layout/MyLayout.layout-meta.xml';
 const lexiPageRecordId = '0M00R000000FmzQSAS';
 
 describe('force:source:open', () => {
@@ -54,7 +54,7 @@ describe('force:source:open', () => {
   });
   test
     .stdout()
-    .command(['force:source:open', '--sourcefile', sourcefile, '--urlonly'])
+    .command(['force:source:open', '--sourcefile', flexiPageSourcefile, '--urlonly'])
     .it('given a flexipage source file return the lightning app builder url for it', (ctx) => {
       expect(ctx.stdout).to.include(testInstance);
       expect(ctx.stdout).to.include(encodeURIComponent(decodeURIComponent('visualEditor/appBuilder.app')));
@@ -62,7 +62,7 @@ describe('force:source:open', () => {
     });
   test
     .stdout()
-    .command(['force:source:open', '--sourcefile', sourcefile2, '--urlonly'])
+    .command(['force:source:open', '--sourcefile', layouSourcefile, '--urlonly'])
     .it('given a non flexipage source file return frontdoor url', (ctx) => {
       expect(ctx.stdout).to.include(testInstance);
       expect(ctx.stdout).not.to.include(encodeURIComponent(decodeURIComponent('visualEditor/appBuilder.app')));
