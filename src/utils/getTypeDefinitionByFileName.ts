@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { fs, SfdxProject } from '@salesforce/core';
+import { fs } from '@salesforce/core';
 
 /**
  * The minimum configuration for a metadata entity subtype (eg. CustomField).
@@ -207,8 +207,11 @@ function getTypeDef(filePath: string): TypeDefObj {
   return;
 }
 /* given file extension, return type def */
-export default function getTypeDefinitionByFileName(filePath: string, useTrueExtType?: boolean): TypeDefObj {
-  const projectPath = SfdxProject.resolveProjectPathSync();
+export default function getTypeDefinitionByFileName(
+  filePath: string,
+  projectPath: string,
+  useTrueExtType?: boolean
+): TypeDefObj {
   const typeDefs = getMetadataTypeDefs();
   let typeDef: TypeDefObj;
 

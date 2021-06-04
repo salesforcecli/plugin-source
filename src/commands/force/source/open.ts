@@ -69,7 +69,8 @@ export class Open extends SfdxCommand {
   };
 
   public async run(): Promise<OpenCommandResult> {
-    const type = getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile));
+    const projectPath = this.project.getPath();
+    const type = getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile), projectPath);
 
     if (type) {
       this.ux.warn('Type Definition: ' + type.metadataName);

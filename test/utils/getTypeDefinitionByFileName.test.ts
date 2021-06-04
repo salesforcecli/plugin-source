@@ -7,15 +7,14 @@
 
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { fs, SfdxProject } from '@salesforce/core';
+import { fs } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
-import getTypeDefinitionByFileName /* , { TypeDefObjs } */ from '../../src/utils/getTypeDefinitionByFileName';
+import getTypeDefinitionByFileName from '../../src/utils/getTypeDefinitionByFileName';
 
 describe('getTypeDefinitionByFileName', () => {
   const sandbox = sinon.createSandbox();
 
   let fileExistsSyncStub: sinon.SinonStub;
-  let resolveProjectPathSyncStub: sinon.SinonStub;
 
   afterEach(() => {
     sandbox.restore();
@@ -23,14 +22,12 @@ describe('getTypeDefinitionByFileName', () => {
 
   beforeEach(() => {
     fileExistsSyncStub = stubMethod(sandbox, fs, 'existsSync');
-    resolveProjectPathSyncStub = stubMethod(sandbox, SfdxProject, 'resolveProjectPathSync');
   });
 
   it('correctly detects FlexiPage type', () => {
     const filePath = '/home/dreamhouse-lwc/force-app/main/default/flexipages/MyPage.flexipage-meta.xml';
     fileExistsSyncStub.returns(false);
-    resolveProjectPathSyncStub.returns('/home/dreamhouse-lwc');
-    const type = getTypeDefinitionByFileName(filePath);
+    const type = getTypeDefinitionByFileName(filePath, '/home/dreamhouse-lwc');
 
     expect(type).to.have.property('metadataName');
     expect(type.metadataName).to.equal('FlexiPage');
@@ -39,8 +36,7 @@ describe('getTypeDefinitionByFileName', () => {
   it('correctly detects Layout of documents', () => {
     const filePath = '/home/dreamhouse-lwc/force-app/main/default/layouts/MyLayout.layout-meta.xml';
     fileExistsSyncStub.returns(false);
-    resolveProjectPathSyncStub.returns('/home/dreamhouse-lwc');
-    const type = getTypeDefinitionByFileName(filePath);
+    const type = getTypeDefinitionByFileName(filePath, '/home/dreamhouse-lwc');
 
     expect(type).to.have.property('metadataName');
     expect(type.metadataName).to.equal('Layout');
