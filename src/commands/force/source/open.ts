@@ -15,10 +15,6 @@ import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError, Org } from '@salesforce/core';
 import getTypeDefinitionByFileName from '../../../utils/getTypeDefinitionByFileName';
 
-export interface OpenCommandResult {
-  url: string;
-}
-
 export interface UrlObject {
   url: string;
   orgId: string;
@@ -68,7 +64,7 @@ export class Open extends SfdxCommand {
     }),
   };
 
-  public async run(): Promise<OpenCommandResult> {
+  public async run(): Promise<UrlObject> {
     const projectPath = this.project.getPath();
     const type = getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile), projectPath);
 
@@ -77,7 +73,7 @@ export class Open extends SfdxCommand {
         const openPath = await this.setUpOpenPath();
         const { orgId, username, url } = await this.open(openPath);
         this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
-        return { url };
+        return { orgId, username, url };
       }
     }
 
