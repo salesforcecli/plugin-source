@@ -73,18 +73,26 @@ export class Open extends SfdxCommand {
     const type = getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile), projectPath);
 
     if (type) {
-      this.ux.warn('Type Definition: ' + type.metadataName);
       if (type.metadataName === 'FlexiPage') {
-        const url = await this.setUpOpenPath();
-        const urlObject = await this.open(url);
-        this.ux.styledObject(urlObject);
-        return urlObject;
+        const openPath = await this.setUpOpenPath();
+        const { orgId, username, url } = await this.open(openPath);
+        this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
+        return { url };
       }
     }
-    const frontDoorUrl: string = await this.buildFrontdoorUrl();
-    const result = await this.open(frontDoorUrl);
-    this.ux.styledObject(result);
-    return result;
+
+    return await this.handleUnsupportedTypes();
+  }
+
+  private async handleUnsupportedTypes(): Promise<UrlObject> {
+    const openPath: string = await this.buildFrontdoorUrl();
+    const { orgId, username, url } = await this.open(openPath);
+    this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
+    return {
+      orgId,
+      username,
+      url,
+    };
   }
 
   /* this is just temporal untill we find an http request library */
