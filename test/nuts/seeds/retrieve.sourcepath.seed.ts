@@ -13,7 +13,7 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
@@ -22,6 +22,8 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
       executable: EXECUTABLE,
       nut: __filename,
     });
+    await testkit.trackGlobs(testkit.packageGlobs);
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
@@ -35,18 +37,19 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
   });
 
   describe('--sourcepath flag', () => {
-    for (const testCase of REPO.deploy.sourcepath) {
-      const toDeploy = path.normalize(testCase.toDeploy);
-      it(`should deploy ${toDeploy}`, async () => {
-        await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
-        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
+    for (const testCase of REPO.retrieve.sourcepath) {
+      const toRetrieve = path.normalize(testCase.toRetrieve);
+      it(`should retrieve ${toRetrieve}`, async () => {
+        await testkit.modifyLocalGlobs(testCase.toVerify);
+        await testkit.retrieve({ args: `--sourcepath ${toRetrieve}` });
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
-      const deploy = await testkit.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'SourcePathInvalid';
-      testkit.expect.errorToHaveName(deploy, expectedError);
+      const retrieve = await testkit.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
+      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnexpectedFileFound';
+      testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 });

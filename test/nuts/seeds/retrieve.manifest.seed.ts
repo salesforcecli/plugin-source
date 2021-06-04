@@ -13,7 +13,7 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
@@ -22,9 +22,8 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
-    // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
+    await testkit.trackGlobs(testkit.packageGlobs);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
-    await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
   });
 
   after(async () => {
@@ -38,21 +37,23 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   });
 
   describe('--manifest flag', () => {
-    for (const testCase of REPO.deploy.manifest) {
-      const toDeploy = path.normalize(testCase.toDeploy);
-      it(`should deploy ${toDeploy}`, async () => {
-        await testkit.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
+    for (const testCase of REPO.retrieve.manifest) {
+      const toRetrieve = path.normalize(testCase.toRetrieve);
+      it(`should retrieve ${toRetrieve}`, async () => {
+        // generate package.xml to use with the --manifest param
+        await testkit.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
 
-        await testkit.deploy({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeDeployed(testCase.toVerify);
+        await testkit.modifyLocalGlobs(testCase.toVerify);
+        await testkit.retrieve({ args: `--manifest ${packageXml}` });
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
     it('should throw an error if the package.xml is not valid', async () => {
-      const deploy = await testkit.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
+      const retrieve = await testkit.retrieve({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
       const expectedError = testkit.isLocalExecutable() ? 'Error' : 'InvalidManifestError';
-      testkit.expect.errorToHaveName(deploy, expectedError);
+      testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });
 });

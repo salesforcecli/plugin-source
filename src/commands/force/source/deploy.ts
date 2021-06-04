@@ -116,7 +116,7 @@ export class Deploy extends DeployCommand {
   protected async deploy(): Promise<void> {
     this.isAsync = this.getFlag<Duration>('wait').quantity === 0;
     this.isRest = await this.isRestDeploy();
-    this.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
+    this.ux.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
@@ -147,7 +147,7 @@ export class Deploy extends DeployCommand {
             rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
             checkOnly: this.getFlag<boolean>('checkonly', false),
             runTests: this.getFlag<string[]>('runtests'),
-            testLevel: this.getFlag<TestLevel>('testlevel'),
+            testLevel: this.getFlag<TestLevel>('testlevel', 'NoTestRun'),
           },
         });
 

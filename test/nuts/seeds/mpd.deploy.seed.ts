@@ -5,15 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
 context('MPD Deploy NUTs [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
       executable: EXECUTABLE,
       nut: __filename,
@@ -21,7 +21,13 @@ context('MPD Deploy NUTs [exec: %EXECUTABLE%]', () => {
   });
 
   after(async () => {
-    await nutshell?.clean();
+    try {
+      await testkit?.clean();
+    } catch (e) {
+      // if the it fails to clean, don't throw so NUTs will pass
+      // eslint-disable-next-line no-console
+      console.log('Clean Failed: ', e);
+    }
   });
 
   describe('CustomLabels', () => {
@@ -31,32 +37,32 @@ context('MPD Deploy NUTs [exec: %EXECUTABLE%]', () => {
 
     describe('--sourcepath', () => {
       it('should deploy all CustomLabels from a single package', async () => {
-        await nutshell.deploy({ args: `--sourcepath ${path.join('force-app', 'main', 'default', 'labels')}` });
-        await nutshell.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.deploy({ args: `--sourcepath ${path.join('force-app', 'main', 'default', 'labels')}` });
+        await testkit.expect.filesToBeDeployed([forceAppLabels]);
       });
 
       it('should deploy all CustomLabels from multiple packages', async () => {
-        await nutshell.deploy({
+        await testkit.deploy({
           args: `--sourcepath ${path.join('force-app', 'main', 'default', 'labels')},${path.join('my-app', 'labels')}`,
         });
-        await nutshell.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
       });
     });
 
     describe('--metadata', () => {
       it('should deploy all CustomLabels', async () => {
-        await nutshell.deploy({ args: '--metadata CustomLabels' });
-        await nutshell.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.deploy({ args: '--metadata CustomLabels' });
+        await testkit.expect.filesToBeDeployed([forceAppLabels]);
       });
 
       it('should deploy individual CustomLabel', async () => {
-        await nutshell.deploy({ args: '--metadata CustomLabel:force_app_Label_1' });
-        await nutshell.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.deploy({ args: '--metadata CustomLabel:force_app_Label_1' });
+        await testkit.expect.filesToBeDeployed([forceAppLabels]);
       });
 
       it('should deploy multiple individual CustomLabel', async () => {
-        await nutshell.deploy({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
-        await nutshell.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
+        await testkit.deploy({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
+        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
       });
     });
   });
