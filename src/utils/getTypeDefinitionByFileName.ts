@@ -157,7 +157,7 @@ const getMetadataTypeDefs = (function (): () => TypeDefObjs {
   return function (): TypeDefObjs {
     const filePath = path.join(__dirname, '..', '..', 'metadata', 'metadataTypeInfos.json');
     if (!metadataInfos) {
-      metadataInfos = (fs.readJsonSync(filePath) as unknown) as {
+      metadataInfos = fs.readJsonSync(filePath) as unknown as {
         typeDefs: TypeDefObjs;
       };
     }
