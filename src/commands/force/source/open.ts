@@ -167,7 +167,7 @@ export class Open extends SfdxCommand {
       } else {
         return undefined;
       }
-    } catch (err) {
+    } catch (error) {
       return undefined;
     }
   }

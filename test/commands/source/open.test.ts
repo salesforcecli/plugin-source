@@ -5,12 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { $$, expect, test } from '@salesforce/command/lib/test';
-import { Org, Messages } from '@salesforce/core';
+import { Org } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { Open } from '../../../src/commands/force/source/open';
-
-Messages.importMessagesDirectory(__dirname);
-// const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
 
 const orgId = '000000000000000';
 const username = 'test@test.org';
@@ -18,12 +15,9 @@ const testInstance = 'https://cs1.my.salesforce.com';
 const accessToken = 'testAccessToken';
 const flexiPageSourcefile = '/home/dreamhouse-lwc/force-app/main/default/flexipages/MyPage.flexipage-meta.xml';
 const layouSourcefile = '/home/dreamhouse-lwc/force-app/main/default/layout/MyLayout.layout-meta.xml';
-const lexiPageRecordId = '0M00R000000FmzQSAS';
+const flexiPageRecordId = '0M00R000000FmzQSAS';
 
 describe('force:source:open', () => {
-  const spies = new Map();
-  afterEach(() => spies.clear());
-
   beforeEach(async function () {
     $$.SANDBOX.restore();
     stubMethod($$.SANDBOX, Org, 'create').resolves(Org.prototype);
@@ -45,7 +39,7 @@ describe('force:source:open', () => {
             done: true,
             queryLocator: null,
             entityTypeName: 'FlexiPage',
-            records: [{ Id: lexiPageRecordId }],
+            records: [{ Id: flexiPageRecordId }],
           });
         },
       },
@@ -67,13 +61,14 @@ describe('force:source:open', () => {
     .it('given a flexipage source file return the lightning app builder url for it', (ctx) => {
       expect(ctx.stdout).to.include(testInstance);
       expect(ctx.stdout).to.include(encodeURIComponent(decodeURIComponent('visualEditor/appBuilder.app')));
-      expect(ctx.stdout).to.include(lexiPageRecordId);
+      expect(ctx.stdout).to.include(flexiPageRecordId);
     });
   test
     .stdout()
     .command(['force:source:open', '--sourcefile', layouSourcefile, '--urlonly'])
     .it('given a non flexipage source file return frontdoor url', (ctx) => {
       expect(ctx.stdout).to.include(testInstance);
+      expect(ctx.stdout).to.include(encodeURIComponent(decodeURIComponent('secur/frontdoor.jsp')));
       expect(ctx.stdout).not.to.include(encodeURIComponent(decodeURIComponent('visualEditor/appBuilder.app')));
     });
 });
