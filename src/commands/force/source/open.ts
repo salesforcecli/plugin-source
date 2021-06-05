@@ -53,16 +53,11 @@ export class Open extends SfdxCommand {
     sourcefile: flags.filepath({
       char: 'f',
       required: true,
-      hidden: false,
       description: messages.getMessage('SourceOpenFileDescription'),
-      longDescription: messages.getMessage('SourceOpenFileLongDescription'),
     }),
     urlonly: flags.boolean({
       char: 'r',
-      required: false,
-      hidden: false,
       description: messages.getMessage('SourceOpenPathDescription'),
-      longDescription: messages.getMessage('SourceOpenPathLongDescription'),
     }),
   };
 
