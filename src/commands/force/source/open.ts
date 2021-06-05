@@ -11,9 +11,11 @@ import * as https from 'https';
 import * as dns from 'dns';
 import * as util from 'util';
 import * as open from 'open';
+import { fs } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError, Org } from '@salesforce/core';
-import getTypeDefinitionByFileName from '../../../utils/getTypeDefinitionByFileName';
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { PackageTypeMembers } from '@salesforce/source-deploy-retrieve/lib/src/collections/types';
 
 export interface UrlObject {
   url: string;
@@ -65,30 +67,33 @@ export class Open extends SfdxCommand {
   };
 
   public async run(): Promise<UrlObject> {
-    const projectPath = this.project.getPath();
-    const type = getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile), projectPath);
+    const type = this.getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile));
+    const { orgId, username, url } =
+      type && type.name === 'FlexiPage' ? await this.handleSupportedTypes() : await this.handleUnsupportedTypes();
 
-    if (type) {
-      if (type.metadataName === 'FlexiPage') {
-        const openPath = await this.setUpOpenPath();
-        const { orgId, username, url } = await this.open(openPath);
-        this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
-        return { orgId, username, url };
-      }
+    this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
+
+    return { orgId, username, url };
+  }
+
+  private getTypeDefinitionByFileName(fsPath: string): PackageTypeMembers | undefined {
+    if (fs.fileExistsSync(fsPath)) {
+      const components = ComponentSet.fromSource(fsPath);
+      const manifestObject = components.getObject();
+      const { types } = manifestObject.Package;
+      return types[0];
     }
+    return undefined;
+  }
 
-    return await this.handleUnsupportedTypes();
+  private async handleSupportedTypes(): Promise<UrlObject> {
+    const openPath = await this.setUpOpenPath();
+    return await this.open(openPath);
   }
 
   private async handleUnsupportedTypes(): Promise<UrlObject> {
     const openPath: string = await this.buildFrontdoorUrl();
-    const { orgId, username, url } = await this.open(openPath);
-    this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
-    return {
-      orgId,
-      username,
-      url,
-    };
+    return await this.open(openPath);
   }
 
   /* this is just temporal untill we find an http request library */
