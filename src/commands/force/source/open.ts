@@ -80,8 +80,7 @@ export class Open extends SfdxCommand {
     if (fs.fileExistsSync(fsPath)) {
       const components = ComponentSet.fromSource(fsPath);
       const manifestObject = components.getObject();
-      const { types } = manifestObject.Package;
-      return types[0];
+      return manifestObject.Package.types[0];
     }
     return undefined;
   }

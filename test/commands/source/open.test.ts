@@ -51,6 +51,15 @@ describe('force:source:open', () => {
       },
     });
     stubMethod($$.SANDBOX, Open.prototype, 'readUrl').resolves('body');
+    stubMethod($$.SANDBOX, Open.prototype, 'getTypeDefinitionByFileName').callsFake((fsPath: string) => {
+      if (fsPath.includes('flexipage-meta.xml')) {
+        return {
+          members: ['MyFlexiPage'],
+          name: 'FlexiPage',
+        };
+      }
+      return undefined;
+    });
   });
   test
     .stdout()
