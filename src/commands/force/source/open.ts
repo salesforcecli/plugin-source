@@ -63,8 +63,10 @@ export class Open extends SfdxCommand {
 
   public async run(): Promise<UrlObject> {
     const type = this.getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile));
-    const { orgId, username, url } =
+    const openPath =
       type && type.name === 'FlexiPage' ? await this.handleSupportedTypes() : await this.handleUnsupportedTypes();
+
+    const { orgId, username, url } = await this.open(openPath);
 
     this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
 
@@ -80,14 +82,12 @@ export class Open extends SfdxCommand {
     return undefined;
   }
 
-  private async handleSupportedTypes(): Promise<UrlObject> {
-    const openPath = await this.setUpOpenPath();
-    return await this.open(openPath);
+  private async handleSupportedTypes(): Promise<string> {
+    return await this.setUpOpenPath();
   }
 
-  private async handleUnsupportedTypes(): Promise<UrlObject> {
-    const openPath: string = await this.buildFrontdoorUrl();
-    return await this.open(openPath);
+  private async handleUnsupportedTypes(): Promise<string> {
+    return await this.buildFrontdoorUrl();
   }
 
   /* this is just temporal untill we find an http request library */
@@ -164,9 +164,8 @@ export class Open extends SfdxCommand {
       if (queryResult.totalSize === 1 && queryResult.records) {
         const record = queryResult.records[0] as FlexiPageRecord;
         return record.Id;
-      } else {
-        return undefined;
       }
+      return undefined;
     } catch (error) {
       return undefined;
     }
