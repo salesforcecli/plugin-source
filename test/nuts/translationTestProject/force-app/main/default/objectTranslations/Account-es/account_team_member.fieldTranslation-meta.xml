@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Miembro del equipo de empresas</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Miembros del equipo de empresas</value>
+    </caseValues>
+    <gender>Masculine</gender>
+    <name>account_team_member</name>
+</CustomFieldTranslation>
