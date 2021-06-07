@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as dns from 'dns';
 import * as util from 'util';
 import * as open from 'open';
-import { fs } from '@salesforce/core';
+import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError, Org } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
@@ -100,12 +100,11 @@ export class Open extends SfdxCommand {
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
-    await this.org.refreshAuth(); // we need a live accessToken for the frontdoor url
     const connection = this.org.getConnection();
-    const { accessToken } = connection;
-    const instanceUrl = this.org.getField(Org.Fields.INSTANCE_URL) as string;
-    const instanceUrlClean = instanceUrl.replace(/\/$/, '');
-    return `${instanceUrlClean}/secur/frontdoor.jsp?sid=${accessToken}`;
+    const { username } = connection.getAuthInfoFields();
+    const authInfo = await AuthInfo.create({ username });
+    const url = authInfo.getOrgFrontDoorUrl();
+    return url;
   }
 
   private async open(src: string, urlonly?: boolean): Promise<UrlObject> {
