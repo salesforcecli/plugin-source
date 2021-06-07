@@ -59,9 +59,7 @@ describe('force:source:open', () => {
     );
   });
   test
-    .stdout({
-      print: true,
-    })
+    .stdout()
     .command(['force:source:open', '--sourcefile', flexiPageSourcefile, '--urlonly'])
     .it('given a flexipage source file return the lightning app builder url for it', (ctx) => {
       expect(ctx.stdout).to.include(testInstance);
