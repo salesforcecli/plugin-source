@@ -12,7 +12,7 @@ import * as util from 'util';
 import * as open from 'open';
 import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
-import { Messages, sfdc, SfdxError, Org } from '@salesforce/core';
+import { Messages, sfdc, SfdxError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { PackageTypeMembers } from '@salesforce/source-deploy-retrieve/lib/src/collections/types';
 
