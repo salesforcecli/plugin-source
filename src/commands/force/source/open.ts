@@ -75,7 +75,7 @@ export class Open extends SfdxCommand {
     const metadataFileExt = '-meta.xml';
     const fileName = path.basename(fsPath);
     if (fileName.endsWith(metadataFileExt)) {
-      return fileName.replace(metadataFileExt, '');
+      return fileName.substring(0, fileName.indexOf('-meta.xml')).split('.').slice(1, 2).pop();
     }
     return undefined;
   }
