@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { $$, expect, test } from '@salesforce/command/lib/test';
-import { Org } from '@salesforce/core';
+import { Org, AuthInfo } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { Open } from '../../../src/commands/force/source/open';
 
@@ -53,9 +53,15 @@ describe('force:source:open', () => {
       }
       return undefined;
     });
+    stubMethod($$.SANDBOX, AuthInfo, 'create').resolves(AuthInfo.prototype);
+    stubMethod($$.SANDBOX, AuthInfo.prototype, 'getOrgFrontDoorUrl').returns(
+      `${testInstance}/secur/frontdoor.jsp?sid=${accessToken}`
+    );
   });
   test
-    .stdout()
+    .stdout({
+      print: true,
+    })
     .command(['force:source:open', '--sourcefile', flexiPageSourcefile, '--urlonly'])
     .it('given a flexipage source file return the lightning app builder url for it', (ctx) => {
       expect(ctx.stdout).to.include(testInstance);
