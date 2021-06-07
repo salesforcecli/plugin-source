@@ -7,7 +7,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import * as https from 'https';
 import * as dns from 'dns';
 import * as util from 'util';
 import * as open from 'open';
@@ -90,25 +89,6 @@ export class Open extends SfdxCommand {
     return await this.buildFrontdoorUrl();
   }
 
-  /* this is just temporal untill we find an http request library */
-  private readUrl(url: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      https.get(url, (response) => {
-        response.setEncoding('utf8');
-        let body = '';
-        response.on('data', (data) => {
-          body += data;
-        });
-        response.on('end', () => {
-          resolve(body);
-        });
-        response.on('error', (error) => {
-          reject(error);
-        });
-      });
-    });
-  }
-
   private async checkLightningDomain(domain: string): Promise<DnsLookupObject> {
     const lookup = util.promisify(dns.lookup);
     return await lookup(`${domain}.lightning.force.com`);
@@ -117,13 +97,6 @@ export class Open extends SfdxCommand {
   private async getUrl(retURL: string): Promise<string> {
     const frontDoorUrl: string = await this.buildFrontdoorUrl();
     return `${frontDoorUrl}&retURL=${encodeURIComponent(decodeURIComponent(retURL))}`;
-  }
-
-  private async isSalesforceOneEnabled(): Promise<boolean> {
-    const src = 'one/one.app';
-    const { url } = await this.open(src, true);
-    const response = await this.readUrl(url);
-    return response && !response.includes('lightning/access/orgAccessDenied.jsp');
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
@@ -173,13 +146,9 @@ export class Open extends SfdxCommand {
 
   private async setUpOpenPath(): Promise<string> {
     const id = await this.deriveFlexipageURL(path.basename(this.flags.sourcefile, '.flexipage-meta.xml'));
-    const salesforceOne = await this.isSalesforceOneEnabled();
 
     if (id) {
       return `/visualEditor/appBuilder.app?pageId=${id}`;
-    }
-    if (salesforceOne) {
-      return '/one/one.app#/setup/FlexiPageList/home';
     }
     return '_ui/flexipage/ui/FlexiPageFilterListPage';
   }
