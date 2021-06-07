@@ -13,8 +13,7 @@ import * as open from 'open';
 import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { PackageTypeMembers } from '@salesforce/source-deploy-retrieve/lib/src/collections/types';
+import { RegistryAccess, MetadataType } from '@salesforce/source-deploy-retrieve';
 
 export interface UrlObject {
   url: string;
@@ -72,11 +71,20 @@ export class Open extends SfdxCommand {
     return { orgId, username, url };
   }
 
-  private getTypeDefinitionByFileName(fsPath: string): PackageTypeMembers | undefined {
+  private getSuffixByFileName(fsPath: string): string | undefined {
+    const metadataFileExt = '-meta.xml';
+    const fileName = path.basename(fsPath);
+    if (fileName.endsWith(metadataFileExt)) {
+      return fileName.replace(metadataFileExt, '');
+    }
+    return undefined;
+  }
+
+  private getTypeDefinitionByFileName(fsPath: string): MetadataType | undefined {
     if (fs.fileExistsSync(fsPath)) {
-      const components = ComponentSet.fromSource(fsPath);
-      const manifestObject = components.getObject();
-      return manifestObject.Package.types[0];
+      const suffix = this.getSuffixByFileName(fsPath);
+      const registryAccess = new RegistryAccess();
+      return registryAccess.getTypeBySuffix(suffix);
     }
     return undefined;
   }
