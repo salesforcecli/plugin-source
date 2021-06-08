@@ -150,8 +150,8 @@ export class Deploy extends DeployCommand {
           testLevel: this.getFlag<TestLevel>('testlevel'),
         },
       });
-      this.asyncDeployResult = { id: deploy.getId() };
-      this.updateDeployId(deploy.getId());
+      this.asyncDeployResult = { id: deploy.id };
+      this.updateDeployId(deploy.id);
 
       if (!this.isAsync) {
         // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
