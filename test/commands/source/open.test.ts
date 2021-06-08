@@ -5,9 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { $$, expect, test } from '@salesforce/command/lib/test';
-import { Org, AuthInfo } from '@salesforce/core';
+import { fs, Org, AuthInfo } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { Open } from '../../../src/commands/force/source/open';
 
 const orgId = '000000000000000';
 const username = 'test@test.org';
@@ -44,14 +43,11 @@ describe('force:source:open', () => {
         },
       },
     });
-    stubMethod($$.SANDBOX, Open.prototype, 'getTypeDefinitionByFileName').callsFake((fsPath: string) => {
+    stubMethod($$.SANDBOX, fs, 'fileExistsSync').callsFake((fsPath: string) => {
       if (fsPath.includes('flexipage-meta.xml')) {
-        return {
-          members: ['MyFlexiPage'],
-          name: 'FlexiPage',
-        };
+        return true;
       }
-      return undefined;
+      return false;
     });
     stubMethod($$.SANDBOX, AuthInfo, 'create').resolves(AuthInfo.prototype);
     stubMethod($$.SANDBOX, AuthInfo.prototype, 'getOrgFrontDoorUrl').returns(
