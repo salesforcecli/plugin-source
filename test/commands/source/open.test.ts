@@ -18,7 +18,6 @@ const flexiPageRecordId = '0M00R000000FmzQSAS';
 
 describe('force:source:open', () => {
   beforeEach(async function () {
-    $$.SANDBOX.restore();
     stubMethod($$.SANDBOX, Org, 'create').resolves(Org.prototype);
     stubMethod($$.SANDBOX, Org.prototype, 'getField').withArgs(Org.Fields.INSTANCE_URL).returns(testInstance);
     stubMethod($$.SANDBOX, Org.prototype, 'refreshAuth').resolves({});
@@ -42,6 +41,9 @@ describe('force:source:open', () => {
           });
         },
       },
+    });
+    afterEach(() => {
+      $$.SANDBOX.restore();
     });
     stubMethod($$.SANDBOX, fs, 'fileExistsSync').callsFake((fsPath: string) => {
       if (fsPath.includes('flexipage-meta.xml')) {
