@@ -148,6 +148,7 @@ export class Deploy extends DeployCommand {
             checkOnly: this.getFlag<boolean>('checkonly', false),
             runTests: this.getFlag<string[]>('runtests'),
             testLevel: this.getFlag<TestLevel>('testlevel', 'NoTestRun'),
+            rest: this.isRest,
           },
         });
 

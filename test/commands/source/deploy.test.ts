@@ -119,6 +119,7 @@ describe('force:source:deploy', () => {
         checkOnly: false,
         runTests: [],
         testLevel: 'NoTestRun',
+        rest: true,
       },
     };
     if (overrides?.apiOptions) {
