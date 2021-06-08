@@ -30,16 +30,14 @@ describe('force:source:open', () => {
         orgId,
       }),
       tooling: {
-        query: () => {
-          return Promise.resolve({
-            size: 1,
-            totalSize: 1,
-            done: true,
-            queryLocator: null,
-            entityTypeName: 'FlexiPage',
-            records: [{ Id: flexiPageRecordId }],
-          });
-        },
+        query: $$.SANDBOX.stub().resolves({
+          size: 1,
+          totalSize: 1,
+          done: true,
+          queryLocator: null,
+          entityTypeName: 'FlexiPage',
+          records: [{ Id: flexiPageRecordId }],
+        }),
       },
     });
     afterEach(() => {
