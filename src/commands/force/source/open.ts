@@ -13,7 +13,7 @@ import * as open from 'open';
 import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
-import { RegistryAccess, MetadataType } from '@salesforce/source-deploy-retrieve';
+import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
 
 export interface UrlObject {
   url: string;
@@ -60,9 +60,8 @@ export class Open extends SfdxCommand {
   };
 
   public async run(): Promise<UrlObject> {
-    const type = this.getTypeDefinitionByFileName(path.resolve(this.flags.sourcefile));
-    const openPath =
-      type && type.name === 'FlexiPage' ? await this.handleSupportedTypes() : await this.handleUnsupportedTypes();
+    const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile));
+    const openPath = typeName === 'FlexiPage' ? await this.handleSupportedTypes() : await this.handleUnsupportedTypes();
 
     const { orgId, username, url } = await this.open(openPath);
 
@@ -71,20 +70,11 @@ export class Open extends SfdxCommand {
     return { orgId, username, url };
   }
 
-  private getSuffixByFileName(fsPath: string): string | undefined {
-    const metadataFileExt = '-meta.xml';
-    const fileName = path.basename(fsPath);
-    if (fileName.endsWith(metadataFileExt)) {
-      return fileName.substring(0, fileName.indexOf('-meta.xml')).split('.').slice(1, 2).pop();
-    }
-    return undefined;
-  }
-
-  private getTypeDefinitionByFileName(fsPath: string): MetadataType | undefined {
+  private getTypeNameDefinitionByFileName(fsPath: string): string | undefined {
     if (fs.fileExistsSync(fsPath)) {
-      const suffix = this.getSuffixByFileName(fsPath);
-      const registryAccess = new RegistryAccess();
-      return registryAccess.getTypeBySuffix(suffix);
+      const metadataResolver = new MetadataResolver();
+      const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
+      return components[0].type.name;
     }
     return undefined;
   }

@@ -7,6 +7,7 @@
 import { $$, expect, test } from '@salesforce/command/lib/test';
 import { fs, Org, AuthInfo } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
+import { MetadataResolver } from '@salesforce/source-deploy-retrieve';
 
 const orgId = '000000000000000';
 const username = 'test@test.org';
@@ -15,6 +16,18 @@ const accessToken = 'testAccessToken';
 const flexiPageSourcefile = '/home/dreamhouse-lwc/force-app/main/default/flexipages/MyPage.flexipage-meta.xml';
 const layouSourcefile = '/home/dreamhouse-lwc/force-app/main/default/layout/MyLayout.layout-meta.xml';
 const flexiPageRecordId = '0M00R000000FmzQSAS';
+
+const sourceComponent = {
+  name: 'Property_Explorer',
+  type: {
+    id: 'flexipage',
+    name: 'FlexiPage',
+    suffix: 'flexipage',
+    directoryName: 'flexipages',
+    inFolder: false,
+    strictDirectoryName: false,
+  },
+};
 
 describe('force:source:open', () => {
   beforeEach(async function () {
@@ -40,9 +53,6 @@ describe('force:source:open', () => {
         }),
       },
     });
-    afterEach(() => {
-      $$.SANDBOX.restore();
-    });
     stubMethod($$.SANDBOX, fs, 'fileExistsSync').callsFake((fsPath: string) => {
       if (fsPath.includes('flexipage-meta.xml')) {
         return true;
@@ -53,7 +63,18 @@ describe('force:source:open', () => {
     stubMethod($$.SANDBOX, AuthInfo.prototype, 'getOrgFrontDoorUrl').returns(
       `${testInstance}/secur/frontdoor.jsp?sid=${accessToken}`
     );
+    stubMethod($$.SANDBOX, MetadataResolver.prototype, 'getComponentsFromPath').callsFake((fsPath: string) => {
+      if (fsPath.includes('flexipage-meta.xml')) {
+        return [sourceComponent];
+      }
+      return [];
+    });
   });
+
+  afterEach(() => {
+    $$.SANDBOX.restore();
+  });
+
   test
     .stdout()
     .command(['force:source:open', '--sourcefile', flexiPageSourcefile, '--urlonly'])
