@@ -34,6 +34,7 @@ describe('force:source:deploy', () => {
 
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
+  let initProgressBarStub: sinon.SinonStub;
   let progressStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
   let startStub: sinon.SinonStub;
@@ -70,6 +71,7 @@ describe('force:source:deploy', () => {
       );
       cmd.setOrg(orgStub);
     });
+    initProgressBarStub = stubMethod(sandbox, cmd, 'initProgressBar');
     progressStub = stubMethod(sandbox, cmd, 'progress');
     stubMethod(sandbox, UX.prototype, 'log');
     stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
@@ -109,8 +111,7 @@ describe('force:source:deploy', () => {
   };
 
   // Ensure ComponentSet.deploy() args
-  // TODO: remove `& { apiOptions: { testLevel: string } }` when that version of SDR is published.
-  const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions & { apiOptions: { testLevel: string } }>) => {
+  const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions>) => {
     const expectedDeployArgs = {
       usernameOrConnection: username,
       apiOptions: {
@@ -139,6 +140,7 @@ describe('force:source:deploy', () => {
   };
 
   const ensureProgressBar = (callCount: number) => {
+    expect(initProgressBarStub.callCount).to.equal(callCount);
     expect(progressStub.callCount).to.equal(callCount);
   };
 
@@ -236,31 +238,6 @@ describe('force:source:deploy', () => {
     ensureProgressBar(0);
   });
 
-  it('should NOT call progress bar because of environment variable', async () => {
-    try {
-      process.env.SFDX_USE_PROGRESS_BAR = 'false';
-      const sourcepath = ['somepath'];
-      const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({ sourcepath });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-    } finally {
-      delete process.env.SFDX_USE_PROGRESS_BAR;
-    }
-  });
-
-  it('should call progress bar', async () => {
-    const sourcepath = ['somepath'];
-    const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ sourcepath });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(1);
-  });
-
   it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
     await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
@@ -275,5 +252,53 @@ describe('force:source:deploy', () => {
       expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
     }
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+  });
+
+  it('should use SOAP by default');
+  it('should use REST when restDeploy=true');
+
+  describe('Progress Bar', () => {
+    it('should NOT call progress bar because of environment variable', async () => {
+      try {
+        process.env.SFDX_USE_PROGRESS_BAR = 'false';
+        const sourcepath = ['somepath'];
+        const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      } finally {
+        delete process.env.SFDX_USE_PROGRESS_BAR;
+      }
+    });
+
+    it('should call progress bar', async () => {
+      const sourcepath = ['somepath'];
+      const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({ sourcepath });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(1);
+    });
+
+    it('should NOT call progress bar because of --json', async () => {
+      const sourcepath = ['somepath'];
+      const result = await runDeployCmd(['--json', '--sourcepath', sourcepath[0]]);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({ sourcepath });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should start the progress bar only once with data onUpdate');
+    it('should display the deploy ID only once onUpdate');
+    it('should update progress bar with data onUpdate');
+    it('should setTotal on the progress bar with data onUpdate');
+    it('should update and stop progress bar with data onFinish');
+    it('should stop progress bar onCancel');
+    it('should stop progress bar onError');
   });
 });
