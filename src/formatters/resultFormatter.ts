@@ -5,13 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as path from 'path';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { getBoolean, getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
-  async?: boolean;
   waitTime?: number;
 }
 
@@ -32,12 +33,30 @@ export abstract class ResultFormatter {
     return getNumber(process, 'exitCode', 0) === 0;
   }
 
-  public isAsync(): boolean {
-    return getBoolean(this.options, 'async', false);
-  }
-
   public isVerbose(): boolean {
     return getBoolean(this.options, 'verbose', false);
+  }
+
+  // Sort by type > filePath > fullName
+  protected sortFileResponses(fileResponses: FileResponse[]): void {
+    fileResponses.sort((i, j) => {
+      if (i.type === j.type) {
+        if (i.filePath === j.filePath) {
+          return i.fullName > j.fullName ? 1 : -1;
+        }
+        return i.filePath > j.filePath ? 1 : -1;
+      }
+      return i.type > j.type ? 1 : -1;
+    });
+  }
+
+  // Convert absolute paths to relative for better table output.
+  protected asRelativePaths(fileResponses: FileResponse[]): void {
+    fileResponses.forEach((file) => {
+      if (file.filePath) {
+        file.filePath = path.relative(process.cwd(), file.filePath);
+      }
+    });
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
