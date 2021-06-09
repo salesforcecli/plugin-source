@@ -60,7 +60,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
     }
   });
 
-  describe('--sourcepath ', () => {
+  describe('--sourcepath', () => {
     for (const sourcepath of repo.deploy.sourcepath) {
       const toDeploy = path.normalize(sourcepath.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
@@ -70,7 +70,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
     }
   });
 
-  describe('--sourcepath ', () => {
+  describe('--metadata ', () => {
     for (const metadata of repo.deploy.metadata) {
       const toDeploy = path.normalize(metadata.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
@@ -80,7 +80,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
     }
   });
 
-  describe('--manifest flag', () => {
+  describe('--manifest', () => {
     for (const testCase of repo.deploy.manifest) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
