@@ -66,6 +66,7 @@ export class ComponentSetBuilder {
       const compSet = await ComponentSet.fromManifest({
         manifestPath: manifest.manifestPath,
         resolveSourcePaths: options.manifest.directoryPaths,
+        forceAddWildcards: true,
       });
       csAggregator.push(...compSet);
     }

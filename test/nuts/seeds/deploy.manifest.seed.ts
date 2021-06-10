@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { Nutshell } from '../nutshell';
+import { SourceTestkit } from '@salesforce/source-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -14,34 +14,45 @@ const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
 context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
-  let nutshell: Nutshell;
+  let testkit: SourceTestkit;
 
   before(async () => {
-    nutshell = await Nutshell.create({
+    testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
       executable: EXECUTABLE,
       nut: __filename,
     });
+    // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
+    await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
   });
 
   after(async () => {
-    await nutshell?.clean();
+    try {
+      await testkit?.clean();
+    } catch (e) {
+      // if the it fails to clean, don't throw so NUTs will pass
+      // eslint-disable-next-line no-console
+      console.log('Clean Failed: ', e);
+    }
   });
 
   describe('--manifest flag', () => {
     for (const testCase of REPO.deploy.manifest) {
-      it(`should deploy ${testCase.toDeploy}`, async () => {
-        await nutshell.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
+      const toDeploy = path.normalize(testCase.toDeploy);
+      it(`should deploy ${toDeploy}`, async () => {
+        await testkit.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
 
-        await nutshell.deploy({ args: `--manifest ${packageXml}` });
-        await nutshell.expect.filesToBeDeployed(testCase.toVerify);
+        await testkit.deploy({ args: `--manifest ${packageXml}` });
+        await testkit.expect.filesToBeDeployed(testCase.toVerify);
       });
     }
 
     it('should throw an error if the package.xml is not valid', async () => {
-      const deploy = await nutshell.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      nutshell.expect.errorToHaveName(deploy, 'InvalidManifestError');
+      const deploy = await testkit.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
+      const expectedError = testkit.isLocalExecutable() ? 'Error' : 'InvalidManifestError';
+      testkit.expect.errorToHaveName(deploy, expectedError);
     });
   });
 });

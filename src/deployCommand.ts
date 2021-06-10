@@ -83,11 +83,12 @@ export abstract class DeployCommand extends SourceCommand {
       return false;
     } else if (restDeployConfig === 'true') {
       this.logger.debug('restDeploy SFDX config === true.  Using REST');
+      return true;
     } else {
-      this.logger.debug('soapdeploy flag unset. restDeploy SFDX config unset.  Defaulting to REST');
+      this.logger.debug('soapdeploy flag unset. restDeploy SFDX config unset.  Defaulting to SOAP');
     }
 
-    return true;
+    return false;
   }
 
   protected async poll(deployId: string, options?: Partial<PollingClient.Options>): Promise<DeployResult> {
