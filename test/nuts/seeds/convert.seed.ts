@@ -113,6 +113,24 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       }
     });
 
+    it('should throw an error if the rootdir param is invalid', async () => {
+      const convert = await testkit.convert({
+        args: '--rootdir DOES_NOT_EXIST',
+        exitCode: 1,
+      });
+      const expectedError = testkit.isLocalExecutable() ? 'pathDoesNotExist' : 'Error';
+      testkit.expect.errorToHaveName(convert, expectedError);
+    });
+
+    it('should convert associate metadata with specified packagename', async () => {
+      const res = await testkit.convert({ args: '--packagename MY-PACKAGE --outputdir out', exitCode: 0 });
+
+      convertDir = path.relative(process.cwd(), asString(res.result?.location));
+      await testkit.expect.directoryToHaveSomeFiles(convertDir);
+      await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
+      await testkit.expect.filesToContainString(path.join(convertDir, 'package.xml'), 'MY-PACKAGE');
+    });
+
     it('should throw an error if the sourcepath is not valid', async () => {
       const convert = await testkit.convert({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
       const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'SourcePathInvalid';

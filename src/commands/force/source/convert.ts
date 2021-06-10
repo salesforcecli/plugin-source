@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { fs, Messages, SfdxError } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
 import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
@@ -72,6 +72,9 @@ export class Convert extends SourceCommand {
     // we will check here, instead of adding the exclusive option to the flag definition so we don't break scripts
     if (rootdir && !sourcepath && !metadata && !manifest) {
       // only rootdir option passed
+      if (!fs.fileExistsSync(rootdir)) {
+        throw SfdxError.create('@salesforce/plugin-source', 'convert', 'pathDoesNotExist', [rootdir]);
+      }
       paths.push(rootdir);
     }
 

@@ -11,7 +11,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
-import { SfdxProject } from '@salesforce/core';
+import { fs, SfdxProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 
@@ -117,6 +117,7 @@ describe('force:source:convert', () => {
   });
 
   it('should call root dir with rootdir flag', async () => {
+    stubMethod(sandbox, fs, 'fileExistsSync').returns(true);
     const result = await runConvertCmd(['--rootdir', myApp, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({ sourcepath: [myApp] });
