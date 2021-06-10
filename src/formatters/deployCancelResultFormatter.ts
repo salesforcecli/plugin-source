@@ -14,7 +14,7 @@ import { ResultFormatter } from './resultFormatter';
 
 export type DeployCancelCommandResult = MetadataApiDeployStatus;
 
-export class DeployCancelFormatter extends ResultFormatter {
+export class DeployCancelResultFormatter extends ResultFormatter {
   protected result: DeployResult;
 
   public constructor(logger: Logger, ux: UX, result: DeployResult) {
