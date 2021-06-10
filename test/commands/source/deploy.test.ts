@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
@@ -238,24 +238,106 @@ describe('force:source:deploy', () => {
     ensureProgressBar(0);
   });
 
-  it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
-    await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
-    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+  describe('SOAP/REST', () => {
+    it('should use SOAP by default', async () => {
+      delete process.env.SFDX_REST_DEPLOY;
+      const sourcepath = ['somepath'];
+      const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
+      expect(cmd.isRest).to.be.false;
+    });
+
+    it('should use SOAP from the env var', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'false';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+
+    it('should use REST from the env var', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+
+    it('should use SOAP by overriding env var with flag', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+
+    it('should use SOAP from flag', async () => {
+      const sourcepath = ['somepath'];
+      const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
+      expect(cmd.isRest).to.be.false;
+    });
+
+    it('should use SOAP from config', async () => {
+      stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+      stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+      const sourcepath = ['somepath'];
+      const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
+      expect(cmd.isRest).to.be.false;
+    });
+
+    it('should use SOAP by overriding env var with config', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+        stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
   });
 
-  it('should emit predeploy hooks for async deploys', async () => {
-    const sourcepath = ['somepath'];
-    try {
-      await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
-    } catch (e) {
-      // once async deploys supported remove the try/catch
-      expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
-    }
-    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-  });
+  describe('Hooks', () => {
+    it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
+      await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
+      expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+    });
 
-  it('should use SOAP by default');
-  it('should use REST when restDeploy=true');
+    it('should emit predeploy hooks for async deploys', async () => {
+      const sourcepath = ['somepath'];
+      try {
+        await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
+      } catch (e) {
+        // TODO: once async deploys supported remove the try/catch
+        expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
+      }
+      expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+    });
+  });
 
   describe('Progress Bar', () => {
     it('should NOT call progress bar because of environment variable', async () => {
