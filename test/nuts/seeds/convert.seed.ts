@@ -122,13 +122,14 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       testkit.expect.errorToHaveName(convert, expectedError);
     });
 
-    it('should convert associate metadata with specified packagename', async () => {
+    it('should convert and associate metadata with specified packagename', async () => {
       const res = await testkit.convert({ args: '--packagename MY-PACKAGE --outputdir out', exitCode: 0 });
 
       convertDir = path.relative(process.cwd(), asString(res.result?.location));
       await testkit.expect.directoryToHaveSomeFiles(convertDir);
       await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
-      await testkit.expect.filesToContainString(path.join(convertDir, 'package.xml'), 'MY-PACKAGE');
+      // we're passing the path name into a glob, which requires '/' separators
+      await testkit.expect.filesToContainString(path.join(convertDir, 'package.xml').replace(/\\/, '/'), 'MY-PACKAGE');
     });
 
     it('should throw an error if the sourcepath is not valid', async () => {
