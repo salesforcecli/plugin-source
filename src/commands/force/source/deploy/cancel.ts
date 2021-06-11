@@ -12,7 +12,10 @@ import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../../deployCommand';
-import { DeployCancelCommandResult, DeployCancelFormatter } from '../../../../formatters/deployCancelResultFormatter';
+import {
+  DeployCancelCommandResult,
+  DeployCancelResultFormatter,
+} from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
@@ -60,7 +63,7 @@ export class Cancel extends DeployCommand {
   }
 
   protected formatResult(): DeployCancelCommandResult {
-    const formatter = new DeployCancelFormatter(this.logger, this.ux, this.deployResult);
+    const formatter = new DeployCancelResultFormatter(this.logger, this.ux, this.deployResult);
     if (!this.isJsonOutput()) {
       formatter.display();
     }

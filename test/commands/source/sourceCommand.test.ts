@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { stubInterface, fromStub } from '@salesforce/ts-sinon';
@@ -35,6 +33,9 @@ describe('SourceCommand', () => {
     public setCmdFlags(flags: Dictionary) {
       this.flags = flags;
     }
+    public callIsJsonOutput() {
+      return this.isJsonOutput();
+    }
     public resolveSuccess() {}
     public formatResult() {}
   }
@@ -43,12 +44,12 @@ describe('SourceCommand', () => {
     it('should return true when json flag is set', () => {
       const command = new SourceCommandTest([''], null);
       command.setCmdFlags({ json: true });
-      expect(command.isJsonOutput()).to.equal(true);
+      expect(command.callIsJsonOutput()).to.equal(true);
     });
 
     it('should return false when json flag is unset', () => {
       const command = new SourceCommandTest([''], null);
-      expect(command.isJsonOutput()).to.equal(false);
+      expect(command.callIsJsonOutput()).to.equal(false);
     });
   });
 

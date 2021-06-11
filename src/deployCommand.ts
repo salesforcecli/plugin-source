@@ -29,7 +29,7 @@ export abstract class DeployCommand extends SourceCommand {
    * @param id the Deploy ID of a deployment request
    * @returns DeployResult
    */
-  public async report(id?: string): Promise<DeployResult> {
+  protected async report(id?: string): Promise<DeployResult> {
     const deployId = this.resolveDeployId(id);
     this.displayDeployId(deployId);
 
