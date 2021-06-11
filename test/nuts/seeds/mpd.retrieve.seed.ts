@@ -48,7 +48,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
   });
 
   // Skipping if using sfdx executable because it does not support multiple CustomLabels files on retrieve
-  (testkit.isLocalExecutable() ? describe : describe.skip)('CustomLabels', () => {
+  (EXECUTABLE.includes('plugin-source') ? describe : describe.skip)('CustomLabels', () => {
     // NOTE these are glob patterns so there's no need to use path.join here
     const forceAppLabels = 'force-app/main/default/labels/CustomLabels.labels-meta.xml';
     const myAppLabels = 'my-app/labels/CustomLabels.labels-meta.xml';

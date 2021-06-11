@@ -128,10 +128,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       convertDir = path.relative(process.cwd(), asString(res.result?.location));
       await testkit.expect.directoryToHaveSomeFiles(convertDir);
       const pkg = path.join(convertDir, 'package.xml');
-      // eslint-disable-next-line no-console
-      console.log('package path ', pkg);
-      // eslint-disable-next-line no-console
-      console.log('package path ready for glob ', pkg.replace(/\\/g, '/'));
+
       await testkit.expect.fileToExist(pkg);
       // we're passing the path name into a glob, which requires '/' separators
       await testkit.expect.filesToContainString(pkg.replace(/\\/g, '/'), 'MY-PACKAGE');
