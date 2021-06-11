@@ -131,10 +131,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       // eslint-disable-next-line no-console
       console.log('package path ', pkg);
       // eslint-disable-next-line no-console
-      console.log('package path ready for glob ', pkg.replace(/\\/, '/'));
+      console.log('package path ready for glob ', pkg.replace(/\\/g, '/'));
       await testkit.expect.fileToExist(pkg);
       // we're passing the path name into a glob, which requires '/' separators
-      await testkit.expect.filesToContainString(pkg.replace(/\\/, '/'), 'MY-PACKAGE');
+      await testkit.expect.filesToContainString(pkg.replace(/\\/g, '/'), 'MY-PACKAGE');
     });
 
     it('should throw an error if the sourcepath is not valid', async () => {
