@@ -91,7 +91,7 @@ export class Retrieve extends SourceCommand {
       output: this.project.getDefaultPackage().fullPath,
       packageNames: this.getFlag<string[]>('packagenames'),
     });
-    this.retrieveResult = await mdapiRetrieve.pollStatus(500, this.getFlag<Duration>('wait').seconds);
+    this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
   }
