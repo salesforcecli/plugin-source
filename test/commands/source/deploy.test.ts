@@ -15,6 +15,10 @@ import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
+import {
+  DeployCommandAsyncResult,
+  DeployAsyncResultFormatter,
+} from '../../../src/formatters/deployAsyncResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getDeployResult } from './deployResponses';
 import { exampleSourceComponent } from './testConsts';
@@ -32,13 +36,32 @@ describe('force:source:deploy', () => {
   expectedResults.outboundFiles = [];
   expectedResults.deploys = [deployResult.response];
 
+  const expectedAsyncResults: DeployCommandAsyncResult = {
+    done: false,
+    id: deployResult.response.id,
+    state: 'Queued',
+    status: 'Queued',
+    timedOut: true,
+    outboundFiles: [],
+    deploys: [
+      {
+        done: false,
+        id: deployResult.response.id,
+        state: 'Queued',
+        status: 'Queued',
+        timedOut: true,
+      },
+    ],
+  };
+
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
   let initProgressBarStub: sinon.SinonStub;
   let progressStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
-  let startStub: sinon.SinonStub;
+  let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
+  let formatterDisplayStub: sinon.SinonStub;
 
   class TestDeploy extends Deploy {
     public async runIt() {
@@ -74,14 +97,17 @@ describe('force:source:deploy', () => {
     initProgressBarStub = stubMethod(sandbox, cmd, 'initProgressBar');
     progressStub = stubMethod(sandbox, cmd, 'progress');
     stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
     stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
+    formatterDisplayStub = stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
     return cmd.runIt();
   };
 
   beforeEach(() => {
-    startStub = sandbox.stub().returns(deployResult);
-    deployStub = sandbox.stub().returns({ start: startStub });
+    pollStub = sandbox.stub().resolves(deployResult);
+    deployStub = sandbox.stub().resolves({
+      pollStatus: pollStub,
+      id: deployResult.response.id,
+    });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: deployStub,
       getPackageXml: () => packageXml,
@@ -120,6 +146,7 @@ describe('force:source:deploy', () => {
         checkOnly: false,
         runTests: [],
         testLevel: 'NoTestRun',
+        rest: false,
       },
     };
     if (overrides?.apiOptions) {
@@ -382,5 +409,31 @@ describe('force:source:deploy', () => {
     it('should update and stop progress bar with data onFinish');
     it('should stop progress bar onCancel');
     it('should stop progress bar onError');
+  });
+
+  it('should return JSON format and not display for a synchronous deploy', async () => {
+    const result = await runDeployCmd(['--sourcepath', 'somepath', '--json']);
+    expect(formatterDisplayStub.calledOnce).to.equal(false);
+    expect(result).to.deep.equal(expectedResults);
+  });
+
+  it('should return JSON format and not display for an asynchronous deploy', async () => {
+    const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+    const result = await runDeployCmd(['--sourcepath', 'somepath', '--json', '--wait', '0']);
+    expect(formatterAsyncDisplayStub.calledOnce).to.equal(false);
+    expect(result).to.deep.equal(expectedAsyncResults);
+  });
+
+  it('should return JSON format and display for a synchronous deploy', async () => {
+    const result = await runDeployCmd(['--sourcepath', 'somepath']);
+    expect(formatterDisplayStub.calledOnce).to.equal(true);
+    expect(result).to.deep.equal(expectedResults);
+  });
+
+  it('should return JSON format and display for an asynchronous deploy', async () => {
+    const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+    const result = await runDeployCmd(['--sourcepath', 'somepath', '--wait', '0']);
+    expect(formatterAsyncDisplayStub.calledOnce).to.equal(true);
+    expect(result).to.deep.equal(expectedAsyncResults);
   });
 });

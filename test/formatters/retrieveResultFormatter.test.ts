@@ -108,9 +108,8 @@ describe('RetrieveResultFormatter', () => {
       expect(logStub.called).to.equal(false);
       expect(tableStub.called).to.equal(true);
       expect(styledHeaderStub.firstCall.args[0]).to.contain('Retrieved Source');
-      // NOTE: THIS SHOULD CHANGE TO BE THE fileResponses after the async PR is merged.
-      const fileProps = retrieveResultSuccess.response.fileProperties;
-      expect(tableStub.firstCall.args[0]).to.deep.equal(fileProps);
+      const fileResponses = retrieveResultSuccess.getFileResponses();
+      expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
     it('should output as expected for an InProgress', async () => {

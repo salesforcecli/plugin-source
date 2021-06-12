@@ -37,7 +37,7 @@ describe('force:source:retrieve', () => {
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
   let retrieveStub: sinon.SinonStub;
-  let startStub: sinon.SinonStub;
+  let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
@@ -77,8 +77,11 @@ describe('force:source:retrieve', () => {
   };
 
   beforeEach(() => {
-    startStub = sandbox.stub().returns(retrieveResult);
-    retrieveStub = sandbox.stub().returns({ start: startStub });
+    pollStub = sandbox.stub().resolves(retrieveResult);
+    retrieveStub = sandbox.stub().resolves({
+      pollStatus: pollStub,
+      retrieveId: retrieveResult.response.id,
+    });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,

@@ -83,12 +83,14 @@ export const getRetrieveResult = (
     getFileResponses() {
       let fileProps = response.fileProperties;
       fileProps = Array.isArray(fileProps) ? fileProps : [fileProps];
-      return fileProps.map((comp) => ({
-        fullName: comp.fullName,
-        filePath: comp.fileName,
-        state: 'Changed',
-        type: comp.type,
-      }));
+      return fileProps
+        .filter((p) => p.type !== 'Package')
+        .map((comp) => ({
+          fullName: comp.fullName,
+          filePath: comp.fileName,
+          state: 'Changed',
+          type: comp.type,
+        }));
     },
   } as RetrieveResult;
 };

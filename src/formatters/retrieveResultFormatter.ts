@@ -10,12 +10,7 @@ import { UX } from '@salesforce/command';
 import { Logger, Messages } from '@salesforce/core';
 import { get, getString, getNumber } from '@salesforce/ts-types';
 import { RetrieveResult, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
-import {
-  FileResponse,
-  FileProperties,
-  RequestStatus,
-  RetrieveMessage,
-} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { FileResponse, RequestStatus, RetrieveMessage } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -71,20 +66,24 @@ export class RetrieveResultFormatter extends ResultFormatter {
 
     this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
     if (this.isSuccess()) {
-      const fileProps = get(this.result, 'response.fileProperties', []) as FileProperties | FileProperties[];
-      const fileProperties: FileProperties[] = Array.isArray(fileProps) ? fileProps : [fileProps];
-      if (fileProperties.length) {
+      if (this.fileResponses?.length) {
+        this.sortFileResponses(this.fileResponses);
+        this.asRelativePaths(this.fileResponses);
         const columns = [
           { key: 'fullName', label: 'FULL NAME' },
           { key: 'type', label: 'TYPE' },
-          { key: 'fileName', label: 'PROJECT PATH' },
+          { key: 'filePath', label: 'PROJECT PATH' },
         ];
-        this.ux.table(fileProperties, { columns });
+        this.ux.table(this.fileResponses, { columns });
       } else {
         this.ux.log(messages.getMessage('NoResultsFound'));
       }
     } else {
-      this.ux.log('Retrieve Failed due to: (check this.result.response.messages)');
+      const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
+      const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
+      const errMsgs = Array.isArray(responseMsgs) ? responseMsgs : [responseMsgs];
+      const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
+      this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
     }
 
     // if (results.status === 'SucceededPartial' && results.successes.length && results.failures.length) {

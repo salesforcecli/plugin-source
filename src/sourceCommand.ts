@@ -7,6 +7,7 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle } from '@salesforce/core';
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 
@@ -22,6 +23,8 @@ export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_SRC_WAIT_MINUTES = 33;
   protected progressBar?: ProgressBar;
   protected lifecycle = Lifecycle.getInstance();
+
+  protected componentSet?: ComponentSet;
 
   protected isJsonOutput(): boolean {
     return getBoolean(this.flags, 'json', false);
