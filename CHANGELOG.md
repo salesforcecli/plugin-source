@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.1.19](https://github.com/salesforcecli/plugin-source/compare/v0.0.19...v0.1.19) (2021-06-12)
 
+
 ### Features
 
-- add support for async deploys ([#89](https://github.com/salesforcecli/plugin-source/issues/89)) ([e7d7215](https://github.com/salesforcecli/plugin-source/commit/e7d721561542baab8abcf6a8d482e7bb9653176a)), closes [#108](https://github.com/salesforcecli/plugin-source/issues/108) [#84](https://github.com/salesforcecli/plugin-source/issues/84) [#85](https://github.com/salesforcecli/plugin-source/issues/85) [#88](https://github.com/salesforcecli/plugin-source/issues/88) [#80](https://github.com/salesforcecli/plugin-source/issues/80) [#90](https://github.com/salesforcecli/plugin-source/issues/90) [#105](https://github.com/salesforcecli/plugin-source/issues/105) [#106](https://github.com/salesforcecli/plugin-source/issues/106)
+* add support for async deploys ([#89](https://github.com/salesforcecli/plugin-source/issues/89)) ([e7d7215](https://github.com/salesforcecli/plugin-source/commit/e7d721561542baab8abcf6a8d482e7bb9653176a)), closes [#108](https://github.com/salesforcecli/plugin-source/issues/108) [#84](https://github.com/salesforcecli/plugin-source/issues/84) [#85](https://github.com/salesforcecli/plugin-source/issues/85) [#88](https://github.com/salesforcecli/plugin-source/issues/88) [#80](https://github.com/salesforcecli/plugin-source/issues/80) [#90](https://github.com/salesforcecli/plugin-source/issues/90) [#105](https://github.com/salesforcecli/plugin-source/issues/105) [#106](https://github.com/salesforcecli/plugin-source/issues/106)
 
 ### [0.0.19](https://github.com/salesforcecli/plugin-source/compare/v0.0.18...v0.0.19) (2021-06-10)
 
