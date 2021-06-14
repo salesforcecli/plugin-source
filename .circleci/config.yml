@@ -9,9 +9,10 @@ workflows:
           filters:
             branches:
               ignore: main
-      - release-management/test-package:
-          name: node-latest
-          node_version: latest
+      #              SDR deploys not compatible with Node 16
+      #      - release-management/test-package:
+      #          name: node-latest
+      #          node_version: latest
       - release-management/test-package:
           name: node-12
       - release-management/test-nut:
@@ -20,7 +21,7 @@ workflows:
           size: large
           sfdx_version: latest
           requires:
-            - node-latest
+            - node-12
       - release-management/test-nut:
           name: nuts-on-windows
           sfdx_version: latest
@@ -28,12 +29,12 @@ workflows:
           node_version: lts
           os: windows
           requires:
-            - node-latest
+            - node-12
       - release-management/release-package:
           sign: true
           github-release: true
           requires:
-            - node-latest
+            - node-12
           filters:
             branches:
               only: main
