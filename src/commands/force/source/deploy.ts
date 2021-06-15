@@ -154,10 +154,10 @@ export class Deploy extends DeployCommand {
         // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
         if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
           this.initProgressBar();
-          this.progress(deploy);
+          await this.progress(deploy);
         }
 
-        this.deployResult = await deploy.start();
+        this.deployResult = await this.getDeployResult(deploy);
       }
     }
 
@@ -171,6 +171,11 @@ export class Deploy extends DeployCommand {
       this.logger.debug(`Stashing deploy ID: ${deployId}`);
       await file.write({ [DeployCommand.STASH_KEY]: { jobid: deployId } });
     }
+  }
+
+  protected async getDeployResult(deploy: Promise<MetadataApiDeploy>): Promise<DeployResult> {
+    const deployResult = await deploy;
+    return deployResult.start() as unknown as Promise<DeployResult>;
   }
 
   protected resolveSuccess(): void {
@@ -222,9 +227,10 @@ export class Deploy extends DeployCommand {
     return this.report(validatedDeployId);
   }
 
-  private progress(deploy: MetadataApiDeploy): void {
+  private async progress(deploy: Promise<MetadataApiDeploy>): Promise<void> {
     let started = false;
-    deploy.onUpdate((data) => {
+    const metadataApiDeploy = await deploy;
+    metadataApiDeploy.onUpdate((data) => {
       // the numCompTot. isn't computed right away, wait to start until we know how many we have
       if (data.numberComponentsTotal && !started) {
         this.displayDeployId(data.id);
@@ -241,17 +247,17 @@ export class Deploy extends DeployCommand {
     });
 
     // any thing else should stop the progress bar
-    deploy.onFinish((data) => {
+    metadataApiDeploy.onFinish((data) => {
       // the final tick of `onUpdate` is actually fired with `onFinish`
       this.progressBar.update(data.response.numberComponentsDeployed + data.response.numberTestsCompleted);
       this.progressBar.stop();
     });
 
-    deploy.onCancel(() => {
+    metadataApiDeploy.onCancel(() => {
       this.progressBar.stop();
     });
 
-    deploy.onError((error: Error) => {
+    metadataApiDeploy.onError((error: Error) => {
       this.progressBar.stop();
       throw error;
     });

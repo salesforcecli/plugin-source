@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
 import { RetrieveResultFormatter, RetrieveCommandResult } from '../../../formatters/retrieveResultFormatter';
@@ -85,16 +85,20 @@ export class Retrieve extends SourceCommand {
 
     await this.lifecycle.emit('preretrieve', cs.toArray());
 
-    this.retrieveResult = await cs
-      .retrieve({
-        usernameOrConnection: this.org.getUsername(),
-        merge: true,
-        output: this.project.getDefaultPackage().fullPath,
-        packageNames: this.getFlag<string[]>('packagenames'),
-      })
-      .start();
+    const metadataApiRetrieve = cs.retrieve({
+      usernameOrConnection: this.org.getUsername(),
+      merge: true,
+      output: this.project.getDefaultPackage().fullPath,
+      packageNames: this.getFlag<string[]>('packagenames'),
+    });
+
+    this.retrieveResult = await this.getRetrieveResult(metadataApiRetrieve);
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
+  }
+
+  protected async getRetrieveResult(cs: Promise<MetadataApiRetrieve>): Promise<RetrieveResult> {
+    return (await cs).start() as unknown as Promise<RetrieveResult>;
   }
 
   protected resolveSuccess(): void {
