@@ -37,7 +37,7 @@ describe('force:source:retrieve', () => {
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
   let retrieveStub: sinon.SinonStub;
-  let startStub: sinon.SinonStub;
+  let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
@@ -73,13 +73,15 @@ describe('force:source:retrieve', () => {
       cmd.setOrg(orgStub);
     });
     stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, RetrieveResultFormatter.prototype, 'display');
     return cmd.runIt();
   };
 
   beforeEach(() => {
-    startStub = sandbox.stub().returns(retrieveResult);
-    retrieveStub = sandbox.stub().returns({ start: startStub });
+    pollStub = sandbox.stub().resolves(retrieveResult);
+    retrieveStub = sandbox.stub().resolves({
+      pollStatus: pollStub,
+      retrieveId: retrieveResult.response.id,
+    });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
@@ -200,5 +202,21 @@ describe('force:source:retrieve', () => {
     });
     ensureRetrieveArgs({ packageNames: packagenames });
     ensureHookArgs();
+  });
+
+  it('should display output with no --json', async () => {
+    const displayStub = sandbox.stub(RetrieveResultFormatter.prototype, 'display');
+    const getJsonStub = sandbox.stub(RetrieveResultFormatter.prototype, 'getJson');
+    await runRetrieveCmd(['--sourcepath', 'somepath']);
+    expect(displayStub.calledOnce).to.equal(true);
+    expect(getJsonStub.calledOnce).to.equal(true);
+  });
+
+  it('should NOT display output with --json', async () => {
+    const displayStub = sandbox.stub(RetrieveResultFormatter.prototype, 'display');
+    const getJsonStub = sandbox.stub(RetrieveResultFormatter.prototype, 'getJson');
+    await runRetrieveCmd(['--sourcepath', 'somepath', '--json']);
+    expect(displayStub.calledOnce).to.equal(false);
+    expect(getJsonStub.calledOnce).to.equal(true);
   });
 });

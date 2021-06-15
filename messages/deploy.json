@@ -30,5 +30,8 @@
   "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output.",
   "MissingDeployId": "No deploy ID was provided or found in deploy history",
   "deployCanceled": "The deployment has been canceled by %s",
-  "deployFailed": "Deploy failed."
+  "deployFailed": "Deploy failed.",
+  "asyncDeployQueued": "Deploy has been queued.",
+  "asyncDeployCancel": "Run sfdx force:source:deploy:cancel -i %s to cancel the deploy.",
+  "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s to get the latest status."
 }

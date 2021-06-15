@@ -6,12 +6,15 @@
  */
 
 import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { getString } from '@salesforce/ts-types';
 import { DeployResultFormatter } from './deployResultFormatter';
 
 export type DeployReportCommandResult = MetadataApiDeployStatus;
 
 export class DeployReportResultFormatter extends DeployResultFormatter {
   public display(): void {
+    const status = getString(this, 'result.response.status', 'unknown');
+    this.ux.log(`Status: ${status}`);
     if (!this.isVerbose()) {
       const componentsTotal = this.getNumResult('numberComponentsTotal');
       if (componentsTotal) {

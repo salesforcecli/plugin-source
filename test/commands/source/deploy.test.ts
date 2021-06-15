@@ -10,11 +10,15 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
+import {
+  DeployCommandAsyncResult,
+  DeployAsyncResultFormatter,
+} from '../../../src/formatters/deployAsyncResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getDeployResult } from './deployResponses';
 import { exampleSourceComponent } from './testConsts';
@@ -32,12 +36,32 @@ describe('force:source:deploy', () => {
   expectedResults.outboundFiles = [];
   expectedResults.deploys = [deployResult.response];
 
+  const expectedAsyncResults: DeployCommandAsyncResult = {
+    done: false,
+    id: deployResult.response.id,
+    state: 'Queued',
+    status: 'Queued',
+    timedOut: true,
+    outboundFiles: [],
+    deploys: [
+      {
+        done: false,
+        id: deployResult.response.id,
+        state: 'Queued',
+        status: 'Queued',
+        timedOut: true,
+      },
+    ],
+  };
+
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
+  let initProgressBarStub: sinon.SinonStub;
   let progressStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
-  let startStub: sinon.SinonStub;
+  let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
+  let formatterDisplayStub: sinon.SinonStub;
 
   class TestDeploy extends Deploy {
     public async runIt() {
@@ -70,16 +94,20 @@ describe('force:source:deploy', () => {
       );
       cmd.setOrg(orgStub);
     });
+    initProgressBarStub = stubMethod(sandbox, cmd, 'initProgressBar');
     progressStub = stubMethod(sandbox, cmd, 'progress');
     stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
     stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
+    formatterDisplayStub = stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
     return cmd.runIt();
   };
 
   beforeEach(() => {
-    startStub = sandbox.stub().returns(deployResult);
-    deployStub = sandbox.stub().returns({ start: startStub });
+    pollStub = sandbox.stub().resolves(deployResult);
+    deployStub = sandbox.stub().resolves({
+      pollStatus: pollStub,
+      id: deployResult.response.id,
+    });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: deployStub,
       getPackageXml: () => packageXml,
@@ -109,8 +137,7 @@ describe('force:source:deploy', () => {
   };
 
   // Ensure ComponentSet.deploy() args
-  // TODO: remove `& { apiOptions: { testLevel: string } }` when that version of SDR is published.
-  const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions & { apiOptions: { testLevel: string } }>) => {
+  const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions>) => {
     const expectedDeployArgs = {
       usernameOrConnection: username,
       apiOptions: {
@@ -119,6 +146,7 @@ describe('force:source:deploy', () => {
         checkOnly: false,
         runTests: [],
         testLevel: 'NoTestRun',
+        rest: false,
       },
     };
     if (overrides?.apiOptions) {
@@ -139,6 +167,7 @@ describe('force:source:deploy', () => {
   };
 
   const ensureProgressBar = (callCount: number) => {
+    expect(initProgressBarStub.callCount).to.equal(callCount);
     expect(progressStub.callCount).to.equal(callCount);
   };
 
@@ -236,44 +265,175 @@ describe('force:source:deploy', () => {
     ensureProgressBar(0);
   });
 
-  it('should NOT call progress bar because of environment variable', async () => {
-    try {
-      process.env.SFDX_USE_PROGRESS_BAR = 'false';
+  describe('SOAP/REST', () => {
+    it('should use SOAP by default', async () => {
+      delete process.env.SFDX_REST_DEPLOY;
+      const sourcepath = ['somepath'];
+      const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
+      expect(cmd.isRest).to.be.false;
+    });
+
+    it('should use SOAP from the env var', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'false';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+
+    it('should use REST from the env var', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+
+    it('should use SOAP by overriding env var with flag', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+
+    it('should use SOAP from flag', async () => {
+      const sourcepath = ['somepath'];
+      const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
+      expect(cmd.isRest).to.be.false;
+    });
+
+    it('should use SOAP from config', async () => {
+      stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+      stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+      const sourcepath = ['somepath'];
+      const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore private method
+      expect(cmd.isRest).to.be.false;
+    });
+
+    it('should use SOAP by overriding env var with config', async () => {
+      try {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+        stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      } finally {
+        delete process.env.SFDX_REST_DEPLOY;
+      }
+    });
+  });
+
+  describe('Hooks', () => {
+    it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
+      await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
+      expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+    });
+
+    it('should emit predeploy hooks for async deploys', async () => {
+      const sourcepath = ['somepath'];
+      try {
+        await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
+      } catch (e) {
+        // TODO: once async deploys supported remove the try/catch
+        expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
+      }
+      expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+    });
+  });
+
+  describe('Progress Bar', () => {
+    it('should NOT call progress bar because of environment variable', async () => {
+      try {
+        process.env.SFDX_USE_PROGRESS_BAR = 'false';
+        const sourcepath = ['somepath'];
+        const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      } finally {
+        delete process.env.SFDX_USE_PROGRESS_BAR;
+      }
+    });
+
+    it('should call progress bar', async () => {
       const sourcepath = ['somepath'];
       const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
       expect(result).to.deep.equal(expectedResults);
       ensureCreateComponentSetArgs({ sourcepath });
       ensureDeployArgs();
       ensureHookArgs();
+      ensureProgressBar(1);
+    });
+
+    it('should NOT call progress bar because of --json', async () => {
+      const sourcepath = ['somepath'];
+      const result = await runDeployCmd(['--json', '--sourcepath', sourcepath[0]]);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({ sourcepath });
+      ensureDeployArgs();
+      ensureHookArgs();
       ensureProgressBar(0);
-    } finally {
-      delete process.env.SFDX_USE_PROGRESS_BAR;
-    }
+    });
+
+    it('should start the progress bar only once with data onUpdate');
+    it('should display the deploy ID only once onUpdate');
+    it('should update progress bar with data onUpdate');
+    it('should setTotal on the progress bar with data onUpdate');
+    it('should update and stop progress bar with data onFinish');
+    it('should stop progress bar onCancel');
+    it('should stop progress bar onError');
   });
 
-  it('should call progress bar', async () => {
-    const sourcepath = ['somepath'];
-    const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
+  it('should return JSON format and not display for a synchronous deploy', async () => {
+    const result = await runDeployCmd(['--sourcepath', 'somepath', '--json']);
+    expect(formatterDisplayStub.calledOnce).to.equal(false);
     expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ sourcepath });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(1);
   });
 
-  it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
-    await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
-    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+  it('should return JSON format and not display for an asynchronous deploy', async () => {
+    const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+    const result = await runDeployCmd(['--sourcepath', 'somepath', '--json', '--wait', '0']);
+    expect(formatterAsyncDisplayStub.calledOnce).to.equal(false);
+    expect(result).to.deep.equal(expectedAsyncResults);
   });
 
-  it('should emit predeploy hooks for async deploys', async () => {
-    const sourcepath = ['somepath'];
-    try {
-      await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
-    } catch (e) {
-      // once async deploys supported remove the try/catch
-      expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
-    }
-    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+  it('should return JSON format and display for a synchronous deploy', async () => {
+    const result = await runDeployCmd(['--sourcepath', 'somepath']);
+    expect(formatterDisplayStub.calledOnce).to.equal(true);
+    expect(result).to.deep.equal(expectedResults);
+  });
+
+  it('should return JSON format and display for an asynchronous deploy', async () => {
+    const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+    const result = await runDeployCmd(['--sourcepath', 'somepath', '--wait', '0']);
+    expect(formatterAsyncDisplayStub.calledOnce).to.equal(true);
+    expect(result).to.deep.equal(expectedAsyncResults);
   });
 });

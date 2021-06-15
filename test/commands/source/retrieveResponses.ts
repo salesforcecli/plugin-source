@@ -6,10 +6,11 @@
  */
 
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 
 const baseRetrieveResponse = {
-  done: 'true',
+  done: true,
   fileProperties: [
     {
       createdById: '00521000007KA39AAG',
@@ -40,17 +41,33 @@ const baseRetrieveResponse = {
   ],
   id: '09S21000002jxznEAA',
   status: 'Succeeded',
-  success: 'true',
+  success: true,
   zipFile: 'UEsDBBQA...some_long_string',
 };
 
-export type RetrieveResponseType = 'success' | 'inProgress' | 'failed';
+export type RetrieveResponseType = 'success' | 'inProgress' | 'failed' | 'empty';
 
 export const getRetrieveResponse = (
   type: RetrieveResponseType,
   overrides?: Partial<MetadataApiRetrieveStatus>
 ): MetadataApiRetrieveStatus => {
   const response = { ...baseRetrieveResponse, ...overrides };
+
+  if (type === 'inProgress') {
+    response.status = RequestStatus.InProgress;
+    response.done = false;
+    response.success = false;
+  }
+
+  if (type === 'failed') {
+    response.status = RequestStatus.Failed;
+    response.done = true;
+    response.success = false;
+  }
+
+  if (type === 'empty') {
+    response.fileProperties = [];
+  }
 
   return response as MetadataApiRetrieveStatus;
 };
@@ -66,12 +83,14 @@ export const getRetrieveResult = (
     getFileResponses() {
       let fileProps = response.fileProperties;
       fileProps = Array.isArray(fileProps) ? fileProps : [fileProps];
-      return fileProps.map((comp) => ({
-        fullName: comp.fullName,
-        filePath: comp.fileName,
-        state: 'Changed',
-        type: comp.type,
-      }));
+      return fileProps
+        .filter((p) => p.type !== 'Package')
+        .map((comp) => ({
+          fullName: comp.fullName,
+          filePath: comp.fileName,
+          state: 'Changed',
+          type: comp.type,
+        }));
     },
   } as RetrieveResult;
 };

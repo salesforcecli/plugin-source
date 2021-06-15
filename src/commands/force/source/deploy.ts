@@ -8,18 +8,15 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
-import { env } from '@salesforce/kit';
+import { env, once } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
-import {
-  DeployResultFormatter,
-  DeployCommandResult,
-  DeployCommandAsyncResult,
-} from '../../../formatters/deployResultFormatter';
+import { DeployResultFormatter, DeployCommandResult } from '../../../formatters/deployResultFormatter';
+import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../formatters/deployAsyncResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -102,6 +99,12 @@ export class Deploy extends DeployCommand {
 
   private isAsync = false;
   private isRest = false;
+  private asyncDeployResult: AsyncResult;
+
+  private updateDeployId = once((id) => {
+    this.displayDeployId(id);
+    this.setStash(id);
+  });
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
     await this.deploy();
@@ -114,15 +117,15 @@ export class Deploy extends DeployCommand {
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
-    this.isAsync = this.getFlag<Duration>('wait').quantity === 0;
+    const waitDuration = this.getFlag<Duration>('wait');
+    this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
     this.ux.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
     } else {
-      // the deployment involves a component set
-      const cs = await ComponentSetBuilder.build({
+      this.componentSet = await ComponentSetBuilder.build({
         apiversion: this.getFlag<string>('apiversion'),
         sourcepath: this.getFlag<string[]>('sourcepath'),
         manifest: this.flags.manifest && {
@@ -135,57 +138,63 @@ export class Deploy extends DeployCommand {
         },
       });
       // fire predeploy event for sync and async deploys
-      await this.lifecycle.emit('predeploy', cs.toArray());
-      if (this.isAsync) {
-        // This is an async deploy.  We just kick off the request.
-        throw Error('ASYNC DEPLOYS NOT IMPLEMENTED YET');
-      } else {
-        const deploy = cs.deploy({
-          usernameOrConnection: this.org.getUsername(),
-          apiOptions: {
-            ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
-            rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
-            checkOnly: this.getFlag<boolean>('checkonly', false),
-            runTests: this.getFlag<string[]>('runtests'),
-            testLevel: this.getFlag<TestLevel>('testlevel', 'NoTestRun'),
-          },
-        });
+      await this.lifecycle.emit('predeploy', this.componentSet.toArray());
 
+      const deploy = await this.componentSet.deploy({
+        usernameOrConnection: this.org.getUsername(),
+        apiOptions: {
+          ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+          rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
+          checkOnly: this.getFlag<boolean>('checkonly', false),
+          runTests: this.getFlag<string[]>('runtests'),
+          testLevel: this.getFlag<TestLevel>('testlevel'),
+          rest: this.isRest,
+        },
+      });
+      this.asyncDeployResult = { id: deploy.id };
+      this.updateDeployId(deploy.id);
+
+      if (!this.isAsync) {
         // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
         if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
           this.initProgressBar();
           this.progress(deploy);
         }
-
-        this.deployResult = await deploy.start();
+        this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
       }
     }
 
-    await this.lifecycle.emit('postdeploy', this.deployResult);
-
-    const deployId = getString(this.deployResult, 'response.id');
-    if (deployId) {
-      this.displayDeployId(deployId);
-      const file = this.getStash();
-      // TODO: I think we should stash the ID as soon as we know it.
-      this.logger.debug(`Stashing deploy ID: ${deployId}`);
-      await file.write({ [DeployCommand.STASH_KEY]: { jobid: deployId } });
+    if (this.deployResult) {
+      // Only fire the postdeploy event when we have results. I.e., not async.
+      await this.lifecycle.emit('postdeploy', this.deployResult);
     }
   }
 
+  /**
+   * Checks the response status to determine whether the deploy was successful.
+   * Async deploys are successful unless an error is thrown, which resolves as
+   * unsuccessful in oclif.
+   */
   protected resolveSuccess(): void {
-    const status = getString(this.deployResult, 'response.status');
-    if (status !== RequestStatus.Succeeded) {
-      this.setExitCode(1);
+    if (!this.isAsync) {
+      const status = getString(this.deployResult, 'response.status');
+      if (status !== RequestStatus.Succeeded) {
+        this.setExitCode(1);
+      }
     }
   }
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
-      async: this.isAsync,
     };
-    const formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
+    let formatter: DeployAsyncResultFormatter | DeployResultFormatter;
+    if (this.isAsync) {
+      formatter = new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult);
+    } else {
+      formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+    }
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
@@ -199,14 +208,7 @@ export class Deploy extends DeployCommand {
     const conn = this.org.getConnection();
     const id = this.getFlag<string>('validateddeployrequestid');
 
-    // TODO: This is an async call so we need to poll unless `--wait 0`
-    //       See mdapiCheckStatusApi.ts for the toolbelt polling impl.
     const response = await conn.deployRecentValidation({ id, rest: this.isRest });
-
-    if (!this.isAsync) {
-      // Remove this and add polling if we need to poll in the plugin.
-      throw Error('deployRecentValidation polling not yet implemented');
-    }
 
     // This is the deploy ID of the deployRecentValidation response, not
     // the already validated deploy ID (i.e., validateddeployrequestid).
@@ -218,26 +220,27 @@ export class Deploy extends DeployCommand {
       // REST API
       validatedDeployId = (response as { id: string }).id;
     }
+    this.updateDeployId(validatedDeployId);
 
-    return this.report(validatedDeployId);
+    return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 
   private progress(deploy: MetadataApiDeploy): void {
-    let started = false;
+    const startProgressBar = once((componentTotal: number) => {
+      this.progressBar.start(componentTotal);
+    });
+
     deploy.onUpdate((data) => {
       // the numCompTot. isn't computed right away, wait to start until we know how many we have
-      if (data.numberComponentsTotal && !started) {
-        this.displayDeployId(data.id);
-        this.progressBar.start(data.numberComponentsTotal + data.numberTestsTotal);
-        started = true;
+      if (data.numberComponentsTotal) {
+        startProgressBar(data.numberComponentsTotal + data.numberTestsTotal);
+        this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
       }
 
       // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
-      if (data.numberTestsTotal) {
+      if (data.numberTestsTotal && data.numberComponentsTotal) {
         this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
       }
-
-      this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
     });
 
     // any thing else should stop the progress bar

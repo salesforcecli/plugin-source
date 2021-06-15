@@ -34,7 +34,7 @@
   {
     "command": "force:source:deploy:report",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait", "verbose"]
   },
   {
     "command": "force:source:open",

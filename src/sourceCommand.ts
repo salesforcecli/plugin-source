@@ -7,6 +7,7 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle } from '@salesforce/core';
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 
@@ -19,19 +20,21 @@ export type ProgressBar = {
 };
 
 export abstract class SourceCommand extends SfdxCommand {
-  public static DEFAULT_SRC_WAIT_MINUTES = 33;
-  public progressBar?: ProgressBar;
-  public lifecycle = Lifecycle.getInstance();
+  public static readonly DEFAULT_SRC_WAIT_MINUTES = 33;
+  protected progressBar?: ProgressBar;
+  protected lifecycle = Lifecycle.getInstance();
 
-  public isJsonOutput(): boolean {
+  protected componentSet?: ComponentSet;
+
+  protected isJsonOutput(): boolean {
     return getBoolean(this.flags, 'json', false);
   }
 
-  public getFlag<T>(flagName: string, defaultVal?: unknown): T {
+  protected getFlag<T>(flagName: string, defaultVal?: unknown): T {
     return get(this.flags, flagName, defaultVal) as T;
   }
 
-  public initProgressBar(): void {
+  protected initProgressBar(): void {
     this.logger.debug('initializing progress bar');
     this.progressBar = cli.progress({
       format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',

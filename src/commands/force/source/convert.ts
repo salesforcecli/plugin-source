@@ -80,7 +80,7 @@ export class Convert extends SourceCommand {
       paths.push(this.project.getDefaultPackage().path);
     }
 
-    const cs = await ComponentSetBuilder.build({
+    this.componentSet = await ComponentSetBuilder.build({
       sourcepath: paths,
       manifest: manifest && {
         manifestPath: this.getFlag<string>('manifest'),
@@ -93,7 +93,7 @@ export class Convert extends SourceCommand {
     });
 
     const converter = new MetadataConverter();
-    this.convertResult = await converter.convert(cs.getSourceComponents().toArray(), 'metadata', {
+    this.convertResult = await converter.convert(this.componentSet.getSourceComponents().toArray(), 'metadata', {
       type: 'directory',
       outputDirectory: this.getFlag<string>('outputdir'),
       packageName: this.getFlag<string>('packagename'),
