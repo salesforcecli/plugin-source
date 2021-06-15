@@ -7,11 +7,12 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { sleep } from '@salesforce/kit';
 import { SourceCommand } from '../../../sourceCommand';
 import { RetrieveResultFormatter, RetrieveCommandResult } from '../../../formatters/retrieveResultFormatter';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -91,7 +92,31 @@ export class Retrieve extends SourceCommand {
       output: this.project.getDefaultPackage().fullPath,
       packageNames: this.getFlag<string[]>('packagenames'),
     });
-    this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
+    // TODO: uncomment the below line once polling is fixed in core and published with SDR
+    // this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
+    // TODO: temporary polling implementation until above is fixed
+    let totalTimeMs = 0;
+    let complete = false;
+    // set the polling frequency equally proportional to CS size.
+    // larger deploys = less frequent polling
+    // 200ms min to avoid excess polling with smaller sets
+    const frequency = Math.min(200, this.componentSet.size);
+    while (!complete) {
+      const status = await mdapiRetrieve.checkStatus();
+      if (totalTimeMs >= this.getFlag<Duration>('wait').milliseconds) {
+        throw SfdxError.create('@salesforce/plugin-source', 'retrieve', 'retrieveTimeout', [
+          this.getFlag<Duration>('wait').minutes,
+        ]);
+      } else if (status.status === RequestStatus.Pending || status.status === RequestStatus.InProgress) {
+        totalTimeMs += frequency;
+        await sleep(frequency);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore post is protected - call to finish retrieve operation
+        this.retrieveResult = await mdapiRetrieve.post(status);
+        complete = true;
+      }
+    }
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
   }
