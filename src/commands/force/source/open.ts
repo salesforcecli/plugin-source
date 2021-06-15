@@ -88,11 +88,6 @@ export class Open extends SfdxCommand {
     return await this.buildFrontdoorUrl();
   }
 
-  private async checkLightningDomain(domain: string): Promise<DnsLookupObject> {
-    const lookup = util.promisify(dns.lookup);
-    return await lookup(`${domain}.lightning.force.com`);
-  }
-
   private async getUrl(retURL: string): Promise<string> {
     const frontDoorUrl: string = await this.buildFrontdoorUrl();
     return `${frontDoorUrl}&retURL=${encodeURIComponent(decodeURIComponent(retURL))}`;
