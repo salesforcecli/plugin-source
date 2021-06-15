@@ -100,7 +100,7 @@ export class Retrieve extends SourceCommand {
     // set the polling frequency equally proportional to CS size.
     // larger deploys = less frequent polling
     // 200ms min to avoid excess polling with smaller sets
-    const frequency = Math.min(200, this.componentSet.size);
+    const frequency = Math.max(200, this.componentSet.size);
     while (!complete) {
       const status = await mdapiRetrieve.checkStatus();
       if (totalTimeMs >= this.getFlag<Duration>('wait').milliseconds) {
