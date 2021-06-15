@@ -13,6 +13,7 @@ import * as open from 'open';
 import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
+import checkLightningDomain from '@salesforce/core/lib/util/checkLightningDomain';
 import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
 
 export interface UrlObject {
@@ -116,9 +117,8 @@ export class Open extends SfdxCommand {
     }
 
     try {
-      const domainRegex = new RegExp(/https?:\/\/([^.]*)/);
-      const domain = domainRegex.exec(url)[1];
-      const result = await this.checkLightningDomain(domain);
+      const result = await checkLightningDomain(url);
+
       if (result) {
         return act();
       }
