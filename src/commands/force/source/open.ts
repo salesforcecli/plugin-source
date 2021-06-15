@@ -7,8 +7,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import * as dns from 'dns';
-import * as util from 'util';
 import * as open from 'open';
 import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
