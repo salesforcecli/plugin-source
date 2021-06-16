@@ -104,10 +104,8 @@ export class Retrieve extends SourceCommand {
     while (!complete) {
       const status = await mdapiRetrieve.checkStatus();
       if (totalTimeMs >= this.getFlag<Duration>('wait').milliseconds) {
-        process.exitCode = 69;
-        throw SfdxError.create('@salesforce/plugin-source', 'retrieve', 'retrieveTimeout', [
-          this.getFlag<Duration>('wait').minutes,
-        ]);
+        const msg = messages.getMessage('retrieveTimeout', [this.getFlag<Duration>('wait').minutes]);
+        throw new SfdxError(msg, null, null, 69);
       } else if (status.status === RequestStatus.Pending || status.status === RequestStatus.InProgress) {
         totalTimeMs += frequency;
         await sleep(frequency);
