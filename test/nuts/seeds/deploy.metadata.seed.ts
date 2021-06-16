@@ -40,7 +40,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.deploy.metadata) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
         await testkit.deploy({ args: `--metadata ${testCase.toDeploy}` });
-        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 

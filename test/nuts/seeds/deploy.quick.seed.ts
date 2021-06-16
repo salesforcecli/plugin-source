@@ -12,7 +12,7 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
 const EXECUTABLE = '%EXECUTABLE%';
 
-context.skip('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
@@ -35,6 +35,8 @@ context.skip('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
   describe('--checkonly flag', () => {
     it('should check deploy of all packages', async () => {
+      // delete the lwc test stubs which will cause errors with the source tracking/globbing
+      await testkit.deleteGlobs(['force-app/test/**/*']);
       await testkit.deploy({
         args: `--sourcepath ${testkit.packageNames.join(',')} --checkonly --ignoreerrors`,
       });
@@ -44,6 +46,8 @@ context.skip('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
   describe('quick deploy', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
+      // delete the lwc test stubs which will cause errors with the source tracking/globbing
+      await testkit.deleteGlobs(['force-app/test/**/*']);
       const checkOnly = await testkit.deploy({
         args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
       });
@@ -53,7 +57,7 @@ context.skip('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
       });
       testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
-      await testkit.expect.filesToBeDeployed(testkit.packageGlobs);
+      await testkit.expect.filesToBeChanged(testkit.packageGlobs);
     });
   });
 });

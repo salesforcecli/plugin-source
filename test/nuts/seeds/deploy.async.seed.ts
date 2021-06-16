@@ -55,7 +55,7 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       if (status) {
         // if the deploy finished, expect changes and a 'succeeded' status
         testkit.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
-        await testkit.expect.filesToBeDeployed(testkit.packageGlobs, [
+        await testkit.expect.filesToBeChanged(testkit.packageGlobs, [
           'force-app/main/default/objects/Account/fields/asdf__c',
         ]);
       } else {
