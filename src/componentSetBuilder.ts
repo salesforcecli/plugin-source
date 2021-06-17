@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, RegistryAccess } from '@salesforce/source-deploy-retrieve';
 import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/resolve/types';
 import { fs, SfdxError, Logger } from '@salesforce/core';
 
@@ -74,11 +74,15 @@ export class ComponentSetBuilder {
     // Resolve metadata entries with source in package directories.
     if (metadata) {
       logger.debug(`Building ComponentSet from metadata: ${metadata.metadataEntries.toString()}`);
+      const registry = new RegistryAccess();
 
       // Build a Set of metadata entries
       const filter = new ComponentSet();
       metadata.metadataEntries.forEach((entry) => {
         const splitEntry = entry.split(':');
+        // try and get the type by name to ensure no typos or errors in type name
+        // matches toolbelt functionality
+        registry.getTypeByName(splitEntry[0]);
         filter.add({
           type: splitEntry[0],
           fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
