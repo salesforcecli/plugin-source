@@ -116,8 +116,7 @@ export class Retrieve extends SourceCommand {
         complete = true;
       }
     }
-
-    await this.lifecycle.emit('postretrieve', this.retrieveResult.response);
+    await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());
   }
 
   protected resolveSuccess(): void {
