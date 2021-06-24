@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.21](https://github.com/salesforcecli/plugin-source/compare/v0.1.20...v0.1.21) (2021-06-24)
+
+
+### Bug Fixes
+
+* postretrieve hook payload is now the file responses ([#120](https://github.com/salesforcecli/plugin-source/issues/120)) ([a505389](https://github.com/salesforcecli/plugin-source/commit/a50538905a9bb02192c9803fec49000baf6a588f))
+
 ### [0.1.20](https://github.com/salesforcecli/plugin-source/compare/v0.1.19...v0.1.20) (2021-06-17)
 
 
