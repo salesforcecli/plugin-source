@@ -139,7 +139,7 @@ describe('force:source:retrieve', () => {
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
     expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
-    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.response);
+    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.inboundFiles);
   };
 
   it('should pass along sourcepath', async () => {
