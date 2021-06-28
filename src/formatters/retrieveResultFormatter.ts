@@ -5,12 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { blue } from 'chalk';
+import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages } from '@salesforce/core';
 import { get, getString, getNumber } from '@salesforce/ts-types';
 import { RetrieveResult, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
-import { FileResponse, RequestStatus, RetrieveMessage } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import {
+  ComponentStatus,
+  FileResponse,
+  RequestStatus,
+  RetrieveMessage,
+} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -31,11 +36,14 @@ export interface RetrieveCommandResult {
 export class RetrieveResultFormatter extends ResultFormatter {
   protected result: RetrieveResult;
   protected fileResponses: FileResponse[];
+  protected warnings: RetrieveMessage[];
 
   public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: RetrieveResult) {
     super(logger, ux, options);
     this.result = result;
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
+    const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
+    this.warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
   }
 
   /**
@@ -44,12 +52,10 @@ export class RetrieveResultFormatter extends ResultFormatter {
    * @returns RetrieveCommandResult
    */
   public getJson(): RetrieveCommandResult {
-    const warnMessages = get(this.result, 'response.messages', []);
-    const warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
     return {
       inboundFiles: this.fileResponses,
       packages: [],
-      warnings,
+      warnings: this.warnings,
       response: this.result.response,
     };
   }
@@ -64,33 +70,20 @@ export class RetrieveResultFormatter extends ResultFormatter {
       return;
     }
 
-    this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
     if (this.isSuccess()) {
-      if (this.fileResponses?.length) {
-        this.sortFileResponses(this.fileResponses);
-        this.asRelativePaths(this.fileResponses);
-        const columns = [
-          { key: 'fullName', label: 'FULL NAME' },
-          { key: 'type', label: 'TYPE' },
-          { key: 'filePath', label: 'PROJECT PATH' },
-        ];
-        this.ux.table(this.fileResponses, { columns });
+      if (this.warnings.length) {
+        this.displayWarnings();
+      }
+      this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
+      const retrievedFiles = this.fileResponses.filter((fr) => fr.state !== ComponentStatus.Failed);
+      if (retrievedFiles?.length) {
+        this.displaySuccesses(retrievedFiles);
       } else {
         this.ux.log(messages.getMessage('NoResultsFound'));
       }
     } else {
-      const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
-      const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
-      const errMsgs = Array.isArray(responseMsgs) ? responseMsgs : [responseMsgs];
-      const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
-      this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
+      this.displayErrors();
     }
-
-    // if (results.status === 'SucceededPartial' && results.successes.length && results.failures.length) {
-    //   this.ux.log('');
-    //   this.ux.styledHeader(yellow(messages.getMessage('metadataNotFoundWarning')));
-    //   results.failures.forEach((warning) => this.ux.log(warning.message));
-    // }
 
     // Display any package retrievals
     // if (results.packages && results.packages.length) {
@@ -108,5 +101,34 @@ export class RetrieveResultFormatter extends ResultFormatter {
 
   protected hasComponents(): boolean {
     return getNumber(this.result, 'components.size', 0) === 0;
+  }
+
+  private displayWarnings(): void {
+    this.ux.styledHeader(yellow(messages.getMessage('retrievedSourceWarningsHeader')));
+    const columns = [
+      { key: 'fileName', label: 'FILE NAME' },
+      { key: 'problem', label: 'PROBLEM' },
+    ];
+    this.ux.table(this.warnings, { columns });
+    this.ux.log();
+  }
+
+  private displaySuccesses(retrievedFiles: FileResponse[]): void {
+    this.sortFileResponses(retrievedFiles);
+    this.asRelativePaths(retrievedFiles);
+    const columns = [
+      { key: 'fullName', label: 'FULL NAME' },
+      { key: 'type', label: 'TYPE' },
+      { key: 'filePath', label: 'PROJECT PATH' },
+    ];
+    this.ux.table(retrievedFiles, { columns });
+  }
+
+  private displayErrors(): void {
+    const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
+    const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
+    const errMsgs = Array.isArray(responseMsgs) ? responseMsgs : [responseMsgs];
+    const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
+    this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
   }
 }
