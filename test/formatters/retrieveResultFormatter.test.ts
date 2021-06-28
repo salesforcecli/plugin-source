@@ -21,6 +21,7 @@ describe('RetrieveResultFormatter', () => {
   const retrieveResultFailure = getRetrieveResult('failed');
   const retrieveResultInProgress = getRetrieveResult('inProgress');
   const retrieveResultEmpty = getRetrieveResult('empty');
+  const retrieveResultWarnings = getRetrieveResult('warnings');
 
   const logger = Logger.childFromRoot('retrieveTestLogger').useMemoryLogging();
   let ux;
@@ -88,14 +89,16 @@ describe('RetrieveResultFormatter', () => {
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
 
-    it.skip('should return expected json for a success with warnings', async () => {
+    it('should return expected json for a success with warnings', async () => {
+      const warnMessages = retrieveResultWarnings.response.messages;
+      const warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
       const expectedSuccessResults: RetrieveCommandResult = {
-        inboundFiles: retrieveResultSuccess.getFileResponses(),
+        inboundFiles: retrieveResultWarnings.getFileResponses(),
         packages: [],
-        warnings: [],
-        response: cloneJson(retrieveResultSuccess.response),
+        warnings,
+        response: cloneJson(retrieveResultWarnings.response),
       };
-      const formatter = new RetrieveResultFormatter(logger, ux, {}, retrieveResultSuccess);
+      const formatter = new RetrieveResultFormatter(logger, ux, {}, retrieveResultWarnings);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
   });
@@ -131,6 +134,19 @@ describe('RetrieveResultFormatter', () => {
       expect(logStub.called).to.equal(true);
       expect(tableStub.called).to.equal(false);
       expect(logStub.firstCall.args[0]).to.contain('Retrieve Failed due to:');
+    });
+
+    it('should output as expected for warnings', async () => {
+      const formatter = new RetrieveResultFormatter(logger, ux, {}, retrieveResultWarnings);
+      formatter.display();
+      // Should call styledHeader for warnings and the standard "Retrieved Source" header
+      expect(styledHeaderStub.calledTwice).to.equal(true);
+      expect(logStub.called).to.equal(true);
+      expect(tableStub.calledOnce).to.equal(true);
+      expect(styledHeaderStub.firstCall.args[0]).to.contain('Retrieved Source Warnings');
+      const warnMessages = retrieveResultWarnings.response.messages;
+      const warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
+      expect(tableStub.firstCall.args[0]).to.deep.equal(warnings);
     });
 
     it('should output a message when no results were returned', async () => {
