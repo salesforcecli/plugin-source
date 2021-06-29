@@ -39,6 +39,9 @@ describe('force:source:retrieve', () => {
   let retrieveStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
+  // TODO: remove the next two stubs when reverting back to SDR polling
+  let checkStatusStub: sinon.SinonStub;
+  let postStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
@@ -78,9 +81,13 @@ describe('force:source:retrieve', () => {
 
   beforeEach(() => {
     pollStub = sandbox.stub().resolves(retrieveResult);
+    checkStatusStub = sandbox.stub().resolves(retrieveResult);
+    postStub = sandbox.stub().resolves(retrieveResult);
     retrieveStub = sandbox.stub().resolves({
       pollStatus: pollStub,
       retrieveId: retrieveResult.response.id,
+      checkStatus: checkStatusStub,
+      post: postStub,
     });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
@@ -132,7 +139,7 @@ describe('force:source:retrieve', () => {
     expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
     expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
     expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
-    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.response);
+    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.inboundFiles);
   };
 
   it('should pass along sourcepath', async () => {

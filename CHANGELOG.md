@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.22](https://github.com/salesforcecli/plugin-source/compare/v0.1.21...v0.1.22) (2021-06-28)
+
+
+### Bug Fixes
+
+* display retrieve warnings ([#121](https://github.com/salesforcecli/plugin-source/issues/121)) ([a2330ed](https://github.com/salesforcecli/plugin-source/commit/a2330edb51408a91169608a5d518423dd919231b))
+
+### [0.1.21](https://github.com/salesforcecli/plugin-source/compare/v0.1.20...v0.1.21) (2021-06-24)
+
+
+### Bug Fixes
+
+* postretrieve hook payload is now the file responses ([#120](https://github.com/salesforcecli/plugin-source/issues/120)) ([a505389](https://github.com/salesforcecli/plugin-source/commit/a50538905a9bb02192c9803fec49000baf6a588f))
+
+### [0.1.20](https://github.com/salesforcecli/plugin-source/compare/v0.1.19...v0.1.20) (2021-06-17)
+
+
+### Bug Fixes
+
+* temporary polling fix ([#114](https://github.com/salesforcecli/plugin-source/issues/114)) ([6c6a3ab](https://github.com/salesforcecli/plugin-source/commit/6c6a3ab6b1a4e36efa974627bc944e37e875c3d6))
+
 ### [0.1.19](https://github.com/salesforcecli/plugin-source/compare/v0.0.19...v0.1.19) (2021-06-12)
 
 

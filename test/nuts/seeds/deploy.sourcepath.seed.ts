@@ -39,7 +39,7 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
         await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
-        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 

@@ -158,6 +158,26 @@ describe('ComponentSetBuilder', () => {
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
 
+    it('should throw an error when it cant resolve a metadata type (Metadata)', async () => {
+      const packageDir1 = path.resolve('force-app');
+
+      try {
+        await ComponentSetBuilder.build({
+          sourcepath: undefined,
+          manifest: undefined,
+          metadata: {
+            metadataEntries: ['NotAType', 'ApexClass:MyClass'],
+            directoryPaths: [packageDir1],
+          },
+        });
+        assert.fail('the above should throw an error');
+      } catch (e) {
+        expect(e).to.not.be.null;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        expect(e.message).to.include("Missing metadata type definition in registry for id 'notatype'");
+      }
+    });
+
     it('should create ComponentSet from specific metadata (ApexClass:MyClass)', async () => {
       componentSet.add(apexClassComponent);
       fromSourceStub.returns(componentSet);

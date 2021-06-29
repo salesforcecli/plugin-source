@@ -65,7 +65,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
       const toDeploy = path.normalize(sourcepath.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
         await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
-        await testkit.expect.filesToBeDeployed(sourcepath.toVerify);
+        await testkit.expect.filesToBeChanged(sourcepath.toVerify);
       });
     }
   });
@@ -75,7 +75,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
       const toDeploy = path.normalize(metadata.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
         await testkit.deploy({ args: `--metadata ${toDeploy}` });
-        await testkit.expect.filesToBeDeployed(metadata.toVerify);
+        await testkit.expect.filesToBeChanged(metadata.toVerify);
       });
     }
   });
@@ -88,7 +88,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
         const packageXml = path.join('out', 'package.xml');
 
         await testkit.deploy({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeDeployed(testCase.toVerify);
+        await testkit.expect.filesToBeChanged(testCase.toVerify);
       });
     }
   });
@@ -120,7 +120,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
   //       args: `--validateddeployrequestid ${checkOnly.result.id}`,
   //     });
   //     testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
-  //     await testkit.expect.filesToBeDeployed(testkit.packageGlobs);
+  //     await testkit.expect.filesToBeChanged(testkit.packageGlobs);
   //   });
   // });
 });

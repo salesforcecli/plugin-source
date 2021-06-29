@@ -23,6 +23,7 @@
   "SourceRetrieveError": "Could not retrieve files in the sourcepath%s",
   "retrieveTimeout": "Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time.",
   "retrievedSourceHeader": "Retrieved Source",
+  "retrievedSourceWarningsHeader": "Retrieved Source Warnings",
   "fullNameTableColumn": "FULL NAME",
   "typeTableColumn": "TYPE",
   "workspacePathTableColumn": "PROJECT PATH",
