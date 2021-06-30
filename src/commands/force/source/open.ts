@@ -8,17 +8,13 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as open from 'open';
+import { getBoolean, getString } from '@salesforce/ts-types';
 import { fs, AuthInfo } from '@salesforce/core';
 import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
 import checkLightningDomain from '@salesforce/core/lib/util/checkLightningDomain';
 import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
-
-export interface UrlObject {
-  url: string;
-  orgId: string;
-  username: string;
-}
+import { OpenResultFormatter, OpenCommandResult } from '../../../formatters/openResultFormatter';
 
 export interface DnsLookupObject {
   address: string;
@@ -35,11 +31,6 @@ export interface FlexiPageRecord {
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
-
-function openBrowser(url: string, options: UrlObject): UrlObject {
-  void open(url);
-  return options;
-}
 
 export class Open extends SfdxCommand {
   public static readonly description = messages.getMessage('description');
@@ -58,15 +49,19 @@ export class Open extends SfdxCommand {
     }),
   };
 
-  public async run(): Promise<UrlObject> {
+  protected openResult: OpenCommandResult;
+
+  public async run(): Promise<OpenCommandResult> {
+    await this.doOpen();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
+
+  private async doOpen(): Promise<void> {
     const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile));
     const openPath = typeName === 'FlexiPage' ? await this.handleSupportedTypes() : await this.handleUnsupportedTypes();
 
-    const { orgId, username, url } = await this.open(openPath);
-
-    this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
-
-    return { orgId, username, url };
+    this.openResult = await this.open(openPath);
   }
 
   private getTypeNameDefinitionByFileName(fsPath: string): string | undefined {
@@ -99,12 +94,31 @@ export class Open extends SfdxCommand {
     return url;
   }
 
-  private async open(src: string, urlonly?: boolean): Promise<UrlObject> {
+  private resolveSuccess(): void {
+    if (!getString(this.openResult, 'url')) {
+      process.exitCode = 1;
+    }
+  }
+
+  private isJsonOutput(): boolean {
+    return getBoolean(this.flags, 'json', false);
+  }
+
+  private formatResult(): OpenCommandResult {
+    const formatter = new OpenResultFormatter(this.logger, this.ux, this.openResult);
+
+    if (!this.isJsonOutput()) {
+      formatter.display();
+    }
+    return formatter.getJson();
+  }
+
+  private async open(src: string, urlonly?: boolean): Promise<OpenCommandResult> {
     const connection = this.org.getConnection();
     const { username, orgId } = connection.getAuthInfoFields();
     const url = await this.getUrl(src);
-    const act = (): UrlObject =>
-      this.flags.urlonly || urlonly ? { url, username, orgId } : openBrowser(url, { url, username, orgId });
+    const act = (): OpenCommandResult =>
+      this.flags.urlonly || urlonly ? { url, username, orgId } : this.openBrowser(url, { url, username, orgId });
     if (sfdc.isInternalUrl(url)) {
       return act();
     }
@@ -122,16 +136,12 @@ export class Open extends SfdxCommand {
 
   private async deriveFlexipageURL(flexipage: string): Promise<string | undefined> {
     const connection = this.org.getConnection();
-    try {
-      const queryResult = await connection.tooling.query(`SELECT id FROM flexipage WHERE DeveloperName='${flexipage}'`);
-      if (queryResult.totalSize === 1 && queryResult.records) {
-        const record = queryResult.records[0] as FlexiPageRecord;
-        return record.Id;
-      }
-      return undefined;
-    } catch (error) {
-      return undefined;
+    const queryResult = await connection.tooling.query(`SELECT id FROM flexipage WHERE DeveloperName='${flexipage}'`);
+    if (queryResult.totalSize === 1 && queryResult.records) {
+      const record = queryResult.records[0] as FlexiPageRecord;
+      return record.Id;
     }
+    return;
   }
 
   private async setUpOpenPath(): Promise<string> {
@@ -141,5 +151,10 @@ export class Open extends SfdxCommand {
       return `/visualEditor/appBuilder.app?pageId=${id}`;
     }
     return '_ui/flexipage/ui/FlexiPageFilterListPage';
+  }
+
+  private openBrowser(url: string, options: OpenCommandResult): OpenCommandResult {
+    void open(url);
+    return options;
   }
 }

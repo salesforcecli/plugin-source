@@ -12,5 +12,6 @@
   "SourceOpenFileDescription": "file to edit",
   "SourceOpenPathDescription": "generate a navigation URL; don’t launch the editor",
   "SourceOpenCommandHumanSuccess": "Access org %s as user %s with the following URL: %s",
-  "SourceOpenCommandTimeoutError": "Timoeut error"
+  "SourceOpenCommandTimeoutError": "Timeout error",
+  "SourceOpenCommandError": "Open failed"
 }
