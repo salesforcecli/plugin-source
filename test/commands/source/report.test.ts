@@ -71,6 +71,7 @@ describe('force:source:report', () => {
       cmd.setOrg(orgStub);
     });
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
+    stubMethod(sandbox, ConfigFile.prototype, 'readSync');
     stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
     checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
 
