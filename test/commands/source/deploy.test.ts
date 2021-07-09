@@ -58,6 +58,7 @@ describe('force:source:deploy', () => {
   let buildComponentSetStub: sinon.SinonStub;
   let initProgressBarStub: sinon.SinonStub;
   let progressStub: sinon.SinonStub;
+  let printStatusStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
@@ -96,6 +97,7 @@ describe('force:source:deploy', () => {
     });
     initProgressBarStub = stubMethod(sandbox, cmd, 'initProgressBar');
     progressStub = stubMethod(sandbox, cmd, 'progress');
+    printStatusStub = stubMethod(sandbox, cmd, 'printStatus');
     stubMethod(sandbox, UX.prototype, 'log');
     stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
     formatterDisplayStub = stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
@@ -171,6 +173,9 @@ describe('force:source:deploy', () => {
     expect(progressStub.callCount).to.equal(callCount);
   };
 
+  const ensurePrintStatus = (callCount: number) => {
+    expect(printStatusStub.callCount).to.equal(callCount);
+  };
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
     const result = await runDeployCmd(['--sourcepath', sourcepath[0], '--json']);
@@ -376,7 +381,8 @@ describe('force:source:deploy', () => {
         ensureCreateComponentSetArgs({ sourcepath });
         ensureDeployArgs();
         ensureHookArgs();
-        ensureProgressBar(0);
+        // this should not be ensurePrintStatus(0).
+        ensurePrintStatus(0);
       } finally {
         delete process.env.SFDX_USE_PROGRESS_BAR;
       }
