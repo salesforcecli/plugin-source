@@ -4,15 +4,15 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
 import * as os from 'os';
+import * as chalk from 'chalk';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { AsyncResult, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
 import { env, once } from '@salesforce/kit';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployResultFormatter, DeployCommandResult } from '../../../formatters/deployResultFormatter';
@@ -155,10 +155,10 @@ export class Deploy extends DeployCommand {
       this.updateDeployId(deploy.id);
 
       if (!this.isAsync) {
-        // if SFDX_USE_PROGRESS_BAR is unset or true (default true) AND we're not print JSON output
-        if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true) && !this.isJsonOutput()) {
-          this.initProgressBar();
-          this.progress(deploy);
+        // we're not print JSON output
+        if (!this.isJsonOutput()) {
+          if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true)) this.initProgressBar();
+          this.progress(deploy, env.getBoolean('SFDX_USE_PROGRESS_BAR', true));
         }
         this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
       }
@@ -225,37 +225,79 @@ export class Deploy extends DeployCommand {
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 
-  private progress(deploy: MetadataApiDeploy): void {
+  // Prints the current status of the deployment
+  private printStatus(data: MetadataApiDeployStatus): void {
+    if (!data.done) {
+      this.ux.log('');
+      this.ux.styledHeader(chalk.yellow('Status'));
+    } else {
+      if (data.completedDate) {
+        const deployStart: number = new Date(data.createdDate).getTime();
+        const deployEnd: number = new Date(data.completedDate).getTime();
+        this.ux.log(`Deployment finished in ${deployEnd - deployStart}ms`);
+      }
+      this.ux.log('');
+      const successHeader: string = chalk.green('Result');
+      const failureHeader: string = chalk.red('Result');
+      const header: string = data.success ? successHeader : failureHeader;
+      this.ux.styledHeader(header);
+      this.ux.log('');
+    }
+
+    const successfulComponentsMessage: string = data.checkOnly
+      ? `Components checked:  ${data.numberComponentsDeployed}`
+      : `Components deployed:  ${data.numberComponentsDeployed}`;
+    this.ux.log('');
+    this.ux.log(`Status:  ${data.status}`);
+    this.ux.log(`jobid:  ${data.id}`);
+    this.ux.log(`Component errors:  ${data.numberComponentErrors}`);
+    this.ux.log(successfulComponentsMessage);
+    this.ux.log(`Components total:  ${data.numberComponentsTotal}`);
+    this.ux.log(`Tests errors:  ${data.numberTestErrors}`);
+    this.ux.log(`Tests completed:  ${data.numberTestsCompleted}`);
+    this.ux.log(`Tests total:  ${data.numberTestsTotal}`);
+    this.ux.log(`Check only: ${data.checkOnly}`);
+    this.ux.log('');
+  }
+
+  private progress(deploy: MetadataApiDeploy, progressBar = true): void {
     const startProgressBar = once((componentTotal: number) => {
       this.progressBar.start(componentTotal);
     });
-
     deploy.onUpdate((data) => {
-      // the numCompTot. isn't computed right away, wait to start until we know how many we have
-      if (data.numberComponentsTotal) {
-        startProgressBar(data.numberComponentsTotal + data.numberTestsTotal);
-        this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
-      }
-
-      // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
-      if (data.numberTestsTotal && data.numberComponentsTotal) {
-        this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
+      if (!progressBar) {
+        // If not progress bar. Print the status in normal formatt
+        this.printStatus(data);
+      } else {
+        // the numCompTot. isn't computed right away, wait to start until we know how many we have
+        if (data.numberComponentsTotal) {
+          startProgressBar(data.numberComponentsTotal + data.numberTestsTotal);
+          this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
+        }
+        // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
+        if (data.numberTestsTotal && data.numberComponentsTotal) {
+          this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
+        }
       }
     });
-
     // any thing else should stop the progress bar
     deploy.onFinish((data) => {
-      // the final tick of `onUpdate` is actually fired with `onFinish`
-      this.progressBar.update(data.response.numberComponentsDeployed + data.response.numberTestsCompleted);
-      this.progressBar.stop();
+      if (progressBar) {
+        // the final tick of `onUpdate` is actually fired with `onFinish`
+        this.progressBar.update(data.response.numberComponentsDeployed + data.response.numberTestsCompleted);
+        this.progressBar.stop();
+      } else {
+        // Prints the final Status
+        this.printStatus(data.response);
+      }
     });
 
     deploy.onCancel(() => {
-      this.progressBar.stop();
+      if (progressBar) this.progressBar.stop();
     });
 
     deploy.onError((error: Error) => {
-      this.progressBar.stop();
+      if (progressBar) this.progressBar.stop();
       throw error;
     });
   }
