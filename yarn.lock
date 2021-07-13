@@ -600,7 +600,7 @@
     chalk "^2.4.2"
     cli-ux "^4.9.3"
 
-"@salesforce/command@^3.0.0", "@salesforce/command@^3.0.5", "@salesforce/command@^3.1.3":
+"@salesforce/command@^3.0.0", "@salesforce/command@^3.0.5":
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/@salesforce/command/-/command-3.1.3.tgz#d72ed2bc516ce7fea1151576a997b45fd1752d26"
   integrity sha512-Yg9lhl3ghwPN7WwqFmgfWIn6i7vz43WTpEsYsChz80bKORlVbDvhwPZQUj0XTv3DKDnPZVU8FFIDsrLSOa9G1A==
@@ -774,13 +774,13 @@
     tslib "^2"
 
 "@salesforce/plugin-user@^1.3.0":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-1.3.1.tgz#08bda7001a9d9fa1eb9a151a3a6fcc6d41916fd0"
-  integrity sha512-e/uopqUzDEuo9vtN8VA7A89U7ocwhAH6YKv69QrE5Ywz3C+8NBuPrVMNQTUF86vbtx/XZiiu7ChCIR7Gh6A4pw==
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-1.4.0.tgz#c5dad9f29c082a45ad8902ac23a630cfd5cb04fb"
+  integrity sha512-CsO1em/mTk+QFQr77aaXmjLVmqJNpr0skPuhXxAgBB7ATQcAqNCm6o01QDz2O1cq/5QbbU9xlxfjezOej2KpRw==
   dependencies:
     "@oclif/config" "^1.17.0"
-    "@salesforce/command" "^3.1.3"
-    "@salesforce/core" "^2.23.4"
+    "@salesforce/command" "^4.0.4"
+    "@salesforce/core" "^2.26.0"
     tslib "^2"
 
 "@salesforce/prettier-config@^0.0.2":
@@ -809,7 +809,7 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^3.0.0":
+"@salesforce/source-deploy-retrieve@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-3.1.1.tgz#47471b4841859876adda8471fad87971e9781e41"
   integrity sha512-9KTLp/tJDThkwXvPGq4/MY/Y+28ykaPgX/xKMtvrZQEP20dJPv/tcTf7HtFQszO4LnX4C90g13XHrtQRodzkYw==
