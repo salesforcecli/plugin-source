@@ -7,7 +7,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, DeployResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
 import { env, once } from '@salesforce/kit';
@@ -17,6 +17,8 @@ import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployResultFormatter, DeployCommandResult } from '../../../formatters/deployResultFormatter';
 import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../formatters/deployAsyncResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -157,13 +159,10 @@ export class Deploy extends DeployCommand {
       if (!this.isAsync) {
         // we're not print JSON output
         if (!this.isJsonOutput()) {
-          if (env.getBoolean('SFDX_USE_PROGRESS_BAR', true)) {
-            this.initProgressBar();
-            this.progress(deploy);
-          } else {
-            const progressFormatter: ProgressFormatter = new ProgressFormatter(this.logger, this.ux);
-            this.progressWithNoBar(deploy, progressFormatter);
-          }
+          const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
+            ? new DeployProgressBarFormatter(this.logger, this.ux)
+            : new DeployProgressStatusFormatter(this.logger, this.ux);
+          progressFormatter.progress(deploy);
         }
         this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
       }
@@ -228,87 +227,5 @@ export class Deploy extends DeployCommand {
     this.updateDeployId(validatedDeployId);
 
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
-  }
-
-  // // Prints the current status of the deployment
-  // private printStatus(data: MetadataApiDeployStatus): void {
-  //   if (!data.done) {
-  //     this.ux.log('');
-  //     this.ux.styledHeader(chalk.yellow('Status'));
-  //   } else {
-  //     if (data.completedDate) {
-  //       const deployStart: number = new Date(data.createdDate).getTime();
-  //       const deployEnd: number = new Date(data.completedDate).getTime();
-  //       this.ux.log(`Deployment finished in ${deployEnd - deployStart}ms`);
-  //     }
-  //     this.ux.log('');
-  //     const successHeader: string = chalk.green('Result');
-  //     const failureHeader: string = chalk.red('Result');
-  //     const header: string = data.success ? successHeader : failureHeader;
-  //     this.ux.styledHeader(header);
-  //     this.ux.log('');
-  //   }
-
-  //   const successfulComponentsMessage: string = data.checkOnly
-  //     ? `Components checked:  ${data.numberComponentsDeployed}`
-  //     : `Components deployed:  ${data.numberComponentsDeployed}`;
-  //   this.ux.log('');
-  //   this.ux.log(`Status:  ${data.status}`);
-  //   this.ux.log(`jobid:  ${data.id}`);
-  //   this.ux.log(`Component errors:  ${data.numberComponentErrors}`);
-  //   this.ux.log(successfulComponentsMessage);
-  //   this.ux.log(`Components total:  ${data.numberComponentsTotal}`);
-  //   this.ux.log(`Tests errors:  ${data.numberTestErrors}`);
-  //   this.ux.log(`Tests completed:  ${data.numberTestsCompleted}`);
-  //   this.ux.log(`Tests total:  ${data.numberTestsTotal}`);
-  //   this.ux.log(`Check only: ${data.checkOnly}`);
-  //   this.ux.log('');
-  // }
-
-  private progressWithNoBar(deploy: MetadataApiDeploy, progressFormatter: ProgressFormatter): void {
-    deploy.onUpdate((data) => {
-      progressFormatter.printStatus(data);
-    });
-    deploy.onFinish((data) => {
-      progressFormatter.printStatus(data.response);
-    });
-    deploy.onError((error: Error) => {
-      throw error;
-    });
-  }
-
-  private progress(deploy: MetadataApiDeploy): void {
-    const startProgressBar = once((componentTotal: number) => {
-      this.progressBar.start(componentTotal);
-    });
-
-    deploy.onUpdate((data) => {
-      // the numCompTot. isn't computed right away, wait to start until we know how many we have
-      if (data.numberComponentsTotal) {
-        startProgressBar(data.numberComponentsTotal + data.numberTestsTotal);
-        this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
-      }
-
-      // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
-      if (data.numberTestsTotal && data.numberComponentsTotal) {
-        this.progressBar.setTotal(data.numberComponentsTotal + data.numberTestsTotal);
-      }
-    });
-
-    // any thing else should stop the progress bar
-    deploy.onFinish((data) => {
-      // the final tick of `onUpdate` is actually fired with `onFinish`
-      this.progressBar.update(data.response.numberComponentsDeployed + data.response.numberTestsCompleted);
-      this.progressBar.stop();
-    });
-
-    deploy.onCancel(() => {
-      this.progressBar.stop();
-    });
-
-    deploy.onError((error: Error) => {
-      this.progressBar.stop();
-      throw error;
-    });
   }
 }

@@ -71,9 +71,11 @@ export class DeployResultFormatter extends ResultFormatter {
       const canceledByName = getString(this.result, 'response.canceledByName', 'unknown');
       throw new SfdxError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
     }
-    this.displaySuccesses();
-    this.displayFailures();
-    this.displayTestResults();
+    setTimeout(() => {
+      this.displaySuccesses();
+      this.displayFailures();
+      this.displayTestResults();
+    }, 500);
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
