@@ -10,6 +10,7 @@ import { Logger } from '@salesforce/core';
 import { getNumber } from '@salesforce/ts-types';
 import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { Duration } from '@salesforce/kit';
 import { ProgressFormatter } from './progressFormatter';
 export class DeployProgressStatusFormatter extends ProgressFormatter {
   public constructor(logger: Logger, ux: UX) {
@@ -33,18 +34,17 @@ export class DeployProgressStatusFormatter extends ProgressFormatter {
   private printDeployStatus(data: MetadataApiDeployStatus): void {
     if (!data.done) {
       this.ux.log('');
-      this.ux.styledHeader(chalk.yellow('Status'));
+      this.ux.styledHeader(chalk.yellow(`Status: ${data.status}`));
       this.ux.log('');
     } else {
       if (data.completedDate) {
         const deployStart: number = new Date(data.createdDate).getTime();
         const deployEnd: number = new Date(data.completedDate).getTime();
-        this.ux.log(`Deployment finished in ${deployEnd - deployStart}ms`);
+        const duration = Duration.seconds((deployEnd - deployStart) / 1000);
+        this.ux.log(`Deployment finished in ${duration.toString()} `);
       }
       this.ux.log('');
-      const successHeader: string = chalk.green('Result');
-      const failureHeader: string = chalk.red('Result');
-      const header: string = data.success ? successHeader : failureHeader;
+      const header: string = data.success ? chalk.green(`Result: ${data.status}`) : chalk.red(`Result: ${data.status}`);
       this.ux.styledHeader(header);
       this.ux.log('');
     }
@@ -58,9 +58,9 @@ export class DeployProgressStatusFormatter extends ProgressFormatter {
       const deploys = `${componentsDeployed}/${componentsTotal} components deployed.`;
       const deployErrors = componentErrors === 1 ? `${componentErrors} error.` : `${componentErrors} errors.`;
       const tests = `${testsCompleted}/${testsTotal} tests completed.`;
-      const testErrs = `Errors: ${testErrors}.`;
-      this.ux.log(`Components: ${data.status}. ${deploys} ${deployErrors}`);
-      this.ux.log(`Tests: ${data.status}. ${tests} ${testErrs}`);
+      const testErrs = testErrors === 1 ? `${testErrors} error.` : `${testErrors} errors.`;
+      this.ux.log(`${deploys} ${deployErrors}`);
+      this.ux.log(`${tests} ${testErrs}`);
     } else {
       this.ux.log('No components deployed');
     }

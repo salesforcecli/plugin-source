@@ -17,7 +17,7 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
     super(logger, ux);
   }
 
-  // displays the porgress of the Deployment
+  // displays the progress of the Deployment
   public progress(deploy: MetadataApiDeploy): void {
     this.initProgressBar();
     const startProgressBar = once((componentTotal: number) => {

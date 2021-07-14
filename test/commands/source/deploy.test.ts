@@ -60,8 +60,6 @@ describe('force:source:deploy', () => {
   let initProgressBarStub: sinon.SinonStub;
   let progressBarStub: sinon.SinonStub;
   let progressStatusStub: sinon.SinonStub;
-  // let progressStub: sinon.SinonStub;
-  // let progressWithNoBar: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
@@ -179,7 +177,6 @@ describe('force:source:deploy', () => {
     const sourcepath = ['somepath'];
     const result = await runDeployCmd(['--sourcepath', sourcepath[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
-    // expect(progressStub.called).to.be.false;
     ensureCreateComponentSetArgs({ sourcepath });
     ensureDeployArgs();
     ensureHookArgs();
