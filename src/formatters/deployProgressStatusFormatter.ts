@@ -13,6 +13,8 @@ import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { ProgressFormatter } from './progressFormatter';
 export class DeployProgressStatusFormatter extends ProgressFormatter {
+  private previousComponents = -1;
+  private previousTests = -1;
   public constructor(logger: Logger, ux: UX) {
     super(logger, ux);
   }
@@ -20,7 +22,12 @@ export class DeployProgressStatusFormatter extends ProgressFormatter {
   // This can be used to print the progress of the deployment.
   public progress(deploy: MetadataApiDeploy): void {
     deploy.onUpdate((data) => {
-      this.printDeployStatus(data);
+      // Printing status only when number of components or tests gets changed in progress.
+      if (data.numberComponentsDeployed > this.previousComponents || data.numberTestsCompleted > this.previousTests) {
+        this.printDeployStatus(data);
+        this.previousComponents = data.numberComponentsDeployed;
+        this.previousTests = data.numberTestsCompleted;
+      }
     });
     deploy.onFinish((data) => {
       this.printDeployStatus(data.response);
