@@ -62,6 +62,7 @@ describe('force:source:deploy', () => {
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
   let formatterDisplayStub: sinon.SinonStub;
+  let resolveProjectConfigStub: sinon.SinonStub;
 
   class TestDeploy extends Deploy {
     public async runIt() {
@@ -82,6 +83,7 @@ describe('force:source:deploy', () => {
       const sfdxProjectStub = fromStub(
         stubInterface<SfdxProject>(sandbox, {
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
+          resolveProjectConfig: resolveProjectConfigStub,
         })
       );
       cmd.setProject(sfdxProjectStub);
@@ -103,6 +105,7 @@ describe('force:source:deploy', () => {
   };
 
   beforeEach(() => {
+    resolveProjectConfigStub = sandbox.stub();
     pollStub = sandbox.stub().resolves(deployResult);
     deployStub = sandbox.stub().resolves({
       pollStatus: pollStub,
@@ -129,6 +132,7 @@ describe('force:source:deploy', () => {
       manifest: undefined,
       metadata: undefined,
       apiversion: undefined,
+      sourceapiversion: undefined,
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
@@ -219,6 +223,24 @@ describe('force:source:deploy', () => {
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       apiversion,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+      },
+    });
+    ensureDeployArgs();
+    ensureHookArgs();
+    ensureProgressBar(0);
+  });
+
+  it('should pass along sourceapiversion', async () => {
+    const sourceApiVersion = '50.0';
+    resolveProjectConfigStub.resolves({ sourceApiVersion });
+    const manifest = 'package.xml';
+    const result = await runDeployCmd(['--manifest', manifest, '--json']);
+    expect(result).to.deep.equal(expectedResults);
+    ensureCreateComponentSetArgs({
+      sourceapiversion: sourceApiVersion,
       manifest: {
         manifestPath: manifest,
         directoryPaths: [defaultDir],
