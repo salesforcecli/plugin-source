@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.23](https://github.com/salesforcecli/plugin-source/compare/v0.1.22...v0.1.23) (2021-07-17)
+
+
+### Bug Fixes
+
+* set sourceApiVersion on the ComponentSet ([#147](https://github.com/salesforcecli/plugin-source/issues/147)) ([46c15ba](https://github.com/salesforcecli/plugin-source/commit/46c15ba5d5f783a09002c81870a155d0691fd162))
+
 ### [0.1.22](https://github.com/salesforcecli/plugin-source/compare/v0.1.21...v0.1.22) (2021-06-28)
 
 
