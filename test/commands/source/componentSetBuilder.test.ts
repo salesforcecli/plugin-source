@@ -104,6 +104,24 @@ describe('ComponentSetBuilder', () => {
       expect(compSet.apiVersion).to.equal(options.apiversion);
     });
 
+    it('should create ComponentSet with sourceApiVersion', async () => {
+      fileExistsSyncStub.returns(true);
+      fromSourceStub.returns(componentSet);
+      const sourcepath = ['force-app'];
+      const options = {
+        sourcepath,
+        manifest: undefined,
+        metadata: undefined,
+        sourceapiversion: '50.0',
+      };
+
+      const compSet = await ComponentSetBuilder.build(options);
+      const expectedPath = path.resolve(sourcepath[0]);
+      expect(fromSourceStub.calledOnceWith(expectedPath)).to.equal(true);
+      expect(compSet.size).to.equal(0);
+      expect(compSet.sourceApiVersion).to.equal(options.sourceapiversion);
+    });
+
     it('should throw with an invalid sourcepath', async () => {
       fileExistsSyncStub.returns(false);
       const sourcepath = ['nonexistent'];

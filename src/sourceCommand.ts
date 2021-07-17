@@ -8,7 +8,7 @@
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { get, getBoolean } from '@salesforce/ts-types';
+import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 
 export type ProgressBar = {
@@ -56,6 +56,11 @@ export abstract class SourceCommand extends SfdxCommand {
 
   protected getPackageDirs(): string[] {
     return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+  }
+
+  protected async getSourceApiVersion(): Promise<Optional<string>> {
+    const projectConfig = await this.project.resolveProjectConfig();
+    return getString(projectConfig, 'sourceApiVersion');
   }
 
   /**

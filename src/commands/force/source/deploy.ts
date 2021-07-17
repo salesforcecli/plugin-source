@@ -127,6 +127,7 @@ export class Deploy extends DeployCommand {
     } else {
       this.componentSet = await ComponentSetBuilder.build({
         apiversion: this.getFlag<string>('apiversion'),
+        sourceapiversion: await this.getSourceApiVersion(),
         sourcepath: this.getFlag<string[]>('sourcepath'),
         manifest: this.flags.manifest && {
           manifestPath: this.getFlag<string>('manifest'),
