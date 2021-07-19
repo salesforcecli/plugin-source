@@ -78,6 +78,7 @@ export const getDeployResponse = (
   type: DeployResponseType,
   overrides?: Partial<MetadataApiDeployStatus>
 ): MetadataApiDeployStatus => {
+  // stringify --> parse to get a clone that doesn't affedt the base deploy response
   const response = JSON.parse(JSON.stringify({ ...baseDeployResponse, ...overrides })) as MetadataApiDeployStatus;
 
   if (type === 'canceled') {
