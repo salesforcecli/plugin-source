@@ -24,6 +24,7 @@ export type ComponentSetOptions = {
   manifest?: ManifestOption;
   metadata?: MetadataOption;
   apiversion?: string;
+  sourceapiversion?: string;
 };
 
 export class ComponentSetBuilder {
@@ -39,7 +40,7 @@ export class ComponentSetBuilder {
     const logger = Logger.childFromRoot('createComponentSet');
     const csAggregator: ComponentLike[] = [];
 
-    const { sourcepath, manifest, metadata, packagenames, apiversion } = options;
+    const { sourcepath, manifest, metadata, packagenames, apiversion, sourceapiversion } = options;
 
     if (sourcepath) {
       logger.debug(`Building ComponentSet from sourcepath: ${sourcepath.toString()}`);
@@ -120,6 +121,10 @@ export class ComponentSetBuilder {
 
     if (apiversion) {
       componentSet.apiVersion = apiversion;
+    }
+
+    if (sourceapiversion) {
+      componentSet.sourceApiVersion = sourceapiversion;
     }
 
     return componentSet;

@@ -20,9 +20,10 @@ import {
   DeployAsyncResultFormatter,
 } from '../../../src/formatters/deployAsyncResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
+import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
 import { getDeployResult } from './deployResponses';
 import { exampleSourceComponent } from './testConsts';
-
 describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
   const username = 'deploy-test@org.com';
@@ -57,11 +58,13 @@ describe('force:source:deploy', () => {
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
   let initProgressBarStub: sinon.SinonStub;
-  let progressStub: sinon.SinonStub;
+  let progressBarStub: sinon.SinonStub;
+  let progressStatusStub: sinon.SinonStub;
   let deployStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
   let formatterDisplayStub: sinon.SinonStub;
+  let resolveProjectConfigStub: sinon.SinonStub;
 
   class TestDeploy extends Deploy {
     public async runIt() {
@@ -82,6 +85,7 @@ describe('force:source:deploy', () => {
       const sfdxProjectStub = fromStub(
         stubInterface<SfdxProject>(sandbox, {
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
+          resolveProjectConfig: resolveProjectConfigStub,
         })
       );
       cmd.setProject(sfdxProjectStub);
@@ -95,7 +99,8 @@ describe('force:source:deploy', () => {
       cmd.setOrg(orgStub);
     });
     initProgressBarStub = stubMethod(sandbox, cmd, 'initProgressBar');
-    progressStub = stubMethod(sandbox, cmd, 'progress');
+    progressBarStub = stubMethod(sandbox, DeployProgressBarFormatter.prototype, 'progress');
+    progressStatusStub = stubMethod(sandbox, DeployProgressStatusFormatter.prototype, 'progress');
     stubMethod(sandbox, UX.prototype, 'log');
     stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
     formatterDisplayStub = stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
@@ -103,6 +108,7 @@ describe('force:source:deploy', () => {
   };
 
   beforeEach(() => {
+    resolveProjectConfigStub = sandbox.stub();
     pollStub = sandbox.stub().resolves(deployResult);
     deployStub = sandbox.stub().resolves({
       pollStatus: pollStub,
@@ -129,6 +135,7 @@ describe('force:source:deploy', () => {
       manifest: undefined,
       metadata: undefined,
       apiversion: undefined,
+      sourceapiversion: undefined,
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
@@ -168,14 +175,12 @@ describe('force:source:deploy', () => {
 
   const ensureProgressBar = (callCount: number) => {
     expect(initProgressBarStub.callCount).to.equal(callCount);
-    expect(progressStub.callCount).to.equal(callCount);
   };
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
     const result = await runDeployCmd(['--sourcepath', sourcepath[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
-    expect(progressStub.called).to.be.false;
     ensureCreateComponentSetArgs({ sourcepath });
     ensureDeployArgs();
     ensureHookArgs();
@@ -219,6 +224,24 @@ describe('force:source:deploy', () => {
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       apiversion,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+      },
+    });
+    ensureDeployArgs();
+    ensureHookArgs();
+    ensureProgressBar(0);
+  });
+
+  it('should pass along sourceapiversion', async () => {
+    const sourceApiVersion = '50.0';
+    resolveProjectConfigStub.resolves({ sourceApiVersion });
+    const manifest = 'package.xml';
+    const result = await runDeployCmd(['--manifest', manifest, '--json']);
+    expect(result).to.deep.equal(expectedResults);
+    ensureCreateComponentSetArgs({
+      sourceapiversion: sourceApiVersion,
       manifest: {
         manifestPath: manifest,
         directoryPaths: [defaultDir],
@@ -376,7 +399,8 @@ describe('force:source:deploy', () => {
         ensureCreateComponentSetArgs({ sourcepath });
         ensureDeployArgs();
         ensureHookArgs();
-        ensureProgressBar(0);
+        expect(progressStatusStub.calledOnce).to.be.true;
+        expect(progressBarStub.calledOnce).to.be.false;
       } finally {
         delete process.env.SFDX_USE_PROGRESS_BAR;
       }
@@ -389,7 +413,8 @@ describe('force:source:deploy', () => {
       ensureCreateComponentSetArgs({ sourcepath });
       ensureDeployArgs();
       ensureHookArgs();
-      ensureProgressBar(1);
+      expect(progressStatusStub.calledOnce).to.be.false;
+      expect(progressBarStub.calledOnce).to.be.true;
     });
 
     it('should NOT call progress bar because of --json', async () => {

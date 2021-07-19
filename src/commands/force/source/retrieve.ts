@@ -71,6 +71,7 @@ export class Retrieve extends SourceCommand {
   protected async retrieve(): Promise<void> {
     this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
+      sourceapiversion: await this.getSourceApiVersion(),
       packagenames: this.getFlag<string[]>('packagenames'),
       sourcepath: this.getFlag<string[]>('sourcepath'),
       manifest: this.flags.manifest && {
@@ -89,7 +90,7 @@ export class Retrieve extends SourceCommand {
       usernameOrConnection: this.org.getUsername(),
       merge: true,
       output: this.project.getDefaultPackage().fullPath,
-      packageNames: this.getFlag<string[]>('packagenames'),
+      packageOptions: this.getFlag<string[]>('packagenames'),
     });
 
     this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
