@@ -72,15 +72,15 @@ export class RetrieveResultFormatter extends ResultFormatter {
     }
 
     if (this.isSuccess()) {
-      if (this.warnings.length) {
-        this.displayWarnings();
-      }
       this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
       const retrievedFiles = this.fileResponses.filter((fr) => fr.state !== ComponentStatus.Failed);
       if (retrievedFiles?.length) {
         this.displaySuccesses(retrievedFiles);
       } else {
         this.ux.log(messages.getMessage('NoResultsFound'));
+      }
+      if (this.warnings.length) {
+        this.displayWarnings();
       }
     } else {
       this.displayErrors();
