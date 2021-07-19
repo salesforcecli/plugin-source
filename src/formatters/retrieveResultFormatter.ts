@@ -34,6 +34,7 @@ export interface RetrieveCommandResult {
 }
 
 export class RetrieveResultFormatter extends ResultFormatter {
+  public packages: PackageRetrieval[] = [];
   protected result: RetrieveResult;
   protected fileResponses: FileResponse[];
   protected warnings: RetrieveMessage[];
@@ -54,7 +55,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
   public getJson(): RetrieveCommandResult {
     return {
       inboundFiles: this.fileResponses,
-      packages: [],
+      packages: this.packages,
       warnings: this.warnings,
       response: this.result.response,
     };
@@ -86,13 +87,13 @@ export class RetrieveResultFormatter extends ResultFormatter {
     }
 
     // Display any package retrievals
-    // if (results.packages && results.packages.length) {
-    //   this.logger.styledHeader(this.logger.color.blue('Retrieved Packages'));
-    //   results.packages.forEach(pkg => {
-    //     this.logger.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
-    //   });
-    //   this.logger.log('');
-    // }
+    if (this.packages && this.packages.length) {
+      this.ux.styledHeader(blue('Retrieved Packages'));
+      this.packages.forEach((pkg) => {
+        this.ux.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
+      });
+      this.ux.log('');
+    }
   }
 
   protected hasStatus(status: RequestStatus): boolean {

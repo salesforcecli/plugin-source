@@ -6,14 +6,19 @@
  */
 
 import * as os from 'os';
+import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { SourceCommand } from '../../../sourceCommand';
-import { RetrieveResultFormatter, RetrieveCommandResult } from '../../../formatters/retrieveResultFormatter';
+import {
+  RetrieveResultFormatter,
+  RetrieveCommandResult,
+  PackageRetrieval,
+} from '../../../formatters/retrieveResultFormatter';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
@@ -105,12 +110,20 @@ export class Retrieve extends SourceCommand {
     }
   }
 
-  protected formatResult(): RetrieveCommandResult {
+  protected async formatResult(): Promise<RetrieveCommandResult> {
+    const packages: PackageRetrieval[] = [];
+    const projectPath = await SfdxProject.resolveProjectPath();
+
+    this.getFlag<string[]>('packagenames', []).forEach((name) => {
+      packages.push({ name, path: join(projectPath, name) });
+    });
+
     const formatterOptions = {
       waitTime: this.getFlag<Duration>('wait').quantity,
       verbose: this.getFlag<boolean>('verbose', false),
     };
     const formatter = new RetrieveResultFormatter(this.logger, this.ux, formatterOptions, this.retrieveResult);
+    formatter.packages = packages;
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
