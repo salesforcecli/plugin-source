@@ -7,7 +7,7 @@
 
 import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
+import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { get, getString, getNumber } from '@salesforce/ts-types';
 import { RetrieveResult, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
 import {
@@ -126,6 +126,11 @@ export class RetrieveResultFormatter extends ResultFormatter {
   }
 
   private displayErrors(): void {
+    // an invalid packagename retrieval will end up with a message in the `errorMessage` entry - which is unique to package names
+    const errorMessage = get(this.result.response, 'errorMessage') as string;
+    if (errorMessage) {
+      throw new SfdxError(errorMessage);
+    }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
     const errMsgs = Array.isArray(responseMsgs) ? responseMsgs : [responseMsgs];
