@@ -51,7 +51,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   /**
-   * Displays deploy results in human format.  Output can vary based on:
+   * Displays deploy results in human readable format.  Output can vary based on:
    *
    * 1. Verbose option
    * 3. Checkonly deploy (checkonly=true)
@@ -85,19 +85,6 @@ export class DeployResultFormatter extends ResultFormatter {
     return getString(this.result, 'response.status') === status;
   }
 
-  // Returns true if the components returned in the server response
-  // were mapped to local source in the ComponentSet.
-  protected hasMappedComponents(): boolean {
-    return getNumber(this.result, 'components.size', 0) > 0;
-  }
-
-  // Returns true if the server response contained components.
-  protected hasComponents(): boolean {
-    const successes = getNumber(this.result, 'response.details.componentSuccesses.length', 0) > 0;
-    const failures = getNumber(this.result, 'response.details.componentFailures.length', 0) > 0;
-    return successes || failures;
-  }
-
   protected isRunTestsEnabled(): boolean {
     return getBoolean(this.result, 'response.runTestsEnabled', false);
   }
@@ -115,13 +102,17 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displaySuccesses(): void {
-    if (this.isSuccess() && this.hasComponents()) {
-      this.sortFileResponses(this.fileResponses);
-      this.asRelativePaths(this.fileResponses);
+    if (this.isSuccess() && this.fileResponses?.length) {
+      const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
+      if (!successes.length) {
+        return;
+      }
+      this.sortFileResponses(successes);
+      this.asRelativePaths(successes);
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
-      this.ux.table(this.fileResponses, {
+      this.ux.table(successes, {
         columns: [
           { key: 'fullName', label: 'FULL NAME' },
           { key: 'type', label: 'TYPE' },
@@ -132,15 +123,13 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    if (this.hasStatus(RequestStatus.Failed) && this.hasComponents()) {
+    if (this.hasStatus(RequestStatus.Failed) && this.fileResponses?.length) {
       const failures = this.fileResponses.filter((f) => f.state === 'Failed');
       this.sortFileResponses(failures);
       this.asRelativePaths(failures);
 
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
-      // TODO: do we really need the project path or file path in the table?
-      // Seems like we can just provide the full name and devs will know.
       this.ux.table(failures, {
         columns: [
           { key: 'problemType', label: 'Type' },

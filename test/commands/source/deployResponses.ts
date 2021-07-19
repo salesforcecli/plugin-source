@@ -6,7 +6,12 @@
  */
 
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
-import { MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import {
+  DeployMessage,
+  MetadataApiDeployStatus,
+  RequestStatus,
+} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { cloneJson } from '@salesforce/kit';
 
 const baseDeployResponse = {
   checkOnly: false,
@@ -73,7 +78,8 @@ export const getDeployResponse = (
   type: DeployResponseType,
   overrides?: Partial<MetadataApiDeployStatus>
 ): MetadataApiDeployStatus => {
-  const response = { ...baseDeployResponse, ...overrides };
+  // stringify --> parse to get a clone that doesn't affedt the base deploy response
+  const response = JSON.parse(JSON.stringify({ ...baseDeployResponse, ...overrides })) as MetadataApiDeployStatus;
 
   if (type === 'canceled') {
     response.canceledBy = '0051h000006BHOq';
@@ -81,7 +87,18 @@ export const getDeployResponse = (
     response.status = RequestStatus.Canceled;
   }
 
-  return response as MetadataApiDeployStatus;
+  if (type === 'failed') {
+    response.status = RequestStatus.Failed;
+    response.success = false;
+    response.details.componentFailures = cloneJson(baseDeployResponse.details.componentSuccesses[1]) as DeployMessage;
+    response.details.componentSuccesses = cloneJson(baseDeployResponse.details.componentSuccesses[0]) as DeployMessage;
+    response.details.componentFailures.success = 'false';
+    delete response.details.componentFailures.id;
+    response.details.componentFailures.problemType = 'Error';
+    response.details.componentFailures.problem = 'This component has some problems';
+  }
+
+  return response;
 };
 
 export const getDeployResult = (
@@ -93,14 +110,30 @@ export const getDeployResult = (
   return {
     response,
     getFileResponses() {
-      let successes = response.details.componentSuccesses;
-      successes = Array.isArray(successes) ? successes : [successes];
-      return successes.map((comp) => ({
-        fullName: comp.fullName,
-        filePath: comp.fileName,
-        state: 'Changed',
-        type: comp.componentType,
-      }));
+      let fileProps: DeployMessage[] = [];
+      if (type === 'failed') {
+        const failures = response.details.componentFailures || [];
+        fileProps = Array.isArray(failures) ? failures : [failures];
+        return fileProps.map((comp) => ({
+          fullName: comp.fullName,
+          filePath: comp.fileName,
+          state: 'Failed',
+          type: comp.componentType,
+          error: comp.problem,
+          problemType: comp.problemType,
+        }));
+      } else {
+        const successes = response.details.componentSuccesses;
+        fileProps = Array.isArray(successes) ? successes : [successes];
+        return fileProps
+          .filter((p) => p.fileName !== 'package.xml')
+          .map((comp) => ({
+            fullName: comp.fullName,
+            filePath: comp.fileName,
+            state: 'Changed',
+            type: comp.componentType,
+          }));
+      }
     },
   } as DeployResult;
 };
