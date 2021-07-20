@@ -45,6 +45,8 @@ export class RetrieveResultFormatter extends ResultFormatter {
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
     const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
     this.warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
+    // zipFile can become massive and unweildy with JSON parsing/terminal output
+    delete this.result.response.zipFile;
   }
 
   /**
