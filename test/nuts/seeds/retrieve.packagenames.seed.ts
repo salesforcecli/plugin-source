@@ -7,6 +7,7 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { exec } from 'shelljs';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
@@ -25,6 +26,7 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
     });
     testkit.installPackage(ELECTRON.id);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
+    exec('sfdx force:package:installed:list');
   });
 
   after(async () => {
