@@ -26,7 +26,6 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
     });
     testkit.installPackage(ELECTRON.id);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
-    exec('sfdx force:package:installed:list');
   });
 
   after(async () => {
@@ -41,6 +40,11 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
+      // eslint-disable-next-line no-console
+      console.log('package list');
+      // eslint-disable-next-line no-console
+      console.log(exec('sfdx force:package:installed:list'));
+
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });

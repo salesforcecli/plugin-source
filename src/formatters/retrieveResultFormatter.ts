@@ -26,6 +26,10 @@ export interface PackageRetrieval {
   path: string;
 }
 
+export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
+  packages?: PackageRetrieval[];
+}
+
 export interface RetrieveCommandResult {
   inboundFiles: FileResponse[];
   packages: PackageRetrieval[];
@@ -34,18 +38,19 @@ export interface RetrieveCommandResult {
 }
 
 export class RetrieveResultFormatter extends ResultFormatter {
-  public packages: PackageRetrieval[] = [];
+  protected packages: PackageRetrieval[] = [];
   protected result: RetrieveResult;
   protected fileResponses: FileResponse[];
   protected warnings: RetrieveMessage[];
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: RetrieveResult) {
+  public constructor(logger: Logger, ux: UX, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
     super(logger, ux, options);
     this.result = result;
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
     const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
     this.warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
-    // zipFile can become massive and unweildy with JSON parsing/terminal output
+    this.packages = options.packages || [];
+    // zipFile can become massive and unweildy with JSON parsing/terminal output and, isn't useful
     delete this.result.response.zipFile;
   }
 
@@ -128,7 +133,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
   }
 
   private displayErrors(): void {
-    // an invalid packagename retrieval will end up with a message in the `errorMessage` entry - which is unique to package names
+    // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
     const errorMessage = get(this.result.response, 'errorMessage') as string;
     if (errorMessage) {
       throw new SfdxError(errorMessage);

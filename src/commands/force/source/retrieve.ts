@@ -121,9 +121,9 @@ export class Retrieve extends SourceCommand {
     const formatterOptions = {
       waitTime: this.getFlag<Duration>('wait').quantity,
       verbose: this.getFlag<boolean>('verbose', false),
+      packages,
     };
     const formatter = new RetrieveResultFormatter(this.logger, this.ux, formatterOptions, this.retrieveResult);
-    formatter.packages = packages;
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
