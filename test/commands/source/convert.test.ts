@@ -24,6 +24,7 @@ describe('force:source:convert', () => {
   const myApp = join('new', 'package', 'directory');
   const packageXml = 'package.xml';
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  let resolveProjectConfigStub: sinon.SinonStub;
 
   class TestConvert extends Convert {
     public async runIt() {
@@ -42,6 +43,7 @@ describe('force:source:convert', () => {
         stubInterface<SfdxProject>(sandbox, {
           getDefaultPackage: () => ({ path: defaultDir }),
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
+          resolveProjectConfig: resolveProjectConfigStub,
         })
       );
       cmd.setProject(sfdxProjectStub);
@@ -56,6 +58,7 @@ describe('force:source:convert', () => {
       sourcepath: [],
       manifest: undefined,
       metadata: undefined,
+      sourceapiversion: undefined,
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
@@ -64,15 +67,11 @@ describe('force:source:convert', () => {
   };
 
   beforeEach(() => {
+    resolveProjectConfigStub = sandbox.stub();
     sandbox.stub(MetadataConverter.prototype, 'convert').resolves({ packagePath: 'temp' });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: sinon.stub(),
       getPackageXml: () => packageXml,
-      getSourceComponents: () => {
-        return {
-          toArray: () => {},
-        };
-      },
     });
   });
 
@@ -85,6 +84,17 @@ describe('force:source:convert', () => {
     const result = await runConvertCmd(['--sourcepath', sourcepath, '--json']);
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({ sourcepath: [sourcepath] });
+  });
+
+  it('should pass along sourceApiVersion', async () => {
+    const sourceApiVersion = '50.0';
+    resolveProjectConfigStub.resolves({ sourceApiVersion });
+    const result = await runConvertCmd(['--json']);
+    expect(result).to.deep.equal({ location: resolve('temp') });
+    ensureCreateComponentSetArgs({
+      sourcepath: [defaultDir],
+      sourceapiversion: sourceApiVersion,
+    });
   });
 
   it('should call default package dir if no args', async () => {

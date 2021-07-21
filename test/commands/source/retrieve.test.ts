@@ -39,9 +39,7 @@ describe('force:source:retrieve', () => {
   let retrieveStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
-  // TODO: remove the next two stubs when reverting back to SDR polling
-  let checkStatusStub: sinon.SinonStub;
-  let postStub: sinon.SinonStub;
+  let resolveProjectConfigStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
@@ -63,6 +61,7 @@ describe('force:source:retrieve', () => {
         stubInterface<SfdxProject>(sandbox, {
           getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
           getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
+          resolveProjectConfig: resolveProjectConfigStub,
         })
       );
       cmd.setProject(sfdxProjectStub);
@@ -80,14 +79,11 @@ describe('force:source:retrieve', () => {
   };
 
   beforeEach(() => {
+    resolveProjectConfigStub = sandbox.stub();
     pollStub = sandbox.stub().resolves(retrieveResult);
-    checkStatusStub = sandbox.stub().resolves(retrieveResult);
-    postStub = sandbox.stub().resolves(retrieveResult);
     retrieveStub = sandbox.stub().resolves({
       pollStatus: pollStub,
       retrieveId: retrieveResult.response.id,
-      checkStatus: checkStatusStub,
-      post: postStub,
     });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
@@ -111,6 +107,7 @@ describe('force:source:retrieve', () => {
       manifest: undefined,
       metadata: undefined,
       apiversion: undefined,
+      sourceapiversion: undefined,
     };
     const expectedArgs = { ...defaultArgs, ...overrides };
 
@@ -124,7 +121,7 @@ describe('force:source:retrieve', () => {
       usernameOrConnection: username,
       merge: true,
       output: defaultPackagePath,
-      packageNames: undefined,
+      packageOptions: undefined,
     };
     const expectedRetrieveArgs = { ...defaultRetrieveArgs, ...overrides };
 
@@ -195,6 +192,23 @@ describe('force:source:retrieve', () => {
     ensureHookArgs();
   });
 
+  it('should pass along sourceapiversion', async () => {
+    const sourceApiVersion = '50.0';
+    resolveProjectConfigStub.resolves({ sourceApiVersion });
+    const manifest = 'package.xml';
+    const result = await runRetrieveCmd(['--manifest', manifest, '--json']);
+    expect(result).to.deep.equal(expectedResults);
+    ensureCreateComponentSetArgs({
+      sourceapiversion: sourceApiVersion,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultPackagePath],
+      },
+    });
+    ensureRetrieveArgs();
+    ensureHookArgs();
+  });
+
   it('should pass along packagenames', async () => {
     const manifest = 'package.xml';
     const packagenames = ['package1'];
@@ -207,7 +221,7 @@ describe('force:source:retrieve', () => {
         directoryPaths: [defaultPackagePath],
       },
     });
-    ensureRetrieveArgs({ packageNames: packagenames });
+    ensureRetrieveArgs({ packageOptions: packagenames });
     ensureHookArgs();
   });
 
