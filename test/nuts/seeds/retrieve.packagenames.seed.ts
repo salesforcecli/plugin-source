@@ -39,22 +39,22 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`);
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });
 
     it('should retrieve two installed packages', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`);
-      exec(`sfdx force:package:install --noprompt --package ${SKUID.id} --wait 5 --json`);
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      exec(`sfdx force:package:install --noprompt --package ${SKUID.id} --wait 5 --json`, { silent: true });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`);
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
 
       await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
