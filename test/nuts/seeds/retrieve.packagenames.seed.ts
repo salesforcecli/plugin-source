@@ -40,8 +40,7 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      // eslint-disable-next-line no-console
-      console.log('package list');
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`);
       // eslint-disable-next-line no-console
       console.log(exec('sfdx force:package:installed:list'));
 
@@ -51,11 +50,16 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
     it('should retrieve two installed packages', async () => {
       testkit.installPackage(SKUID.id);
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`);
+      exec(`sfdx force:package:install --noprompt --package ${SKUID.id} --wait 5 --json`);
+
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`);
+
       await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
       });
