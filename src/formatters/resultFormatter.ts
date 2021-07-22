@@ -10,6 +10,7 @@ import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { getBoolean, getNumber } from '@salesforce/ts-types';
+import { Failures, Successes } from '@salesforce/source-deploy-retrieve/src/client/types';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
@@ -47,6 +48,15 @@ export abstract class ResultFormatter {
         return i.filePath > j.filePath ? 1 : -1;
       }
       return i.type > j.type ? 1 : -1;
+    });
+  }
+
+  protected sortTestResults(results: Failures[] | Successes[]): Failures[] | Successes[] {
+    return results.sort((a: Successes, b: Successes) => {
+      if (a.methodName === b.methodName) {
+        return a.name > b.name ? 1 : -1;
+      }
+      return a.methodName > b.methodName ? 1 : -1;
     });
   }
 

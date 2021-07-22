@@ -8,12 +8,16 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getBoolean, getString, getNumber } from '@salesforce/ts-types';
+import { get, getBoolean, getString, getNumber, asString, asArray } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
+  CodeCoverage,
+  Failures,
   FileResponse,
+  LocationsNotCovered,
   MetadataApiDeployStatus,
   RequestStatus,
+  Successes,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
@@ -145,7 +149,9 @@ export class DeployResultFormatter extends ResultFormatter {
     if (this.isRunTestsEnabled()) {
       this.ux.log('');
       if (this.isVerbose()) {
-        this.ux.log('TBD: Show test successes, failures, and code coverage');
+        this.verboseTestFailures();
+        this.verboseTestSuccess();
+        this.verboseTestTime();
       } else {
         this.ux.styledHeader(chalk.blue('Test Results Summary'));
         this.ux.log(`Passing: ${this.getNumResult('numberTestsCompleted')}`);
@@ -153,6 +159,105 @@ export class DeployResultFormatter extends ResultFormatter {
         this.ux.log(`Total: ${this.getNumResult('numberTestsTotal')}`);
         this.ux.log(`Time: ${this.getNumResult('details.runTestResult.totalTime')}`);
       }
+    }
+  }
+
+  protected verboseTestFailures(): void {
+    if (this.result.response.numberTestErrors) {
+      const failures = asArray<Failures>(this.result.response.details.runTestResult.failures);
+
+      const tests = this.sortTestResults(failures);
+
+      this.ux.log('');
+      this.ux.styledHeader(
+        chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult.numFailures)}]`)
+      );
+      this.ux.table(tests, {
+        columns: [
+          { key: 'name', label: 'Name' },
+          { key: 'methodName', label: 'Method' },
+          { key: 'message', label: 'Message' },
+          { key: 'stackTrace', label: 'Stacktrace' },
+        ],
+      });
+    }
+  }
+
+  protected verboseTestSuccess(): void {
+    const success = asArray<Successes>(this.result.response.details.runTestResult.successes);
+    if (success.length) {
+      const tests: Successes[] = this.sortTestResults(success);
+      this.ux.log('');
+      this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
+      this.ux.table(tests, {
+        columns: [
+          { key: 'name', label: 'Name' },
+          { key: 'methodName', label: 'Method' },
+        ],
+      });
+    }
+    const codeCoverage = asArray<CodeCoverage>(this.result.response.details.runTestResult.codeCoverage);
+
+    if (codeCoverage.length) {
+      const coverage = codeCoverage.sort((a, b) => {
+        return a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1;
+      });
+
+      this.ux.log('');
+      this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
+      this.ux.table(coverage, {
+        columns: [
+          { key: 'name', label: 'Name' },
+          {
+            key: 'numLocations',
+            label: '% Covered',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore the format method expects two string params, we're passing in a CodeCoverage object
+            format: (numLocations: string, row: CodeCoverage): string => {
+              const numLocationsNum = parseInt(numLocations, 10);
+              const numLocationsNotCovered: number = parseInt(row.numLocationsNotCovered, 10);
+              const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
+
+              let pctCovered = 100;
+              const coverageDecimal: number = parseFloat(
+                ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
+              );
+              if (numLocationsNum > 0) {
+                pctCovered = coverageDecimal * 100;
+              }
+
+              return color(`${pctCovered}%`);
+            },
+          },
+          {
+            key: 'locationsNotCovered',
+            label: 'Uncovered Lines',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore the format method expects a string, we're passing in LocationsNotCovered[]
+            format: (locationsNotCovered: LocationsNotCovered[]): string => {
+              if (!locationsNotCovered) {
+                return '';
+              }
+
+              const uncoveredLines = [];
+              // asArray wasn't properly converting a single LocationsNotCovered object to [LocationsNotCovered]
+              const locations = Array.isArray(locationsNotCovered) ? locationsNotCovered : [locationsNotCovered];
+              locations.forEach((uncoveredLine) => {
+                uncoveredLines.push(uncoveredLine.line);
+              });
+
+              return uncoveredLines.join(',');
+            },
+          },
+        ],
+      });
+    }
+  }
+
+  protected verboseTestTime(): void {
+    if (this.result.response.details.runTestResult.successes || this.result.response.details.runTestResult.failures) {
+      this.ux.log('');
+      this.ux.log(`Total Test Time:  ${this.result.response.details.runTestResult.totalTime}`);
     }
   }
 }
