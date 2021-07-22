@@ -7,6 +7,7 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { exec } from 'shelljs';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
@@ -14,7 +15,7 @@ const EXECUTABLE = '%EXECUTABLE%';
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const SKUID = { id: '04t4A000000cESSQA2', name: 'Skuid' };
 
-context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
+context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
@@ -23,7 +24,6 @@ context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
-    testkit.installPackage(ELECTRON.id);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
@@ -39,17 +39,23 @@ context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });
 
     it('should retrieve two installed packages', async () => {
-      testkit.installPackage(SKUID.id);
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      exec(`sfdx force:package:install --noprompt --package ${SKUID.id} --wait 5 --json`, { silent: true });
+
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
+      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+
       await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,
       });

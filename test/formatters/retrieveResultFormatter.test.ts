@@ -143,7 +143,7 @@ describe('RetrieveResultFormatter', () => {
       expect(styledHeaderStub.calledTwice).to.equal(true);
       expect(logStub.called).to.equal(true);
       expect(tableStub.calledOnce).to.equal(true);
-      expect(styledHeaderStub.firstCall.args[0]).to.contain('Retrieved Source Warnings');
+      expect(styledHeaderStub.secondCall.args[0]).to.contain('Retrieved Source Warnings');
       const warnMessages = retrieveResultWarnings.response.messages;
       const warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
       expect(tableStub.firstCall.args[0]).to.deep.equal(warnings);

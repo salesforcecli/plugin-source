@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { RetrieveOptions } from '@salesforce/source-deploy-retrieve';
@@ -56,6 +57,7 @@ describe('force:source:retrieve', () => {
 
   const runRetrieveCmd = async (params: string[]) => {
     const cmd = new TestRetrieve(params, oclifConfigStub);
+    stubMethod(sandbox, SfdxProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
       const sfdxProjectStub = fromStub(
         stubInterface<SfdxProject>(sandbox, {
@@ -213,6 +215,7 @@ describe('force:source:retrieve', () => {
     const manifest = 'package.xml';
     const packagenames = ['package1'];
     const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames[0], '--json']);
+    expectedResults.packages.push({ name: packagenames[0], path: join('path', 'to', 'package', packagenames[0]) });
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       packagenames,
@@ -223,6 +226,29 @@ describe('force:source:retrieve', () => {
     });
     ensureRetrieveArgs({ packageOptions: packagenames });
     ensureHookArgs();
+    // reset the packages for other tests
+    expectedResults.packages = [];
+  });
+
+  it('should pass along multiple packagenames', async () => {
+    const manifest = 'package.xml';
+    const packagenames = ['package1', 'package2'];
+    const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames.join(','), '--json']);
+    packagenames.forEach((pkg) => {
+      expectedResults.packages.push({ name: pkg, path: join('path', 'to', 'package', pkg) });
+    });
+    expect(result).to.deep.equal(expectedResults);
+    ensureCreateComponentSetArgs({
+      packagenames,
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultPackagePath],
+      },
+    });
+    ensureRetrieveArgs({ packageOptions: packagenames });
+    ensureHookArgs();
+    // reset the packages for other tests
+    expectedResults.packages = [];
   });
 
   it('should display output with no --json', async () => {

@@ -43,7 +43,6 @@ const baseRetrieveResponse = {
   id: '09S21000002jxznEAA',
   status: 'Succeeded',
   success: true,
-  zipFile: 'UEsDBBQA...some_long_string',
 };
 
 const warningMessage = "Entity of type 'ApexClass' named 'ProductController' cannot be found";
