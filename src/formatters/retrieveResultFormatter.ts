@@ -95,6 +95,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
 
     // Display any package retrievals
     if (this.packages && this.packages.length) {
+      this.ux.log('');
       this.ux.styledHeader(blue('Retrieved Packages'));
       this.packages.forEach((pkg) => {
         this.ux.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
