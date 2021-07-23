@@ -15,6 +15,9 @@ import { UX } from '@salesforce/command';
 import { Report } from '../../../src/commands/force/source/deploy/report';
 import { DeployReportResultFormatter } from '../../../src/formatters/deployReportResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { MetadataApiDeploy } from '../../../../source-deploy-retrieve';
+import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
 import { getDeployResult } from './deployResponses';
 
 describe('force:source:report', () => {
@@ -33,6 +36,7 @@ describe('force:source:report', () => {
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
   let checkDeployStatusStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
+  let pollStatusStub: sinon.SinonStub;
 
   class TestReport extends Report {
     public async runIt() {
@@ -44,6 +48,11 @@ describe('force:source:report', () => {
     }
     public setProject(project: SfdxProject) {
       this.project = project;
+    }
+
+    public createDeploy(): MetadataApiDeploy {
+      pollStatusStub = sandbox.stub(MetadataApiDeploy.prototype, 'pollStatus');
+      return MetadataApiDeploy.prototype;
     }
   }
 
@@ -91,9 +100,11 @@ describe('force:source:report', () => {
   });
 
   it('should display stashed deploy ID', async () => {
+    const progressBarStub = sandbox.stub(DeployProgressBarFormatter.prototype, 'progress').returns();
     const result = await runReportCmd([]);
     expect(result).to.deep.equal(expectedResults);
     expect(uxLogStub.firstCall.args[0]).to.contain(stashedDeployId);
+    expect(progressBarStub.calledOnce).to.equal(true);
   });
 
   it('should use the jobid flag', async () => {
@@ -105,18 +116,22 @@ describe('force:source:report', () => {
   });
 
   it('should display the jobid flag', async () => {
+    const progressBarStub = sandbox.stub(DeployProgressBarFormatter.prototype, 'progress').returns();
     const result = await runReportCmd(['--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(uxLogStub.firstCall.args[0]).to.contain(expectedResults.id);
+    expect(progressBarStub.calledOnce).to.equal(true);
   });
 
   it('should display output with no --json', async () => {
     const displayStub = sandbox.stub(DeployReportResultFormatter.prototype, 'display');
+    const progressBarStub = sandbox.stub(DeployProgressBarFormatter.prototype, 'progress').returns();
     const getJsonStub = sandbox.stub(DeployReportResultFormatter.prototype, 'getJson');
     await runReportCmd([]);
     expect(displayStub.calledOnce).to.equal(true);
     expect(getJsonStub.calledOnce).to.equal(true);
     expect(uxLogStub.called).to.equal(true);
+    expect(progressBarStub.calledOnce).to.equal(true);
   });
 
   it('should NOT display output with --json', async () => {
@@ -126,5 +141,14 @@ describe('force:source:report', () => {
     expect(displayStub.calledOnce).to.equal(false);
     expect(getJsonStub.calledOnce).to.equal(true);
     expect(uxLogStub.called).to.equal(false);
+  });
+
+  it('should call the correct progress method', async () => {
+    const progressBarStub = sandbox.stub(DeployProgressBarFormatter.prototype, 'progress').returns();
+    const progressStatusStub = sandbox.stub(DeployProgressStatusFormatter.prototype, 'progress').returns();
+    await runReportCmd([]);
+    expect(progressStatusStub.calledOnce).to.equal(false);
+    expect(progressBarStub.calledOnce).to.equal(true);
+    expect(pollStatusStub.calledOnce).to.equal(true);
   });
 });
