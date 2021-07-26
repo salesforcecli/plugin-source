@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Org, SfdxProject, Messages } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
@@ -24,6 +24,10 @@ import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgre
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
 import { getDeployResult } from './deployResponses';
 import { exampleSourceComponent } from './testConsts';
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
+
 describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
   const username = 'deploy-test@org.com';
@@ -176,6 +180,15 @@ describe('force:source:deploy', () => {
   const ensureProgressBar = (callCount: number) => {
     expect(initProgressBarStub.callCount).to.equal(callCount);
   };
+
+  it('should error if sourcepath or manifest arguments are not provided', async () => {
+    const requiredFlags = 'manifest, metadata, sourcepath, validateddeployrequestid';
+    try {
+      await runDeployCmd([]);
+    } catch (e) {
+      expect((e as Error).message).to.equal(messages.getMessage('MissingRequiredParam', [requiredFlags]));
+    }
+  });
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
