@@ -51,7 +51,7 @@ export abstract class ResultFormatter {
     });
   }
 
-  protected sortTestResults(results: Failures[] | Successes[]): Failures[] | Successes[] {
+  protected sortTestResults(results: Failures[] | Successes[] = []): Failures[] | Successes[] {
     return results.sort((a: Successes, b: Successes) => {
       if (a.methodName === b.methodName) {
         return a.name > b.name ? 1 : -1;

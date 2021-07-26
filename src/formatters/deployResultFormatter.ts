@@ -164,13 +164,13 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected verboseTestFailures(): void {
     if (this.result.response.numberTestErrors) {
-      const failures = asArray<Failures>(this.result.response.details.runTestResult.failures);
+      const failures = asArray<Failures>(this.result.response.details?.runTestResult?.failures);
 
       const tests = this.sortTestResults(failures);
 
       this.ux.log('');
       this.ux.styledHeader(
-        chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult.numFailures)}]`)
+        chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
       );
       this.ux.table(tests, {
         columns: [
@@ -184,7 +184,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestSuccess(): void {
-    const success = asArray<Successes>(this.result.response.details.runTestResult.successes);
+    const success = asArray<Successes>(this.result.response.details.runTestResult.successes, []);
     if (success.length) {
       const tests: Successes[] = this.sortTestResults(success);
       this.ux.log('');
@@ -196,7 +196,7 @@ export class DeployResultFormatter extends ResultFormatter {
         ],
       });
     }
-    const codeCoverage = asArray<CodeCoverage>(this.result.response.details.runTestResult.codeCoverage);
+    const codeCoverage = asArray<CodeCoverage>(this.result.response.details.runTestResult.codeCoverage, []);
 
     if (codeCoverage.length) {
       const coverage = codeCoverage.sort((a, b) => {
@@ -255,7 +255,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestTime(): void {
-    if (this.result.response.details.runTestResult.successes || this.result.response.details.runTestResult.failures) {
+    if (this.result.response.details?.runTestResult?.successes || this.result.response.details.runTestResult.failures) {
       this.ux.log('');
       this.ux.log(`Total Test Time:  ${this.result.response.details.runTestResult.totalTime}`);
     }
