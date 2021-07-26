@@ -13,7 +13,7 @@ import { exec } from 'shelljs';
 const EXECUTABLE = '%EXECUTABLE%';
 
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
-const SKUID = { id: '04t4A000000cESSQA2', name: 'Skuid' };
+const ESCAPEROOM = { id: '04t0P000000JFs1QAG', name: 'DFXP Escape Room' };
 
 context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
@@ -47,10 +47,10 @@ context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
 
     it('should retrieve two installed packages', async () => {
       exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
-      exec(`sfdx force:package:install --noprompt --package ${SKUID.id} --wait 5 --json`, { silent: true });
+      exec(`sfdx force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, { silent: true });
 
-      await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${SKUID.name}"` });
-      await testkit.expect.packagesToBeRetrieved([ELECTRON.name, SKUID.name]);
+      await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${ESCAPEROOM.name}"` });
+      await testkit.expect.packagesToBeRetrieved([ELECTRON.name, ESCAPEROOM.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {

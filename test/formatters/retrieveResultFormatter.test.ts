@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
@@ -78,14 +79,15 @@ describe('RetrieveResultFormatter', () => {
       expect(formatter.getJson()).to.deep.equal(expectedInProgressResults);
     });
 
-    it.skip('should return expected json for a success with packages', async () => {
+    it('should return expected json for a success with packages', async () => {
+      const testPkg = { name: 'testPkg', path: join('path', 'to', 'testPkg') };
       const expectedSuccessResults: RetrieveCommandResult = {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
-        packages: [],
+        packages: [testPkg],
         warnings: [],
         response: cloneJson(retrieveResultSuccess.response),
       };
-      const formatter = new RetrieveResultFormatter(logger, ux, {}, retrieveResultSuccess);
+      const formatter = new RetrieveResultFormatter(logger, ux, { packages: [testPkg] }, retrieveResultSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
 
@@ -127,10 +129,11 @@ describe('RetrieveResultFormatter', () => {
         .and.contain(`${options.waitTime} minutes`);
     });
 
-    it.skip('should output as expected for a Failure', async () => {
-      const formatter = new RetrieveResultFormatter(logger, ux, {}, retrieveResultInProgress);
+    it('should output as expected for a Failure', async () => {
+      const formatter = new RetrieveResultFormatter(logger, ux, {}, retrieveResultFailure);
+      sandbox.stub(formatter, 'isSuccess').returns(false);
+
       formatter.display();
-      expect(styledHeaderStub.called).to.equal(true);
       expect(logStub.called).to.equal(true);
       expect(tableStub.called).to.equal(false);
       expect(logStub.firstCall.args[0]).to.contain('Retrieve Failed due to:');
