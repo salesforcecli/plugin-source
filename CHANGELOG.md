@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/salesforcecli/plugin-source/compare/v1.0.1...v1.0.2) (2021-07-26)
+
+
+### Bug Fixes
+
+* throw deploy error when missing required params ([#150](https://github.com/salesforcecli/plugin-source/issues/150)) ([234c596](https://github.com/salesforcecli/plugin-source/commit/234c5968b31dc620dcdb318dccbcc1dcc1e11fde))
+
 ### [1.0.1](https://github.com/salesforcecli/plugin-source/compare/v1.0.0...v1.0.1) (2021-07-26)
 
 
