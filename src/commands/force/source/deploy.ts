@@ -114,7 +114,7 @@ export class Deploy extends DeployCommand {
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
     // verify that the user defined one of: manifest, metadata, sourcepath, validateddeployrequestid
     if (!Object.keys(this.flags).some((flag) => requiredFlags.includes(flag))) {
-      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', requiredFlags);
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [requiredFlags.join(', ')]);
     }
 
     await this.deploy();

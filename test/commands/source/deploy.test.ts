@@ -182,11 +182,11 @@ describe('force:source:deploy', () => {
   };
 
   it('should error if sourcepath or manifest arguments are not provided', async () => {
-    const requiredFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
+    const requiredFlags = 'manifest, metadata, sourcepath, validateddeployrequestid';
     try {
       await runDeployCmd([]);
     } catch (e) {
-      expect((e as Error).message).to.equal(messages.getMessage('MissingRequiredParam', requiredFlags));
+      expect((e as Error).message).to.equal(messages.getMessage('MissingRequiredParam', [requiredFlags]));
     }
   });
 
