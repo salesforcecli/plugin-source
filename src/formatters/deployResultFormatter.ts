@@ -163,7 +163,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestFailures(): void {
-    if (this.result.response.numberTestErrors) {
+    if (this.result?.response?.numberTestErrors) {
       const failures = asArray<Failures>(this.result.response.details?.runTestResult?.failures);
 
       const tests = this.sortTestResults(failures);
@@ -184,7 +184,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestSuccess(): void {
-    const success = asArray<Successes>(this.result.response.details.runTestResult.successes, []);
+    const success = asArray<Successes>(this.result?.response?.details?.runTestResult?.successes, []);
     if (success.length) {
       const tests: Successes[] = this.sortTestResults(success);
       this.ux.log('');
@@ -196,7 +196,7 @@ export class DeployResultFormatter extends ResultFormatter {
         ],
       });
     }
-    const codeCoverage = asArray<CodeCoverage>(this.result.response.details.runTestResult.codeCoverage, []);
+    const codeCoverage = asArray<CodeCoverage>(this.result?.response?.details?.runTestResult?.codeCoverage, []);
 
     if (codeCoverage.length) {
       const coverage = codeCoverage.sort((a, b) => {
@@ -238,15 +238,9 @@ export class DeployResultFormatter extends ResultFormatter {
               if (!locationsNotCovered) {
                 return '';
               }
-
-              const uncoveredLines = [];
               // asArray wasn't properly converting a single LocationsNotCovered object to [LocationsNotCovered]
               const locations = Array.isArray(locationsNotCovered) ? locationsNotCovered : [locationsNotCovered];
-              locations.forEach((uncoveredLine) => {
-                uncoveredLines.push(uncoveredLine.line);
-              });
-
-              return uncoveredLines.join(',');
+              return locations.map((location) => location.line).join(',');
             },
           },
         ],
@@ -255,9 +249,12 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestTime(): void {
-    if (this.result.response.details?.runTestResult?.successes || this.result.response.details.runTestResult.failures) {
+    if (
+      this.result.response?.details?.runTestResult?.successes ||
+      this.result?.response?.details?.runTestResult?.failures
+    ) {
       this.ux.log('');
-      this.ux.log(`Total Test Time:  ${this.result.response.details.runTestResult.totalTime}`);
+      this.ux.log(`Total Test Time:  ${this.result?.response?.details?.runTestResult?.totalTime}`);
     }
   }
 }
