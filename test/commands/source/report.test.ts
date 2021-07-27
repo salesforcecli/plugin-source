@@ -12,10 +12,10 @@ import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-s
 import { ConfigFile, Org, SfdxProject } from '@salesforce/core';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
+import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Report } from '../../../src/commands/force/source/deploy/report';
 import { DeployReportResultFormatter } from '../../../src/formatters/deployReportResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { MetadataApiDeploy } from '../../../../source-deploy-retrieve';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
 import { getDeployResult } from './deployResponses';

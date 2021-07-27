@@ -42,7 +42,6 @@ export class Report extends DeployCommand {
       description: messages.getMessage('flags.verbose'),
     }),
   };
-
   public async run(): Promise<DeployReportCommandResult> {
     await this.doReport();
     this.resolveSuccess();
@@ -54,7 +53,7 @@ export class Report extends DeployCommand {
    *
    * @param id
    */
-  public createDeploy(id: string): MetadataApiDeploy {
+  public createDeploy(id?: string): MetadataApiDeploy {
     return new MetadataApiDeploy({ usernameOrConnection: this.org.getUsername(), id });
   }
 
