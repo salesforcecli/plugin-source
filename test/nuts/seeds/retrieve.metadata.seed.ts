@@ -71,7 +71,7 @@ context('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
     it('should throw an error if the metadata is not valid', async () => {
       const retrieve = await testkit.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'RegistryError' : 'UnsupportedType';
+      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnsupportedType';
       testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });
