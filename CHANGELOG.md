@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/salesforcecli/plugin-source/compare/v1.0.2...v1.0.3) (2021-07-28)
+
+
+### Bug Fixes
+
+* deploy:report now respects the wait flag ([#153](https://github.com/salesforcecli/plugin-source/issues/153)) ([c194f7c](https://github.com/salesforcecli/plugin-source/commit/c194f7c6907074fef8ac2b4e450c511966b83f5f))
+
+### [1.0.2](https://github.com/salesforcecli/plugin-source/compare/v1.0.1...v1.0.2) (2021-07-26)
+
+
+### Bug Fixes
+
+* throw deploy error when missing required params ([#150](https://github.com/salesforcecli/plugin-source/issues/150)) ([234c596](https://github.com/salesforcecli/plugin-source/commit/234c5968b31dc620dcdb318dccbcc1dcc1e11fde))
+
+### [1.0.1](https://github.com/salesforcecli/plugin-source/compare/v1.0.0...v1.0.1) (2021-07-26)
+
+
+### Bug Fixes
+
+* minor package fixes ([#152](https://github.com/salesforcecli/plugin-source/issues/152)) ([5aa593d](https://github.com/salesforcecli/plugin-source/commit/5aa593d2e20297c1b928b828679de9c3ea4809e6))
+
+## [1.0.0](https://github.com/salesforcecli/plugin-source/compare/v0.1.22...v1.0.0) (2021-07-22)
+
+
+### Bug Fixes
+
+* deploy errors are reported properly ([#146](https://github.com/salesforcecli/plugin-source/issues/146)) ([08fbbdd](https://github.com/salesforcecli/plugin-source/commit/08fbbdd2c919b1000fcdb253d9d63babf643ded1))
+* retrieve package names output ([#149](https://github.com/salesforcecli/plugin-source/issues/149)) ([7350488](https://github.com/salesforcecli/plugin-source/commit/7350488f2ac7e7d0fa1c0ffef58c7b60d74fb423))
+* set sourceApiVersion on the ComponentSet ([#147](https://github.com/salesforcecli/plugin-source/issues/147)) ([46c15ba](https://github.com/salesforcecli/plugin-source/commit/46c15ba5d5f783a09002c81870a155d0691fd162))
+
 ### [0.1.22](https://github.com/salesforcecli/plugin-source/compare/v0.1.21...v0.1.22) (2021-06-28)
 
 

@@ -8,13 +8,17 @@
 import * as os from 'os';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Duration } from '@salesforce/kit';
+import { Duration, env } from '@salesforce/kit';
+import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
 } from '../../../../formatters/deployReportResultFormatter';
 import { ComponentSetBuilder } from '../../../../componentSetBuilder';
+import { ProgressFormatter } from '../../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
@@ -38,11 +42,19 @@ export class Report extends DeployCommand {
       description: messages.getMessage('flags.verbose'),
     }),
   };
-
   public async run(): Promise<DeployReportCommandResult> {
     await this.doReport();
     this.resolveSuccess();
     return this.formatResult();
+  }
+
+  /**
+   * This method is here to provide a workaround to stubbing a constructor in the tests.
+   *
+   * @param id
+   */
+  public createDeploy(id?: string): MetadataApiDeploy {
+    return new MetadataApiDeploy({ usernameOrConnection: this.org.getUsername(), id });
   }
 
   protected async doReport(): Promise<void> {
@@ -61,6 +73,16 @@ export class Report extends DeployCommand {
       }
       this.componentSet = await ComponentSetBuilder.build({ sourcepath });
     }
+
+    const waitDuration = this.getFlag<Duration>('wait');
+    const deploy = this.createDeploy(deployId);
+    if (!this.isJsonOutput()) {
+      const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
+        ? new DeployProgressBarFormatter(this.logger, this.ux)
+        : new DeployProgressStatusFormatter(this.logger, this.ux);
+      progressFormatter.progress(deploy);
+    }
+    await deploy.pollStatus(500, waitDuration.seconds);
     this.deployResult = await this.report(deployId);
   }
 

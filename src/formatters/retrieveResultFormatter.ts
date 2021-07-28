@@ -7,7 +7,7 @@
 
 import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
+import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { get, getString, getNumber } from '@salesforce/ts-types';
 import { RetrieveResult, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
 import {
@@ -26,6 +26,10 @@ export interface PackageRetrieval {
   path: string;
 }
 
+export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
+  packages?: PackageRetrieval[];
+}
+
 export interface RetrieveCommandResult {
   inboundFiles: FileResponse[];
   packages: PackageRetrieval[];
@@ -34,16 +38,20 @@ export interface RetrieveCommandResult {
 }
 
 export class RetrieveResultFormatter extends ResultFormatter {
+  protected packages: PackageRetrieval[] = [];
   protected result: RetrieveResult;
   protected fileResponses: FileResponse[];
   protected warnings: RetrieveMessage[];
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: RetrieveResult) {
+  public constructor(logger: Logger, ux: UX, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
     super(logger, ux, options);
     this.result = result;
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
     const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
     this.warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
+    this.packages = options.packages || [];
+    // zipFile can become massive and unweildy with JSON parsing/terminal output and, isn't useful
+    delete this.result.response.zipFile;
   }
 
   /**
@@ -54,7 +62,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
   public getJson(): RetrieveCommandResult {
     return {
       inboundFiles: this.fileResponses,
-      packages: [],
+      packages: this.packages,
       warnings: this.warnings,
       response: this.result.response,
     };
@@ -71,9 +79,6 @@ export class RetrieveResultFormatter extends ResultFormatter {
     }
 
     if (this.isSuccess()) {
-      if (this.warnings.length) {
-        this.displayWarnings();
-      }
       this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
       const retrievedFiles = this.fileResponses.filter((fr) => fr.state !== ComponentStatus.Failed);
       if (retrievedFiles?.length) {
@@ -81,18 +86,22 @@ export class RetrieveResultFormatter extends ResultFormatter {
       } else {
         this.ux.log(messages.getMessage('NoResultsFound'));
       }
+      if (this.warnings.length) {
+        this.displayWarnings();
+      }
     } else {
       this.displayErrors();
     }
 
     // Display any package retrievals
-    // if (results.packages && results.packages.length) {
-    //   this.logger.styledHeader(this.logger.color.blue('Retrieved Packages'));
-    //   results.packages.forEach(pkg => {
-    //     this.logger.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
-    //   });
-    //   this.logger.log('');
-    // }
+    if (this.packages && this.packages.length) {
+      this.ux.log('');
+      this.ux.styledHeader(blue('Retrieved Packages'));
+      this.packages.forEach((pkg) => {
+        this.ux.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
+      });
+      this.ux.log('');
+    }
   }
 
   protected hasStatus(status: RequestStatus): boolean {
@@ -125,6 +134,11 @@ export class RetrieveResultFormatter extends ResultFormatter {
   }
 
   private displayErrors(): void {
+    // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
+    const errorMessage = get(this.result.response, 'errorMessage') as string;
+    if (errorMessage) {
+      throw new SfdxError(errorMessage);
+    }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
     const errMsgs = Array.isArray(responseMsgs) ? responseMsgs : [responseMsgs];
