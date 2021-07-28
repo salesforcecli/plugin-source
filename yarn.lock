@@ -823,15 +823,15 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.0.0.tgz#a42d45afff683d00f449f09533e208438dc239b1"
-  integrity sha512-1ROnnCdY/q3C9xi0mPchoH+U5+00Df8pf6Nmf4ERcL3lpDnbjFbyZjQA+jkx2KmJKAf/AMjgXa/W6RAxV6CZSw==
+"@salesforce/source-deploy-retrieve@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.0.1.tgz#82442eefb5a55837a86fc25b17830f4fe6712a8e"
+  integrity sha512-QKK64yLiSNlJS5dSLqpEZ3Tna0fjjG7lI+okRoIVYtIT6eP8qRRFpbGCmf+LCkjeL7wkv2DxElutIl+T4Yzm9g==
   dependencies:
     "@salesforce/core" "2.25.1"
     "@salesforce/kit" "^1.5.0"
     "@salesforce/ts-types" "^1.4.2"
-    archiver "4.0.1"
+    archiver "^5.3.0"
     fast-xml-parser "^3.17.4"
     gitignore-parser "0.0.2"
     ignore "^5.1.8"
@@ -1299,7 +1299,7 @@ archiver@4.0.1:
     tar-stream "^2.1.2"
     zip-stream "^3.0.1"
 
-archiver@^5.2.0:
+archiver@^5.2.0, archiver@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/archiver/-/archiver-5.3.0.tgz#dd3e097624481741df626267564f7dd8640a45ba"
   integrity sha512-iUw+oDwK0fgNpvveEsdQ0Ase6IIKztBJU2U0E9MzszMfmVVUyv1QJhS2ITW9ZCqx8dktAxVAjWWkKehuZE8OPg==
