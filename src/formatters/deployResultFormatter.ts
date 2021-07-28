@@ -8,17 +8,17 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getBoolean, getString, getNumber, asString, asArray } from '@salesforce/ts-types';
+import { get, getBoolean, getString, getNumber, asString } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
   CodeCoverage,
-  Failures,
   FileResponse,
   LocationsNotCovered,
   MetadataApiDeployStatus,
   RequestStatus,
   Successes,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { normalizeToArray } from '@salesforce/source-deploy-retrieve/lib/src/utils';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -164,7 +164,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected verboseTestFailures(): void {
     if (this.result?.response?.numberTestErrors) {
-      const failures = asArray<Failures>(this.result.response.details?.runTestResult?.failures);
+      const failures = normalizeToArray(this.result.response.details?.runTestResult?.failures);
 
       const tests = this.sortTestResults(failures);
 
@@ -184,7 +184,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestSuccess(): void {
-    const success = asArray<Successes>(this.result?.response?.details?.runTestResult?.successes, []);
+    const success = normalizeToArray(this.result?.response?.details?.runTestResult?.successes);
     if (success.length) {
       const tests: Successes[] = this.sortTestResults(success);
       this.ux.log('');
@@ -196,7 +196,7 @@ export class DeployResultFormatter extends ResultFormatter {
         ],
       });
     }
-    const codeCoverage = asArray<CodeCoverage>(this.result?.response?.details?.runTestResult?.codeCoverage, []);
+    const codeCoverage = normalizeToArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
     if (codeCoverage.length) {
       const coverage = codeCoverage.sort((a, b) => {
