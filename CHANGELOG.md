@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/salesforcecli/plugin-source/compare/v1.0.2...v1.0.3) (2021-07-28)
+
+
+### Bug Fixes
+
+* deploy:report now respects the wait flag ([#153](https://github.com/salesforcecli/plugin-source/issues/153)) ([c194f7c](https://github.com/salesforcecli/plugin-source/commit/c194f7c6907074fef8ac2b4e450c511966b83f5f))
+
 ### [1.0.2](https://github.com/salesforcecli/plugin-source/compare/v1.0.1...v1.0.2) (2021-07-26)
 
 
