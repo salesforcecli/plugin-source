@@ -12,6 +12,7 @@ import {
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { cloneJson } from '@salesforce/kit';
+import { toArray } from '../../../src/formatters/resultFormatter';
 
 const baseDeployResponse = {
   checkOnly: false,
@@ -267,7 +268,7 @@ export const getDeployResult = (
       let fileProps: DeployMessage[] = [];
       if (type === 'failed') {
         const failures = response.details.componentFailures || [];
-        fileProps = Array.isArray(failures) ? failures : [failures];
+        fileProps = toArray(failures);
         return fileProps.map((comp) => ({
           fullName: comp.fullName,
           filePath: comp.fileName,
@@ -278,7 +279,7 @@ export const getDeployResult = (
         }));
       } else {
         const successes = response.details.componentSuccesses;
-        fileProps = Array.isArray(successes) ? successes : [successes];
+        fileProps = toArray(successes);
         return fileProps
           .filter((p) => p.fileName !== 'package.xml')
           .map((comp) => ({

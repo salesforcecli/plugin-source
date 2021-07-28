@@ -16,7 +16,7 @@ import {
   RequestStatus,
   RetrieveMessage,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -48,7 +48,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
     this.result = result;
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
     const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
-    this.warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
+    this.warnings = toArray(warnMessages);
     this.packages = options.packages || [];
     // zipFile can become massive and unweildy with JSON parsing/terminal output and, isn't useful
     delete this.result.response.zipFile;
@@ -141,7 +141,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
     }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
-    const errMsgs = Array.isArray(responseMsgs) ? responseMsgs : [responseMsgs];
+    const errMsgs = toArray(responseMsgs);
     const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
     this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
   }

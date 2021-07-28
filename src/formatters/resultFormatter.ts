@@ -17,6 +17,13 @@ export interface ResultFormatterOptions {
   waitTime?: number;
 }
 
+export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
+  if (entryOrArray) {
+    return Array.isArray(entryOrArray) ? entryOrArray : [entryOrArray];
+  }
+  return [];
+}
+
 export abstract class ResultFormatter {
   public logger: Logger;
   public ux: UX;

@@ -13,13 +13,10 @@ import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
   CodeCoverage,
   FileResponse,
-  LocationsNotCovered,
   MetadataApiDeployStatus,
   RequestStatus,
-  Successes,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { normalizeToArray } from '@salesforce/source-deploy-retrieve/lib/src/utils';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -164,7 +161,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected verboseTestFailures(): void {
     if (this.result?.response?.numberTestErrors) {
-      const failures = normalizeToArray(this.result.response.details?.runTestResult?.failures);
+      const failures = toArray(this.result.response.details?.runTestResult?.failures);
 
       const tests = this.sortTestResults(failures);
 
@@ -184,9 +181,9 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestSuccess(): void {
-    const success = normalizeToArray(this.result?.response?.details?.runTestResult?.successes);
+    const success = toArray(this.result?.response?.details?.runTestResult?.successes);
     if (success.length) {
-      const tests: Successes[] = this.sortTestResults(success);
+      const tests = this.sortTestResults(success);
       this.ux.log('');
       this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
       this.ux.table(tests, {
@@ -196,7 +193,7 @@ export class DeployResultFormatter extends ResultFormatter {
         ],
       });
     }
-    const codeCoverage = normalizeToArray(this.result?.response?.details?.runTestResult?.codeCoverage);
+    const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
     if (codeCoverage.length) {
       const coverage = codeCoverage.sort((a, b) => {
@@ -205,43 +202,38 @@ export class DeployResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
+
+      coverage.map((cov: CodeCoverage & { lineNotCovered: string }) => {
+        const numLocationsNum = parseInt(cov.numLocations, 10);
+        const numLocationsNotCovered: number = parseInt(cov.numLocationsNotCovered, 10);
+        const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
+
+        let pctCovered = 100;
+        const coverageDecimal: number = parseFloat(
+          ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
+        );
+        if (numLocationsNum > 0) {
+          pctCovered = coverageDecimal * 100;
+        }
+        cov.numLocations = color(`${pctCovered}%`);
+
+        if (!cov.locationsNotCovered) {
+          cov.lineNotCovered = '';
+        }
+        const locations = toArray(cov.locationsNotCovered);
+        cov.lineNotCovered = locations.map((location) => location.line).join(',');
+      });
+
       this.ux.table(coverage, {
         columns: [
           { key: 'name', label: 'Name' },
           {
             key: 'numLocations',
             label: '% Covered',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore the format method expects two string params, we're passing in a CodeCoverage object
-            format: (numLocations: string, row: CodeCoverage): string => {
-              const numLocationsNum = parseInt(numLocations, 10);
-              const numLocationsNotCovered: number = parseInt(row.numLocationsNotCovered, 10);
-              const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
-
-              let pctCovered = 100;
-              const coverageDecimal: number = parseFloat(
-                ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
-              );
-              if (numLocationsNum > 0) {
-                pctCovered = coverageDecimal * 100;
-              }
-
-              return color(`${pctCovered}%`);
-            },
           },
           {
-            key: 'locationsNotCovered',
+            key: 'lineNotCovered',
             label: 'Uncovered Lines',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore the format method expects a string, we're passing in LocationsNotCovered[]
-            format: (locationsNotCovered: LocationsNotCovered[]): string => {
-              if (!locationsNotCovered) {
-                return '';
-              }
-              // asArray wasn't properly converting a single LocationsNotCovered object to [LocationsNotCovered]
-              const locations = Array.isArray(locationsNotCovered) ? locationsNotCovered : [locationsNotCovered];
-              return locations.map((location) => location.line).join(',');
-            },
           },
         ],
       });

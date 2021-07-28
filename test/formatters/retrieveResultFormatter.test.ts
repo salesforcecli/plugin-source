@@ -14,6 +14,7 @@ import { cloneJson } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getRetrieveResult } from '../commands/source/retrieveResponses';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../src/formatters/retrieveResultFormatter';
+import { toArray } from '../../src/formatters/resultFormatter';
 
 describe('RetrieveResultFormatter', () => {
   const sandbox = sinon.createSandbox();
@@ -93,7 +94,7 @@ describe('RetrieveResultFormatter', () => {
 
     it('should return expected json for a success with warnings', async () => {
       const warnMessages = retrieveResultWarnings.response.messages;
-      const warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
+      const warnings = toArray(warnMessages);
       const expectedSuccessResults: RetrieveCommandResult = {
         inboundFiles: retrieveResultWarnings.getFileResponses(),
         packages: [],
@@ -148,7 +149,7 @@ describe('RetrieveResultFormatter', () => {
       expect(tableStub.calledOnce).to.equal(true);
       expect(styledHeaderStub.secondCall.args[0]).to.contain('Retrieved Source Warnings');
       const warnMessages = retrieveResultWarnings.response.messages;
-      const warnings = Array.isArray(warnMessages) ? warnMessages : [warnMessages];
+      const warnings = toArray(warnMessages);
       expect(tableStub.firstCall.args[0]).to.deep.equal(warnings);
     });
 
