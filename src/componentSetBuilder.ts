@@ -41,61 +41,71 @@ export class ComponentSetBuilder {
     const csAggregator: ComponentLike[] = [];
 
     const { sourcepath, manifest, metadata, packagenames, apiversion, sourceapiversion } = options;
-
-    if (sourcepath) {
-      logger.debug(`Building ComponentSet from sourcepath: ${sourcepath.toString()}`);
-      sourcepath.forEach((filepath) => {
-        if (fs.fileExistsSync(filepath)) {
-          csAggregator.push(...ComponentSet.fromSource(path.resolve(filepath)));
-        } else {
-          throw new SfdxError(`The sourcepath "${filepath}" is not a valid source file path.`);
-        }
-      });
-    }
-
-    // Return empty ComponentSet and use packageNames in the library via `.retrieve` options
-    if (packagenames) {
-      logger.debug(`Building ComponentSet for packagenames: ${packagenames.toString()}`);
-      csAggregator.push(...new ComponentSet([]));
-    }
-
-    // Resolve manifest with source in package directories.
-    if (manifest) {
-      logger.debug(`Building ComponentSet from manifest: ${manifest.manifestPath}`);
-      const directoryPaths = options.manifest.directoryPaths;
-      logger.debug(`Searching in packageDir: ${directoryPaths.join(', ')} for matching metadata`);
-      const compSet = await ComponentSet.fromManifest({
-        manifestPath: manifest.manifestPath,
-        resolveSourcePaths: options.manifest.directoryPaths,
-        forceAddWildcards: true,
-      });
-      csAggregator.push(...compSet);
-    }
-
-    // Resolve metadata entries with source in package directories.
-    if (metadata) {
-      logger.debug(`Building ComponentSet from metadata: ${metadata.metadataEntries.toString()}`);
-      const registry = new RegistryAccess();
-
-      // Build a Set of metadata entries
-      const filter = new ComponentSet();
-      metadata.metadataEntries.forEach((entry) => {
-        const splitEntry = entry.split(':');
-        // try and get the type by name to ensure no typos or errors in type name
-        // matches toolbelt functionality
-        registry.getTypeByName(splitEntry[0]);
-        filter.add({
-          type: splitEntry[0],
-          fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
+    try {
+      if (sourcepath) {
+        logger.debug(`Building ComponentSet from sourcepath: ${sourcepath.toString()}`);
+        sourcepath.forEach((filepath) => {
+          if (fs.fileExistsSync(filepath)) {
+            csAggregator.push(...ComponentSet.fromSource(path.resolve(filepath)));
+          } else {
+            throw new SfdxError(`The sourcepath "${filepath}" is not a valid source file path.`);
+          }
         });
-      });
+      }
 
-      const directoryPaths = options.metadata.directoryPaths;
-      logger.debug(`Searching for matching metadata in directories: ${directoryPaths.join(', ')}`);
-      const fromSource = ComponentSet.fromSource({ fsPaths: directoryPaths, include: filter });
-      // If no matching metadata is found, default to the original component set
-      const finalized = fromSource.size > 0 ? fromSource : filter;
-      csAggregator.push(...finalized);
+      // Return empty ComponentSet and use packageNames in the library via `.retrieve` options
+      if (packagenames) {
+        logger.debug(`Building ComponentSet for packagenames: ${packagenames.toString()}`);
+        csAggregator.push(...new ComponentSet([]));
+      }
+
+      // Resolve manifest with source in package directories.
+      if (manifest) {
+        logger.debug(`Building ComponentSet from manifest: ${manifest.manifestPath}`);
+        const directoryPaths = options.manifest.directoryPaths;
+        logger.debug(`Searching in packageDir: ${directoryPaths.join(', ')} for matching metadata`);
+        const compSet = await ComponentSet.fromManifest({
+          manifestPath: manifest.manifestPath,
+          resolveSourcePaths: options.manifest.directoryPaths,
+          forceAddWildcards: true,
+        });
+        csAggregator.push(...compSet);
+      }
+
+      // Resolve metadata entries with source in package directories.
+      if (metadata) {
+        logger.debug(`Building ComponentSet from metadata: ${metadata.metadataEntries.toString()}`);
+        const registry = new RegistryAccess();
+
+        // Build a Set of metadata entries
+        const filter = new ComponentSet();
+        metadata.metadataEntries.forEach((entry) => {
+          const splitEntry = entry.split(':');
+          // try and get the type by name to ensure no typos or errors in type name
+          // matches toolbelt functionality
+          registry.getTypeByName(splitEntry[0]);
+          filter.add({
+            type: splitEntry[0],
+            fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
+          });
+        });
+
+        const directoryPaths = options.metadata.directoryPaths;
+        logger.debug(`Searching for matching metadata in directories: ${directoryPaths.join(', ')}`);
+        const fromSource = ComponentSet.fromSource({ fsPaths: directoryPaths, include: filter });
+        // If no matching metadata is found, default to the original component set
+        const finalized = fromSource.size > 0 ? fromSource : filter;
+        csAggregator.push(...finalized);
+      }
+    } catch (e) {
+      if ((e as Error).message.includes('Missing metadata type definition in registry for id')) {
+        // to remain generic to catch missing metadata types regardless of parameters, split on '
+        // example message : Missing metadata type definition in registry for id 'NonExistentType'
+        const issueType = (e as Error).message.split("'")[1];
+        throw new SfdxError(`The specified metadata type is unsupported: [${issueType}]`);
+      } else {
+        throw e;
+      }
     }
 
     const componentSet = new ComponentSet(csAggregator);
