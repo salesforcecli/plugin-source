@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5](https://github.com/salesforcecli/plugin-source/compare/v1.0.3...v1.0.5) (2021-07-29)
+
+
+### Bug Fixes
+
+* add verbose test detail when deploying with tests ([#151](https://github.com/salesforcecli/plugin-source/issues/151)) ([1485c0e](https://github.com/salesforcecli/plugin-source/commit/1485c0e47cba4faf22f0420a561f8986e229ada0))
+* bump to 1.0.5 ([#160](https://github.com/salesforcecli/plugin-source/issues/160)) ([b0716cf](https://github.com/salesforcecli/plugin-source/commit/b0716cf0096727137ecfaa1e9e687278d0a046fd))
+* missing metadata type error matches toolbelt ([#155](https://github.com/salesforcecli/plugin-source/issues/155)) ([45ec6d0](https://github.com/salesforcecli/plugin-source/commit/45ec6d069b7d50642daccb3214e6ae8d0bdb6db1))
+
 ### [1.0.3](https://github.com/salesforcecli/plugin-source/compare/v1.0.2...v1.0.3) (2021-07-28)
 
 
