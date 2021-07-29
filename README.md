@@ -80,7 +80,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@salesforce/plugin-source/1.0.2 linux-x64 node-v12.22.3
+@salesforce/plugin-source/1.0.3 linux-x64 node-v12.22.4
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -138,7 +138,7 @@ EXAMPLES
   $ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'
 ```
 
-_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.2/src/commands/force/source/convert.ts)_
+_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.3/src/commands/force/source/convert.ts)_
 
 ## `sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [-q <id> | -x <filepath> | -m <array> | -p <array> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -213,7 +213,7 @@ EXAMPLES
   $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.2/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.3/src/commands/force/source/deploy.ts)_
 
 ## `sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -251,7 +251,7 @@ EXAMPLES
   $ sfdx force:source:deploy:cancel -i <jobid>
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.2/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.3/src/commands/force/source/deploy/cancel.ts)_
 
 ## `sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -296,7 +296,7 @@ EXAMPLES
     $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.2/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.3/src/commands/force/source/deploy/report.ts)_
 
 ## `sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -351,5 +351,5 @@ EXAMPLES
   sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.2/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.3/src/commands/force/source/retrieve.ts)_
 <!-- commandsstop -->

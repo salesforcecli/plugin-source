@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/salesforcecli/plugin-source/compare/v1.0.3...v1.0.4) (2021-07-29)
+
+
+### Bug Fixes
+
+* add verbose test detail when deploying with tests ([#151](https://github.com/salesforcecli/plugin-source/issues/151)) ([1485c0e](https://github.com/salesforcecli/plugin-source/commit/1485c0e47cba4faf22f0420a561f8986e229ada0))
+
 ### [1.0.3](https://github.com/salesforcecli/plugin-source/compare/v1.0.2...v1.0.3) (2021-07-28)
 
 
