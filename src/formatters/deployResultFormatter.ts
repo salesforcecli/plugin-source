@@ -8,14 +8,15 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getBoolean, getString, getNumber } from '@salesforce/ts-types';
+import { get, getBoolean, getString, getNumber, asString } from '@salesforce/ts-types';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
+  CodeCoverage,
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -145,7 +146,9 @@ export class DeployResultFormatter extends ResultFormatter {
     if (this.isRunTestsEnabled()) {
       this.ux.log('');
       if (this.isVerbose()) {
-        this.ux.log('TBD: Show test successes, failures, and code coverage');
+        this.verboseTestFailures();
+        this.verboseTestSuccess();
+        this.verboseTestTime();
       } else {
         this.ux.styledHeader(chalk.blue('Test Results Summary'));
         this.ux.log(`Passing: ${this.getNumResult('numberTestsCompleted')}`);
@@ -153,6 +156,97 @@ export class DeployResultFormatter extends ResultFormatter {
         this.ux.log(`Total: ${this.getNumResult('numberTestsTotal')}`);
         this.ux.log(`Time: ${this.getNumResult('details.runTestResult.totalTime')}`);
       }
+    }
+  }
+
+  protected verboseTestFailures(): void {
+    if (this.result?.response?.numberTestErrors) {
+      const failures = toArray(this.result.response.details?.runTestResult?.failures);
+
+      const tests = this.sortTestResults(failures);
+
+      this.ux.log('');
+      this.ux.styledHeader(
+        chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
+      );
+      this.ux.table(tests, {
+        columns: [
+          { key: 'name', label: 'Name' },
+          { key: 'methodName', label: 'Method' },
+          { key: 'message', label: 'Message' },
+          { key: 'stackTrace', label: 'Stacktrace' },
+        ],
+      });
+    }
+  }
+
+  protected verboseTestSuccess(): void {
+    const success = toArray(this.result?.response?.details?.runTestResult?.successes);
+    if (success.length) {
+      const tests = this.sortTestResults(success);
+      this.ux.log('');
+      this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
+      this.ux.table(tests, {
+        columns: [
+          { key: 'name', label: 'Name' },
+          { key: 'methodName', label: 'Method' },
+        ],
+      });
+    }
+    const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
+
+    if (codeCoverage.length) {
+      const coverage = codeCoverage.sort((a, b) => {
+        return a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1;
+      });
+
+      this.ux.log('');
+      this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
+
+      coverage.map((cov: CodeCoverage & { lineNotCovered: string }) => {
+        const numLocationsNum = parseInt(cov.numLocations, 10);
+        const numLocationsNotCovered: number = parseInt(cov.numLocationsNotCovered, 10);
+        const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
+
+        let pctCovered = 100;
+        const coverageDecimal: number = parseFloat(
+          ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
+        );
+        if (numLocationsNum > 0) {
+          pctCovered = coverageDecimal * 100;
+        }
+        cov.numLocations = color(`${pctCovered}%`);
+
+        if (!cov.locationsNotCovered) {
+          cov.lineNotCovered = '';
+        }
+        const locations = toArray(cov.locationsNotCovered);
+        cov.lineNotCovered = locations.map((location) => location.line).join(',');
+      });
+
+      this.ux.table(coverage, {
+        columns: [
+          { key: 'name', label: 'Name' },
+          {
+            key: 'numLocations',
+            label: '% Covered',
+          },
+          {
+            key: 'lineNotCovered',
+            label: 'Uncovered Lines',
+          },
+        ],
+      });
+    }
+  }
+
+  protected verboseTestTime(): void {
+    if (
+      this.result.response?.details?.runTestResult?.successes ||
+      this.result?.response?.details?.runTestResult?.failures
+    ) {
+      this.ux.log('');
+      this.ux.log(`Total Test Time:  ${this.result?.response?.details?.runTestResult?.totalTime}`);
     }
   }
 }

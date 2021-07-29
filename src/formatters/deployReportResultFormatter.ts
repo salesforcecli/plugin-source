@@ -5,8 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { getString } from '@salesforce/ts-types';
+import { SfdxError } from '@salesforce/core';
 import { DeployResultFormatter } from './deployResultFormatter';
 
 export type DeployReportCommandResult = MetadataApiDeployStatus;
@@ -35,10 +36,16 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
       } else {
         this.ux.log('No components deployed');
       }
-      return;
+    } else {
+      this.displaySuccesses();
+      this.displayFailures();
+      this.displayTestResults();
     }
-    this.displaySuccesses();
-    this.displayFailures();
-    this.displayTestResults();
+
+    if (status === RequestStatus.Failed) {
+      throw SfdxError.create('@salesforce/plugin-source', 'report', 'mdapiDeployFailed');
+    }
+
+    return;
   }
 }

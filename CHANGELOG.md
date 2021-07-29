@@ -2,33 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [0.1.22](https://github.com/salesforcecli/plugin-source/compare/v0.1.21...v0.1.22) (2021-06-28)
-
+### [1.0.3](https://github.com/salesforcecli/plugin-source/compare/v1.0.2...v1.0.3) (2021-07-28)
 
 ### Bug Fixes
 
-* display retrieve warnings ([#121](https://github.com/salesforcecli/plugin-source/issues/121)) ([a2330ed](https://github.com/salesforcecli/plugin-source/commit/a2330edb51408a91169608a5d518423dd919231b))
+- deploy:report now respects the wait flag ([#153](https://github.com/salesforcecli/plugin-source/issues/153)) ([c194f7c](https://github.com/salesforcecli/plugin-source/commit/c194f7c6907074fef8ac2b4e450c511966b83f5f))
+
+### [1.0.2](https://github.com/salesforcecli/plugin-source/compare/v1.0.1...v1.0.2) (2021-07-26)
+
+### Bug Fixes
+
+- throw deploy error when missing required params ([#150](https://github.com/salesforcecli/plugin-source/issues/150)) ([234c596](https://github.com/salesforcecli/plugin-source/commit/234c5968b31dc620dcdb318dccbcc1dcc1e11fde))
+
+### [1.0.1](https://github.com/salesforcecli/plugin-source/compare/v1.0.0...v1.0.1) (2021-07-26)
+
+### Bug Fixes
+
+- minor package fixes ([#152](https://github.com/salesforcecli/plugin-source/issues/152)) ([5aa593d](https://github.com/salesforcecli/plugin-source/commit/5aa593d2e20297c1b928b828679de9c3ea4809e6))
+
+## [1.0.0](https://github.com/salesforcecli/plugin-source/compare/v0.1.22...v1.0.0) (2021-07-22)
+
+### Bug Fixes
+
+- deploy errors are reported properly ([#146](https://github.com/salesforcecli/plugin-source/issues/146)) ([08fbbdd](https://github.com/salesforcecli/plugin-source/commit/08fbbdd2c919b1000fcdb253d9d63babf643ded1))
+- retrieve package names output ([#149](https://github.com/salesforcecli/plugin-source/issues/149)) ([7350488](https://github.com/salesforcecli/plugin-source/commit/7350488f2ac7e7d0fa1c0ffef58c7b60d74fb423))
+- set sourceApiVersion on the ComponentSet ([#147](https://github.com/salesforcecli/plugin-source/issues/147)) ([46c15ba](https://github.com/salesforcecli/plugin-source/commit/46c15ba5d5f783a09002c81870a155d0691fd162))
+
+### [0.1.22](https://github.com/salesforcecli/plugin-source/compare/v0.1.21...v0.1.22) (2021-06-28)
+
+### Bug Fixes
+
+- display retrieve warnings ([#121](https://github.com/salesforcecli/plugin-source/issues/121)) ([a2330ed](https://github.com/salesforcecli/plugin-source/commit/a2330edb51408a91169608a5d518423dd919231b))
 
 ### [0.1.21](https://github.com/salesforcecli/plugin-source/compare/v0.1.20...v0.1.21) (2021-06-24)
 
-
 ### Bug Fixes
 
-* postretrieve hook payload is now the file responses ([#120](https://github.com/salesforcecli/plugin-source/issues/120)) ([a505389](https://github.com/salesforcecli/plugin-source/commit/a50538905a9bb02192c9803fec49000baf6a588f))
+- postretrieve hook payload is now the file responses ([#120](https://github.com/salesforcecli/plugin-source/issues/120)) ([a505389](https://github.com/salesforcecli/plugin-source/commit/a50538905a9bb02192c9803fec49000baf6a588f))
 
 ### [0.1.20](https://github.com/salesforcecli/plugin-source/compare/v0.1.19...v0.1.20) (2021-06-17)
 
-
 ### Bug Fixes
 
-* temporary polling fix ([#114](https://github.com/salesforcecli/plugin-source/issues/114)) ([6c6a3ab](https://github.com/salesforcecli/plugin-source/commit/6c6a3ab6b1a4e36efa974627bc944e37e875c3d6))
+- temporary polling fix ([#114](https://github.com/salesforcecli/plugin-source/issues/114)) ([6c6a3ab](https://github.com/salesforcecli/plugin-source/commit/6c6a3ab6b1a4e36efa974627bc944e37e875c3d6))
 
 ### [0.1.19](https://github.com/salesforcecli/plugin-source/compare/v0.0.19...v0.1.19) (2021-06-12)
 
-
 ### Features
 
-* add support for async deploys ([#89](https://github.com/salesforcecli/plugin-source/issues/89)) ([e7d7215](https://github.com/salesforcecli/plugin-source/commit/e7d721561542baab8abcf6a8d482e7bb9653176a)), closes [#108](https://github.com/salesforcecli/plugin-source/issues/108) [#84](https://github.com/salesforcecli/plugin-source/issues/84) [#85](https://github.com/salesforcecli/plugin-source/issues/85) [#88](https://github.com/salesforcecli/plugin-source/issues/88) [#80](https://github.com/salesforcecli/plugin-source/issues/80) [#90](https://github.com/salesforcecli/plugin-source/issues/90) [#105](https://github.com/salesforcecli/plugin-source/issues/105) [#106](https://github.com/salesforcecli/plugin-source/issues/106)
+- add support for async deploys ([#89](https://github.com/salesforcecli/plugin-source/issues/89)) ([e7d7215](https://github.com/salesforcecli/plugin-source/commit/e7d721561542baab8abcf6a8d482e7bb9653176a)), closes [#108](https://github.com/salesforcecli/plugin-source/issues/108) [#84](https://github.com/salesforcecli/plugin-source/issues/84) [#85](https://github.com/salesforcecli/plugin-source/issues/85) [#88](https://github.com/salesforcecli/plugin-source/issues/88) [#80](https://github.com/salesforcecli/plugin-source/issues/80) [#90](https://github.com/salesforcecli/plugin-source/issues/90) [#105](https://github.com/salesforcecli/plugin-source/issues/105) [#106](https://github.com/salesforcecli/plugin-source/issues/106)
 
 ### [0.0.19](https://github.com/salesforcecli/plugin-source/compare/v0.0.18...v0.0.19) (2021-06-10)
 

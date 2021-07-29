@@ -27,6 +27,7 @@
     "validateDeployRequestId": "deploy request ID of the validated deployment to run a Quick Deploy",
     "soapDeploy": "deploy metadata with SOAP API instead of REST API"
   },
+  "MissingRequiredParam": "Missing one of the following parameters: %s",
   "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output.",
   "MissingDeployId": "No deploy ID was provided or found in deploy history",
   "deployCanceled": "The deployment has been canceled by %s",

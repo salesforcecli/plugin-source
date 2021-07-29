@@ -8,6 +8,7 @@
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { toArray } from '../../../src/formatters/resultFormatter';
 
 const packageFileProp = {
   createdById: '00521000007KA39AAG',
@@ -43,7 +44,6 @@ const baseRetrieveResponse = {
   id: '09S21000002jxznEAA',
   status: 'Succeeded',
   success: true,
-  zipFile: 'UEsDBBQA...some_long_string',
 };
 
 const warningMessage = "Entity of type 'ApexClass' named 'ProductController' cannot be found";
@@ -93,7 +93,7 @@ export const getRetrieveResult = (
     response,
     getFileResponses() {
       let fileProps = response.fileProperties;
-      fileProps = Array.isArray(fileProps) ? fileProps : [fileProps];
+      fileProps = toArray(fileProps);
       return fileProps
         .filter((p) => p.type !== 'Package')
         .map((comp) => {

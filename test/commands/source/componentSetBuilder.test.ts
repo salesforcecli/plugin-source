@@ -191,8 +191,7 @@ describe('ComponentSetBuilder', () => {
         assert.fail('the above should throw an error');
       } catch (e) {
         expect(e).to.not.be.null;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        expect(e.message).to.include("Missing metadata type definition in registry for id 'notatype'");
+        expect((e as Error).message).to.include('The specified metadata type is unsupported: [notatype]');
       }
     });
 
