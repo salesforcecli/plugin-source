@@ -18,6 +18,9 @@ describe('DeployResultFormatter', () => {
 
   const deployResultSuccess = getDeployResult('successSync');
   const deployResultFailure = getDeployResult('failed');
+  const deployResultTestFailure = getDeployResult('failedTest');
+  const deployResultTestSuccess = getDeployResult('passedTest');
+  const deployResultTestSuccessAndFailure = getDeployResult('passedAndFailedTest');
 
   const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
   let ux;
@@ -85,6 +88,37 @@ describe('DeployResultFormatter', () => {
       expect(styledHeaderStub.firstCall.args[0]).to.contain('Component Failures [1]');
       const fileResponses = deployResultFailure.getFileResponses();
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
+    });
+
+    it('should output as expected for a test failure with verbose', async () => {
+      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestFailure);
+      formatter.display();
+      expect(styledHeaderStub.calledTwice).to.equal(true);
+      expect(logStub.callCount).to.equal(5);
+      expect(tableStub.calledTwice).to.equal(true);
+      expect(styledHeaderStub.firstCall.args[0]).to.contain('Test Failures [1]');
+      expect(styledHeaderStub.secondCall.args[0]).to.contain('Apex Code Coverage');
+    });
+
+    it('should output as expected for passing tests with verbose', async () => {
+      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestSuccess);
+      formatter.display();
+      expect(styledHeaderStub.calledTwice).to.equal(true);
+      expect(logStub.callCount).to.equal(5);
+      expect(tableStub.calledTwice).to.equal(true);
+      expect(styledHeaderStub.firstCall.args[0]).to.contain('Test Success [1]');
+      expect(styledHeaderStub.secondCall.args[0]).to.contain('Apex Code Coverage');
+    });
+
+    it('should output as expected for passing and failing tests with verbose', async () => {
+      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestSuccessAndFailure);
+      formatter.display();
+      expect(styledHeaderStub.callCount).to.equal(3);
+      expect(logStub.callCount).to.equal(6);
+      expect(tableStub.callCount).to.equal(3);
+      expect(styledHeaderStub.firstCall.args[0]).to.contain('Test Failures [2]');
+      expect(styledHeaderStub.secondCall.args[0]).to.contain('Test Success [1]');
+      expect(styledHeaderStub.thirdCall.args[0]).to.contain('Apex Code Coverage');
     });
   });
 });

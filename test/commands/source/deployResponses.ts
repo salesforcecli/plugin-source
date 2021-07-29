@@ -12,6 +12,7 @@ import {
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { cloneJson } from '@salesforce/kit';
+import { toArray } from '../../../src/formatters/resultFormatter';
 
 const baseDeployResponse = {
   checkOnly: false,
@@ -72,7 +73,10 @@ export type DeployResponseType =
   | 'successRecentValidation'
   | 'canceled'
   | 'inProgress'
-  | 'failed';
+  | 'failed'
+  | 'failedTest'
+  | 'passedTest'
+  | 'passedAndFailedTest';
 
 export const getDeployResponse = (
   type: DeployResponseType,
@@ -98,6 +102,157 @@ export const getDeployResponse = (
     response.details.componentFailures.problem = 'This component has some problems';
   }
 
+  if (type === 'failedTest') {
+    response.status = RequestStatus.Failed;
+    response.success = false;
+    response.details.componentFailures = cloneJson(baseDeployResponse.details.componentSuccesses[1]) as DeployMessage;
+    response.details.componentSuccesses = cloneJson(baseDeployResponse.details.componentSuccesses[0]) as DeployMessage;
+    response.details.componentFailures.success = 'false';
+    delete response.details.componentFailures.id;
+    response.details.componentFailures.problemType = 'Error';
+    response.details.componentFailures.problem = 'This component has some problems';
+    response.details.runTestResult.numFailures = '1';
+    response.runTestsEnabled = true;
+    response.numberTestErrors = 1;
+    response.details.runTestResult.successes = [];
+    response.details.runTestResult.failures = [
+      {
+        name: 'ChangePasswordController',
+        methodName: 'testMethod',
+        message: 'testMessage',
+        id: 'testId',
+        time: 'testTime',
+        packageName: 'testPkg',
+        stackTrace: 'test stack trace',
+        type: 'ApexClass',
+      },
+    ];
+    response.details.runTestResult.codeCoverage = [
+      {
+        id: 'ChangePasswordController',
+        type: 'ApexClass',
+        name: 'ChangePasswordController',
+        numLocations: '1',
+        locationsNotCovered: {
+          column: '54',
+          line: '2',
+          numExecutions: '1',
+          time: '2',
+        },
+        numLocationsNotCovered: '5',
+      },
+    ];
+  }
+
+  if (type === 'passedTest') {
+    response.status = RequestStatus.Failed;
+    response.success = false;
+    response.details.componentFailures = cloneJson(baseDeployResponse.details.componentSuccesses[1]) as DeployMessage;
+    response.details.componentSuccesses = cloneJson(baseDeployResponse.details.componentSuccesses[0]) as DeployMessage;
+    response.details.componentFailures.success = 'false';
+    delete response.details.componentFailures.id;
+    response.details.componentFailures.problemType = 'Error';
+    response.details.componentFailures.problem = 'This component has some problems';
+    response.details.runTestResult.numFailures = '0';
+    response.runTestsEnabled = true;
+    response.numberTestErrors = 0;
+    response.details.runTestResult.successes = [
+      {
+        name: 'ChangePasswordController',
+        methodName: 'testMethod',
+        id: 'testId',
+        time: 'testTime',
+      },
+    ];
+    response.details.runTestResult.failures = [];
+    response.details.runTestResult.codeCoverage = [
+      {
+        id: 'ChangePasswordController',
+        type: 'ApexClass',
+        name: 'ChangePasswordController',
+        numLocations: '1',
+        locationsNotCovered: {
+          column: '54',
+          line: '2',
+          numExecutions: '1',
+          time: '2',
+        },
+        numLocationsNotCovered: '5',
+      },
+    ];
+  }
+  if (type === 'passedAndFailedTest') {
+    response.status = RequestStatus.Failed;
+    response.success = false;
+    response.details.componentFailures = cloneJson(baseDeployResponse.details.componentSuccesses[1]) as DeployMessage;
+    response.details.componentSuccesses = cloneJson(baseDeployResponse.details.componentSuccesses[0]) as DeployMessage;
+    response.details.componentFailures.success = 'false';
+    delete response.details.componentFailures.id;
+    response.details.componentFailures.problemType = 'Error';
+    response.details.componentFailures.problem = 'This component has some problems';
+    response.details.runTestResult.numFailures = '2';
+    response.runTestsEnabled = true;
+    response.numberTestErrors = 2;
+    response.details.runTestResult.successes = [
+      {
+        name: 'ChangePasswordController',
+        methodName: 'testMethod',
+        id: 'testId',
+        time: 'testTime',
+      },
+    ];
+    response.details.runTestResult.failures = [
+      {
+        name: 'ChangePasswordController',
+        methodName: 'testMethod',
+        message: 'testMessage',
+        id: 'testId',
+        time: 'testTime',
+        packageName: 'testPkg',
+        stackTrace: 'test stack trace',
+        type: 'ApexClass',
+      },
+      {
+        name: 'ApexTestClass',
+        methodName: 'testMethod',
+        message: 'testMessage',
+        id: 'testId',
+        time: 'testTime',
+        packageName: 'testPkg',
+        stackTrace: 'test stack trace',
+        type: 'ApexClass',
+      },
+    ];
+    response.details.runTestResult.codeCoverage = [
+      {
+        id: 'ChangePasswordController',
+        type: 'ApexClass',
+        name: 'ChangePasswordController',
+        numLocations: '1',
+        locationsNotCovered: {
+          column: '54',
+          line: '2',
+          numExecutions: '1',
+          time: '2',
+        },
+        numLocationsNotCovered: '5',
+      },
+      {
+        id: 'ApexTestClass',
+        type: 'ApexClass',
+        name: 'ApexTestClass',
+        numLocations: '1',
+        locationsNotCovered: {
+          column: '54',
+          line: '2',
+          numExecutions: '1',
+          time: '2',
+        },
+        numLocationsNotCovered: '5',
+      },
+    ];
+  }
+
   return response;
 };
 
@@ -113,7 +268,7 @@ export const getDeployResult = (
       let fileProps: DeployMessage[] = [];
       if (type === 'failed') {
         const failures = response.details.componentFailures || [];
-        fileProps = Array.isArray(failures) ? failures : [failures];
+        fileProps = toArray(failures);
         return fileProps.map((comp) => ({
           fullName: comp.fullName,
           filePath: comp.fileName,
@@ -124,7 +279,7 @@ export const getDeployResult = (
         }));
       } else {
         const successes = response.details.componentSuccesses;
-        fileProps = Array.isArray(successes) ? successes : [successes];
+        fileProps = toArray(successes);
         return fileProps
           .filter((p) => p.fileName !== 'package.xml')
           .map((comp) => ({
