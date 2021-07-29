@@ -8,13 +8,14 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as open from 'open';
-import { getBoolean, getString } from '@salesforce/ts-types';
+import { getString } from '@salesforce/ts-types';
 import { fs, AuthInfo } from '@salesforce/core';
-import { SfdxCommand, flags, FlagsConfig } from '@salesforce/command';
+import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
 import checkLightningDomain from '@salesforce/core/lib/util/checkLightningDomain';
 import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { OpenResultFormatter, OpenCommandResult } from '../../../formatters/openResultFormatter';
+import { SourceCommand } from '../../../sourceCommand';
 
 export interface DnsLookupObject {
   address: string;
@@ -32,7 +33,7 @@ export interface FlexiPageRecord {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
 
-export class Open extends SfdxCommand {
+export class Open extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -55,6 +56,21 @@ export class Open extends SfdxCommand {
     await this.doOpen();
     this.resolveSuccess();
     return this.formatResult();
+  }
+
+  protected resolveSuccess(): void {
+    if (!getString(this.openResult, 'url')) {
+      process.exitCode = 1;
+    }
+  }
+
+  protected formatResult(): OpenCommandResult {
+    const formatter = new OpenResultFormatter(this.logger, this.ux, this.openResult);
+
+    if (!this.isJsonOutput()) {
+      formatter.display();
+    }
+    return formatter.getJson();
   }
 
   private async doOpen(): Promise<void> {
@@ -92,25 +108,6 @@ export class Open extends SfdxCommand {
     const authInfo = await AuthInfo.create({ username });
     const url = authInfo.getOrgFrontDoorUrl();
     return url;
-  }
-
-  private resolveSuccess(): void {
-    if (!getString(this.openResult, 'url')) {
-      process.exitCode = 1;
-    }
-  }
-
-  private isJsonOutput(): boolean {
-    return getBoolean(this.flags, 'json', false);
-  }
-
-  private formatResult(): OpenCommandResult {
-    const formatter = new OpenResultFormatter(this.logger, this.ux, this.openResult);
-
-    if (!this.isJsonOutput()) {
-      formatter.display();
-    }
-    return formatter.getJson();
   }
 
   private async open(src: string, urlonly?: boolean): Promise<OpenCommandResult> {
