@@ -605,7 +605,21 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^1.1.1", "@salesforce/cli-plugins-testkit@^1.2.1":
+"@salesforce/cli-plugins-testkit@1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.1.5.tgz#d4ff270e3dce6bc9b2abdb9fbd7c315a24be541c"
+  integrity sha512-FgUsyQlP6y8sqBD6k7loj1i+xbuKlRI6LDKU7R1YCdRH5rSRJejrO3jheaasLeT3uoWerAyqrfmvQTV/GlDywQ==
+  dependencies:
+    "@salesforce/core" "^2.20.3"
+    "@salesforce/kit" "^1.4.5"
+    "@salesforce/ts-types" "^1.5.5"
+    archiver "^5.2.0"
+    debug "^4.3.1"
+    shelljs "^0.8.4"
+    sinon "^10.0.0"
+    strip-ansi "6.0.0"
+
+"@salesforce/cli-plugins-testkit@^1.1.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.2.1.tgz#c25ba3780f9e42386d8b563519b2fb8278b26088"
   integrity sha512-hD1VdDT2qUIPTy+pGU8Ot43TJwMMBrkrysgh8Wuf8KRcF9UtNv76mdg2f+6aYKmKmMeJQVhnnswb43RJXns2Dg==
@@ -708,7 +722,7 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.23.4", "@salesforce/core@^2.24.0", "@salesforce/core@^2.26.0", "@salesforce/core@^2.26.1", "@salesforce/core@^2.3.0":
+"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.20.3", "@salesforce/core@^2.23.4", "@salesforce/core@^2.24.0", "@salesforce/core@^2.26.0", "@salesforce/core@^2.26.1", "@salesforce/core@^2.3.0":
   version "2.26.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.26.1.tgz#00ecf0d989308786dcee648da231c528e6346c09"
   integrity sha512-Ltswt8HWqIOS0NKZ7ggsYXD8X/nq/6uYO8REzj7g7HdZR+/GIrFUzRdJZ9ACjVGZpjkYLNN6E7ncyoy/Uudiww==
