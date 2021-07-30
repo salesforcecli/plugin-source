@@ -37,6 +37,11 @@
     "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait", "verbose"]
   },
   {
+    "command": "force:source:open",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "json", "loglevel", "sourcefile", "targetusername", "urlonly"]
+  },
+  {
     "command": "force:source:retrieve",
     "plugin": "@salesforce/plugin-source",
     "flags": [
