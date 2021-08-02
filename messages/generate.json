@@ -1,0 +1,12 @@
+{
+  "description": "generate a manifest from a sourcepath or list of metadata",
+  "examples": [
+    "$ sfdx force:source:manifest:generate -m ApexClass",
+    "$ sfdx force:source:manifest:generate -m ApexClass:MyApexClass",
+    "$ sfdx force:source:manifest:generate --sourcepath force/app/main/default/classes"
+  ],
+  "flags": {
+    "name": "the name of the manifest to generate",
+    "outputdir": "the location to save the manifest"
+  }
+}
