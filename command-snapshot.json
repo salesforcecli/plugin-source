@@ -34,7 +34,12 @@
   {
     "command": "force:source:deploy:report",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait", "verbose"]
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"]
+  },
+  {
+    "command": "force:source:manifest:create",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["json", "loglevel", "manifestname", "manifesttype", "metadata", "outputdir", "sourcepath"]
   },
   {
     "command": "force:source:open",
