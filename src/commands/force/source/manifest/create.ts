@@ -60,8 +60,9 @@ export class create extends SourceCommand {
     }),
   };
   public requiredFlags = ['metadata', 'sourcepath'];
-  private manifestname: string;
-  private outputdir: string;
+  private manifestName: string;
+  private outputDir: string;
+  private outputPath: string;
 
   public async run(): Promise<CreateResult> {
     await this.createManifest();
@@ -72,9 +73,9 @@ export class create extends SourceCommand {
   protected async createManifest(): Promise<void> {
     this.validateFlags(Object.keys(this.flags));
     // get the official manifest name, if no matches, check the manifestname flag, if not passed, default to 'package.xml'
-    this.manifestname =
+    this.manifestName =
       manifestTypes[this.getFlag<string>('manifesttype')] || this.getFlag<string>('manifestname') || 'package.xml';
-    this.outputdir = this.getFlag<string>('outputdir');
+    this.outputDir = this.getFlag<string>('outputdir');
 
     const componentSet = await ComponentSetBuilder.build({
       sourcepath: this.getFlag<string[]>('sourcepath'),
@@ -85,14 +86,16 @@ export class create extends SourceCommand {
     });
 
     // automatically add the .xml suffix if the user just provided a file name
-    let outputPath = this.manifestname.endsWith('xml') ? this.manifestname : this.manifestname + '.xml';
+    this.manifestName = this.manifestName.endsWith('xml') ? this.manifestName : this.manifestName + '.xml';
 
-    if (this.outputdir) {
-      fs.mkdirSync(this.outputdir, { recursive: true });
-      outputPath = join(this.outputdir, outputPath);
+    if (this.outputDir) {
+      fs.mkdirSync(this.outputDir, { recursive: true });
+      this.outputPath = join(this.outputDir, this.manifestName);
+    } else {
+      this.outputPath = this.manifestName;
     }
 
-    await fs.writeFile(outputPath, componentSet.getPackageXml());
+    await fs.writeFile(this.outputPath, componentSet.getPackageXml());
   }
   // noop this method because any errors will be reported by the createManifest method
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -100,13 +103,13 @@ export class create extends SourceCommand {
 
   protected formatResult(): CreateResult {
     if (!this.isJsonOutput()) {
-      if (this.outputdir) {
+      if (this.outputDir) {
         // if the user specified a different outputdir
-        this.ux.log(`successfully wrote ${this.manifestname} to ${this.outputdir}`);
+        this.ux.log(`successfully wrote ${this.manifestName} to ${this.outputDir}`);
       } else {
-        this.ux.log(`successfully wrote ${this.manifestname}`);
+        this.ux.log(`successfully wrote ${this.manifestName}`);
       }
     }
-    return { path: this.outputdir, name: this.manifestname };
+    return { path: this.outputPath, name: this.manifestName };
   }
 }
