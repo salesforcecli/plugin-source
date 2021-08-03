@@ -102,7 +102,7 @@
                 "description": "interact with an active deploy request"
               },
               "manifest": {
-                "description": "generate a manifest to use in a deploy/retrieve"
+                "description": "create a manifest to use in a deploy/retrieve"
               }
             }
           }

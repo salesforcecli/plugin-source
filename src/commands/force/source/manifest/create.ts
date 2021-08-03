@@ -7,19 +7,28 @@
 import * as os from 'os';
 import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { fs, SfdxError } from '@salesforce/core';
+import { fs } from '@salesforce/core';
 import { Messages } from '@salesforce/core';
 import { SourceCommand } from '../../../../sourceCommand';
 import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'generate');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'create');
 
-// One of these flags must be specified for a valid deploy.
-const requiredFlags = ['metadata', 'sourcepath'];
+const manifestTypes: Record<string, string> = {
+  pre: 'destructiveChangesPre.xml',
+  post: 'destructiveChangesPost.xml',
+  destroy: 'destructiveChanges.xml',
+  package: 'package.xml',
+};
 
-export class generate extends SourceCommand {
+interface CreateResult {
+  name: string;
+  path: string;
+}
+
+export class create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
@@ -27,43 +36,47 @@ export class generate extends SourceCommand {
     metadata: flags.array({
       char: 'm',
       description: deployMessages.getMessage('flags.metadata'),
-      exclusive: ['manifest', 'sourcepath'],
+      exclusive: ['sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: deployMessages.getMessage('flags.sourcePath'),
-      exclusive: ['manifest', 'metadata'],
+      exclusive: ['metadata'],
     }),
-    name: flags.string({
+    manifestname: flags.string({
       char: 'n',
-      description: messages.getMessage('flags.name'),
+      description: messages.getMessage('flags.manifestname'),
       default: 'package.xml',
+      exclusive: ['manifesttype'],
+    }),
+    manifesttype: flags.enum({
+      description: messages.getMessage('flags.manifesttype'),
+      options: ['pre', 'post', 'package', 'destroy'],
+      char: 't',
     }),
     outputdir: flags.string({
       char: 'o',
       description: messages.getMessage('flags.outputdir'),
-      default: '.',
     }),
   };
-  private name: string;
+  public requiredFlags = ['metadata', 'sourcepath'];
+  private manifestname: string;
   private outputdir: string;
 
-  public async run(): Promise<{ path: string }> {
-    // verify that the user defined one of:  metadata, sourcepath
-    if (!Object.keys(this.flags).some((flag) => requiredFlags.includes(flag))) {
-      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [requiredFlags.join(', ')]);
-    }
-    await this.generateManifest();
+  public async run(): Promise<CreateResult> {
+    await this.createManifest();
     this.resolveSuccess();
     return this.formatResult();
   }
 
-  protected async generateManifest(): Promise<void> {
-    this.name = this.getFlag<string>('name');
+  protected async createManifest(): Promise<void> {
+    this.validateFlags(Object.keys(this.flags));
+    // get the official manifest name, if no matches, check the manifestname flag, if not passed, default to 'package.xml'
+    this.manifestname =
+      manifestTypes[this.getFlag<string>('manifesttype')] || this.getFlag<string>('manifestname') || 'package.xml';
     this.outputdir = this.getFlag<string>('outputdir');
+
     const componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag<string>('apiversion'),
-      sourceapiversion: await this.getSourceApiVersion(),
       sourcepath: this.getFlag<string[]>('sourcepath'),
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
@@ -72,28 +85,28 @@ export class generate extends SourceCommand {
     });
 
     // automatically add the .xml suffix if the user just provided a file name
-    this.name = this.name.endsWith('xml') ? this.name : this.name + '.xml';
-    if (this.outputdir !== '.') {
-      fs.mkdirSync(this.outputdir);
+    let outputPath = this.manifestname.endsWith('xml') ? this.manifestname : this.manifestname + '.xml';
+
+    if (this.outputdir) {
+      fs.mkdirSync(this.outputdir, { recursive: true });
+      outputPath = join(this.outputdir, outputPath);
     }
 
-    this.outputdir = join(this.outputdir, this.name);
-
-    await fs.writeFile(this.outputdir, componentSet.getPackageXml());
+    await fs.writeFile(outputPath, componentSet.getPackageXml());
   }
-  // noop this method because any errors will be reported by the generateManifest method
+  // noop this method because any errors will be reported by the createManifest method
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected resolveSuccess(): void {}
 
-  protected formatResult(): { path: string } {
+  protected formatResult(): CreateResult {
     if (!this.isJsonOutput()) {
-      if (this.outputdir !== '.') {
+      if (this.outputdir) {
         // if the user specified a different outputdir
-        this.ux.log(`successfully wrote ${this.name} to ${this.outputdir}`);
+        this.ux.log(`successfully wrote ${this.manifestname} to ${this.outputdir}`);
       } else {
-        this.ux.log(`succesfully wrote ${this.name}`);
+        this.ux.log(`successfully wrote ${this.manifestname}`);
       }
     }
-    return { path: this.outputdir };
+    return { path: this.outputdir, name: this.manifestname };
   }
 }
