@@ -13,7 +13,6 @@ import { SourceCommand } from '../../../../sourceCommand';
 import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
-const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'create');
 
 const manifestTypes: Record<string, string> = {
@@ -35,12 +34,12 @@ export class create extends SourceCommand {
   public static readonly flagsConfig: FlagsConfig = {
     metadata: flags.array({
       char: 'm',
-      description: deployMessages.getMessage('flags.metadata'),
+      description: messages.getMessage('flags.metadata'),
       exclusive: ['sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
-      description: deployMessages.getMessage('flags.sourcePath'),
+      description: messages.getMessage('flags.sourcePath'),
       exclusive: ['metadata'],
     }),
     manifestname: flags.string({

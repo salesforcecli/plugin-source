@@ -8,6 +8,8 @@
   "flags": {
     "manifesttype": "a pre defined list of manifest types designed to be used with salesforce APIs",
     "manifestname": "the name of the manifest to create",
-    "outputdir": "the location to save the manifest"
+    "outputdir": "the location to save the manifest",
+    "sourcepath": "comma-separated list of source file paths to create a manifest from",
+    "manifest": "comma-separated list of metadata component names to create a manifest from"
   }
 }
