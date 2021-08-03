@@ -1,9 +1,9 @@
 {
-  "description": "create a manifest from a sourcepath or list of metadata",
+  "description": "create a manifest to use in a deploy or retrieve operation from a sourcepath or list of metadata",
   "examples": [
     "$ sfdx force:source:manifest:create -m ApexClass",
     "$ sfdx force:source:manifest:create -m ApexClass:MyApexClass --manifesttype destroy",
-    "$ sfdx force:source:manifest:create --sourcepath force/app/main/default/classes"
+    "$ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest"
   ],
   "flags": {
     "manifesttype": "a pre defined list of manifest types designed to be used with salesforce APIs",

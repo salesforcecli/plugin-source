@@ -46,12 +46,11 @@ export class create extends SourceCommand {
     manifestname: flags.string({
       char: 'n',
       description: messages.getMessage('flags.manifestname'),
-      default: 'package.xml',
       exclusive: ['manifesttype'],
     }),
     manifesttype: flags.enum({
       description: messages.getMessage('flags.manifesttype'),
-      options: ['pre', 'post', 'package', 'destroy'],
+      options: Object.keys(manifestTypes),
       char: 't',
     }),
     outputdir: flags.string({
@@ -72,7 +71,9 @@ export class create extends SourceCommand {
 
   protected async createManifest(): Promise<void> {
     this.validateFlags(Object.keys(this.flags));
-    // get the official manifest name, if no matches, check the manifestname flag, if not passed, default to 'package.xml'
+    // convert the manifesttype into one of the "official" manifest names
+    // if no manifesttype flag passed, use the manifestname flag
+    // if no manifestname flag, default to 'package.xml'
     this.manifestName =
       manifestTypes[this.getFlag<string>('manifesttype')] || this.getFlag<string>('manifestname') || 'package.xml';
     this.outputDir = this.getFlag<string>('outputdir');
@@ -85,8 +86,8 @@ export class create extends SourceCommand {
       },
     });
 
-    // automatically add the .xml suffix if the user just provided a file name
-    this.manifestName = this.manifestName.endsWith('xml') ? this.manifestName : this.manifestName + '.xml';
+    // add the .xml suffix if the user just provided a file name
+    this.manifestName = this.manifestName.endsWith('.xml') ? this.manifestName : this.manifestName + '.xml';
 
     if (this.outputDir) {
       fs.mkdirSync(this.outputDir, { recursive: true });
@@ -104,7 +105,6 @@ export class create extends SourceCommand {
   protected formatResult(): CreateResult {
     if (!this.isJsonOutput()) {
       if (this.outputDir) {
-        // if the user specified a different outputdir
         this.ux.log(`successfully wrote ${this.manifestName} to ${this.outputDir}`);
       } else {
         this.ux.log(`successfully wrote ${this.manifestName}`);

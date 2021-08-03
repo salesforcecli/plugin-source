@@ -9,7 +9,24 @@ import { join } from 'path';
 import { expect } from '@salesforce/command/lib/test';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
+import { fs } from '@salesforce/core';
 import { Dictionary } from '@salesforce/ts-types';
+
+const apexManifest =
+  '<?xml version="1.0" encoding="UTF-8"?>\n' +
+  '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n' +
+  '    <types>\n' +
+  '        <members>GeocodingService</members>\n' +
+  '        <members>GeocodingServiceTest</members>\n' +
+  '        <members>PagedResult</members>\n' +
+  '        <members>PropertyController</members>\n' +
+  '        <members>SampleDataController</members>\n' +
+  '        <members>TestPropertyController</members>\n' +
+  '        <members>TestSampleDataController</members>\n' +
+  '        <name>ApexClass</name>\n' +
+  '    </types>\n' +
+  '    <version>52.0</version>\n' +
+  '</Package>';
 
 describe('force:source:manifest:create', () => {
   let session: TestSession;
@@ -53,6 +70,8 @@ describe('force:source:manifest:create', () => {
     ).jsonOutput.result;
     expect(result).to.be.ok;
     expect(result).to.include({ path: `${outputFile}`, name: 'destructiveChanges.xml' });
+    const file = fs.readFileSync(join(session.project.dir, outputFile), 'utf-8');
+    expect(file).to.include(apexManifest);
   });
 
   it('should produce a custom manifest (myNewManifest.xml) for a sourcepath', () => {
