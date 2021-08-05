@@ -39,7 +39,7 @@ export class create extends SourceCommand {
     }),
     sourcepath: flags.array({
       char: 'p',
-      description: messages.getMessage('flags.sourcePath'),
+      description: messages.getMessage('flags.sourcepath'),
       exclusive: ['metadata'],
     }),
     manifestname: flags.string({
@@ -104,9 +104,9 @@ export class create extends SourceCommand {
   protected formatResult(): CreateResult {
     if (!this.isJsonOutput()) {
       if (this.outputDir) {
-        this.ux.log(`successfully wrote ${this.manifestName} to ${this.outputDir}`);
+        this.ux.log(messages.getMessage('successOutputDir', [this.manifestName, this.outputDir]));
       } else {
-        this.ux.log(`successfully wrote ${this.manifestName}`);
+        this.ux.log(messages.getMessage('success', [this.manifestName]));
       }
     }
     return { path: this.outputPath, name: this.manifestName };
