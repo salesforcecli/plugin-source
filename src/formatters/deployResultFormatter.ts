@@ -9,13 +9,8 @@ import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { get, getBoolean, getString, getNumber, asString } from '@salesforce/ts-types';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
-import {
-  CodeCoverage,
-  FileResponse,
-  MetadataApiDeployStatus,
-  RequestStatus,
-} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { DeployResult } from 'SDR';
+import { CodeCoverage, FileResponse, MetadataApiDeployStatus, RequestStatus } from 'SDR/lib/src/client/types';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);

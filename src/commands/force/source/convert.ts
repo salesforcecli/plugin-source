@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { MetadataConverter, ConvertResult } from 'SDR';
 import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
 import { ConvertResultFormatter, ConvertCommandResult } from '../../../formatters/convertResultFormatter';

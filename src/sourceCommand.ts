@@ -7,7 +7,7 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle } from '@salesforce/core';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet } from 'SDR';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 

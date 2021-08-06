@@ -8,7 +8,7 @@
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
-import { ComponentSet, FromSourceOptions } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, FromSourceOptions } from 'SDR';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { fs as fsCore, SfdxError } from '@salesforce/core';
 import { ComponentSetBuilder } from '../../../src/componentSetBuilder';

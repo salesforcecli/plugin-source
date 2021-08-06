@@ -6,7 +6,7 @@
  */
 
 import { join, resolve } from 'path';
-import { MetadataConverter } from '@salesforce/source-deploy-retrieve';
+import { MetadataConverter } from 'SDR';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';

@@ -7,11 +7,11 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
-import { AsyncResult, DeployResult } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployResult } from 'SDR';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
 import { env, once } from '@salesforce/kit';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { RequestStatus } from 'SDR/lib/src/client/types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployResultFormatter, DeployCommandResult } from '../../../formatters/deployResultFormatter';

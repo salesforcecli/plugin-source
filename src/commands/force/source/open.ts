@@ -13,7 +13,7 @@ import { fs, AuthInfo } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
 import checkLightningDomain from '@salesforce/core/lib/util/checkLightningDomain';
-import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
+import { SourceComponent, MetadataResolver } from 'SDR';
 import { OpenResultFormatter, OpenCommandResult } from '../../../formatters/openResultFormatter';
 import { SourceCommand } from '../../../sourceCommand';
 

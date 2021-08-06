@@ -8,7 +8,7 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { RetrieveOptions } from '@salesforce/source-deploy-retrieve';
+import { RetrieveOptions } from 'SDR';
 import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';

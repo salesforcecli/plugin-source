@@ -9,7 +9,7 @@ import { EOL } from 'os';
 import { UX } from '@salesforce/command';
 import { Logger, Messages } from '@salesforce/core';
 import { cloneJson } from '@salesforce/kit';
-import { AsyncResult } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult } from 'SDR';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);

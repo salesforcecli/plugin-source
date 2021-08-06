@@ -9,13 +9,8 @@ import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { get, getString, getNumber } from '@salesforce/ts-types';
-import { RetrieveResult, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
-import {
-  ComponentStatus,
-  FileResponse,
-  RequestStatus,
-  RetrieveMessage,
-} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { RetrieveResult, MetadataApiRetrieveStatus } from 'SDR';
+import { ComponentStatus, FileResponse, RequestStatus, RetrieveMessage } from 'SDR/lib/src/client/types';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);

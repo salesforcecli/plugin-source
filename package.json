@@ -8,7 +8,7 @@
     "@oclif/config": "^1",
     "@salesforce/command": "^4.0.4",
     "@salesforce/core": "^2.26.1",
-    "@salesforce/source-deploy-retrieve": "^4.0.2",
+    "SDR": "npm:@salesforce/source-deploy-retrieve@^4.0.2",
     "chalk": "^4.1.1",
     "cli-ux": "^5.6.3",
     "open": "^8.2.1",

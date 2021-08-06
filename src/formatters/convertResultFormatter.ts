@@ -8,7 +8,7 @@
 import { resolve } from 'path';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { ConvertResult } from 'SDR';
 import { ResultFormatter } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);

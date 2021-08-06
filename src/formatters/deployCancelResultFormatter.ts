@@ -8,8 +8,8 @@
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { getString } from '@salesforce/ts-types';
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
-import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { DeployResult } from 'SDR';
+import { MetadataApiDeployStatus } from 'SDR/lib/src/client/types';
 import { ResultFormatter } from './resultFormatter';
 
 export type DeployCancelCommandResult = MetadataApiDeployStatus;

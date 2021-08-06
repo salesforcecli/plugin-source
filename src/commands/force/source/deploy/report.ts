@@ -9,7 +9,7 @@ import * as os from 'os';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiDeploy } from 'SDR';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,

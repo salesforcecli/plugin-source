@@ -5,9 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { RetrieveResult } from 'SDR';
+import { RequestStatus } from 'SDR/lib/src/client/types';
+import { MetadataApiRetrieveStatus } from 'SDR/lib/src/client/types';
 import { toArray } from '../../../src/formatters/resultFormatter';
 
 const packageFileProp = {

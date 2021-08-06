@@ -6,7 +6,7 @@
  */
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiDeploy } from 'SDR';
 import { once } from '@salesforce/kit';
 import cli from 'cli-ux';
 import { ProgressBar } from '../sourceCommand';

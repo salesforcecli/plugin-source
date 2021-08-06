@@ -7,7 +7,7 @@
 
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiDeploy } from 'SDR';
 
 export abstract class ProgressFormatter {
   public logger: Logger;
