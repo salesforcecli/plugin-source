@@ -39,17 +39,7 @@
   {
     "command": "force:source:manifest:create",
     "plugin": "@salesforce/plugin-source",
-    "flags": [
-      "apiversion",
-      "json",
-      "loglevel",
-      "manifestname",
-      "manifesttype",
-      "metadata",
-      "outputdir",
-      "sourcepath",
-      "targetusername"
-    ]
+    "flags": ["apiversion", "json", "loglevel", "manifestname", "manifesttype", "metadata", "outputdir", "sourcepath"]
   },
   {
     "command": "force:source:open",
