@@ -21,7 +21,7 @@ export type ProgressBar = {
 
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_SRC_WAIT_MINUTES = 33;
-  public requiredFlags: string[] = [];
+  protected xorFlags: string[] = [];
   protected progressBar?: ProgressBar;
   protected lifecycle = Lifecycle.getInstance();
 
@@ -31,12 +31,10 @@ export abstract class SourceCommand extends SfdxCommand {
     return getBoolean(this.flags, 'json', false);
   }
 
-  protected validateFlags(flags: string[]): void {
+  protected validateFlags(): void {
     // verify that the user defined one of the flag names specified in requiredFlags property
-    if (!flags.some((flag) => this.requiredFlags.includes(flag))) {
-      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [
-        this.requiredFlags.join(', '),
-      ]);
+    if (!Object.keys(this.flags).some((flag) => this.xorFlags.includes(flag))) {
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [this.xorFlags.join(', ')]);
     }
   }
 

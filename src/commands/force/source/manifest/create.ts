@@ -22,7 +22,7 @@ const manifestTypes: Record<string, string> = {
   package: 'package.xml',
 };
 
-interface CreateResult {
+interface CreateCommandResult {
   name: string;
   path: string;
 }
@@ -57,19 +57,19 @@ export class create extends SourceCommand {
       description: messages.getMessage('flags.outputdir'),
     }),
   };
-  public requiredFlags = ['metadata', 'sourcepath'];
+  protected xorFlags = ['metadata', 'sourcepath'];
   private manifestName: string;
   private outputDir: string;
   private outputPath: string;
 
-  public async run(): Promise<CreateResult> {
+  public async run(): Promise<CreateCommandResult> {
     await this.createManifest();
     this.resolveSuccess();
     return this.formatResult();
   }
 
   protected async createManifest(): Promise<void> {
-    this.validateFlags(Object.keys(this.flags));
+    this.validateFlags();
     // convert the manifesttype into one of the "official" manifest names
     // if no manifesttype flag passed, use the manifestname flag
     // if no manifestname flag, default to 'package.xml'
@@ -78,6 +78,7 @@ export class create extends SourceCommand {
     this.outputDir = this.getFlag<string>('outputdir');
 
     const componentSet = await ComponentSetBuilder.build({
+      sourceapiversion: await this.getSourceApiVersion(),
       sourcepath: this.getFlag<string[]>('sourcepath'),
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
@@ -95,13 +96,14 @@ export class create extends SourceCommand {
       this.outputPath = this.manifestName;
     }
 
-    await fs.writeFile(this.outputPath, componentSet.getPackageXml());
+    return fs.writeFile(this.outputPath, componentSet.getPackageXml());
   }
+
   // noop this method because any errors will be reported by the createManifest method
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected resolveSuccess(): void {}
 
-  protected formatResult(): CreateResult {
+  protected formatResult(): CreateCommandResult {
     if (!this.isJsonOutput()) {
       if (this.outputDir) {
         this.ux.log(messages.getMessage('successOutputDir', [this.manifestName, this.outputDir]));
