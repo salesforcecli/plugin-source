@@ -36,10 +36,6 @@ describe('force:source:manifest:create', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
-      setupCommands: [
-        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
-        'sfdx force:source:deploy -p force-app',
-      ],
     });
   });
 
@@ -53,10 +49,6 @@ describe('force:source:manifest:create', () => {
     }).jsonOutput.result;
     expect(result).to.be.ok;
     expect(result).to.include({ path: 'package.xml', name: 'package.xml' });
-    // deploy the package to ensure it's valid
-    execCmd<Dictionary>('force:source:deploy -x package.xml --json', {
-      ensureExitCode: 0,
-    });
   });
 
   it('should produce a manifest (destructiveChanges.xml) for ApexClass in a new directory', () => {
@@ -85,10 +77,6 @@ describe('force:source:manifest:create', () => {
     ).jsonOutput.result;
     expect(result).to.be.ok;
     expect(result).to.include({ path: `${outputFile}`, name: 'myNewManifest.xml' });
-    // deploy the package to ensure it's valid
-    execCmd<Dictionary>(`force:source:deploy -x ${outputFile} --json`, {
-      ensureExitCode: 0,
-    });
   });
 
   it('should produce a manifest in a directory with stdout output', () => {

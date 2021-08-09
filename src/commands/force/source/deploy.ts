@@ -99,7 +99,7 @@ export class Deploy extends DeployCommand {
       exclusive: ['metadata', 'sourcepath'],
     }),
   };
-  public requiredFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
+  protected xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private isAsync = false;
@@ -112,9 +112,6 @@ export class Deploy extends DeployCommand {
   });
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
-    // verify that the user defined one of: manifest, metadata, sourcepath, validateddeployrequestid
-    this.validateFlags(Object.keys(this.flags));
-
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();
@@ -125,6 +122,9 @@ export class Deploy extends DeployCommand {
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
+    // verify that the user defined one of: manifest, metadata, sourcepath, validateddeployrequestid
+    this.validateFlags();
+
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
