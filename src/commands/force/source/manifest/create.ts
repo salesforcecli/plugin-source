@@ -31,6 +31,7 @@ export class create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
+  public static readonly supportsUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     metadata: flags.array({
       char: 'm',
@@ -78,7 +79,7 @@ export class create extends SourceCommand {
     this.outputDir = this.getFlag<string>('outputdir');
 
     const componentSet = await ComponentSetBuilder.build({
-      sourceapiversion: await this.getSourceApiVersion(),
+      apiversion: this.getFlag('apiversion'),
       sourcepath: this.getFlag<string[]>('sourcepath'),
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),

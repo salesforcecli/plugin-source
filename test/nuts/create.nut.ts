@@ -25,7 +25,7 @@ const apexManifest =
   '        <members>TestSampleDataController</members>\n' +
   '        <name>ApexClass</name>\n' +
   '    </types>\n' +
-  '    <version>52.0</version>\n' +
+  '    <version>51.0</version>\n' +
   '</Package>';
 
 describe('force:source:manifest:create', () => {
@@ -55,7 +55,7 @@ describe('force:source:manifest:create', () => {
     const output = join('abc', 'def');
     const outputFile = join(output, 'destructiveChanges.xml');
     const result = execCmd<Dictionary>(
-      `force:source:manifest:create --metadata ApexClass --manifesttype destroy --outputdir ${output} --json`,
+      `force:source:manifest:create --metadata ApexClass --manifesttype destroy --outputdir ${output} --apiversion=51.0 --json`,
       {
         ensureExitCode: 0,
       }
