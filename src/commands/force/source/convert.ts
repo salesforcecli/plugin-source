@@ -95,7 +95,8 @@ export class Convert extends SourceCommand {
     });
 
     const packageName = this.getFlag<string>('packagename');
-    const outputDirectory = this.getFlag<string>('outputdir');
+    const outputDirectory =
+      this.getFlag<string>('outputdir') === './' ? `metadataPackage_${Date.now()}` : this.getFlag<string>('outputdir');
     const converter = new MetadataConverter();
     this.convertResult = await converter.convert(this.componentSet, 'metadata', {
       type: 'directory',
@@ -114,6 +115,7 @@ export class Convert extends SourceCommand {
       const tempDir = join(os.tmpdir(), `metadataPackage_${Date.now()}`);
       fs.renameSync(this.convertResult.packagePath, tempDir);
       fs.renameSync(tempDir, outputDirectory);
+      this.convertResult.packagePath = outputDirectory;
     }
   }
 

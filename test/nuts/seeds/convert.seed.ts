@@ -59,6 +59,25 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       });
     }
 
+    for (const testCase of REPO.convert.manifest) {
+      it(`should convert ${testCase.toConvert} to default outputdir`, async () => {
+        // Generate a package.xml by converting via sourcepath
+        await testkit.convert({ args: `--sourcepath ${testCase.toConvert}` });
+        const packageXml = 'package.xml';
+
+        await testkit.convert({ args: `--manifest ${packageXml} --outputdir out2` });
+        await testkit.expect.directoryToHaveSomeFiles('out2');
+        await testkit.expect.fileToExist(path.join('out2', 'package.xml'));
+        await testkit.expect.filesToBeConverted('out2', testCase.toVerify);
+      });
+
+      afterEach(() => {
+        if (convertDir) {
+          shelljs.rm('-rf', convertDir);
+        }
+      });
+    }
+
     it('should throw an error if the package.xml is not valid', async () => {
       const convert = await testkit.convert({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
       testkit.expect.errorToHaveName(convert, 'Error');
