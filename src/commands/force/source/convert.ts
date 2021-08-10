@@ -6,8 +6,9 @@
  */
 
 import * as os from 'os';
+import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { fs, Messages } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
 import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
@@ -93,13 +94,27 @@ export class Convert extends SourceCommand {
       },
     });
 
+    const packageName = this.getFlag<string>('packagename');
+    const outputDirectory = this.getFlag<string>('outputdir');
     const converter = new MetadataConverter();
     this.convertResult = await converter.convert(this.componentSet, 'metadata', {
       type: 'directory',
-      outputDirectory: this.getFlag<string>('outputdir'),
-      packageName: this.getFlag<string>('packagename'),
+      outputDirectory,
+      packageName,
       genUniqueDir: false,
     });
+
+    if (packageName) {
+      // SDR will build an output path like /output/directory/packageName/package.xml
+      // this was breaking from toolbelt, so to revert it we "rename" the directory as a 2 step process
+      // step 1: move /output/directory/packageName/package.xml to the temp dir
+      // step 2: move it back to the output dir named as the output dir
+      // renameSync will throw an error when trying to move to a populated directory - so this has to be in 2 steps
+      // we can't renameSync(this.convertResult.packagePath, outputDirectory)
+      const tempDir = join(os.tmpdir(), `metadataPackage_${Date.now()}`);
+      fs.renameSync(this.convertResult.packagePath, tempDir);
+      fs.renameSync(tempDir, outputDirectory);
+    }
   }
 
   protected resolveSuccess(): void {
