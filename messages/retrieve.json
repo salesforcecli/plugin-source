@@ -1,16 +1,16 @@
 {
-  "description": "retrieve source from an org",
+  "description": "retrieve source from an org \nUse this command to retrieve source (metadata that’s in source format) from an org.\nTo take advantage of change tracking with scratch orgs, use \"sfdx force:source:pull\".\nTo retrieve metadata that’s in metadata format, use \"sfdx force:mdapi:retrieve\".\n\nThe source you retrieve overwrites the corresponding source files in your local project. This command does not attempt to merge the source from your org with your local source files.\n\nIf the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of double quotes. On Windows, if the list contains commas, also enclose it in one set of double quotes.",
   "examples": [
-    "sfdx force:source:retrieve -p path/to/source",
-    "sfdx force:source:retrieve -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
-    "sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
-    "sfdx force:source:retrieve -m ApexClass",
-    "sfdx force:source:retrieve -m ApexClass:MyApexClass",
-    "sfdx force:source:retrieve -m \"CustomObject,ApexClass\"",
-    "sfdx force:source:retrieve -x path/to/package.xml",
-    "sfdx force:source:retrieve -n \"Package1, PackageName With Spaces, Package3\"",
-    "sfdx force:source:retrieve -n MyPackageName -p path/to/apex/classes",
-    "sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml"
+    "To retrieve the source files in a directory:\n   $ sfdx force:source:retrieve -p path/to/source",
+    "To retrieve a specific Apex class and the objects whose source is in a directory:\n   $ sfdx force:source:retrieve -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
+    "To retrieve source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes",
+    "To retrieve all Apex classes:\n   $ sfdx force:source:retrieve -m ApexClass",
+    "To retrieve a specific Apex class:\n   $ sfdx force:source:retrieve -m ApexClass:MyApexClass",
+    "To retrieve all custom objects and Apex classes:\n   $ sfdx force:source:retrieve -m \"CustomObject,ApexClass",
+    "To retrieve all Apex classes and two specific profiles (one of which has a space in its name):\n   $ sfdx force:source:retrieve -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
+    "To retrieve all metadata components listed in a manifest:\n   $ sfdx force:source:retrieve -x path/to/package.xml",
+    "To retrieve metadata from a package or multiple packages:\n   $ sfdx force:source:retrieve -n MyPackageName\n   $ sfdx force:source:retrieve -n \"Package1, PackageName With Spaces, Package3\"",
+    "To retrieve all metadata from a package and specific components that aren’t in the package, specify both -n | --packagenames and one other scoping parameter:\n   $ sfdx force:source:retrieve -n MyPackageName -p path/to/apex/classes\n   $ sfdx force:source:retrieve -n MyPackageName -m ApexClass:MyApexClass\n   $ sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml"
   ],
   "flags": {
     "sourcePath": "comma-separated list of source file paths to retrieve",

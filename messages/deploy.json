@@ -1,17 +1,17 @@
 {
-  "description": "deploy source to an org",
+  "description": "deploy source to an org Use this command to deploy source (metadata that’s in source format) to an org.\nTo take advantage of change tracking with scratch orgs, use \"sfdx force:source:push\".\nTo deploy metadata that’s in metadata format, use \"sfdx force:mdapi:deploy\".\n\nThe source you deploy overwrites the corresponding metadata in your org. This command does not attempt to merge your source with the versions in your org.\n\nTo run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI.\nTo check the status of the job, use force:source:deploy:report.\n\nIf the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of double quotes. On Windows, if the list contains commas, also enclose the entire list in one set of double quotes.\n",
   "examples": [
-    "$ sfdx force:source:deploy -p path/to/source",
-    "$ sfdx force:source:deploy -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
-    "$ sfdx force:source:deploy -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
-    "$ sfdx force:source:deploy -m ApexClass",
-    "$ sfdx force:source:deploy -m ApexClass:MyApexClass",
-    "$ sfdx force:source:deploy -m \"CustomObject,ApexClass\"",
-    "$ sfdx force:source:deploy -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
-    "$ sfdx force:source:deploy -x path/to/package.xml",
-    "$ sfdx force:source:deploy -m ApexClass -l RunLocalTests",
-    "$ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c",
-    "$ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH"
+    "To deploy the source files in a directory:\n\t $ sfdx force:source:deploy -p path/to/source",
+    "To deploy a specific Apex class and the objects whose source is in a directory: \n\t$ sfdx force:source:deploy -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
+    "To deploy source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:deploy -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
+    "To deploy all Apex classes:\n   $ sfdx force:source:deploy -m ApexClass",
+    "To deploy a specific Apex class:\n   $ sfdx force:source:deploy -m ApexClass:MyApexClass",
+    "To deploy all custom objects and Apex classes:\n   $ sfdx force:source:deploy -m \"CustomObject,ApexClass\"",
+    "To deploy all Apex classes and two specific profiles (one of which has a space in its name):\n   $ sfdx force:source:deploy -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
+    "To deploy all components listed in a manifest:\n   $ sfdx force:source:deploy -x path/to/package.xml",
+    "To run the tests that aren’t in any managed packages as part of a deployment:\n   $ sfdx force:source:deploy -m ApexClass -l RunLocalTests",
+    "To check whether a deployment would succeed (to prepare for Quick Deploy):\n   $ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c",
+    "To deploy an already validated deployment (Quick Deploy):\n    $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`,"
   ],
   "flags": {
     "sourcePath": "comma-separated list of source file paths to deploy",

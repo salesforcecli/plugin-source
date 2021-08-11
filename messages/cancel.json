@@ -1,9 +1,8 @@
 {
-  "description": "cancel a source deployment",
+  "description": "cancel a source deployment\n Use this command to cancel a specified asynchronous source deployment. You can also specify a wait time (in minutes) to check for updates to the canceled deploy status.\n\nTo run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI.\nTo check the status of the job, use force:source:deploy:report.",
   "examples": [
-    "$ sfdx force:source:deploy:cancel",
-    "$ sfdx force:source:deploy:cancel -w 2",
-    "$ sfdx force:source:deploy:cancel -i <jobid>"
+    "Deploy a directory of files to the org\n  $ sfdx force:source:deploy -d <directory>\nNow cancel this deployment and wait two minutes\n  $ sfdx force:source:deploy:cancel -w 2",
+    "If you have multiple deployments in progress and want to cancel a specific one, specify the job ID\n  $ sfdx force:source:deploy:cancel -i <jobid>\nCheck the status of the cancel job\n  $ sfdx force:source:deploy:report"
   ],
   "flags": {
     "wait": "wait time for command to finish in minutes",
