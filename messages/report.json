@@ -1,5 +1,5 @@
 {
-  "description": "check the status of a metadata deployment",
+  "description": "check the status of a metadata deployment \nSpecify the job ID for the deploy you want to check. You can also specify a wait time (minutes) to check for updates to the deploy status.",
   "examples": [
     "Deploy a directory of files to the org",
     " $ sfdx force:source:deploy -d <directory>",

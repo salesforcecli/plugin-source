@@ -1,5 +1,5 @@
 {
-  "description": "convert source into Metadata API format",
+  "description": "convert source into Metadata API format \n Converts source-formatted files into metadata that you can deploy using Metadata API. \nTo convert source-formatted files into the metadata format, so that you can deploy them using Metadata API,\nrun \"sfdx force:source:convert\". Then deploy the metadata using \"sfdx force:mdapi:deploy\".\n\nTo convert Metadata API–formatted files into the source format, run \"sfdx force:mdapi:convert\".\n\nTo specify a package name that includes spaces, enclose the name in single quotes.",
   "examples": [
     "$ sfdx force:source:convert -r path/to/source",
     "$ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'"
