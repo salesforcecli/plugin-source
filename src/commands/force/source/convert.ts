@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
@@ -28,7 +28,7 @@ export class Convert extends SourceCommand {
       description: messages.getMessage('flags.rootdir'),
     }),
     outputdir: flags.directory({
-      default: './',
+      default: `metadataPackage_${Date.now()}`,
       char: 'd',
       description: messages.getMessage('flags.outputdir'),
     }),
@@ -95,8 +95,7 @@ export class Convert extends SourceCommand {
     });
 
     const packageName = this.getFlag<string>('packagename');
-    const outputDirectory =
-      this.getFlag<string>('outputdir') === './' ? `metadataPackage_${Date.now()}` : this.getFlag<string>('outputdir');
+    const outputDirectory = resolve(this.getFlag<string>('outputdir'));
     const converter = new MetadataConverter();
     this.convertResult = await converter.convert(this.componentSet, 'metadata', {
       type: 'directory',
@@ -107,16 +106,31 @@ export class Convert extends SourceCommand {
 
     if (packageName) {
       // SDR will build an output path like /output/directory/packageName/package.xml
-      // this was breaking from toolbelt, so to revert it we "rename" the directory as a 2 step process
-      // step 1: move /output/directory/packageName/package.xml to the temp dir
-      // step 2: move it back to the output dir named as the output dir
-      // renameSync will throw an error when trying to move to a populated directory - so this has to be in 2 steps
-      // we can't renameSync(this.convertResult.packagePath, outputDirectory)
-      const tempDir = join(os.tmpdir(), `metadataPackage_${Date.now()}`);
-      fs.renameSync(this.convertResult.packagePath, tempDir);
-      fs.renameSync(tempDir, outputDirectory);
+      // this was breaking from toolbelt, so to revert it we copy the directory up a level and delete the original
+      this.copyDir(this.convertResult.packagePath, outputDirectory);
+      try {
+        fs.rmSync(this.convertResult.packagePath, { recursive: true });
+      } catch (e) {
+        // rmdirSync is being deprecated and emits a warning
+        // but rmSync is introduced in node 14 so fall back to rmdirSync
+        fs.rmdirSync(this.convertResult.packagePath, { recursive: true });
+      }
+
       this.convertResult.packagePath = outputDirectory;
     }
+  }
+
+  // TODO: move into fs in sfdx-core
+  protected copyDir(src: string, dest: string): void {
+    fs.mkdirSync(dest, { recursive: true });
+    const entries = fs.readdirSync(src, { withFileTypes: true });
+
+    entries.map((entry) => {
+      const srcPath = join(src, entry.name);
+      const destPath = join(dest, entry.name);
+
+      return entry.isDirectory() ? this.copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
+    });
   }
 
   protected resolveSuccess(): void {
