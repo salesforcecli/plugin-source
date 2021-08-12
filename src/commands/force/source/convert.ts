@@ -6,8 +6,9 @@
  */
 
 import * as os from 'os';
+import { join, resolve } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { fs, Messages } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
 import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
@@ -27,7 +28,7 @@ export class Convert extends SourceCommand {
       description: messages.getMessage('flags.rootdir'),
     }),
     outputdir: flags.directory({
-      default: './',
+      default: `metadataPackage_${Date.now()}`,
       char: 'd',
       description: messages.getMessage('flags.outputdir'),
     }),
@@ -93,12 +94,42 @@ export class Convert extends SourceCommand {
       },
     });
 
+    const packageName = this.getFlag<string>('packagename');
+    const outputDirectory = resolve(this.getFlag<string>('outputdir'));
     const converter = new MetadataConverter();
     this.convertResult = await converter.convert(this.componentSet, 'metadata', {
       type: 'directory',
-      outputDirectory: this.getFlag<string>('outputdir'),
-      packageName: this.getFlag<string>('packagename'),
+      outputDirectory,
+      packageName,
       genUniqueDir: false,
+    });
+
+    if (packageName) {
+      // SDR will build an output path like /output/directory/packageName/package.xml
+      // this was breaking from toolbelt, so to revert it we copy the directory up a level and delete the original
+      this.copyDir(this.convertResult.packagePath, outputDirectory);
+      try {
+        fs.rmSync(this.convertResult.packagePath, { recursive: true });
+      } catch (e) {
+        // rmdirSync is being deprecated and emits a warning
+        // but rmSync is introduced in node 14 so fall back to rmdirSync
+        fs.rmdirSync(this.convertResult.packagePath, { recursive: true });
+      }
+
+      this.convertResult.packagePath = outputDirectory;
+    }
+  }
+
+  // TODO: move into fs in sfdx-core
+  protected copyDir(src: string, dest: string): void {
+    fs.mkdirSync(dest, { recursive: true });
+    const entries = fs.readdirSync(src, { withFileTypes: true });
+
+    entries.map((entry) => {
+      const srcPath = join(src, entry.name);
+      const destPath = join(dest, entry.name);
+
+      return entry.isDirectory() ? this.copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
     });
   }
 
