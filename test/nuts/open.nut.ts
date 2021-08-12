@@ -24,7 +24,7 @@ describe('force:source:open', () => {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
       setupCommands: [
-        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10',
+        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
         'sfdx force:source:deploy -p force-app',
       ],
     });

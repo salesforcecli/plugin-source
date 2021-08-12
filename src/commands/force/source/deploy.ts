@@ -6,7 +6,7 @@
  */
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { AsyncResult, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
@@ -24,7 +24,6 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 // One of these flags must be specified for a valid deploy.
-const requiredFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
 
 type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
@@ -100,6 +99,7 @@ export class Deploy extends DeployCommand {
       exclusive: ['metadata', 'sourcepath'],
     }),
   };
+  protected xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private isAsync = false;
@@ -112,11 +112,6 @@ export class Deploy extends DeployCommand {
   });
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
-    // verify that the user defined one of: manifest, metadata, sourcepath, validateddeployrequestid
-    if (!Object.keys(this.flags).some((flag) => requiredFlags.includes(flag))) {
-      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [requiredFlags.join(', ')]);
-    }
-
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();
@@ -127,6 +122,9 @@ export class Deploy extends DeployCommand {
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
+    // verify that the user defined one of: manifest, metadata, sourcepath, validateddeployrequestid
+    this.validateFlags();
+
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
