@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as shelljs from 'shelljs';
 import { asString } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { fs } from '@salesforce/core';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -45,6 +46,27 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         // Generate a package.xml by converting via sourcepath
         await testkit.convert({ args: `--sourcepath ${testCase.toConvert} --outputdir out1` });
         const packageXml = path.join('out1', 'package.xml');
+
+        await testkit.convert({ args: `--manifest ${packageXml} --outputdir out2` });
+        await testkit.expect.directoryToHaveSomeFiles('out2');
+        await testkit.expect.fileToExist(path.join('out2', 'package.xml'));
+        await testkit.expect.filesToBeConverted('out2', testCase.toVerify);
+      });
+
+      afterEach(() => {
+        if (convertDir) {
+          shelljs.rm('-rf', convertDir);
+        }
+      });
+    }
+
+    for (const testCase of REPO.convert.manifest) {
+      it(`should convert ${testCase.toConvert} to default output dir`, async () => {
+        // Generate a package.xml by converting via sourcepath
+        await testkit.convert({ args: `--sourcepath ${testCase.toConvert}` });
+        // should be like metadataPackage_1628780058561
+        convertDir = fs.readdirSync(testkit.projectDir).find((files) => files.startsWith('metadataPackage'));
+        const packageXml = path.join(convertDir, 'package.xml');
 
         await testkit.convert({ args: `--manifest ${packageXml} --outputdir out2` });
         await testkit.expect.directoryToHaveSomeFiles('out2');
