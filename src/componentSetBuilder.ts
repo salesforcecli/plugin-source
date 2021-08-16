@@ -7,7 +7,7 @@
 
 import * as path from 'path';
 import { ComponentSet, RegistryAccess } from '@salesforce/source-deploy-retrieve';
-import { ComponentLike } from '@salesforce/source-deploy-retrieve/lib/src/resolve/types';
+import { ComponentLike } from '@salesforce/source-deploy-retrieve';
 import { fs, SfdxError, Logger } from '@salesforce/core';
 
 export type ManifestOption = {

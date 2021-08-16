@@ -6,8 +6,8 @@
  */
 
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
-import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
 import { toArray } from '../../../src/formatters/resultFormatter';
 
 const packageFileProp = {

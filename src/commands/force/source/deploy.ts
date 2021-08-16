@@ -11,7 +11,7 @@ import { AsyncResult, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
 import { env, once } from '@salesforce/kit';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployResultFormatter, DeployCommandResult } from '../../../formatters/deployResultFormatter';

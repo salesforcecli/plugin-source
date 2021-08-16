@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployCancelCommandResult,

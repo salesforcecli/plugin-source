@@ -7,7 +7,7 @@
 
 import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
-import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';

@@ -10,7 +10,7 @@ import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { getBoolean, getNumber } from '@salesforce/ts-types';
-import { Failures, Successes } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { Failures, Successes } from '@salesforce/source-deploy-retrieve';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;

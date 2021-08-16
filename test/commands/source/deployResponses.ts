@@ -6,11 +6,7 @@
  */
 
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
-import {
-  DeployMessage,
-  MetadataApiDeployStatus,
-  RequestStatus,
-} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { DeployMessage, MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { cloneJson } from '@salesforce/kit';
 import { toArray } from '../../../src/formatters/resultFormatter';
 
