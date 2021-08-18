@@ -8,8 +8,7 @@ import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { getNumber } from '@salesforce/ts-types';
-import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { ProgressFormatter } from './progressFormatter';
 export class DeployProgressStatusFormatter extends ProgressFormatter {

@@ -11,8 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   RetrieveResultFormatter,
