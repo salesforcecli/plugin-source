@@ -16,6 +16,7 @@ const apexManifest =
   '<?xml version="1.0" encoding="UTF-8"?>\n' +
   '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n' +
   '    <types>\n' +
+  '        <members>*</members>\n' +
   '        <members>GeocodingService</members>\n' +
   '        <members>GeocodingServiceTest</members>\n' +
   '        <members>PagedResult</members>\n' +
