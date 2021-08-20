@@ -843,10 +843,10 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.1.0.tgz#b28b8e1c9c810884315c564751e8854c4e1e16d3"
-  integrity sha512-dLdCNs8KZl2AlI5nxzqjPFTt/RiOQqlbIFsmsbnY/i0Vk15/Fqyxu1cBU0stV3+NxHYV/ijzz2jRVq87G7+jRg==
+"@salesforce/source-deploy-retrieve@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.1.1.tgz#8c5b23cec488dcd4aea5e15df49e014bf00a7929"
+  integrity sha512-tfuPtmdtWU/1HwuB+ZM6gvCXUBZh+XOiBLPz98KU3khKi81CRnJyXQCL+tiBZpIwzGaQV1emOIZD2WsjTEY9oA==
   dependencies:
     "@salesforce/core" "2.25.1"
     "@salesforce/kit" "^1.5.0"
