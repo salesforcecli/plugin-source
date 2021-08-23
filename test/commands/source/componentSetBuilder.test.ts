@@ -58,8 +58,8 @@ describe('ComponentSetBuilder', () => {
         metadata: undefined,
       });
 
-      const expectedPath = path.resolve(sourcepath[0]);
-      expect(fromSourceStub.calledOnceWith(expectedPath)).to.equal(true);
+      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])] };
+      expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });
@@ -78,9 +78,8 @@ describe('ComponentSetBuilder', () => {
       });
       const expectedPath1 = path.resolve(sourcepath[0]);
       const expectedPath2 = path.resolve(sourcepath[1]);
-      expect(fromSourceStub.calledTwice).to.equal(true);
-      expect(fromSourceStub.firstCall.args[0]).to.equal(expectedPath1);
-      expect(fromSourceStub.secondCall.args[0]).to.equal(expectedPath2);
+      const expectedArg = { fsPaths: [expectedPath1, expectedPath2] };
+      expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(customObjectComponent)).to.equal(true);
@@ -98,8 +97,8 @@ describe('ComponentSetBuilder', () => {
       };
 
       const compSet = await ComponentSetBuilder.build(options);
-      const expectedPath = path.resolve(sourcepath[0]);
-      expect(fromSourceStub.calledOnceWith(expectedPath)).to.equal(true);
+      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])] };
+      expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(0);
       expect(compSet.apiVersion).to.equal(options.apiversion);
     });
@@ -116,8 +115,8 @@ describe('ComponentSetBuilder', () => {
       };
 
       const compSet = await ComponentSetBuilder.build(options);
-      const expectedPath = path.resolve(sourcepath[0]);
-      expect(fromSourceStub.calledOnceWith(expectedPath)).to.equal(true);
+      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])] };
+      expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(0);
       expect(compSet.sourceApiVersion).to.equal(options.sourceapiversion);
     });
@@ -173,8 +172,9 @@ describe('ComponentSetBuilder', () => {
       filter.add({ type: 'ApexClass', fullName: '*' });
       expect(fromSourceArgs).to.have.property('include');
       expect(fromSourceArgs.include.getSourceComponents()).to.deep.equal(filter.getSourceComponents());
-      expect(compSet.size).to.equal(1);
+      expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
+      expect(compSet.has({ type: 'ApexClass', fullName: '*' })).to.equal(true);
     });
 
     it('should throw an error when it cant resolve a metadata type (Metadata)', async () => {
@@ -242,9 +242,10 @@ describe('ComponentSetBuilder', () => {
       filter.add({ type: 'CustomObject', fullName: '*' });
       expect(fromSourceArgs).to.have.property('include');
       expect(fromSourceArgs.include.getSourceComponents()).to.deep.equal(filter.getSourceComponents());
-      expect(compSet.size).to.equal(2);
+      expect(compSet.size).to.equal(3);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(customObjectComponent)).to.equal(true);
+      expect(compSet.has({ type: 'CustomObject', fullName: '*' })).to.equal(true);
     });
 
     it('should create ComponentSet from metadata and multiple package directories', async () => {
@@ -270,9 +271,10 @@ describe('ComponentSetBuilder', () => {
       filter.add({ type: 'ApexClass', fullName: '*' });
       expect(fromSourceArgs).to.have.property('include');
       expect(fromSourceArgs.include.getSourceComponents()).to.deep.equal(filter.getSourceComponents());
-      expect(compSet.size).to.equal(2);
+      expect(compSet.size).to.equal(3);
       expect(compSet.has(apexClassComponent)).to.equal(true);
       expect(compSet.has(apexClassComponent2)).to.equal(true);
+      expect(compSet.has({ type: 'ApexClass', fullName: '*' })).to.equal(true);
     });
 
     it('should create ComponentSet from manifest', async () => {
