@@ -177,6 +177,31 @@ describe('ComponentSetBuilder', () => {
       expect(compSet.has({ type: 'ApexClass', fullName: '*' })).to.equal(true);
     });
 
+    it('should create ComponentSet from metadata with spaces between : (ApexClass: MyApexClass)', async () => {
+      componentSet.add(apexClassComponent);
+      fromSourceStub.returns(componentSet);
+      const packageDir1 = path.resolve('force-app');
+
+      const compSet = await ComponentSetBuilder.build({
+        sourcepath: undefined,
+        manifest: undefined,
+        metadata: {
+          metadataEntries: ['ApexClass: MyApexClass'],
+          directoryPaths: [packageDir1],
+        },
+      });
+      expect(fromSourceStub.calledOnce).to.equal(true);
+      const fromSourceArgs = fromSourceStub.firstCall.args[0] as FromSourceOptions;
+      expect(fromSourceArgs).to.have.deep.property('fsPaths', [packageDir1]);
+      const filter = new ComponentSet();
+      filter.add({ type: 'ApexClass', fullName: 'MyApexClass' });
+      expect(fromSourceArgs).to.have.property('include');
+      expect(fromSourceArgs.include.getSourceComponents()).to.deep.equal(filter.getSourceComponents());
+      expect(compSet.size).to.equal(2);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+      expect(compSet.has({ type: 'ApexClass', fullName: 'MyApexClass' })).to.equal(true);
+    });
+
     it('should throw an error when it cant resolve a metadata type (Metadata)', async () => {
       const packageDir1 = path.resolve('force-app');
 

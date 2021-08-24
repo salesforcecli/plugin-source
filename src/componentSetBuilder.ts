@@ -82,10 +82,10 @@ export class ComponentSetBuilder {
         metadata.metadataEntries.forEach((rawEntry) => {
           const splitEntry = rawEntry.split(':');
           // The registry will throw if it doesn't know what this type is.
-          registry.getTypeByName(splitEntry[0]);
+          registry.getTypeByName(splitEntry[0].trim());
           const entry = {
             type: splitEntry[0],
-            fullName: splitEntry.length === 1 ? '*' : splitEntry[1],
+            fullName: splitEntry.length === 1 ? '*' : splitEntry[1].trim(),
           };
           // Add to the filtered ComponentSet for resolved source paths,
           // and the unfiltered ComponentSet to build the correct manifest.
