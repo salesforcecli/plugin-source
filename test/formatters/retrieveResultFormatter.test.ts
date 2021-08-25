@@ -5,11 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join } from 'path';
+import { join, relative } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { cloneJson } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getRetrieveResult } from '../commands/source/retrieveResponses';
@@ -30,6 +31,14 @@ describe('RetrieveResultFormatter', () => {
   let logStub: sinon.SinonStub;
   let styledHeaderStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;
+
+  const resolveExpectedPaths = (fileResponses: FileResponse[]): void => {
+    fileResponses.forEach((file) => {
+      if (file.filePath) {
+        file.filePath = relative(process.cwd(), file.filePath);
+      }
+    });
+  };
 
   beforeEach(() => {
     logStub = sandbox.stub();
@@ -115,6 +124,7 @@ describe('RetrieveResultFormatter', () => {
       expect(tableStub.called).to.equal(true);
       expect(styledHeaderStub.firstCall.args[0]).to.contain('Retrieved Source');
       const fileResponses = retrieveResultSuccess.getFileResponses();
+      resolveExpectedPaths(fileResponses);
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 

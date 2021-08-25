@@ -5,10 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter';
@@ -27,6 +29,14 @@ describe('DeployResultFormatter', () => {
   let logStub: sinon.SinonStub;
   let styledHeaderStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;
+
+  const resolveExpectedPaths = (fileResponses: FileResponse[]): void => {
+    fileResponses.forEach((file) => {
+      if (file.filePath) {
+        file.filePath = path.relative(process.cwd(), file.filePath);
+      }
+    });
+  };
 
   beforeEach(() => {
     logStub = sandbox.stub();
@@ -76,6 +86,7 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.called).to.equal(true);
       expect(styledHeaderStub.firstCall.args[0]).to.contain('Deployed Source');
       const fileResponses = deployResultSuccess.getFileResponses();
+      resolveExpectedPaths(fileResponses);
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
@@ -87,6 +98,7 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.called).to.equal(true);
       expect(styledHeaderStub.firstCall.args[0]).to.contain('Component Failures [1]');
       const fileResponses = deployResultFailure.getFileResponses();
+      resolveExpectedPaths(fileResponses);
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
