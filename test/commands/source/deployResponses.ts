@@ -11,7 +11,6 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import {} from '@salesforce/source-deploy-retrieve';
 import { cloneJson } from '@salesforce/kit';
 import { toArray } from '../../../src/formatters/resultFormatter';
 
