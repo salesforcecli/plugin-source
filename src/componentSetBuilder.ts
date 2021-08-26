@@ -80,7 +80,7 @@ export class ComponentSetBuilder {
 
         // Build a Set of metadata entries
         metadata.metadataEntries.forEach((rawEntry) => {
-          const splitEntry = rawEntry.split(':');
+          const splitEntry = rawEntry.split(':').map((entry) => entry.trim());
           // The registry will throw if it doesn't know what this type is.
           registry.getTypeByName(splitEntry[0]);
           const entry = {
