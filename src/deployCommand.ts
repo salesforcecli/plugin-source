@@ -5,9 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { ComponentSet, DeployResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
-import { MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';

@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import {
+  DeployResult,
   DeployMessage,
   MetadataApiDeployStatus,
   RequestStatus,
-} from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+} from '@salesforce/source-deploy-retrieve';
 import { cloneJson } from '@salesforce/kit';
 import { toArray } from '../../../src/formatters/resultFormatter';
 
