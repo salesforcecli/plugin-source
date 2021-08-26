@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.11](https://github.com/salesforcecli/plugin-source/compare/v1.0.10...v1.0.11) (2021-08-26)
+
+
+### Bug Fixes
+
+* trim metadata type, and name to prevent unnecessary errors ([#179](https://github.com/salesforcecli/plugin-source/issues/179)) ([2011caa](https://github.com/salesforcecli/plugin-source/commit/2011caae414c9c4ac6e51e9d3a1da50513d3dc77))
+
 ### [1.0.10](https://github.com/salesforcecli/plugin-source/compare/v1.0.9...v1.0.10) (2021-08-20)
 
 
