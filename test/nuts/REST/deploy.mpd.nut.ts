@@ -7,6 +7,10 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
+import { expect } from 'chai';
+import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
 
 const EXECUTABLE = path.join(process.cwd(), 'bin', 'run');
 
@@ -15,7 +19,11 @@ const repo = {
   gitUrl: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
   deploy: {
     sourcepath: [
-      { toDeploy: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
+      {
+        toDeploy: '"force-app, my-app, foo-bar"',
+        toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
+        toIgnore: [],
+      },
       {
         toDeploy:
           'force-app/main/default/labels/CustomLabels.labels-meta.xml,my-app/labels/CustomLabels.labels-meta.xml',
@@ -23,24 +31,35 @@ const repo = {
           'force-app/main/default/labels/CustomLabels.labels-meta.xml',
           'my-app/labels/CustomLabels.labels-meta.xml',
         ],
+        toIgnore: [],
       },
       {
         toDeploy: 'force-app/main/default/labels/CustomLabels.labels-meta.xml',
         toVerify: ['force-app/main/default/labels/CustomLabels.labels-meta.xml'],
+        toIgnore: [],
       },
     ],
     metadata: [
-      { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'] },
+      {
+        toDeploy: 'CustomObject',
+        toVerify: ['force-app/main/default/objects/*__c/**/*', 'my-app/objects/*__c/**/*'],
+        toIgnore: [],
+      },
       {
         toDeploy: 'CustomLabels',
         toVerify: [
           'force-app/main/default/labels/CustomLabels.labels-meta.xml',
           'my-app/labels/CustomLabels.labels-meta.xml',
         ],
+        toIgnore: [],
       },
     ],
     manifest: [
-      { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
+      {
+        toDeploy: 'force-app',
+        toVerify: ['force-app/**/*', 'force-app/main/default/labels/CustomLabels.labels-meta.xml'],
+        toIgnore: [],
+      },
       // { toDeploy: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] }, SDR BUG
     ],
   },
@@ -73,8 +92,10 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
     for (const sourcepath of repo.deploy.sourcepath) {
       const toDeploy = path.normalize(sourcepath.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
-        await testkit.expect.filesToBeChanged(sourcepath.toVerify);
+        const res = await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(sourcepath.toVerify, sourcepath.toIgnore, fileResponse);
       });
     }
   });
@@ -83,8 +104,10 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
     for (const metadata of repo.deploy.metadata) {
       const toDeploy = path.normalize(metadata.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.deploy({ args: `--metadata ${toDeploy}` });
-        await testkit.expect.filesToBeChanged(metadata.toVerify);
+        const res = await testkit.deploy({ args: `--metadata ${toDeploy}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(metadata.toVerify, metadata.toIgnore, fileResponse);
       });
     }
   });
@@ -96,8 +119,10 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
         await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
 
-        await testkit.deploy({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify);
+        const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }
   });
@@ -123,24 +148,26 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
     await testkit.expect.apexTestsToBeRun();
   });
 
-  // TODO: once SDR v3 with async polling - update validateddeployrequestid polling
-  // describe('--validateddeployrequestid', () => {
-  //   it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
-  //     // deploy all metadata to the org so that we can run tests
-  //     await testkit.deploy({ args: '--sourcepath force-app' });
-  //     // running tests requires a special permission in the 'dreamhouse' permission set
-  //     await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
-  //
-  //     const checkOnly = await testkit.deploy({
-  //       args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors',
-  //     });
-  //     testkit.expect.toHaveProperty(checkOnly.result, 'id');
-  //
-  //     const quickDeploy = await testkit.deploy({
-  //       args: `--validateddeployrequestid ${checkOnly.result.id}`,
-  //     });
-  //     testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
-  //     await testkit.expect.filesToBeChanged(testkit.packageGlobs);
-  //   });
-  // });
+  describe('--validateddeployrequestid', () => {
+    it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
+      // deploy all metadata to the org so that we can run tests
+      await testkit.deploy({ args: '--sourcepath force-app' });
+      // running tests requires a special permission in the 'dreamhouse' permission set
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+
+      const classes = path.join('foo-bar', 'app', 'classes');
+
+      const checkOnly = (await testkit.deploy({
+        args: `--sourcepath ${classes} --testlevel RunLocalTests --checkonly --ignoreerrors`,
+      })) as { id: string; result: DeployCommandResult };
+
+      const quickDeploy = (await testkit.deploy({
+        args: `--validateddeployrequestid ${checkOnly.result.id}`,
+      })) as { id: string; result: DeployCommandResult };
+      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+
+      expect(quickDeploy.result.status).to.equal('Succeeded');
+      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
+    });
+  });
 });

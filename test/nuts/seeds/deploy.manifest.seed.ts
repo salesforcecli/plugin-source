@@ -7,6 +7,8 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -44,8 +46,23 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         await testkit.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
 
-        await testkit.deploy({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify);
+        const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
+        console.log('res', res);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
+        console.log('res dep source', res.result.deployedSource);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
+        console.log('res details comp succ', res.result.details.componentSuccesses);
+
+        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }
 

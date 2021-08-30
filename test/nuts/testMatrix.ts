@@ -39,11 +39,14 @@ const testRepos: RepoConfig[] = [
         { toDeploy: '"force-app, my-app, foo-bar"', toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'] },
         { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/**/*'] },
         // { toDeploy: 'my-app/objects', toVerify: ['my-app/objects/**/*'] }, //redundant to above
-        { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
+        { toDeploy: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls*'] },
         // { toDeploy: 'foo-bar/app/lwc', toVerify: ['foo-bar/app/lwc/**/*'] },
       ],
       metadata: [
-        { toDeploy: 'CustomObject', toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'] },
+        {
+          toDeploy: 'CustomObject',
+          toVerify: ['force-app/main/default/objects/**/*', 'my-app/objects/**/*'],
+        },
         {
           toDeploy: 'CustomLabels',
           toVerify: [
@@ -75,7 +78,7 @@ const testRepos: RepoConfig[] = [
         //   toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
         //   toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
         // },
-        { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/*'] },
+        { toRetrieve: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/*__c/**/*'] },
         // { toRetrieve: 'my-app/objects', toVerify: ['my-app/objects/*__c/fields/*'] },
         // { toRetrieve: 'my-app/apex/my.cls-meta.xml', toVerify: ['my-app/apex/my.cls-meta.xml'] },
         {
@@ -87,7 +90,7 @@ const testRepos: RepoConfig[] = [
       metadata: [
         {
           toRetrieve: 'CustomObject',
-          toVerify: ['force-app/main/default/objects/*__c/*', 'my-app/objects/*__c/*'],
+          toVerify: ['force-app/main/default/objects/*__c/**/*', 'my-app/objects/*__c/**/*'],
         },
         {
           toRetrieve: 'CustomLabels',
@@ -147,11 +150,11 @@ const testRepos: RepoConfig[] = [
         { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
           toDeploy: 'CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/objects/Broker__c/*'],
+          toVerify: ['force-app/main/default/objects/Broker__c/**/*'],
         },
         {
           toDeploy: 'ApexClass,CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/**/*'],
         },
         // {
         //   toDeploy: 'ApexClass:GeocodingService,CustomObject',
@@ -174,13 +177,13 @@ const testRepos: RepoConfig[] = [
         },
         {
           toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
         },
         {
           toDeploy:
             '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
           toVerify: [
-            'force-app/main/default/objects/*',
+            'force-app/main/default/objects/**/*',
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
         },
@@ -197,7 +200,7 @@ const testRepos: RepoConfig[] = [
         { toRetrieve: 'force-app/main/default/classes', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*__c/*'],
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*__c/**/*'],
         },
         // {
         //   toRetrieve: '"force-app/main/default/classes, force-app/main/default/permissionsets"',
@@ -212,11 +215,11 @@ const testRepos: RepoConfig[] = [
         { toRetrieve: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
         {
           toRetrieve: 'CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/objects/Broker__c/*'],
+          toVerify: ['force-app/main/default/objects/Broker__c/**/*'],
         },
         {
           toRetrieve: 'ApexClass,CustomObject:Broker__c',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/**/*'],
         },
         // {
         //   toRetrieve: 'ApexClass:GeocodingService,CustomObject',
@@ -226,7 +229,7 @@ const testRepos: RepoConfig[] = [
           toRetrieve: '"ApexClass:GeocodingService, CustomObject, PermissionSet"',
           toVerify: [
             'force-app/main/default/classes/GeocodingService.cls',
-            'force-app/main/default/objects/*__c/*',
+            'force-app/main/default/objects/*__c/**/*',
             'force-app/main/default/permissionsets/*',
           ],
         },
@@ -239,13 +242,13 @@ const testRepos: RepoConfig[] = [
         },
         {
           toRetrieve: 'force-app/main/default/classes,force-app/main/default/objects',
-          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
+          toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
         },
         {
           toRetrieve:
             '"force-app/main/default/objects, force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml"',
           toVerify: [
-            'force-app/main/default/objects/*',
+            'force-app/main/default/objects/**/*',
             'force-app/main/default/permissionsets/dreamhouse.permissionset-meta.xml',
           ],
         },

@@ -46,7 +46,7 @@ context('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
         await testkit.modifyLocalGlobs(testCase.toVerify);
         await testkit.retrieve({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
 

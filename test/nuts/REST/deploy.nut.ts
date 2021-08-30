@@ -7,7 +7,10 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
-
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
+import { expect } from 'chai';
+import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
 const EXECUTABLE = path.join(process.cwd(), 'bin', 'run');
 
 const repo = {
@@ -15,23 +18,26 @@ const repo = {
   gitUrl: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
   deploy: {
     sourcepath: [
-      { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/**/*'] },
+      { toDeploy: 'force-app/main/default/objects', toVerify: ['force-app/main/default/objects/**/*'], toIgnore: [] },
       {
         toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
         toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
+        toIgnore: [],
       },
     ],
     metadata: [
-      { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'] },
+      { toDeploy: 'ApexClass', toVerify: ['force-app/main/default/classes/*'], toIgnore: [] },
       {
         toDeploy: 'ApexClass,CustomObject:Broker__c',
-        toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/*'],
+        toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/**/*'],
+        toIgnore: [],
       },
     ],
     manifest: [
       {
         toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
-        toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/*'],
+        toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
+        toIgnore: [],
       },
     ],
   },
@@ -64,8 +70,10 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
     for (const sourcepath of repo.deploy.sourcepath) {
       const toDeploy = path.normalize(sourcepath.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
-        await testkit.expect.filesToBeChanged(sourcepath.toVerify);
+        const res = await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(sourcepath.toVerify, sourcepath.toIgnore, fileResponse);
       });
     }
   });
@@ -74,8 +82,10 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
     for (const metadata of repo.deploy.metadata) {
       const toDeploy = path.normalize(metadata.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.deploy({ args: `--metadata ${toDeploy}` });
-        await testkit.expect.filesToBeChanged(metadata.toVerify);
+        const res = await testkit.deploy({ args: `--metadata ${toDeploy}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(metadata.toVerify, metadata.toIgnore, fileResponse);
       });
     }
   });
@@ -87,8 +97,10 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
         await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
 
-        await testkit.deploy({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify);
+        const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }
   });
@@ -103,24 +115,24 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
     });
   });
 
-  // TODO: once SDR v3 with async polling - update validateddeployrequestid polling
-  // describe('--validateddeployrequestid', () => {
-  //   it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
-  //     // deploy all metadata to the org so that we can run tests
-  //     await testkit.deploy({ args: '--sourcepath force-app' });
-  //     // running tests requires a special permission in the 'dreamhouse' permission set
-  //     await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
-  //
-  //     const checkOnly = await testkit.deploy({
-  //       args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors',
-  //     });
-  //     testkit.expect.toHaveProperty(checkOnly.result, 'id');
-  //
-  //     const quickDeploy = await testkit.deploy({
-  //       args: `--validateddeployrequestid ${checkOnly.result.id}`,
-  //     });
-  //     testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
-  //     await testkit.expect.filesToBeChanged(testkit.packageGlobs);
-  //   });
-  // });
+  describe('--validateddeployrequestid', () => {
+    it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
+      // deploy all metadata to the org so that we can run tests
+      await testkit.deploy({ args: '--sourcepath force-app' });
+      // running tests requires a special permission in the 'dreamhouse' permission set
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+
+      const checkOnly = (await testkit.deploy({
+        args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors',
+      })) as { id: string; result: DeployCommandResult };
+
+      const quickDeploy = (await testkit.deploy({
+        args: `--validateddeployrequestid ${checkOnly.result.id}`,
+      })) as { id: string; result: DeployCommandResult };
+      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+
+      expect(quickDeploy.result.status).to.equal('Succeeded');
+      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
+    });
+  });
 });

@@ -7,6 +7,8 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -38,8 +40,10 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
     for (const testCase of REPO.deploy.sourcepath) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        const res = await testkit.deploy({ args: `--sourcepath ${toDeploy}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }
 

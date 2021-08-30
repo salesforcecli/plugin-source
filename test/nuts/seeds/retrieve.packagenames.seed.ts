@@ -14,8 +14,8 @@ const EXECUTABLE = '%EXECUTABLE%';
 
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const ESCAPEROOM = { id: '04t0P000000JFs1QAG', name: 'DFXP Escape Room' };
-
-context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
+// todo unskip this
+context.skip('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {

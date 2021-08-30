@@ -42,7 +42,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () 
       it(`should retrieve ${toRetrieve}`, async () => {
         await testkit.modifyLocalGlobs(testCase.toVerify);
         await testkit.retrieve({ args: `--sourcepath ${toRetrieve}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
       });
     }
 

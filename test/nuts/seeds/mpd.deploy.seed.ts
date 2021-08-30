@@ -38,31 +38,31 @@ context('MPD Deploy NUTs [exec: %EXECUTABLE%]', () => {
     describe('--sourcepath', () => {
       it('should deploy all CustomLabels from a single package', async () => {
         await testkit.deploy({ args: `--sourcepath ${path.join('force-app', 'main', 'default', 'labels')}` });
-        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToBeDeployed([forceAppLabels]);
       });
 
       it('should deploy all CustomLabels from multiple packages', async () => {
         await testkit.deploy({
           args: `--sourcepath ${path.join('force-app', 'main', 'default', 'labels')},${path.join('my-app', 'labels')}`,
         });
-        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
       });
     });
 
     describe('--metadata', () => {
       it('should deploy all CustomLabels', async () => {
         await testkit.deploy({ args: '--metadata CustomLabels' });
-        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToBeDeployed([forceAppLabels]);
       });
 
       it('should deploy individual CustomLabel', async () => {
         await testkit.deploy({ args: '--metadata CustomLabel:force_app_Label_1' });
-        await testkit.expect.filesToBeChanged([forceAppLabels]);
+        await testkit.expect.filesToBeDeployed([forceAppLabels]);
       });
 
       it('should deploy multiple individual CustomLabel', async () => {
         await testkit.deploy({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
-        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
       });
     });
   });
