@@ -49,19 +49,6 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
         const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
-        console.log('res', res);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
-        console.log('res dep source', res.result.deployedSource);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line no-console,@typescript-eslint/no-unsafe-member-access
-        console.log('res details comp succ', res.result.details.componentSuccesses);
-
         await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }

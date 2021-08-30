@@ -42,7 +42,7 @@ const repo = {
     metadata: [
       {
         toDeploy: 'CustomObject',
-        toVerify: ['force-app/main/default/objects/*__c/**/*', 'my-app/objects/*__c/**/*'],
+        toVerify: ['force-app/main/default/objects/**/*', 'my-app/objects/**/*'],
         toIgnore: [],
       },
       {
@@ -57,7 +57,12 @@ const repo = {
     manifest: [
       {
         toDeploy: 'force-app',
-        toVerify: ['force-app/**/*', 'force-app/main/default/labels/CustomLabels.labels-meta.xml'],
+        toVerify: [
+          'force-app/**/*',
+          'force-app/main/default/labels/CustomLabels.labels-meta.xml',
+          'my-app/labels/CustomLabels.labels-meta.xml',
+          'my-app/objects/MyObj__c/fields/MyField__c.field-meta.xml',
+        ],
         toIgnore: [],
       },
       // { toDeploy: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] }, SDR BUG
@@ -100,7 +105,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
     }
   });
 
-  describe('--sourcepath ', () => {
+  describe('--metadata ', () => {
     for (const metadata of repo.deploy.metadata) {
       const toDeploy = path.normalize(metadata.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
@@ -113,8 +118,8 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
   });
 
   describe('--manifest flag', () => {
-    for (const testCase of repo.deploy.manifest) {
-      const toDeploy = path.normalize(testCase.toDeploy);
+    for (const manifest of repo.deploy.manifest) {
+      const toDeploy = path.normalize(manifest.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
         await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
@@ -122,7 +127,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
         const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
 
-        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
+        await testkit.expect.filesToBeDeployedViaResult(manifest.toVerify, manifest.toIgnore, fileResponse);
       });
     }
   });

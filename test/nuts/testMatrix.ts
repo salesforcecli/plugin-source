@@ -56,7 +56,14 @@ const testRepos: RepoConfig[] = [
         },
       ],
       manifest: [
-        { toDeploy: 'force-app', toVerify: ['force-app/**/*'] },
+        {
+          toDeploy: 'force-app',
+          toVerify: [
+            'force-app/**/*',
+            'my-app/labels/CustomLabels.labels-meta.xml',
+            'my-app/objects/MyObj__c/fields/MyField__c.field-meta.xml',
+          ],
+        },
         // the following are redundant
         // { toDeploy: 'my-app', toVerify: ['my-app/**/*'] },
         // { toDeploy: 'foo-bar', toVerify: ['foo-bar/**/*'] },
