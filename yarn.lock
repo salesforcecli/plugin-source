@@ -844,9 +844,9 @@
     xmldom-sfdx-encoding "^0.1.29"
 
 "@salesforce/source-deploy-retrieve@^4.3.2":
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.3.2.tgz#b4eb01d235a1d2ab16918e5d25df34886654e294"
-  integrity sha512-xzLL7/YjMbrAXE3sAr4lbXQDTcFpGLDgnh2k9Bqf+Ns24/xgtm5avg65OlXpeLR1/A+WSAPv3tE9osIiR27yAg==
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.3.3.tgz#1d515e05bddf4f8405b001eb6fb4dfe117f56d40"
+  integrity sha512-BrEqgrmaR05mybpdnZF54uj+sTV/rnrHqYnkA+OpUHQnmVIWKJWfjRMXC1DHL/5d7valpG8NhzrKjww4KddbTQ==
   dependencies:
     "@salesforce/core" "2.25.1"
     "@salesforce/kit" "^1.5.0"
