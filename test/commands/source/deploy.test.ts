@@ -392,12 +392,7 @@ describe('force:source:deploy', () => {
 
     it('should emit predeploy hooks for async deploys', async () => {
       const sourcepath = ['somepath'];
-      try {
-        await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
-      } catch (e) {
-        // TODO: once async deploys supported remove the try/catch
-        expect((e as Error).message).to.include('NOT IMPLEMENTED YET');
-      }
+      await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
       expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
     });
   });
