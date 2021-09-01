@@ -24,7 +24,7 @@
     "@salesforce/plugin-config": "^1.2.13",
     "@salesforce/plugin-user": "^1.4.0",
     "@salesforce/prettier-config": "^0.0.2",
-    "@salesforce/source-testkit": "^0.0.12",
+    "@salesforce/source-testkit": "^0.0.13",
     "@salesforce/ts-sinon": "1.3.21",
     "@types/debug": "^4.1.7",
     "@types/jsforce": "^1.9.33",

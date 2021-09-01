@@ -39,7 +39,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
       const objectsAndFields = ['force-app/main/default/objects/MyObj__c/*', 'my-app/objects/MyObj__c/fields/*'];
       await testkit.modifyLocalGlobs(objectsAndFields);
       await testkit.retrieve({ args: '--metadata CustomObject' });
-      await testkit.expect.filesToBeDeployed(objectsAndFields);
+      await testkit.expect.filesToBeChanged(objectsAndFields);
       await testkit.expect.filesToNotExist([
         'force-app/main/default/objects/MyObj__c/fields/*',
         'my-app/objects/MyObj__c/MyObj__c.object.xml',
@@ -70,7 +70,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
         await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
         await testkit.expect.filesToNotContainString(
           myAppLabels,
@@ -84,7 +84,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.deleteGlobs([myAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToContainString(
           forceAppLabels,
           '<fullName>my_app_Label_1</fullName>',
@@ -98,7 +98,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.deleteGlobs([forceAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await testkit.expect.filesToBeDeployed([myAppLabels]);
+        await testkit.expect.filesToBeChanged([myAppLabels]);
         await testkit.expect.filesToContainString(
           myAppLabels,
           '<fullName>my_app_Label_1</fullName>',
@@ -112,7 +112,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.deleteGlobs([forceAppLabels, myAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToContainString(
           forceAppLabels,
           '<fullName>my_app_Label_1</fullName>',
@@ -126,7 +126,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
       it('should put individual label into appropriate CustomLabels file', async () => {
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToNotBeChanged([myAppLabels]);
         await testkit.expect.filesToNotContainString(
           forceAppLabels,
@@ -145,7 +145,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.deleteGlobs([forceAppLabels, myAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToContainString(forceAppLabels, '<fullName>force_app_Label_1</fullName>');
         await testkit.expect.filesToNotContainString(
           forceAppLabels,
@@ -160,7 +160,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
         await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
         await testkit.expect.filesToNotContainString(
           myAppLabels,
@@ -175,7 +175,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.modifyLocalGlobs([forceAppLabels]);
         await testkit.retrieve({ args: '--sourcepath force-app' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToNotBeChanged([myAppLabels]);
 
         await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
@@ -192,7 +192,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.modifyLocalGlobs([myAppLabels]);
         await testkit.retrieve({ args: '--sourcepath my-app' });
 
-        await testkit.expect.filesToBeDeployed([myAppLabels]);
+        await testkit.expect.filesToBeChanged([myAppLabels]);
         await testkit.expect.filesToNotBeChanged([forceAppLabels]);
 
         await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
@@ -209,7 +209,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
         await testkit.retrieve({ args: '--sourcepath force-app,my-app' });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
         await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
         await testkit.expect.filesToNotContainString(
           myAppLabels,
@@ -226,7 +226,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         const packageXml = await testkit.createPackageXml(xml);
         await testkit.retrieve({ args: `--manifest ${packageXml}` });
 
-        await testkit.expect.filesToBeDeployed([forceAppLabels, myAppLabels]);
+        await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
         await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
         await testkit.expect.filesToNotContainString(
           myAppLabels,

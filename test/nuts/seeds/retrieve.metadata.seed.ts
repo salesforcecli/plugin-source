@@ -42,7 +42,7 @@ context('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
       it(`should retrieve ${testCase.toRetrieve}`, async () => {
         await testkit.modifyLocalGlobs(testCase.toVerify);
         await testkit.retrieve({ args: `--metadata ${testCase.toRetrieve}` });
-        await testkit.expect.filesToBeDeployed(testCase.toVerify, testCase.toIgnore);
+        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
 
