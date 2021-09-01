@@ -6,6 +6,7 @@
  */
 
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { StatusResult } from '@salesforce/source-testkit/lib/types';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
@@ -52,13 +53,13 @@ context.skip('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
       const myAppLabels = 'my-app/labels/CustomLabels.labels-meta.xml';
       await testkit.spoofRemoteChange([forceAppLabels, myAppLabels]);
 
-      const status1 = await testkit.status();
-      testkit.expect.statusToOnlyHaveState(status1.result, 'Remote Changed');
+      const status1 = (await testkit.status()) as StatusResult;
+      testkit.expect.statusToOnlyHaveState(status1, 'Remote Changed');
 
       await testkit.pull();
 
-      const status2 = await testkit.status();
-      testkit.expect.statusToBeEmpty(status2.result);
+      const status2 = (await testkit.status()) as StatusResult;
+      testkit.expect.statusToBeEmpty(status2);
 
       await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
       await testkit.expect.filesToNotContainString(
