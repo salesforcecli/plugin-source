@@ -13,7 +13,7 @@ export class DeleteResultFormatter extends DeployResultFormatter {
    */
   public getJson(): DeployCommandResult {
     const json = this.getResponse() as DeployCommandResult;
-    json.deletedSource = this.fileResponses;
+    json.deletedSource = this.fileResponses; // to match toolbelt json output
     json.outboundFiles = []; // to match toolbelt version
     json.deletes = [Object.assign({}, this.getResponse())]; // to match toolbelt version
 

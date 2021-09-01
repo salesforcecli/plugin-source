@@ -106,8 +106,8 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
-    this.sourceComponents.map((c) => {
-      cs.add(c, true);
+    this.sourceComponents.map((component) => {
+      cs.add(component, true);
     });
     this.componentSet = cs;
 
@@ -161,8 +161,13 @@ export class Delete extends DeployCommand {
     // so we'll delete the files locally now
     if (!this.getFlag('checkonly')) {
       this.sourceComponents.map((component) => {
-        fs.unlinkSync(component.content);
-        fs.unlinkSync(component.xml);
+        // delete the content and/or the xml of the components
+        if (component.content) {
+          fs.unlinkSync(component.content);
+        }
+        if (component.xml) {
+          fs.unlinkSync(component.xml);
+        }
       });
     }
 
