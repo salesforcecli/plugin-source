@@ -1,0 +1,15 @@
+{
+  "description": "delete source from your project and from a non-source-tracked org \n Use this command to delete components from orgs that don’t have source tracking.\nTo remove deleted items from scratch orgs, which have change tracking, use \"sfdx force:source:push\".",
+  "examples": ["$ sfdx force:source:delete -m <metadata>", "$ sfdx force:source:delete -p path/to/source"],
+  "flags": {
+    "sourcePath": "comma-separated list of source file paths to delete",
+    "metadata": "comma-separated list of names of metadata components to delete",
+    "noprompt": "do not prompt for delete confirmation",
+    "wait": "wait time for command to finish in minutes",
+    "checkonly": "validate delete command but do not delete from the org or delete files locally",
+    "testLevel": "deployment testing level",
+    "runTests": "tests to run if --testlevel RunSpecifiedTests",
+    "verbose": "verbose output of delete result"
+  },
+  "prompt": "This operation will delete the following files on your computer and in your org: \n%s\n\nAre you sure you want to proceed (y/n)?"
+}
