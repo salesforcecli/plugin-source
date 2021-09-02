@@ -124,7 +124,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
           exitCode: 0,
         });
 
-        convertDir = path.relative(process.cwd(), getString(res, 'res.result.location'));
+        convertDir = path.relative(process.cwd(), getString(res, 'result.location') || '');
         await testkit.expect.directoryToHaveSomeFiles(convertDir);
         await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await testkit.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -158,7 +158,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
           exitCode: 0,
         });
 
-        convertDir = path.relative(process.cwd(), getString(res, 'res.result.location'));
+        convertDir = path.relative(process.cwd(), getString(res, 'result.location'));
         await testkit.expect.directoryToHaveSomeFiles(convertDir);
         await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await testkit.expect.filesToBeConverted(convertDir, testCase.toVerify);
