@@ -93,7 +93,7 @@ export const exampleDeployResponse = {
 };
 
 export const exampleDeleteResponse = {
-  result: {
+  response: {
     canceledBy: '0051h000006BHOq',
     canceledByName: 'User User',
     checkOnly: false,
@@ -145,8 +145,8 @@ export const exampleDeleteResponse = {
     rollbackOnError: true,
     runTestsEnabled: false,
     startDate: '2021-04-09T20:22:58.000Z',
-    status: 'Canceled',
-    success: false,
+    status: 'Succeeded',
+    success: true,
   },
   status: 0,
 };

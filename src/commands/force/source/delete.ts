@@ -159,17 +159,7 @@ export class Delete extends DeployCommand {
 
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
-    if (!this.getFlag('checkonly')) {
-      this.sourceComponents.map((component) => {
-        // delete the content and/or the xml of the components
-        if (component.content) {
-          fs.unlinkSync(component.content);
-        }
-        if (component.xml) {
-          fs.unlinkSync(component.xml);
-        }
-      });
-    }
+    this.deleteFilesLocally();
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
@@ -177,6 +167,26 @@ export class Delete extends DeployCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private deleteFilesLocally(): void {
+    if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
+      this.sourceComponents.map((component) => {
+        // delete the content and/or the xml of the components
+        if (component.content) {
+          const stats = fs.lstatSync(component.content);
+          if (stats.isDirectory()) {
+            fs.rmdirSync(component.content, { recursive: true });
+          } else {
+            fs.unlinkSync(component.content);
+          }
+        }
+        // the xml could've been deleted as part of a bundle type above
+        if (component.xml && fs.existsSync(component.xml)) {
+          fs.unlinkSync(component.xml);
+        }
+      });
+    }
   }
 
   private async handlePrompt(): Promise<boolean> {

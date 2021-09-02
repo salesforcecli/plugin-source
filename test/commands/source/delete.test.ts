@@ -117,14 +117,16 @@ describe('force:source:delete', () => {
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
+    stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
     await runDeleteCmd(['--sourcepath', sourcepath[0], '--json', '-r']);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureHookArgs();
-    expect(fsUnlink.callCount).to.equal(2);
+    expect(fsUnlink.callCount).to.equal(1);
   });
 
   it('should pass along metadata', async () => {
     const metadata = ['ApexClass:MyClass'];
+    stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
     await runDeleteCmd(['--metadata', metadata[0], '--json', '-r']);
     ensureCreateComponentSetArgs({
       metadata: {
@@ -137,6 +139,8 @@ describe('force:source:delete', () => {
 
   it('should pass along apiversion', async () => {
     const metadata = ['ApexClass:MyClass'];
+    stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
+
     await runDeleteCmd(['--metadata', metadata[0], '--json', '-r', '--apiversion', '52.0']);
     ensureCreateComponentSetArgs({
       metadata: {
@@ -153,6 +157,8 @@ describe('force:source:delete', () => {
     const metadata = ['ApexClass:MyClass'];
 
     resolveProjectConfigStub.resolves({ sourceApiVersion });
+    stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
+
     await runDeleteCmd(['--metadata', metadata[0], '--json', '-r']);
     ensureCreateComponentSetArgs({
       sourceapiversion: sourceApiVersion,
