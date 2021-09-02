@@ -11,7 +11,7 @@ import { StatusResult } from '@salesforce/source-testkit/lib/types';
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const EXECUTABLE = '%EXECUTABLE%';
 
-context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
+context.skip('MPD pull NUTs [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
