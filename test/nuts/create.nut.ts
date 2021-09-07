@@ -12,23 +12,6 @@ import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { fs } from '@salesforce/core';
 import { Dictionary } from '@salesforce/ts-types';
 
-const apexManifest =
-  '<?xml version="1.0" encoding="UTF-8"?>\n' +
-  '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n' +
-  '    <types>\n' +
-  '        <members>*</members>\n' +
-  '        <members>GeocodingService</members>\n' +
-  '        <members>GeocodingServiceTest</members>\n' +
-  '        <members>PagedResult</members>\n' +
-  '        <members>PropertyController</members>\n' +
-  '        <members>SampleDataController</members>\n' +
-  '        <members>TestPropertyController</members>\n' +
-  '        <members>TestSampleDataController</members>\n' +
-  '        <name>ApexClass</name>\n' +
-  '    </types>\n' +
-  '    <version>51.0</version>\n' +
-  '</Package>';
-
 describe('force:source:manifest:create', () => {
   let session: TestSession;
 
@@ -53,6 +36,16 @@ describe('force:source:manifest:create', () => {
   });
 
   it('should produce a manifest (destructiveChanges.xml) for ApexClass in a new directory', () => {
+    const apexManifest =
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n' +
+      '    <types>\n' +
+      '        <members>*</members>\n' +
+      '        <name>ApexClass</name>\n' +
+      '    </types>\n' +
+      '    <version>51.0</version>\n' +
+      '</Package>';
+
     const output = join('abc', 'def');
     const outputFile = join(output, 'destructiveChanges.xml');
     const result = execCmd<Dictionary>(
