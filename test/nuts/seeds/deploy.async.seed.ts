@@ -9,8 +9,8 @@ import { SourceTestkit } from '@salesforce/source-testkit';
 import { get, getBoolean, getString } from '@salesforce/ts-types';
 import { expect } from '@salesforce/command/lib/test';
 import { Result } from '@salesforce/source-testkit/lib/types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
-import { FileResponse } from '../../../../source-deploy-retrieve';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
