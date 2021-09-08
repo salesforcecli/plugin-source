@@ -80,7 +80,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@salesforce/plugin-source/1.0.12 linux-x64 node-v12.22.5
+@salesforce/plugin-source/1.0.12 linux-x64 node-v12.22.6
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -119,7 +119,7 @@ USAGE
 
 OPTIONS
   -d, --outputdir=outputdir                                                         [default:
-                                                                                    metadataPackage_1630001120595]
+                                                                                    metadataPackage_1631132027364]
                                                                                     output directory to store the
                                                                                     Metadata API–formatted files in
 
