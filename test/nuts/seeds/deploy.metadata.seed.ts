@@ -6,6 +6,8 @@
  */
 
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -39,8 +41,10 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   describe('--metadata flag', () => {
     for (const testCase of REPO.deploy.metadata) {
       it(`should deploy ${testCase.toDeploy}`, async () => {
-        await testkit.deploy({ args: `--metadata ${testCase.toDeploy}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
+        const res = await testkit.deploy({ args: `--metadata ${testCase.toDeploy}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }
 

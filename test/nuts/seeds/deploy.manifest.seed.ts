@@ -7,6 +7,8 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -44,8 +46,10 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         await testkit.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
         const packageXml = path.join('out', 'package.xml');
 
-        await testkit.deploy({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToBeChanged(testCase.toVerify);
+        const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
+        const fileResponse = get(res, 'result.deployedSource') as FileResponse[];
+
+        await testkit.expect.filesToBeDeployedViaResult(testCase.toVerify, testCase.toIgnore, fileResponse);
       });
     }
 

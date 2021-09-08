@@ -8,6 +8,7 @@
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { getBoolean, getString } from '@salesforce/ts-types';
 import { expect } from '@salesforce/command/lib/test';
+import { Result } from '@salesforce/source-testkit/lib/types';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -42,11 +43,11 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       // delete the lwc test stubs which will cause errors with the source tracking/globbing
       await testkit.deleteGlobs(['force-app/test/**/*']);
 
-      const deploy = await testkit.deploy({
+      const deploy = (await testkit.deploy({
         args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-      });
+      })) as Result<{ id: string; result: { id: string } }>;
       // test the stashed deploy id
-      const report = await testkit.deployReport();
+      const report = (await testkit.deployReport()) as Result<{ id: string; result: { id: string } }>;
 
       testkit.expect.toHaveProperty(deploy.result, 'id');
       testkit.expect.toHavePropertyAndNotValue(deploy.result, 'status', 'Succeeded');
@@ -55,9 +56,9 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       if (status) {
         // if the deploy finished, expect changes and a 'succeeded' status
         testkit.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
-        await testkit.expect.filesToBeChanged(testkit.packageGlobs, [
-          'force-app/main/default/objects/Account/fields/asdf__c',
-        ]);
+        testkit.expect.toHaveProperty(report.result, 'numberComponentsDeployed');
+        testkit.expect.toHaveProperty(report.result, 'deployedSource');
+        testkit.expect.toHaveProperty(report.result, 'deploys');
       } else {
         // the deploy could be InProgress, Pending, or Queued, at this point
         expect(['Pending', 'InProgress', 'Queued']).to.include(getString(report.result, 'status'));
@@ -70,9 +71,9 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
         await testkit.deleteGlobs(['force-app/test/**/*']);
 
-        const deploy = await testkit.deploy({
+        const deploy = (await testkit.deploy({
           args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-        });
+        })) as Result<{ id: string; result: { id: string } }>;
         await testkit.deployCancel({ args: `-i ${deploy.result.id}` });
 
         testkit.expect.toHaveProperty(deploy.result, 'id');

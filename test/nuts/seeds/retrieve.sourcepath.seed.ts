@@ -7,6 +7,7 @@
 
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { JsonMap } from '@salesforce/ts-types';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -47,7 +48,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () 
     }
 
     it('should throw an error if the sourcepath is not valid', async () => {
-      const retrieve = await testkit.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
+      const retrieve = (await testkit.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 })) as JsonMap;
       const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnexpectedFileFound';
       testkit.expect.errorToHaveName(retrieve, expectedError);
     });

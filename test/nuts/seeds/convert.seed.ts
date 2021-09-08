@@ -7,9 +7,10 @@
 
 import * as path from 'path';
 import * as shelljs from 'shelljs';
-import { asString } from '@salesforce/ts-types';
+import { getString } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { fs } from '@salesforce/core';
+import { Result } from '@salesforce/source-testkit/lib/types';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -105,7 +106,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     }
 
     it('should throw an error if the package.xml is not valid', async () => {
-      const convert = await testkit.convert({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
+      const convert = (await testkit.convert({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 })) as Result<{
+        id: string;
+        result: { id: string };
+      }>;
       testkit.expect.errorToHaveName(convert, 'Error');
     });
   });
@@ -115,9 +119,12 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     for (const testCase of REPO.convert.metadata) {
       it(`should convert ${testCase.toConvert}`, async () => {
-        const res = await testkit.convert({ args: `--metadata ${testCase.toConvert} --outputdir out`, exitCode: 0 });
+        const res = await testkit.convert({
+          args: `--metadata ${testCase.toConvert} --outputdir out`,
+          exitCode: 0,
+        });
 
-        convertDir = path.relative(process.cwd(), asString(res.result?.location));
+        convertDir = path.relative(process.cwd(), getString(res, 'result.location') || '');
         await testkit.expect.directoryToHaveSomeFiles(convertDir);
         await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await testkit.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -131,7 +138,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     });
 
     it('should throw an error if the metadata is not valid', async () => {
-      const convert = await testkit.convert({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
+      const convert = (await testkit.convert({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 })) as Result<{
+        id: string;
+        result: { id: string };
+      }>;
       const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnsupportedType';
       testkit.expect.errorToHaveName(convert, expectedError);
     });
@@ -143,9 +153,12 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     for (const testCase of REPO.convert.sourcepath) {
       it(`should convert ${testCase.toConvert}`, async () => {
         const toConvert = path.normalize(testCase.toConvert);
-        const res = await testkit.convert({ args: `--sourcepath ${toConvert} --outputdir out`, exitCode: 0 });
+        const res = await testkit.convert({
+          args: `--sourcepath ${toConvert} --outputdir out`,
+          exitCode: 0,
+        });
 
-        convertDir = path.relative(process.cwd(), asString(res.result?.location));
+        convertDir = path.relative(process.cwd(), getString(res, 'result.location'));
         await testkit.expect.directoryToHaveSomeFiles(convertDir);
         await testkit.expect.fileToExist(path.join(convertDir, 'package.xml'));
         await testkit.expect.filesToBeConverted(convertDir, testCase.toVerify);
@@ -159,7 +172,10 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     });
 
     it('should throw an error if the sourcepath is not valid', async () => {
-      const convert = await testkit.convert({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
+      const convert = (await testkit.convert({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 })) as Result<{
+        id: string;
+        result: { id: string };
+      }>;
       const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'SourcePathInvalid';
       testkit.expect.errorToHaveName(convert, expectedError);
     });

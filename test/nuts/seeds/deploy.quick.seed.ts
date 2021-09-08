@@ -6,6 +6,9 @@
  */
 
 import { SourceTestkit } from '@salesforce/source-testkit';
+import { Result } from '@salesforce/source-testkit/lib/types';
+import { get } from '@salesforce/ts-types';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -48,16 +51,18 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       // delete the lwc test stubs which will cause errors with the source tracking/globbing
       await testkit.deleteGlobs(['force-app/test/**/*']);
-      const checkOnly = await testkit.deploy({
+      const checkOnly = (await testkit.deploy({
         args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
-      });
+      })) as Result<{ id: string; result: { id: string } }>;
       testkit.expect.toHaveProperty(checkOnly.result, 'id');
 
-      const quickDeploy = await testkit.deploy({
+      const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
-      });
+      })) as Result<{ id: string; result: { id: string } }>;
       testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
-      await testkit.expect.filesToBeChanged(testkit.packageGlobs);
+
+      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
     });
   });
 });
