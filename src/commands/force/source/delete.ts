@@ -34,6 +34,7 @@ export class Delete extends DeployCommand {
     checkonly: flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
+      longDescription: messages.getMessage('flags.checkonlyLong'),
     }),
     wait: flags.minutes({
       char: 'w',
@@ -58,7 +59,8 @@ export class Delete extends DeployCommand {
     }),
     sourcepath: flags.array({
       char: 'p',
-      description: messages.getMessage('flags.sourcePath'),
+      description: messages.getMessage('flags.sourcepath'),
+      longDescription: messages.getMessage('flags.sourcepathLong'),
       exclusive: ['manifest', 'metadata'],
     }),
     verbose: flags.builtin({
