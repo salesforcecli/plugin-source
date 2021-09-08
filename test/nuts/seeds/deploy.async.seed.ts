@@ -6,10 +6,11 @@
  */
 
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { getBoolean, getString } from '@salesforce/ts-types';
+import { get, getBoolean, getString } from '@salesforce/ts-types';
 import { expect } from '@salesforce/command/lib/test';
 import { Result } from '@salesforce/source-testkit/lib/types';
 import { TEST_REPOS_MAP } from '../testMatrix';
+import { FileResponse } from '../../../../source-deploy-retrieve';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
@@ -56,9 +57,8 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       if (status) {
         // if the deploy finished, expect changes and a 'succeeded' status
         testkit.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
-        await testkit.expect.filesToBeChanged(testkit.packageGlobs, [
-          'force-app/main/default/objects/Account/fields/asdf__c',
-        ]);
+        const fileResponse = get(deploy, 'result.deployedSource') as FileResponse[];
+        await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
       } else {
         // the deploy could be InProgress, Pending, or Queued, at this point
         expect(['Pending', 'InProgress', 'Queued']).to.include(getString(report.result, 'status'));
