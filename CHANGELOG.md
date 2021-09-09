@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.15](https://github.com/salesforcecli/plugin-source/compare/v1.0.14...v1.0.15) (2021-09-09)
+
+
+### Bug Fixes
+
+* bump SDR to 4.4.1 ([#207](https://github.com/salesforcecli/plugin-source/issues/207)) ([d80ddf3](https://github.com/salesforcecli/plugin-source/commit/d80ddf30b7aa63129ffcbb40785c3873bc8c8f6d))
+
 ### [1.0.14](https://github.com/salesforcecli/plugin-source/compare/v1.0.13...v1.0.14) (2021-09-09)
 
 
