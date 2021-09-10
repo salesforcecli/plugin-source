@@ -80,7 +80,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@salesforce/plugin-source/1.0.14 linux-x64 node-v12.22.6
+@salesforce/plugin-source/1.0.15 linux-x64 node-v12.22.6
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -119,7 +119,7 @@ USAGE
 
 OPTIONS
   -d, --outputdir=outputdir                                                         [default:
-                                                                                    metadataPackage_1631229391330]
+                                                                                    metadataPackage_1631292577437]
                                                                                     output directory to store the
                                                                                     Metadata API–formatted files in
 
@@ -157,14 +157,15 @@ EXAMPLES
   $ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'
 ```
 
-_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/convert.ts)_
+_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/convert.ts)_
 
 ## `sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [-q <id> | -x <filepath> | -m <array> | -p <array> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
-deploy source to an org Use this command to deploy source (metadata that’s in source format) to an org.
+deploy source to an org
 
 ```
-deploy source to an org Use this command to deploy source (metadata that’s in source format) to an org.
+deploy source to an org
+Use this command to deploy source (metadata that’s in source format) to an org.
 To take advantage of change tracking with scratch orgs, use "sfdx force:source:push".
 To deploy metadata that’s in metadata format, use "sfdx force:mdapi:deploy".
 
@@ -229,6 +230,7 @@ OPTIONS
   --verbose                                                                         verbose output of deploy result
 
 DESCRIPTION
+  Use this command to deploy source (metadata that’s in source format) to an org.
   To take advantage of change tracking with scratch orgs, use "sfdx force:source:push".
   To deploy metadata that’s in metadata format, use "sfdx force:mdapi:deploy".
 
@@ -267,7 +269,7 @@ EXAMPLES
        $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`,
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/deploy.ts)_
 
 ## `sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -322,7 +324,7 @@ EXAMPLES
      $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/deploy/cancel.ts)_
 
 ## `sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -372,7 +374,7 @@ EXAMPLES
     $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/deploy/report.ts)_
 
 ## `sfdx force:source:manifest:create [-m <array> | -p <array>] [-n <string> | -t pre|post|destroy|package] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -451,7 +453,7 @@ EXAMPLES
   $ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest
 ```
 
-_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/manifest/create.ts)_
+_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/manifest/create.ts)_
 
 ## `sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -501,7 +503,7 @@ EXAMPLES
   $ sfdx force:source:open -f path/to/source -u my-user@my-org.com
 ```
 
-_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/open.ts)_
+_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/open.ts)_
 
 ## `sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -589,5 +591,5 @@ EXAMPLES
       $ sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.14/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.0.15/src/commands/force/source/retrieve.ts)_
 <!-- commandsstop -->
