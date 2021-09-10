@@ -35,6 +35,7 @@ export class Deploy extends DeployCommand {
     checkonly: flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
+      longDescription: messages.getMessage('flagsLong.checkonly'),
     }),
     soapdeploy: flags.boolean({
       default: false,
@@ -45,29 +46,35 @@ export class Deploy extends DeployCommand {
       default: Duration.minutes(Deploy.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(0), // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.wait'),
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     testlevel: flags.enum({
       char: 'l',
       description: messages.getMessage('flags.testLevel'),
+      longDescription: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
       default: 'NoTestRun',
     }),
     runtests: flags.array({
       char: 'r',
       description: messages.getMessage('flags.runTests'),
+      longDescription: messages.getMessage('flagsLong.runTests'),
       default: [],
     }),
     ignoreerrors: flags.boolean({
       char: 'o',
       description: messages.getMessage('flags.ignoreErrors'),
+      longDescription: messages.getMessage('flagsLong.ignoreErrors'),
     }),
     ignorewarnings: flags.boolean({
       char: 'g',
       description: messages.getMessage('flags.ignoreWarnings'),
+      longDescription: messages.getMessage('flagsLong.ignoreWarnings'),
     }),
     validateddeployrequestid: flags.id({
       char: 'q',
       description: messages.getMessage('flags.validateDeployRequestId'),
+      longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
       exclusive: [
         'manifest',
         'metadata',
@@ -85,16 +92,19 @@ export class Deploy extends DeployCommand {
     metadata: flags.array({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
+      longDescription: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
+      longDescription: messages.getMessage('flagsLong.sourcePath'),
       exclusive: ['manifest', 'metadata'],
     }),
     manifest: flags.filepath({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
+      longDescription: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
   };
