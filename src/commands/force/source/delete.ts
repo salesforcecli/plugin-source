@@ -11,7 +11,6 @@ import { fs, Messages } from '@salesforce/core';
 import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Duration, once, env } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import * as chalk from 'chalk';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult } from '../../../formatters/deployResultFormatter';
@@ -71,6 +70,8 @@ export class Delete extends DeployCommand {
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   private sourceComponents: SourceComponent[];
   private isRest = false;
+  private deleteResultFormatter: DeleteResultFormatter;
+  private aborted = false;
 
   private updateDeployId = once((id) => {
     this.displayDeployId(id);
@@ -80,10 +81,15 @@ export class Delete extends DeployCommand {
   public async run(): Promise<DeployCommandResult> {
     await this.delete();
     this.resolveSuccess();
-    return this.formatResult();
+    const result = this.formatResult();
+    // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
+    // so we'll delete the files locally now
+    this.deleteFilesLocally();
+    return result;
   }
 
   protected async delete(): Promise<void> {
+    this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
     // verify that the user defined one of: metadata, sourcepath
     this.validateFlags();
 
@@ -101,10 +107,8 @@ export class Delete extends DeployCommand {
 
     if (!this.sourceComponents.length) {
       // if we didn't find any components to delete, let the user know and exit
-      // matches toolbelt
-      this.ux.styledHeader(chalk.blue('Deleted Source'));
-      this.ux.log('No results found');
-      this.exit(0);
+      this.deleteResultFormatter.displayNoResultsFound();
+      return;
     }
 
     // create a new ComponentSet and mark everything for deletion
@@ -114,10 +118,8 @@ export class Delete extends DeployCommand {
     });
     this.componentSet = cs;
 
-    if (!(await this.handlePrompt())) {
-      // the user said 'no' to the prompt
-      this.exit(0);
-    }
+    this.aborted = !(await this.handlePrompt());
+    if (this.aborted) return;
 
     // fire predeploy event for the delete
     await this.lifecycle.emit('predeploy', this.componentSet.toArray());
@@ -150,7 +152,7 @@ export class Delete extends DeployCommand {
    */
   protected resolveSuccess(): void {
     const status = getString(this.deployResult, 'response.status');
-    if (status !== RequestStatus.Succeeded) {
+    if (status !== RequestStatus.Succeeded && !this.aborted) {
       this.setExitCode(1);
     }
   }
@@ -160,18 +162,14 @@ export class Delete extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
     };
 
-    const formatter = new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
-
-    // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
-    // so we'll delete the files locally now
-    this.deleteFilesLocally();
+    this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
-      formatter.display();
+      this.deleteResultFormatter.display();
     }
 
-    return formatter.getJson();
+    return this.deleteResultFormatter.getJson();
   }
 
   private deleteFilesLocally(): void {
