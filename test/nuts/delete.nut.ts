@@ -32,7 +32,7 @@ describe('source:delete NUTs', () => {
       executable: os.platform() === 'win32' ? executable.replace(/\\/g, '\\\\') : executable,
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
-    await testkit.deploy({ args: '--sourcepath force-app' });
+    execCmd('force:source:deploy --sourcepath force-app');
   });
 
   after(async () => {
