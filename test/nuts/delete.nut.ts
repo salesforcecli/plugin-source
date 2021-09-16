@@ -29,7 +29,6 @@ describe('source:delete NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       nut: __filename,
-      orgless: false,
       executable: os.platform() === 'win32' ? executable.replace(/\\/g, '\\\\') : executable,
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
