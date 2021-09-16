@@ -106,26 +106,15 @@ describe('source:delete NUTs', () => {
 
   it('should run tests with a delete', async () => {
     const { pathToClass, apexName } = createApexClass();
-    await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
     const response = execCmd<{
-      deletedSource: [{ filePath: string }];
       checkOnly: boolean;
       runTestsEnabled: boolean;
-      details: {
-        runTestResult: {
-          numFailures: string;
-          numTestsRun: string;
-        };
-      };
     }>(`force:source:delete --json --testlevel RunAllTestsInOrg --noprompt --metadata ApexClass:${apexName}`, {
       ensureExitCode: 1,
     }).jsonOutput.result;
-    // the delete operation will fail due to test failures
-    expect(response.deletedSource).to.have.length(2);
+    // the delete operation will fail due to test failures without the 'dreamhouse' permission set assigned to the user
     expect(response.runTestsEnabled).to.be.true;
     expect(response.checkOnly).to.be.false;
-    expect(response.details.runTestResult.numTestsRun).to.equal('7');
-    expect(response.details.runTestResult.numFailures).to.equal('1');
     // ensure a failed delete attempt won't delete local files
     expect(fs.fileExistsSync(pathToClass)).to.be.true;
   });
