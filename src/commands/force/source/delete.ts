@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
-import { prompt } from 'cli-ux/lib/prompt';
+import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
@@ -196,8 +196,8 @@ export class Delete extends DeployCommand {
     if (!this.getFlag('noprompt')) {
       const paths = this.sourceComponents.map((component) => component.content + '\n' + component.xml).join('\n');
       const promptMessage = messages.getMessage('prompt', [paths]);
-      const answer = (await prompt(promptMessage)) as string;
-      return answer.toUpperCase() === 'YES' || answer.toUpperCase() === 'Y';
+
+      return confirm(promptMessage);
     }
     return true;
   }
