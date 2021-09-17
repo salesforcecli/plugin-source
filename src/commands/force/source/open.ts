@@ -9,26 +9,11 @@ import * as os from 'os';
 import * as path from 'path';
 import * as open from 'open';
 import { getString } from '@salesforce/ts-types';
-import { fs, AuthInfo } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, sfdc, SfdxError } from '@salesforce/core';
-import checkLightningDomain from '@salesforce/core/lib/util/checkLightningDomain';
+import { Messages, sfdc, SfdxError, fs, AuthInfo, SfdcUrl } from '@salesforce/core';
 import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { OpenResultFormatter, OpenCommandResult } from '../../../formatters/openResultFormatter';
 import { SourceCommand } from '../../../sourceCommand';
-
-export interface DnsLookupObject {
-  address: string;
-  family: number;
-}
-
-export interface FlexiPageRecord {
-  attributes: {
-    type: string;
-    url: string;
-  };
-  Id: string;
-}
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
@@ -75,81 +60,58 @@ export class Open extends SourceCommand {
 
   private async doOpen(): Promise<void> {
     const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile));
-    const openPath = typeName === 'FlexiPage' ? await this.handleSupportedTypes() : await this.handleUnsupportedTypes();
+    const openPath = typeName === 'FlexiPage' ? await this.setUpOpenPath() : await this.buildFrontdoorUrl();
 
     this.openResult = await this.open(openPath);
   }
 
   private getTypeNameDefinitionByFileName(fsPath: string): string | undefined {
     if (fs.fileExistsSync(fsPath)) {
-      const metadataResolver = new MetadataResolver();
-      const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
+      const components: SourceComponent[] = new MetadataResolver().getComponentsFromPath(fsPath);
       return components[0].type.name;
     }
-    return undefined;
-  }
-
-  private async handleSupportedTypes(): Promise<string> {
-    return await this.setUpOpenPath();
-  }
-
-  private async handleUnsupportedTypes(): Promise<string> {
-    return await this.buildFrontdoorUrl();
-  }
-
-  private async getUrl(retURL: string): Promise<string> {
-    const frontDoorUrl: string = await this.buildFrontdoorUrl();
-    return `${frontDoorUrl}&retURL=${encodeURIComponent(decodeURIComponent(retURL))}`;
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
-    const connection = this.org.getConnection();
-    const { username } = connection.getAuthInfoFields();
-    const authInfo = await AuthInfo.create({ username });
-    const url = authInfo.getOrgFrontDoorUrl();
-    return url;
+    const authInfo = await AuthInfo.create({ username: this.org.getUsername() });
+    return authInfo.getOrgFrontDoorUrl();
   }
 
-  private async open(src: string, urlonly?: boolean): Promise<OpenCommandResult> {
-    const connection = this.org.getConnection();
-    const { username, orgId } = connection.getAuthInfoFields();
-    const url = await this.getUrl(src);
-    const act = (): OpenCommandResult =>
-      this.flags.urlonly || urlonly ? { url, username, orgId } : this.openBrowser(url, { url, username, orgId });
-    if (sfdc.isInternalUrl(url)) {
-      return act();
-    }
+  private async open(src: string): Promise<OpenCommandResult> {
+    const url = `${await this.buildFrontdoorUrl()}&retURL=${encodeURIComponent(decodeURIComponent(src))}`;
+    const result: OpenCommandResult = {
+      url,
+      username: this.org.getUsername(),
+      orgId: this.org.getOrgId(),
+    };
 
-    try {
-      const result = await checkLightningDomain(url);
-
-      if (result) {
-        return act();
+    if (!sfdc.isInternalUrl(url)) {
+      try {
+        await new SfdcUrl(url).checkLightningDomain();
+      } catch (error) {
+        throw SfdxError.create('@salesforce/plugin-source', 'open', 'SourceOpenCommandTimeoutError');
       }
-    } catch (error) {
-      throw SfdxError.create('@salesforce/plugin-source', 'open', 'SourceOpenCommandTimeoutError');
     }
-  }
 
-  private async deriveFlexipageURL(flexipage: string): Promise<string | undefined> {
-    const connection = this.org.getConnection();
-    const queryResult = await connection.tooling.query(`SELECT id FROM flexipage WHERE DeveloperName='${flexipage}'`);
-    if (queryResult.totalSize === 1 && queryResult.records) {
-      const record = queryResult.records[0] as FlexiPageRecord;
-      return record.Id;
-    }
-    return;
+    return this.flags.urlonly ? result : this.openBrowser(url, result);
   }
 
   private async setUpOpenPath(): Promise<string> {
-    const id = await this.deriveFlexipageURL(path.basename(this.flags.sourcefile, '.flexipage-meta.xml'));
-
-    if (id) {
-      return `/visualEditor/appBuilder.app?pageId=${id}`;
+    try {
+      const flexipage = await this.org
+        .getConnection()
+        .singleRecordQuery<{ Id: string }>(
+          `SELECT id FROM flexipage WHERE DeveloperName='${path.basename(
+            this.flags.sourcefile,
+            '.flexipage-meta.xml'
+          )}'`,
+          { tooling: true }
+        );
+      return `/visualEditor/appBuilder.app?pageId=${flexipage.Id}`;
+    } catch (error) {
+      return '_ui/flexipage/ui/FlexiPageFilterListPage';
     }
-    return '_ui/flexipage/ui/FlexiPageFilterListPage';
   }
-
   private openBrowser(url: string, options: OpenCommandResult): OpenCommandResult {
     void open(url);
     return options;
