@@ -35,4 +35,25 @@ export class DeleteResultFormatter extends DeployResultFormatter {
     this.ux.styledHeader(chalk.blue('Deleted Source'));
     this.ux.log('No results found');
   }
+
+  protected displaySuccesses(): void {
+    if (this.isSuccess() && this.fileResponses?.length) {
+      const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
+      if (!successes.length) {
+        return;
+      }
+      this.sortFileResponses(successes);
+      this.asRelativePaths(successes);
+
+      this.ux.log('');
+      this.ux.styledHeader(chalk.blue('Deleted Source'));
+      this.ux.table(successes, {
+        columns: [
+          { key: 'fullName', label: 'FULL NAME' },
+          { key: 'type', label: 'TYPE' },
+          { key: 'filePath', label: 'PROJECT PATH' },
+        ],
+      });
+    }
+  }
 }
