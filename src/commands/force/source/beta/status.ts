@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
-import { SfdxProject, Org, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 
 import {
   SourceTracking,
@@ -51,8 +51,6 @@ export default class SourceStatus extends SfdxCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected hidden = true;
-  protected project!: SfdxProject;
-  protected org!: Org;
 
   protected localAdds: ChangeResult[] = [];
 

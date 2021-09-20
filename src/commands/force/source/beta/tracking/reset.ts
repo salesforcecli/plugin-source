@@ -6,7 +6,7 @@
  */
 
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { Messages, Org, SfdxProject } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import * as chalk from 'chalk';
 import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
 
@@ -36,9 +36,6 @@ export class SourceTrackingResetCommand extends SfdxCommand {
     }),
   };
   protected hidden = true;
-  // valid assertions with ! because requiresProject and requiresUsername
-  protected org!: Org;
-  protected project!: SfdxProject;
 
   public async run(): Promise<SourceTrackingResetResult> {
     throwIfInvalid({

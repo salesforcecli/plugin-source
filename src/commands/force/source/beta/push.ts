@@ -7,7 +7,7 @@
 
 import { FlagsConfig, flags } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
-import { SfdxProject, Org, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { RequestStatus, ComponentStatus } from '@salesforce/source-deploy-retrieve';
 
 // TODO: move to plugin-source
@@ -48,8 +48,6 @@ export default class SourcePush extends DeployCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  protected project!: SfdxProject; // ok because requiresProject
-  protected org!: Org; // ok because requiresUsername
   protected hidden = true;
 
   private isRest = false;

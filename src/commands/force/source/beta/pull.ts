@@ -7,7 +7,7 @@
 
 import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
-import { SfdxProject, Org, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
 import { processConflicts } from '../../../../formatters/conflicts';
@@ -39,8 +39,6 @@ export default class SourcePull extends SfdxCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected hidden = true;
-  protected project!: SfdxProject;
-  protected org!: Org;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(): Promise<PullResponse[]> {
