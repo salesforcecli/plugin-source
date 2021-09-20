@@ -134,6 +134,10 @@
     "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:manifest:create": "nyc mocha \"test/nuts/create.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:tracking": "nyc mocha \"test/nuts/trackingCommands/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:tracking:basics": "nyc mocha \"test/nuts/trackingCommands/basics.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:conflicts": "nyc mocha \"test/nuts/trackingCommands/conflicts.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:remote": "nyc mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {
