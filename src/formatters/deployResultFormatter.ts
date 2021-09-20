@@ -15,6 +15,7 @@ import {
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
+  DeployMessage,
 } from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
@@ -124,10 +125,23 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    if (this.hasStatus(RequestStatus.Failed) && this.fileResponses?.length) {
-      const failures = this.fileResponses.filter((f) => f.state === 'Failed');
-      this.sortFileResponses(failures);
-      this.asRelativePaths(failures);
+    if (this.hasStatus(RequestStatus.Failed)) {
+      const failures: Array<FileResponse | DeployMessage> = [];
+
+      if (this.fileResponses?.length) {
+        const fileResponses = this.fileResponses.filter((f) => f.state === 'Failed');
+        this.sortFileResponses(fileResponses);
+        this.asRelativePaths(fileResponses);
+        failures.push(...fileResponses);
+      }
+
+      if (this.result?.response?.details?.componentFailures) {
+        const deployMessages = toArray(this.result.response.details.componentFailures);
+        deployMessages.map((deployMessage) => {
+          // duplicate the problem message to the error property for displaying in the table
+          failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+        });
+      }
 
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
