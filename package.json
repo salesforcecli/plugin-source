@@ -104,6 +104,14 @@
               },
               "manifest": {
                 "description": "create a manifest to use in a deploy/retrieve"
+              },
+              "beta": {
+                "description": "new versions of source tracking commands",
+                "subtopics": {
+                  "tracking": {
+                    "description": "new versions of source tracking commands"
+                  }
+                }
               }
             }
           }
