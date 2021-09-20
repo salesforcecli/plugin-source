@@ -700,7 +700,7 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.23.4", "@salesforce/core@^2.24.0", "@salesforce/core@^2.26.0", "@salesforce/core@^2.26.1", "@salesforce/core@^2.3.0":
+"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.23.4", "@salesforce/core@^2.24.0", "@salesforce/core@^2.26.0", "@salesforce/core@^2.3.0":
   version "2.26.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.26.1.tgz#00ecf0d989308786dcee648da231c528e6346c09"
   integrity sha512-Ltswt8HWqIOS0NKZ7ggsYXD8X/nq/6uYO8REzj7g7HdZR+/GIrFUzRdJZ9ACjVGZpjkYLNN6E7ncyoy/Uudiww==
@@ -820,20 +820,6 @@
     "@salesforce/core" "^2.15.2"
     tslib "^2"
 
-"@salesforce/plugin-source@^1.0.16":
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-source/-/plugin-source-1.0.16.tgz#a9b9259d5b5fb36ce7938c48a0e17f608edea216"
-  integrity sha512-5cUFtvtvhSF1iSsz0+ueh16yda63K73gjVQI940eKJmMecThdtL80ku6Wot2WWxGMbp2cjlR4dDz52qved5SeA==
-  dependencies:
-    "@oclif/config" "^1"
-    "@salesforce/command" "^4.0.4"
-    "@salesforce/core" "^2.26.1"
-    "@salesforce/source-deploy-retrieve" "^4.4.1"
-    chalk "^4.1.1"
-    cli-ux "^5.6.3"
-    open "^8.2.1"
-    tslib "^2"
-
 "@salesforce/plugin-user@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-1.4.0.tgz#c5dad9f29c082a45ad8902ac23a630cfd5cb04fb"
@@ -903,16 +889,14 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.0.2.tgz#1c74eef32dc73c4167116d0dbfb0937a279ce05a"
-  integrity sha512-SPYkmqzanDLFJ77tbgEkAkjBa2pL926yNxxYsBv0kjv2sgRSbxLQ0TYe0oSIetz6BDqoIw5SkG4+Ahrmdq4PmQ==
+"@salesforce/source-tracking@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.0.3.tgz#67567b6ebf4abf2cebadccf679397145628f1c7b"
+  integrity sha512-BR6A6Rwl8Tsm/zC8VG7PVBNeVk7BGpgtB2QFz+AqiltbIquHOUc1ln/NzvmvTVsDHokPDHWJS9o6TiTOk1BZtg==
   dependencies:
     "@oclif/config" "^1.17.0"
-    "@salesforce/command" "^4.0.4"
     "@salesforce/core" "^2.27.0"
     "@salesforce/kit" "^1.5.17"
-    "@salesforce/plugin-source" "^1.0.16"
     "@salesforce/source-deploy-retrieve" "^4.4.1"
     isomorphic-git "^1.9.2"
     ts-retry-promise "^0.6.0"
