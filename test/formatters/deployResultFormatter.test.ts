@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
-import { DeployMessage, FileResponse } from '@salesforce/source-deploy-retrieve';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter';
@@ -90,22 +90,16 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
-    it('should output as expected for a failure', async () => {
+    it('should output as expected for a failure and exclude duplicate information', async () => {
       const formatter = new DeployResultFormatter(logger, ux, {}, deployResultFailure);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
       expect(logStub.calledTwice).to.equal(true);
       expect(tableStub.called).to.equal(true);
-      expect(styledHeaderStub.args[0][0]).to.include('Component Failures [2]');
+      expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
       const fileResponses = deployResultFailure.getFileResponses();
       resolveExpectedPaths(fileResponses);
-      const mutatedObject = Object.assign(deployResultFailure.response.details.componentFailures, {
-        error: (deployResultFailure.response.details.componentFailures as DeployMessage).problem,
-      });
-
-      const tableData = [...fileResponses, mutatedObject];
-
-      expect(tableStub.firstCall.args[0]).to.deep.equal(tableData);
+      expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
     it('should output as expected for a test failure with verbose', async () => {

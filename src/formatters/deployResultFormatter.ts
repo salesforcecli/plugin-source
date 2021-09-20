@@ -135,11 +135,22 @@ export class DeployResultFormatter extends ResultFormatter {
         failures.push(...fileResponses);
       }
 
-      if (this.result?.response?.details?.componentFailures) {
-        const deployMessages = toArray(this.result.response.details.componentFailures);
+      const deployMessages = toArray(this.result?.response?.details?.componentFailures);
+      if (deployMessages.length > failures.length) {
+        // if there's additional failures in the API response, find the failure and add it to the output
         deployMessages.map((deployMessage) => {
-          // duplicate the problem message to the error property for displaying in the table
-          failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+          if (
+            !failures.find(
+              (fail: FileResponse & { error: string }) =>
+                // if either of their error messages contains the other, and they're the same type and fullName, consider them the same error
+                (fail.error.includes(deployMessage.problem) || deployMessage.problem.includes(fail.error)) &&
+                fail.type === deployMessage.componentType &&
+                fail.fullName === deployMessage.fullName
+            )
+          ) {
+            // duplicate the problem message to the error property for displaying in the table
+            failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+          }
         });
       }
 
