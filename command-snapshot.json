@@ -1,5 +1,30 @@
 [
   {
+    "command": "force:source:beta:pull",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"]
+  },
+  {
+    "command": "force:source:beta:push",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "forceoverwrite", "ignorewarnings", "json", "loglevel", "targetusername", "wait"]
+  },
+  {
+    "command": "force:source:beta:status",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["all", "apiversion", "json", "local", "loglevel", "remote", "targetusername"]
+  },
+  {
+    "command": "force:source:beta:tracking:clear",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "json", "loglevel", "noprompt", "targetusername"]
+  },
+  {
+    "command": "force:source:beta:tracking:reset",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "json", "loglevel", "noprompt", "revision", "targetusername"]
+  },
+  {
     "command": "force:source:convert",
     "plugin": "@salesforce/plugin-source",
     "flags": ["json", "loglevel", "manifest", "metadata", "outputdir", "packagename", "rootdir", "sourcepath"]
