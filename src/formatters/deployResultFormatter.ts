@@ -127,9 +127,16 @@ export class DeployResultFormatter extends ResultFormatter {
   protected displayFailures(): void {
     if (this.hasStatus(RequestStatus.Failed)) {
       const failures: Array<FileResponse | DeployMessage> = [];
+      const fileResponseFailures: Map<string, string> = new Map<string, string>();
 
       if (this.fileResponses?.length) {
-        const fileResponses = this.fileResponses.filter((f) => f.state === 'Failed');
+        const fileResponses: FileResponse[] = [];
+        this.fileResponses
+          .filter((f) => f.state === 'Failed')
+          .map((f: FileResponse & { error: string }) => {
+            fileResponses.push(f);
+            fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+          });
         this.sortFileResponses(fileResponses);
         this.asRelativePaths(fileResponses);
         failures.push(...fileResponses);
@@ -139,15 +146,7 @@ export class DeployResultFormatter extends ResultFormatter {
       if (deployMessages.length > failures.length) {
         // if there's additional failures in the API response, find the failure and add it to the output
         deployMessages.map((deployMessage) => {
-          if (
-            !failures.find(
-              (fail: FileResponse & { error: string }) =>
-                // if either of their error messages contains the other, and they're the same type and fullName, consider them the same error
-                (fail.error.includes(deployMessage.problem) || deployMessage.problem.includes(fail.error)) &&
-                fail.type === deployMessage.componentType &&
-                fail.fullName === deployMessage.fullName
-            )
-          ) {
+          if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
             // duplicate the problem message to the error property for displaying in the table
             failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
           }
