@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
-import * as path from 'path';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
@@ -193,40 +192,10 @@ export class Delete extends DeployCommand {
     }
   }
 
-  // TODO: maybe move to fs in sfdx-core?
-  private readDirectoryRecursively(directory: string): string[] {
-    const files: string[] = [];
-
-    const filesInDirectory = fs.readdirSync(directory);
-    for (const file of filesInDirectory) {
-      const absolute = path.join(directory, file);
-      if (fs.statSync(absolute).isDirectory()) {
-        files.push(...this.readDirectoryRecursively(absolute));
-      } else {
-        files.push(absolute);
-      }
-    }
-    return files;
-  }
-
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
-      const paths: string[] = [];
-      this.sourceComponents.map((component) => {
-        if (component.content) {
-          if (fs.lstatSync(component.content).isDirectory()) {
-            // display all paths in the folder to be deleted
-            paths.push(...this.readDirectoryRecursively(component.content));
-          } else {
-            paths.push(component.content);
-          }
-        }
-        // this will prevent displaying the xml file twice in the confirmation
-        if (component.xml && !paths.includes(component.xml)) {
-          paths.push(component.xml);
-        }
-      });
-      const promptMessage = messages.getMessage('prompt', [paths.join('\n')]);
+      const paths = this.sourceComponents.flatMap((component) => [component.xml, ...component.walkContent()]);
+      const promptMessage = messages.getMessage('prompt', [[...new Set(paths)].join('\n')]);
 
       return confirm(promptMessage);
     }
