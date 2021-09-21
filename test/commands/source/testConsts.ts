@@ -30,6 +30,9 @@ export const exampleCustomFieldSourceComponent = {
     suffix: 'field',
     directoryName: 'fields',
   },
+  parent: {
+    xml: '/dreamhouse-lwc/force-app/main/default/objects/CustomObject__c/CustomObject__c.object-meta.xml',
+  },
   xml: '/dreamhouse-lwc/force-app/main/default/objects/CustomObject__c/fields/CustomField__c.field-meta.xml',
   content: undefined,
 };

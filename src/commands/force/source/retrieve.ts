@@ -139,7 +139,7 @@ export class Retrieve extends SourceCommand {
 
   private wantsToRetrieveCustomFields(): boolean {
     return this.componentSet.toArray().some((sourceComponent: SourceComponent) => {
-      return sourceComponent.type.name === 'CustomField';
+      return sourceComponent.type.name === 'CustomField' && sourceComponent.parent.xml;
     });
   }
 }
