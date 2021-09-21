@@ -9,7 +9,7 @@ import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { RetrieveOptions } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { Messages, Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
@@ -17,7 +17,10 @@ import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getRetrieveResult } from './retrieveResponses';
-import { exampleSourceComponent } from './testConsts';
+import { exampleSourceComponent, exampleCustomFieldSourceComponent } from './testConsts';
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 describe('force:source:retrieve', () => {
   const sandbox = sinon.createSandbox();
@@ -41,6 +44,7 @@ describe('force:source:retrieve', () => {
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
   let resolveProjectConfigStub: sinon.SinonStub;
+  let warnStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
@@ -95,6 +99,7 @@ describe('force:source:retrieve', () => {
       },
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
+    warnStub = stubMethod(sandbox, UX.prototype, 'warn');
   });
 
   afterEach(() => {
@@ -265,5 +270,20 @@ describe('force:source:retrieve', () => {
     await runRetrieveCmd(['--sourcepath', 'somepath', '--json']);
     expect(displayStub.calledOnce).to.equal(false);
     expect(getJsonStub.calledOnce).to.equal(true);
+  });
+
+  it('should warn users when retrieving CustomField', async () => {
+    const metadata = 'CustomField:CustomObject__c.CustomField__c';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleCustomFieldSourceComponent];
+      },
+    });
+    await runRetrieveCmd(['--metadata', metadata]);
+    expect(warnStub.calledOnce);
+    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
   });
 });

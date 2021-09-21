@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   RetrieveResultFormatter,
@@ -88,6 +88,11 @@ export class Retrieve extends SourceCommand {
       },
     });
 
+    const wantsToRetrieveCustomFields = this.wantsToRetrieveCustomFields();
+    if (wantsToRetrieveCustomFields) {
+      this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
+    }
+
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
     const mdapiRetrieve = await this.componentSet.retrieve({
@@ -130,5 +135,11 @@ export class Retrieve extends SourceCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private wantsToRetrieveCustomFields(): boolean {
+    return this.componentSet.toArray().some((sourceComponent: SourceComponent) => {
+      return sourceComponent.type.name === 'CustomField';
+    });
   }
 }

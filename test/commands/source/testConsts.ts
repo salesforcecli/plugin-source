@@ -22,6 +22,18 @@ export const exampleSourceComponent = {
   content: '/dreamhouse-lwc/force-app/main/default/classes/GeocodingService.cls',
 };
 
+export const exampleCustomFieldSourceComponent = {
+  name: 'CustomObject__c',
+  type: {
+    id: 'customfield',
+    name: 'CustomField',
+    suffix: 'field',
+    directoryName: 'fields',
+  },
+  xml: '/dreamhouse-lwc/force-app/main/default/objects/CustomObject__c/fields/CustomField__c.field-meta.xml',
+  content: undefined,
+};
+
 export const exampleDeployResponse = {
   result: {
     canceledBy: '0051h000006BHOq',
