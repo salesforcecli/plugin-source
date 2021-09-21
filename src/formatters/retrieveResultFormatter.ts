@@ -51,7 +51,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
     const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
     this.warnings = toArray(warnMessages);
     this.packages = options.packages || [];
-    // zipFile can become massive and unweildy with JSON parsing/terminal output and, isn't useful
+    // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
     delete this.result.response.zipFile;
   }
 
