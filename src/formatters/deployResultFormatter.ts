@@ -22,9 +22,11 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export interface DeployCommandResult extends MetadataApiDeployStatus {
+  deletedSource?: FileResponse[];
   deployedSource: FileResponse[];
   outboundFiles: string[];
   deploys: MetadataApiDeployStatus[];
+  deletes?: MetadataApiDeployStatus[];
 }
 
 export class DeployResultFormatter extends ResultFormatter {
