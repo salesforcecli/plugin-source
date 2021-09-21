@@ -11,7 +11,7 @@ import * as chalk from 'chalk';
 import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'source_tracking');
+const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
 export type SourceTrackingResetResult = {
   sourceMembersSynced: number;

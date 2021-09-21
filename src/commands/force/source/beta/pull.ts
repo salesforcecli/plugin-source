@@ -53,6 +53,7 @@ export default class SourcePull extends SfdxCommand {
     const tracking = await SourceTracking.create({
       org: this.org,
       project: this.project,
+      // API version can be undefined.  STL will determine version using project/config/org
       apiVersion: this.flags.apiversion as string,
     });
 
