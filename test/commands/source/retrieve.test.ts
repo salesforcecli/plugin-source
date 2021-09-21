@@ -272,7 +272,7 @@ describe('force:source:retrieve', () => {
     expect(getJsonStub.calledOnce).to.equal(true);
   });
 
-  it('should warn users when retrieving CustomField', async () => {
+  it('should warn users when retrieving CustomField with --metadata', async () => {
     const metadata = 'CustomField:CustomObject__c.CustomField__c';
     buildComponentSetStub.restore();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
@@ -283,6 +283,21 @@ describe('force:source:retrieve', () => {
       },
     });
     await runRetrieveCmd(['--metadata', metadata]);
+    expect(warnStub.calledOnce);
+    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+  });
+
+  it('should warn users when retrieving CustomField with --manifest', async () => {
+    const manifest = 'package.xml';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleCustomFieldSourceComponent];
+      },
+    });
+    await runRetrieveCmd(['--manifest', manifest]);
     expect(warnStub.calledOnce);
     expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
   });
