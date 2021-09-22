@@ -17,7 +17,11 @@ import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getRetrieveResult } from './retrieveResponses';
-import { exampleSourceComponent, exampleCustomFieldSourceComponent } from './testConsts';
+import {
+  exampleSourceComponent,
+  exampleCustomFieldSourceComponent,
+  exampleCustomObjectSourceComponent,
+} from './testConsts';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -273,7 +277,7 @@ describe('force:source:retrieve', () => {
   });
 
   it('should warn users when retrieving CustomField with --metadata', async () => {
-    const metadata = 'CustomField:CustomObject__c.CustomField__c';
+    const metadata = 'CustomField';
     buildComponentSetStub.restore();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
@@ -285,6 +289,20 @@ describe('force:source:retrieve', () => {
     await runRetrieveCmd(['--metadata', metadata]);
     expect(warnStub.calledOnce);
     expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+  });
+
+  it('should not warn users when retrieving CustomField,CustomObject with --metadata', async () => {
+    const metadata = 'CustomField,CustomObject';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleCustomObjectSourceComponent];
+      },
+    });
+    await runRetrieveCmd(['--metadata', metadata]);
+    expect(warnStub.callCount).to.be.equal(0);
   });
 
   it('should warn users when retrieving CustomField with --manifest', async () => {
@@ -300,5 +318,19 @@ describe('force:source:retrieve', () => {
     await runRetrieveCmd(['--manifest', manifest]);
     expect(warnStub.calledOnce);
     expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+  });
+
+  it('should not be warn users when retrieving CustomField,CustomObject with --manifest', async () => {
+    const manifest = 'package.xml';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleCustomObjectSourceComponent];
+      },
+    });
+    await runRetrieveCmd(['--manifest', manifest]);
+    expect(warnStub.callCount).to.be.equal(0);
   });
 });

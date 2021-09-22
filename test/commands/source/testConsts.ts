@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+
 export const exampleSourceComponent = {
   name: 'GeocodingService',
   type: {
@@ -24,17 +26,26 @@ export const exampleSourceComponent = {
 
 export const exampleCustomFieldSourceComponent = {
   name: 'CustomObject__c',
+  fullName: ComponentSet.WILDCARD,
   type: {
     id: 'customfield',
     name: 'CustomField',
     suffix: 'field',
     directoryName: 'fields',
   },
-  parent: {
-    xml: '/dreamhouse-lwc/force-app/main/default/objects/CustomObject__c/CustomObject__c.object-meta.xml',
-  },
   xml: '/dreamhouse-lwc/force-app/main/default/objects/CustomObject__c/fields/CustomField__c.field-meta.xml',
-  content: undefined,
+};
+
+export const exampleCustomObjectSourceComponent = {
+  name: 'CustomObject__c',
+  fullName: 'CustomObject__c',
+  type: {
+    id: 'customobject',
+    name: 'CustomObject',
+    suffix: 'object',
+    directoryName: 'objects',
+  },
+  xml: '/dreamhouse-lwc/force-app/main/default/objects/CustomObject__c/CustomObject__c.object-meta.xml',
 };
 
 export const exampleDeployResponse = {
