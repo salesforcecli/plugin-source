@@ -88,9 +88,10 @@ export class Retrieve extends SourceCommand {
       },
     });
 
-    const wantsToRetrieveCustomFields = this.wantsToRetrieveCustomFields();
-    if (wantsToRetrieveCustomFields) {
-      this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
+    if (this.getFlag<string>('manifest') || this.getFlag<string>('metadata')) {
+      if (this.wantsToRetrieveCustomFields()) {
+        this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
+      }
     }
 
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
@@ -138,6 +139,7 @@ export class Retrieve extends SourceCommand {
   }
 
   private wantsToRetrieveCustomFields(): boolean {
+    // return this.componentSet.has({ fullName: ComponentSet.WILDCARD, type: 'CustomField' });
     const hasCustomField = this.componentSet.toArray().some((sourceComponent: SourceComponent) => {
       return sourceComponent.type.name === 'CustomField' && sourceComponent.fullName === ComponentSet.WILDCARD;
     });
