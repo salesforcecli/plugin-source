@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult, RequestStatus, SourceComponent, ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, RequestStatus, ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   RetrieveResultFormatter,
@@ -139,12 +139,14 @@ export class Retrieve extends SourceCommand {
   }
 
   private wantsToRetrieveCustomFields(): boolean {
-    // return this.componentSet.has({ fullName: ComponentSet.WILDCARD, type: 'CustomField' });
-    const hasCustomField = this.componentSet.toArray().some((sourceComponent: SourceComponent) => {
-      return sourceComponent.type.name === 'CustomField' && sourceComponent.fullName === ComponentSet.WILDCARD;
+    const hasCustomField = this.componentSet.has({
+      type: { name: 'CustomField', id: 'customfield' },
+      fullName: ComponentSet.WILDCARD,
     });
-    const hasCustomObject = this.componentSet.toArray().some((sourceComponent: SourceComponent) => {
-      return sourceComponent.type.name === 'CustomObject' && sourceComponent.fullName === ComponentSet.WILDCARD;
+
+    const hasCustomObject = this.componentSet.has({
+      type: { name: 'CustomObject', id: 'customobject' },
+      fullName: ComponentSet.WILDCARD,
     });
     return hasCustomField && !hasCustomObject;
   }
