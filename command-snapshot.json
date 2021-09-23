@@ -5,6 +5,23 @@
     "flags": ["json", "loglevel", "manifest", "metadata", "outputdir", "packagename", "rootdir", "sourcepath"]
   },
   {
+    "command": "force:source:delete",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "checkonly",
+      "json",
+      "loglevel",
+      "metadata",
+      "noprompt",
+      "sourcepath",
+      "targetusername",
+      "testlevel",
+      "verbose",
+      "wait"
+    ]
+  },
+  {
     "command": "force:source:deploy",
     "plugin": "@salesforce/plugin-source",
     "flags": [
