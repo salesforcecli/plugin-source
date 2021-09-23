@@ -15,6 +15,7 @@ import {
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
+  DeployMessage,
 } from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
@@ -22,9 +23,11 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export interface DeployCommandResult extends MetadataApiDeployStatus {
+  deletedSource?: FileResponse[];
   deployedSource: FileResponse[];
   outboundFiles: string[];
   deploys: MetadataApiDeployStatus[];
+  deletes?: MetadataApiDeployStatus[];
 }
 
 export class DeployResultFormatter extends ResultFormatter {
@@ -124,10 +127,33 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    if (this.hasStatus(RequestStatus.Failed) && this.fileResponses?.length) {
-      const failures = this.fileResponses.filter((f) => f.state === 'Failed');
-      this.sortFileResponses(failures);
-      this.asRelativePaths(failures);
+    if (this.hasStatus(RequestStatus.Failed)) {
+      const failures: Array<FileResponse | DeployMessage> = [];
+      const fileResponseFailures: Map<string, string> = new Map<string, string>();
+
+      if (this.fileResponses?.length) {
+        const fileResponses: FileResponse[] = [];
+        this.fileResponses
+          .filter((f) => f.state === 'Failed')
+          .map((f: FileResponse & { error: string }) => {
+            fileResponses.push(f);
+            fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+          });
+        this.sortFileResponses(fileResponses);
+        this.asRelativePaths(fileResponses);
+        failures.push(...fileResponses);
+      }
+
+      const deployMessages = toArray(this.result?.response?.details?.componentFailures);
+      if (deployMessages.length > failures.length) {
+        // if there's additional failures in the API response, find the failure and add it to the output
+        deployMessages.map((deployMessage) => {
+          if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
+            // duplicate the problem message to the error property for displaying in the table
+            failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+          }
+        });
+      }
 
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));

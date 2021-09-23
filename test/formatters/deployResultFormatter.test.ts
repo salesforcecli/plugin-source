@@ -90,13 +90,13 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
-    it('should output as expected for a failure', async () => {
+    it('should output as expected for a failure and exclude duplicate information', async () => {
       const formatter = new DeployResultFormatter(logger, ux, {}, deployResultFailure);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
       expect(logStub.calledTwice).to.equal(true);
       expect(tableStub.called).to.equal(true);
-      expect(styledHeaderStub.firstCall.args[0]).to.contain('Component Failures [1]');
+      expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
       const fileResponses = deployResultFailure.getFileResponses();
       resolveExpectedPaths(fileResponses);
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
@@ -105,32 +105,35 @@ describe('DeployResultFormatter', () => {
     it('should output as expected for a test failure with verbose', async () => {
       const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestFailure);
       formatter.display();
-      expect(styledHeaderStub.calledTwice).to.equal(true);
-      expect(logStub.callCount).to.equal(5);
-      expect(tableStub.calledTwice).to.equal(true);
-      expect(styledHeaderStub.firstCall.args[0]).to.contain('Test Failures [1]');
-      expect(styledHeaderStub.secondCall.args[0]).to.contain('Apex Code Coverage');
+      expect(styledHeaderStub.calledThrice).to.equal(true);
+      expect(logStub.callCount).to.equal(7);
+      expect(tableStub.calledThrice).to.equal(true);
+      expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
+      expect(styledHeaderStub.args[1][0]).to.include('Test Failures [1]');
+      expect(styledHeaderStub.args[2][0]).to.include('Apex Code Coverage');
     });
 
     it('should output as expected for passing tests with verbose', async () => {
       const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestSuccess);
       formatter.display();
-      expect(styledHeaderStub.calledTwice).to.equal(true);
-      expect(logStub.callCount).to.equal(5);
-      expect(tableStub.calledTwice).to.equal(true);
-      expect(styledHeaderStub.firstCall.args[0]).to.contain('Test Success [1]');
-      expect(styledHeaderStub.secondCall.args[0]).to.contain('Apex Code Coverage');
+      expect(styledHeaderStub.calledThrice).to.equal(true);
+      expect(logStub.callCount).to.equal(7);
+      expect(tableStub.calledThrice).to.equal(true);
+      expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
+      expect(styledHeaderStub.args[1][0]).to.include('Test Success [1]');
+      expect(styledHeaderStub.args[2][0]).to.include('Apex Code Coverage');
     });
 
     it('should output as expected for passing and failing tests with verbose', async () => {
       const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestSuccessAndFailure);
       formatter.display();
-      expect(styledHeaderStub.callCount).to.equal(3);
-      expect(logStub.callCount).to.equal(6);
-      expect(tableStub.callCount).to.equal(3);
-      expect(styledHeaderStub.firstCall.args[0]).to.contain('Test Failures [2]');
-      expect(styledHeaderStub.secondCall.args[0]).to.contain('Test Success [1]');
-      expect(styledHeaderStub.thirdCall.args[0]).to.contain('Apex Code Coverage');
+      expect(styledHeaderStub.callCount).to.equal(4);
+      expect(logStub.callCount).to.equal(8);
+      expect(tableStub.callCount).to.equal(4);
+      expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
+      expect(styledHeaderStub.args[1][0]).to.include('Test Failures [2]');
+      expect(styledHeaderStub.args[2][0]).to.include('Test Success [1]');
+      expect(styledHeaderStub.args[3][0]).to.include('Apex Code Coverage');
     });
   });
 });
