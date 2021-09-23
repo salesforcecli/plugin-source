@@ -8,9 +8,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
+import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
-import { FileResponse } from '@salesforce/source-deploy-retrieve';
 
 describe('metadata types that go in folders', () => {
   let session: TestSession;
@@ -35,43 +35,46 @@ describe('metadata types that go in folders', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
-    const getExpectedSource = (state: 'Created' | 'Changed') => ([
+    const getExpectedSource = (state: 'Created' | 'Changed') => [
       {
         fullName: 'Top_Level_Folder',
         type: 'EmailFolder',
         state,
         filePath: path.join('default', 'email', 'Top_Level_Folder.emailFolder-meta.xml'),
-      }, {
+      },
+      {
         fullName: 'Top_Level_Folder/Template_in_folder',
         type: 'EmailTemplate',
         state,
         filePath: path.join('email', 'Top_Level_Folder', 'Template_in_folder.email'),
-      }, {
+      },
+      {
         fullName: 'Top_Level_Folder/Template_in_folder',
         type: 'EmailTemplate',
         state,
         filePath: path.join('email', 'Top_Level_Folder', 'Template_in_folder.email-meta.xml'),
-      }, {
+      },
+      {
         fullName: 'unfiled$public/Top_level_email',
         type: 'EmailTemplate',
         state,
         filePath: path.join('email', 'unfiled$public', 'Top_level_email.email'),
-      }, {
+      },
+      {
         fullName: 'unfiled$public/Top_level_email',
         type: 'EmailTemplate',
         state,
         filePath: path.join('email', 'unfiled$public', 'Top_level_email.email-meta.xml'),
-      }
-    ]);
+      },
+    ];
 
     const getRelativeFileResponses = (resp: FileResponse[]) => {
-      return resp.map(s => {
-        let { fullName, type, state, filePath } = s;
+      return resp.map((s) => {
         // grab the last 2 directories with the file only
-        filePath = s.filePath.split(path.sep).slice(-3).join(path.sep);
-        return { fullName, type, state, filePath };
+        s.filePath = s.filePath.split(path.sep).slice(-3).join(path.sep);
+        return s;
       });
-    }
+    };
 
     it('can generate manifest for just the emailTemplates', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');
@@ -81,7 +84,7 @@ describe('metadata types that go in folders', () => {
 
     it('can deploy email templates via the manifest', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json').jsonOutput;
-      expect(deployResults.status, JSON.stringify(deployResults)).to.equal(0); 
+      expect(deployResults.status, JSON.stringify(deployResults)).to.equal(0);
       const deployedSource = getRelativeFileResponses(deployResults.result.deployedSource);
       expect(deployedSource).to.have.deep.members(getExpectedSource('Created'));
     });
