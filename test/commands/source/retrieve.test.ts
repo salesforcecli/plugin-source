@@ -149,7 +149,7 @@ describe('force:source:retrieve', () => {
     expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.inboundFiles);
   };
 
-  it.skip('should pass along sourcepath', async () => {
+  it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
     const result = await runRetrieveCmd(['--sourcepath', sourcepath[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
@@ -158,7 +158,7 @@ describe('force:source:retrieve', () => {
     ensureHookArgs();
   });
 
-  it.skip('should pass along metadata', async () => {
+  it('should pass along metadata', async () => {
     const metadata = ['ApexClass:MyClass'];
     const result = await runRetrieveCmd(['--metadata', metadata[0], '--json']);
     expect(result).to.deep.equal(expectedResults);
@@ -172,7 +172,7 @@ describe('force:source:retrieve', () => {
     ensureHookArgs();
   });
 
-  it.skip('should pass along manifest', async () => {
+  it('should pass along manifest', async () => {
     const manifest = 'package.xml';
     const result = await runRetrieveCmd(['--manifest', manifest, '--json']);
     expect(result).to.deep.equal(expectedResults);
@@ -186,7 +186,7 @@ describe('force:source:retrieve', () => {
     ensureHookArgs();
   });
 
-  it.skip('should pass along apiversion', async () => {
+  it('should pass along apiversion', async () => {
     const manifest = 'package.xml';
     const apiversion = '50.0';
     const result = await runRetrieveCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
@@ -202,7 +202,7 @@ describe('force:source:retrieve', () => {
     ensureHookArgs();
   });
 
-  it.skip('should pass along sourceapiversion', async () => {
+  it('should pass along sourceapiversion', async () => {
     const sourceApiVersion = '50.0';
     resolveProjectConfigStub.resolves({ sourceApiVersion });
     const manifest = 'package.xml';
@@ -219,7 +219,7 @@ describe('force:source:retrieve', () => {
     ensureHookArgs();
   });
 
-  it.skip('should pass along packagenames', async () => {
+  it('should pass along packagenames', async () => {
     const manifest = 'package.xml';
     const packagenames = ['package1'];
     const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames[0], '--json']);
@@ -238,7 +238,7 @@ describe('force:source:retrieve', () => {
     expectedResults.packages = [];
   });
 
-  it.skip('should pass along multiple packagenames', async () => {
+  it('should pass along multiple packagenames', async () => {
     const manifest = 'package.xml';
     const packagenames = ['package1', 'package2'];
     const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames.join(','), '--json']);
@@ -259,7 +259,7 @@ describe('force:source:retrieve', () => {
     expectedResults.packages = [];
   });
 
-  it.skip('should display output with no --json', async () => {
+  it('should display output with no --json', async () => {
     const displayStub = sandbox.stub(RetrieveResultFormatter.prototype, 'display');
     const getJsonStub = sandbox.stub(RetrieveResultFormatter.prototype, 'getJson');
     await runRetrieveCmd(['--sourcepath', 'somepath']);
@@ -267,7 +267,7 @@ describe('force:source:retrieve', () => {
     expect(getJsonStub.calledOnce).to.equal(true);
   });
 
-  it.skip('should NOT display output with --json', async () => {
+  it('should NOT display output with --json', async () => {
     const displayStub = sandbox.stub(RetrieveResultFormatter.prototype, 'display');
     const getJsonStub = sandbox.stub(RetrieveResultFormatter.prototype, 'getJson');
     await runRetrieveCmd(['--sourcepath', 'somepath', '--json']);
