@@ -8,7 +8,7 @@
     "@oclif/config": "^1",
     "@salesforce/command": "^4.0.4",
     "@salesforce/core": "^2.26.1",
-    "@salesforce/source-deploy-retrieve": "^4.4.1",
+    "@salesforce/source-deploy-retrieve": "^4.4.6",
     "chalk": "^4.1.1",
     "cli-ux": "^5.6.3",
     "open": "^8.2.1",
@@ -113,8 +113,8 @@
   "repository": "salesforcecli/plugin-source",
   "scripts": {
     "build": "sf-build",
-    "clean": "sf-clean",
-    "clean-all": "sf-clean all",
+    "clean": "sf-clean && shx rm -rf ./test/nuts/generated",
+    "clean-all": "sf-clean all && shx rm -rf ./test/nuts/generated",
     "clean:lib": "shx rm -rf lib && shx rm -rf coverage && shx rm -rf .nyc_output && shx rm -f oclif.manifest.json",
     "compile": "sf-compile",
     "docs": "sf-docs",
@@ -133,6 +133,7 @@
     "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:manifest:create": "nyc mocha \"test/nuts/create.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:folders": "nyc mocha \"test/nuts/folderTypes.nut.ts\" --slow 3000 --timeout 600000",
     "test:nuts:delete": "nyc mocha \"test/nuts/delete.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "version": "oclif-dev readme"
   },
