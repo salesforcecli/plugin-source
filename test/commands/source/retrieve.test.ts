@@ -285,7 +285,7 @@ describe('force:source:retrieve', () => {
         return [exampleSourceComponent];
       },
       has: (component: ComponentLike) => {
-        expect(component).to.be.a.a('object').and.to.have.property('type');
+        expect(component).to.be.a('object').and.to.have.property('type');
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
         const type = component.type as MetadataType;
         if (type.name === 'CustomField') {
@@ -311,7 +311,7 @@ describe('force:source:retrieve', () => {
         return [exampleSourceComponent];
       },
       has: (component: ComponentLike) => {
-        expect(component).to.be.a.a('object').and.to.have.property('type');
+        expect(component).to.be.a('object').and.to.have.property('type');
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
         const type = component.type as MetadataType;
         if (type.name === 'CustomField') {
@@ -336,7 +336,7 @@ describe('force:source:retrieve', () => {
         return [exampleSourceComponent];
       },
       has: (component: ComponentLike) => {
-        expect(component).to.be.a.a('object').and.to.have.property('type');
+        expect(component).to.be.a('object').and.to.have.property('type');
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
         const type = component.type as MetadataType;
         if (type.name === 'CustomField') {
@@ -362,7 +362,7 @@ describe('force:source:retrieve', () => {
         return [exampleSourceComponent];
       },
       has: (component: ComponentLike) => {
-        expect(component).to.be.a.a('object').and.to.have.property('type');
+        expect(component).to.be.a('object').and.to.have.property('type');
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
         const type = component.type as MetadataType;
         if (type.name === 'CustomField') {
