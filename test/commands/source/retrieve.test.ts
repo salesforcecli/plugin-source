@@ -284,6 +284,13 @@ describe('force:source:retrieve', () => {
       toArray: () => {
         return [exampleSourceComponent];
       },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+      },
       has: (component: ComponentLike) => {
         expect(component).to.be.a('object').and.to.have.property('type');
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
@@ -310,6 +317,13 @@ describe('force:source:retrieve', () => {
       toArray: () => {
         return [exampleSourceComponent];
       },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+      },
       has: (component: ComponentLike) => {
         expect(component).to.be.a('object').and.to.have.property('type');
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
@@ -334,6 +348,13 @@ describe('force:source:retrieve', () => {
       getPackageXml: () => packageXml,
       toArray: () => {
         return [exampleSourceComponent];
+      },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
       },
       has: (component: ComponentLike) => {
         expect(component).to.be.a('object').and.to.have.property('type');
@@ -360,6 +381,13 @@ describe('force:source:retrieve', () => {
       getPackageXml: () => packageXml,
       toArray: () => {
         return [exampleSourceComponent];
+      },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
       },
       has: (component: ComponentLike) => {
         expect(component).to.be.a('object').and.to.have.property('type');

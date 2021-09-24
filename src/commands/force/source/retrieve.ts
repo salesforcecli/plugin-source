@@ -91,7 +91,7 @@ export class Retrieve extends SourceCommand {
     if (this.getFlag<string>('manifest') || this.getFlag<string>('metadata')) {
       if (this.wantsToRetrieveCustomFields()) {
         this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
-        this.componentSet.add({ fullName: '*', type: { id: 'customobject', name: 'CustomObject' } });
+        this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
       }
     }
 
