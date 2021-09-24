@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/salesforcecli/plugin-source/compare/v1.0.16...v1.1.0) (2021-09-24)
+
+
+### Features
+
+* source:delete ([#199](https://github.com/salesforcecli/plugin-source/issues/199)) ([4c443c8](https://github.com/salesforcecli/plugin-source/commit/4c443c818c64829e0043932fb6fc4c0823207ebd))
+
+
+### Bug Fixes
+
+* find server errors and display them with FileResponse errors ([#210](https://github.com/salesforcecli/plugin-source/issues/210)) ([99df1ca](https://github.com/salesforcecli/plugin-source/commit/99df1ca41e83eba15646545f94c1e2ff713a6da9))
+
 ### [1.0.16](https://github.com/salesforcecli/plugin-source/compare/v1.0.15...v1.0.16) (2021-09-10)
 
 ### [1.0.15](https://github.com/salesforcecli/plugin-source/compare/v1.0.14...v1.0.15) (2021-09-09)

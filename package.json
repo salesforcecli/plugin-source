@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-source",
   "description": "Commands to interact with source formatted metadata",
-  "version": "1.0.16",
+  "version": "1.1.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
@@ -113,8 +113,8 @@
   "repository": "salesforcecli/plugin-source",
   "scripts": {
     "build": "sf-build",
-    "clean": "sf-clean && shx rm -rf ./test/nuts/generated",
-    "clean-all": "sf-clean all && shx rm -rf ./test/nuts/generated",
+    "clean": "sf-clean",
+    "clean-all": "sf-clean all",
     "clean:lib": "shx rm -rf lib && shx rm -rf coverage && shx rm -rf .nyc_output && shx rm -f oclif.manifest.json",
     "compile": "sf-compile",
     "docs": "sf-docs",
@@ -130,11 +130,11 @@
     "test:deprecation-policy": "./bin/run snapshot:compare",
     "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:convert": "PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:manifest:create": "nyc mocha \"test/nuts/create.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:folders": "nyc mocha \"test/nuts/folderTypes.nut.ts\" --slow 3000 --timeout 600000",
     "test:nuts:delete": "nyc mocha \"test/nuts/delete.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:folders": "nyc mocha \"test/nuts/folderTypes.nut.ts\" --slow 3000 --timeout 600000",
+    "test:nuts:manifest:create": "nyc mocha \"test/nuts/create.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {
