@@ -31,5 +31,6 @@
   "metadataNotFoundWarning": "WARNING: The following metadata isn’t in your org. If it’s not new, someone deleted it from the org.",
   "columnNumberColumn": "COLUMN NUMBER",
   "lineNumberColumn": "LINE NUMBER",
-  "errorColumn": "PROBLEM"
+  "errorColumn": "PROBLEM",
+  "wantsToRetrieveCustomFields": "Because you're retrieving one or more CustomFields, we're also retrieving the CustomObject to which it's associated."
 }

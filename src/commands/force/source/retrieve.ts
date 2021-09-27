@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, RequestStatus, ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   RetrieveResultFormatter,
@@ -88,6 +88,13 @@ export class Retrieve extends SourceCommand {
       },
     });
 
+    if (this.getFlag<string>('manifest') || this.getFlag<string>('metadata')) {
+      if (this.wantsToRetrieveCustomFields()) {
+        this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
+        this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
+      }
+    }
+
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
     const mdapiRetrieve = await this.componentSet.retrieve({
@@ -130,5 +137,18 @@ export class Retrieve extends SourceCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private wantsToRetrieveCustomFields(): boolean {
+    const hasCustomField = this.componentSet.has({
+      type: { name: 'CustomField', id: 'customfield' },
+      fullName: ComponentSet.WILDCARD,
+    });
+
+    const hasCustomObject = this.componentSet.has({
+      type: { name: 'CustomObject', id: 'customobject' },
+      fullName: ComponentSet.WILDCARD,
+    });
+    return hasCustomField && !hasCustomObject;
   }
 }

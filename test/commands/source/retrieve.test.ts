@@ -8,8 +8,8 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { RetrieveOptions } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { RetrieveOptions, ComponentLike, ComponentSet, MetadataType } from '@salesforce/source-deploy-retrieve';
+import { Messages, Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
@@ -18,6 +18,9 @@ import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/for
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getRetrieveResult } from './retrieveResponses';
 import { exampleSourceComponent } from './testConsts';
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 describe('force:source:retrieve', () => {
   const sandbox = sinon.createSandbox();
@@ -41,6 +44,7 @@ describe('force:source:retrieve', () => {
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
   let resolveProjectConfigStub: sinon.SinonStub;
+  let warnStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
@@ -93,8 +97,12 @@ describe('force:source:retrieve', () => {
       toArray: () => {
         return [exampleSourceComponent];
       },
+      has: () => {
+        return false;
+      },
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
+    warnStub = stubMethod(sandbox, UX.prototype, 'warn');
   });
 
   afterEach(() => {
@@ -265,5 +273,135 @@ describe('force:source:retrieve', () => {
     await runRetrieveCmd(['--sourcepath', 'somepath', '--json']);
     expect(displayStub.calledOnce).to.equal(false);
     expect(getJsonStub.calledOnce).to.equal(true);
+  });
+
+  it('should warn users when retrieving CustomField with --metadata', async () => {
+    const metadata = 'CustomField';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+      },
+      has: (component: ComponentLike) => {
+        expect(component).to.be.a('object').and.to.have.property('type');
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+        const type = component.type as MetadataType;
+        if (type.name === 'CustomField') {
+          return true;
+        }
+        if (type.name === 'CustomObject') {
+          return false;
+        }
+      },
+    });
+    await runRetrieveCmd(['--metadata', metadata]);
+    expect(warnStub.calledOnce);
+    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+  });
+
+  it('should not warn users when retrieving CustomField,CustomObject with --metadata', async () => {
+    const metadata = 'CustomField,CustomObject';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+      },
+      has: (component: ComponentLike) => {
+        expect(component).to.be.a('object').and.to.have.property('type');
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+        const type = component.type as MetadataType;
+        if (type.name === 'CustomField') {
+          return true;
+        }
+        if (type.name === 'CustomObject') {
+          return true;
+        }
+      },
+    });
+    await runRetrieveCmd(['--metadata', metadata]);
+    expect(warnStub.callCount).to.be.equal(0);
+  });
+
+  it('should warn users when retrieving CustomField with --manifest', async () => {
+    const manifest = 'package.xml';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+      },
+      has: (component: ComponentLike) => {
+        expect(component).to.be.a('object').and.to.have.property('type');
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+        const type = component.type as MetadataType;
+        if (type.name === 'CustomField') {
+          return true;
+        }
+        if (type.name === 'CustomObject') {
+          return false;
+        }
+      },
+    });
+    await runRetrieveCmd(['--manifest', manifest]);
+    expect(warnStub.calledOnce);
+    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+  });
+
+  it('should not be warn users when retrieving CustomField,CustomObject with --manifest', async () => {
+    const manifest = 'package.xml';
+    buildComponentSetStub.restore();
+    buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      retrieve: retrieveStub,
+      getPackageXml: () => packageXml,
+      toArray: () => {
+        return [exampleSourceComponent];
+      },
+      add: (component: ComponentLike) => {
+        expect(component)
+          .to.be.a('object')
+          .and.to.have.property('type')
+          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+      },
+      has: (component: ComponentLike) => {
+        expect(component).to.be.a('object').and.to.have.property('type');
+        expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
+        const type = component.type as MetadataType;
+        if (type.name === 'CustomField') {
+          return true;
+        }
+        if (type.name === 'CustomObject') {
+          return true;
+        }
+      },
+    });
+    await runRetrieveCmd(['--manifest', manifest]);
+    expect(warnStub.callCount).to.be.equal(0);
   });
 });
