@@ -131,6 +131,7 @@
     "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:convert": "PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:delete": "nyc mocha \"test/nuts/delete.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:destructive": "nyc mocha \"test/nuts/deployDestructive.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "test:nuts:folders": "nyc mocha \"test/nuts/folderTypes.nut.ts\" --slow 3000 --timeout 600000",
     "test:nuts:manifest:create": "nyc mocha \"test/nuts/create.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",

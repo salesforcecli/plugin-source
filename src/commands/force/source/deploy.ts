@@ -8,12 +8,11 @@ import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { AsyncResult, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
-import { Duration } from '@salesforce/kit';
+import { Duration, env, once } from '@salesforce/kit';
 import { getString, isString } from '@salesforce/ts-types';
-import { env, once } from '@salesforce/kit';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
-import { DeployResultFormatter, DeployCommandResult } from '../../../formatters/deployResultFormatter';
+import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../formatters/deployAsyncResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
@@ -107,6 +106,12 @@ export class Deploy extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
+    destructivechangespre: flags.filepath({
+      description: messages.getMessage('flags.destructivechangespre'),
+    }),
+    destructivechangespost: flags.filepath({
+      description: messages.getMessage('flags.destructivechangespre'),
+    }),
   };
   protected xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
@@ -149,6 +154,8 @@ export class Deploy extends DeployCommand {
         manifest: this.flags.manifest && {
           manifestPath: this.getFlag<string>('manifest'),
           directoryPaths: this.getPackageDirs(),
+          destructiveChangesPre: this.getFlag<string>('destructivechangespre'),
+          destructiveChangesPost: this.getFlag<string>('destructivechangespost'),
         },
         metadata: this.flags.metadata && {
           metadataEntries: this.getFlag<string[]>('metadata'),

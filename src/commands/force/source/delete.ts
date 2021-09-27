@@ -8,8 +8,13 @@ import * as os from 'os';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
-import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { Duration, once, env } from '@salesforce/kit';
+import {
+  ComponentSet,
+  DestructiveChangesType,
+  RequestStatus,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
+import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -114,7 +119,7 @@ export class Delete extends DeployCommand {
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
     this.sourceComponents.map((component) => {
-      cs.add(component, true);
+      cs.add(component, DestructiveChangesType.POST);
     });
     this.componentSet = cs;
 

@@ -25,7 +25,9 @@
     "ignoreErrors": "ignore any errors and do not roll back deployment",
     "ignoreWarnings": "whether a warning will allow a deployment to complete successfully",
     "validateDeployRequestId": "deploy request ID of the validated deployment to run a Quick Deploy",
-    "soapDeploy": "deploy metadata with SOAP API instead of REST API"
+    "soapDeploy": "deploy metadata with SOAP API instead of REST API",
+    "destructivechangespre": "file path for manifest (destructivechangespre.xml) of components to delete before the deploy",
+    "destructivechangespost": "file path for manifest (destructivechangespost.xml) of components to delete after the deploy"
   },
   "flagsLong": {
     "sourcePath": [
