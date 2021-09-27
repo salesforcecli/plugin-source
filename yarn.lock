@@ -835,17 +835,16 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.4.1.tgz#892cc5918aa46553536cf15c461428a6a3a1a4b7"
-  integrity sha512-9oMVdHZIUr1yrKxLsBL1VTb3tFR94oWOrGaHMkYGKDQ1ruM9PPbm7bSMbTFY0uSnIGE6/hQeIHXYePlseRaJog==
+"@salesforce/source-deploy-retrieve@^4.4.6":
+  version "4.4.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.4.6.tgz#a0105165d22d17fc0ac2a886782618afa444cf13"
+  integrity sha512-r82GFgejyOz7RzdSbc1NhnRV+TVG4UREt1+PKDcXMimXtcYSEHwIK4tNUfPAGe6vyxImTr8DSF2vv5KWNGRV4w==
   dependencies:
     "@salesforce/core" "2.25.1"
     "@salesforce/kit" "^1.5.0"
     "@salesforce/ts-types" "^1.4.2"
     archiver "^5.3.0"
     fast-xml-parser "^3.17.4"
-    gitignore-parser "0.0.2"
     ignore "^5.1.8"
     mime "2.4.6"
     unzipper "0.10.11"
