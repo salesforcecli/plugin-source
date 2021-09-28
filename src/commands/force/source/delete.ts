@@ -9,7 +9,7 @@ import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
 import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { Duration, once, env } from '@salesforce/kit';
+import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -68,7 +68,6 @@ export class Delete extends DeployCommand {
   };
   protected xorFlags = ['metadata', 'sourcepath'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  private sourceComponents: SourceComponent[];
   private isRest = false;
   private deleteResultFormatter: DeleteResultFormatter;
   private aborted = false;
@@ -103,9 +102,7 @@ export class Delete extends DeployCommand {
       },
     });
 
-    this.sourceComponents = this.componentSet.getSourceComponents().toArray();
-
-    if (!this.sourceComponents.length) {
+    if (!this.componentSet.toArray().length) {
       // if we didn't find any components to delete, let the user know and exit
       this.deleteResultFormatter.displayNoResultsFound();
       return;
@@ -113,8 +110,13 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
-    this.sourceComponents.map((component) => {
-      cs.add(component, true);
+    this.componentSet.toArray().map((component) => {
+      if (component instanceof SourceComponent) {
+        cs.add(component, true);
+      } else {
+        // a remote-only delete
+        cs.add(new SourceComponent({ name: component.fullName, type: component.type }), true);
+      }
     });
     this.componentSet = cs;
 
@@ -174,7 +176,7 @@ export class Delete extends DeployCommand {
 
   private deleteFilesLocally(): void {
     if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
-      this.sourceComponents.map((component) => {
+      this.componentSet.toArray().map((component: SourceComponent) => {
         // delete the content and/or the xml of the components
         if (component.content) {
           const stats = fs.lstatSync(component.content);
@@ -194,7 +196,9 @@ export class Delete extends DeployCommand {
 
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
-      const paths = this.sourceComponents.flatMap((component) => [component.xml, ...component.walkContent()]);
+      const paths = this.componentSet
+        .toArray()
+        .flatMap((component: SourceComponent) => [component.xml, ...component.walkContent()]);
       const promptMessage = messages.getMessage('prompt', [[...new Set(paths)].join('\n')]);
 
       return confirm(promptMessage);

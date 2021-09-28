@@ -11,6 +11,7 @@ import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { fs } from '@salesforce/core';
+import { exec } from 'shelljs';
 
 describe('source:delete NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
@@ -66,9 +67,9 @@ describe('source:delete NUTs', () => {
     expect(fs.fileExistsSync(pathToClass)).to.be.false;
   });
 
-  it('should source:delete all Prompts using the metadata param', () => {
+  it('should source:delete all Prompts using the sourcepath param', () => {
     const response = execCmd<{ deletedSource: [{ filePath: string }] }>(
-      'force:source:delete --json --noprompt --metadata Prompt',
+      `force:source:delete --json --noprompt --sourcepath ${path.join('force-app', 'main', 'default', 'prompts')}`,
       {
         ensureExitCode: 0,
       }
@@ -89,6 +90,35 @@ describe('source:delete NUTs', () => {
     ).jsonOutput.result;
     expect(response.deletedSource).to.have.length(2);
     expect(fs.fileExistsSync(pathToClass)).to.be.false;
+  });
+
+  it('should source:delete a remote-only ApexClass from the org', async () => {
+    const { apexName, pathToClass } = createApexClass();
+    const query = () => {
+      return JSON.parse(
+        exec(
+          `sfdx force:data:soql:query -q "SELECT IsNameObsolete FROM SourceMember WHERE MemberType='ApexClass' AND MemberName='${apexName}' LIMIT 1" -t --json`,
+          { silent: true }
+        )
+      ) as { result: { records: Array<{ IsNameObsolete: boolean }> } };
+    };
+
+    let soql = query();
+    // the ApexClass is present in the org
+    expect(soql.result.records[0].IsNameObsolete).to.be.false;
+    await testkit.deleteGlobs(['force-app/main/default/classes/myApexClass.*']);
+    const response = execCmd<{ deletedSource: [{ filePath: string }] }>(
+      `force:source:delete --json --noprompt --metadata ApexClass:${apexName}`,
+      {
+        ensureExitCode: 0,
+      }
+    ).jsonOutput.result;
+    // remote only delete won't have an associated filepath
+    expect(response.deletedSource).to.have.length(0);
+    expect(fs.fileExistsSync(pathToClass)).to.be.false;
+    soql = query();
+    // the apex class has been deleted in the org
+    expect(soql.result.records[0].IsNameObsolete).to.be.true;
   });
 
   it('should NOT delete local files with --checkonly', () => {

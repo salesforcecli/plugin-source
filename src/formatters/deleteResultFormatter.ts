@@ -4,12 +4,12 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { DeployResult } from '@salesforce/source-deploy-retrieve';
+import { DeployMessage, DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import * as chalk from 'chalk';
 import { DeployCommandResult, DeployResultFormatter } from './deployResultFormatter';
-import { ResultFormatterOptions } from './resultFormatter';
+import { ResultFormatterOptions, toArray } from './resultFormatter';
 
 export class DeleteResultFormatter extends DeployResultFormatter {
   public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result?: DeployResult) {
@@ -37,13 +37,36 @@ export class DeleteResultFormatter extends DeployResultFormatter {
   }
 
   protected displaySuccesses(): void {
-    if (this.isSuccess() && this.fileResponses?.length) {
-      const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
-      if (!successes.length) {
-        return;
+    if (this.isSuccess()) {
+      const successes: Array<FileResponse | DeployMessage> = [];
+      const fileResponseSuccesses: Map<string, FileResponse> = new Map<string, FileResponse>();
+
+      if (this.fileResponses?.length) {
+        const fileResponses: FileResponse[] = [];
+        this.fileResponses.map((f: FileResponse) => {
+          fileResponses.push(f);
+          fileResponseSuccesses.set(`${f.type}#${f.fullName}`, f);
+        });
+        this.sortFileResponses(fileResponses);
+        this.asRelativePaths(fileResponses);
+        successes.push(...fileResponses);
       }
-      this.sortFileResponses(successes);
-      this.asRelativePaths(successes);
+
+      const deployMessages = toArray(this.result?.response?.details?.componentSuccesses).filter(
+        (item) => !item.fileName.includes('package.xml')
+      );
+      if (deployMessages.length >= successes.length) {
+        // if there's additional successes in the API response, find the success and add it to the output
+        deployMessages.map((deployMessage) => {
+          if (!fileResponseSuccesses.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
+            successes.push(
+              Object.assign(deployMessage, {
+                type: deployMessage.componentType,
+              })
+            );
+          }
+        });
+      }
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deleted Source'));

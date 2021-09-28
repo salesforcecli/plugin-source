@@ -7,7 +7,7 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { fs, Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
@@ -78,12 +78,8 @@ describe('force:source:delete', () => {
   beforeEach(() => {
     resolveProjectConfigStub = sandbox.stub();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
-      getSourceComponents: () => {
-        return {
-          toArray: () => {
-            return [exampleSourceComponent];
-          },
-        };
+      toArray: () => {
+        return [new SourceComponent(exampleSourceComponent)];
       },
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
