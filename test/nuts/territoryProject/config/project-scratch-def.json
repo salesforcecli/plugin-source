@@ -1,0 +1,17 @@
+{
+  "orgName": "shane.mclaughlin company",
+  "adminEmail": "sfdx@mailinator.com",
+  "edition": "Developer",
+  "features": ["EnableSetPasswordInApi"],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    },
+    "territory2Settings": {
+      "enableTerritoryManagement2": true
+    }
+  }
+}
