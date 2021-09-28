@@ -16,9 +16,8 @@ describe('source:delete NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
   let testkit: SourceTestkit;
 
-  const createApexClass = () => {
+  const createApexClass = (apexName = 'myApexClass') => {
     // create and deploy an ApexClass that can be deleted without dependency issues
-    const apexName = 'myApexClass';
     const output = path.join('force-app', 'main', 'default', 'classes');
     const pathToClass = path.join(testkit.projectDir, output, `${apexName}.cls`);
     execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output}`);
@@ -28,6 +27,18 @@ describe('source:delete NUTs', () => {
 
   const createManifest = (metadata: string, manifesttype: string) => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype}`);
+  };
+
+  const query = (
+    memberType: string,
+    memberName: string
+  ): { result: { records: Array<{ IsNameObsolete: boolean }> } } => {
+    return JSON.parse(
+      exec(
+        `sfdx force:data:soql:query -q "SELECT IsNameObsolete FROM SourceMember WHERE MemberType='${memberType}' AND MemberName='${memberName}'" -t --json`,
+        { silent: true }
+      )
+    ) as { result: { records: Array<{ IsNameObsolete: boolean }> } };
   };
 
   before(async () => {
@@ -44,14 +55,9 @@ describe('source:delete NUTs', () => {
   });
 
   describe('destructive changes POST', () => {
-    it('should deploy and delete an ApexClass', async () => {
+    it('should deploy and then delete an ApexClass ', async () => {
       const { apexName } = createApexClass();
-      let soql = JSON.parse(
-        exec(
-          "sfdx force:data:soql:query -q \"SELECT IsNameObsolete FROM SourceMember WHERE MemberType='ApexClass' AND MemberName='myApexClass'\" -t --json",
-          { silent: true }
-        )
-      ) as { result: { records: Array<{ IsNameObsolete: boolean }> } };
+      let soql = query('ApexClass', apexName);
 
       expect(soql.result.records[0].IsNameObsolete).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
@@ -60,68 +66,54 @@ describe('source:delete NUTs', () => {
       execCmd('force:source:deploy --json --manifest package.xml --destructivechangespost destructiveChangesPost.xml', {
         ensureExitCode: 0,
       });
-      // const fileResponse = get(response, 'result.deployedSource') as FileResponse[];
-      // await testkit.expect.filesToBeDeployedViaResult(['force-app/main/default/classes/**/*'], [], fileResponse);
-      soql = JSON.parse(
-        exec(
-          "sfdx force:data:soql:query -q \"SELECT IsNameObsolete FROM SourceMember WHERE MemberType='ApexClass' AND MemberName='myApexClass'\" -t --json",
-          { silent: true }
-        )
-      ) as { result: { records: Array<{ IsNameObsolete: boolean }> } };
+
+      soql = query('ApexClass', apexName);
       expect(soql.result.records[0].IsNameObsolete).to.be.true;
     });
   });
 
-  // it('should source:delete all Prompts using the metadata param', () => {
-  //   const response = execCmd<{ deletedSource: [{ filePath: string }] }>(
-  //     'force:source:delete --json --noprompt --metadata Prompt',
-  //     {
-  //       ensureExitCode: 0,
-  //     }
-  //   ).jsonOutput.result;
-  //   const pathToPrompts = path.join(testkit.projectDir, 'force-app', 'main', 'default', 'prompts');
-  //   expect(response.deletedSource).to.have.length(3);
-  //   // should delete directory contents
-  //   expect(fs.readdirSync(pathToPrompts).length).to.equal(0);
-  // });
-  //
-  // it('should source:delete an ApexClass using the sourcepath param', () => {
-  //   const { pathToClass } = createApexClass();
-  //   const response = execCmd<{ deletedSource: [{ filePath: string }] }>(
-  //     `force:source:delete --json --noprompt --sourcepath ${pathToClass}`,
-  //     {
-  //       ensureExitCode: 0,
-  //     }
-  //   ).jsonOutput.result;
-  //   expect(response.deletedSource).to.have.length(2);
-  //   expect(fs.fileExistsSync(pathToClass)).to.be.false;
-  // });
-  //
-  // it('should NOT delete local files with --checkonly', () => {
-  //   const { apexName, pathToClass } = createApexClass();
-  //   const response = execCmd<{ deletedSource: [{ filePath: string }]; deletes: [{ checkOnly: boolean }] }>(
-  //     `force:source:delete --json --checkonly --noprompt --metadata ApexClass:${apexName}`,
-  //     {
-  //       ensureExitCode: 0,
-  //     }
-  //   ).jsonOutput.result;
-  //   expect(response.deletedSource).to.have.length(2);
-  //   expect(response.deletes[0].checkOnly).to.be.true;
-  //   expect(fs.fileExistsSync(pathToClass)).to.be.true;
-  // });
-  //
-  // it('should run tests with a delete', async () => {
-  //   const { pathToClass, apexName } = createApexClass();
-  //   const response = execCmd<{
-  //     checkOnly: boolean;
-  //     runTestsEnabled: boolean;
-  //   }>(`force:source:delete --json --testlevel RunAllTestsInOrg --noprompt --metadata ApexClass:${apexName}`, {
-  //     ensureExitCode: 1,
-  //   }).jsonOutput.result;
-  //   // the delete operation will fail due to test failures without the 'dreamhouse' permission set assigned to the user
-  //   expect(response.runTestsEnabled).to.be.true;
-  //   expect(response.checkOnly).to.be.false;
-  //   // ensure a failed delete attempt won't delete local files
-  //   expect(fs.fileExistsSync(pathToClass)).to.be.true;
-  // });
+  describe('destructive changes PRE', () => {
+    it('should delete an ApexClass and then deploy a class', async () => {
+      const { apexName } = createApexClass();
+      let soql = query('ApexClass', apexName);
+
+      expect(soql.result.records[0].IsNameObsolete).to.be.false;
+      createManifest('ApexClass:GeocodingService', 'package');
+      createManifest(`ApexClass:${apexName}`, 'pre');
+
+      execCmd('force:source:deploy --json --manifest package.xml --destructivechangespre destructiveChangesPre.xml', {
+        ensureExitCode: 0,
+      });
+
+      soql = query('ApexClass', apexName);
+      expect(soql.result.records[0].IsNameObsolete).to.be.true;
+    });
+  });
+
+  describe('destructive changes POST and PRE', () => {
+    it('should delete a class, then deploy and then delete an ApexClass', async () => {
+      const pre = createApexClass('pre').apexName;
+      const post = createApexClass('post').apexName;
+      let soqlPre = query('ApexClass', pre);
+      let soqlPost = query('ApexClass', post);
+
+      expect(soqlPre.result.records[0].IsNameObsolete).to.be.false;
+      expect(soqlPost.result.records[0].IsNameObsolete).to.be.false;
+      createManifest('ApexClass:GeocodingService', 'package');
+      createManifest(`ApexClass:${post}`, 'post');
+      createManifest(`ApexClass:${pre}`, 'pre');
+
+      execCmd(
+        'force:source:deploy --json --manifest package.xml --destructivechangespost destructiveChangesPost.xml --destructivechangespre destructiveChangesPre.xml',
+        {
+          ensureExitCode: 0,
+        }
+      );
+
+      soqlPre = query('ApexClass', pre);
+      soqlPost = query('ApexClass', post);
+      expect(soqlPre.result.records[0].IsNameObsolete).to.be.true;
+      expect(soqlPost.result.records[0].IsNameObsolete).to.be.true;
+    });
+  });
 });

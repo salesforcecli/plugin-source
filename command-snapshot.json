@@ -27,6 +27,8 @@
     "flags": [
       "apiversion",
       "checkonly",
+      "destructivechangespost",
+      "destructivechangespre",
       "ignoreerrors",
       "ignorewarnings",
       "json",
