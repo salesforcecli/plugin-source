@@ -700,10 +700,10 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^2.1.4", "@salesforce/core@^2.15.2", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.23.4", "@salesforce/core@^2.24.0", "@salesforce/core@^2.26.0", "@salesforce/core@^2.26.1", "@salesforce/core@^2.3.0":
-  version "2.26.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.26.1.tgz#00ecf0d989308786dcee648da231c528e6346c09"
-  integrity sha512-Ltswt8HWqIOS0NKZ7ggsYXD8X/nq/6uYO8REzj7g7HdZR+/GIrFUzRdJZ9ACjVGZpjkYLNN6E7ncyoy/Uudiww==
+"@salesforce/core@^2.1.4", "@salesforce/core@^2.2.0", "@salesforce/core@^2.20.11", "@salesforce/core@^2.23.4", "@salesforce/core@^2.24.0", "@salesforce/core@^2.26.0", "@salesforce/core@^2.26.1", "@salesforce/core@^2.27.2", "@salesforce/core@^2.3.0":
+  version "2.28.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.28.0.tgz#2fb3d7be0dfac8505332f558b7dd4274afd34901"
+  integrity sha512-CFw2xloL3UwuvLm+0nK588kFVGPRZFmUzeUBYFCIz+34CJShc1B7yN+anPlZcHWgT12Ih9yzKYaki0BjCeIgKQ==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.5.0"
@@ -790,13 +790,13 @@
     tslib "^1"
 
 "@salesforce/plugin-config@^1.2.13":
-  version "1.2.13"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-config/-/plugin-config-1.2.13.tgz#e2f62a28a0bd229ac2071baf0f8c6432142fa7d9"
-  integrity sha512-W3AeaD8FxTiLcQztOY1RIZQw/o2KbmX0rpLjlqjXwu7HnX7XaNcQt85FiBII2ksRN0lNUNZNUcXLLCpzIL6QSw==
+  version "1.2.35"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-config/-/plugin-config-1.2.35.tgz#65d5169c11fc6c6567537086479057abe8d100db"
+  integrity sha512-hKdTmFfdAb9zWgyBWIJ8xR3BJvY8Ph7w2BOT6uKOdHYNedatWpWJFXJhlWClGFnRMaD/t59Wb2d6/lDVdvq+gg==
   dependencies:
     "@oclif/config" "^1.17.0"
     "@salesforce/command" "^3.0.5"
-    "@salesforce/core" "^2.15.2"
+    "@salesforce/core" "^2.27.2"
     tslib "^2"
 
 "@salesforce/plugin-user@^1.4.0":
