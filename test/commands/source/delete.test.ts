@@ -70,7 +70,7 @@ describe('force:source:delete', () => {
         return exampleDeleteResponse;
       },
     });
-    fsUnlink = stubMethod(sandbox, fs, 'unlinkSync').returns(true);
+    fsUnlink = stubMethod(sandbox, fs, 'unlink').resolves(true);
 
     return cmd.runIt();
   };
@@ -117,7 +117,8 @@ describe('force:source:delete', () => {
     await runDeleteCmd(['--sourcepath', sourcepath[0], '--json', '-r']);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureHookArgs();
-    expect(fsUnlink.callCount).to.equal(1);
+    // deleting the component and its xml
+    expect(fsUnlink.callCount).to.equal(2);
   });
 
   it('should pass along metadata', async () => {

@@ -8,7 +8,7 @@ import * as os from 'os';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { fs, Messages } from '@salesforce/core';
-import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, MetadataComponent, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
@@ -71,6 +71,7 @@ export class Delete extends DeployCommand {
   private isRest = false;
   private deleteResultFormatter: DeleteResultFormatter;
   private aborted = false;
+  private components: MetadataComponent[];
 
   private updateDeployId = once((id) => {
     this.displayDeployId(id);
@@ -83,7 +84,7 @@ export class Delete extends DeployCommand {
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
-    this.deleteFilesLocally();
+    await this.deleteFilesLocally();
     return result;
   }
 
@@ -102,7 +103,9 @@ export class Delete extends DeployCommand {
       },
     });
 
-    if (!this.componentSet.toArray().length) {
+    this.components = this.componentSet.toArray();
+
+    if (!this.components.length) {
       // if we didn't find any components to delete, let the user know and exit
       this.deleteResultFormatter.displayNoResultsFound();
       return;
@@ -110,7 +113,7 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
-    this.componentSet.toArray().map((component) => {
+    this.components.map((component) => {
       if (component instanceof SourceComponent) {
         cs.add(component, true);
       } else {
@@ -124,7 +127,7 @@ export class Delete extends DeployCommand {
     if (this.aborted) return;
 
     // fire predeploy event for the delete
-    await this.lifecycle.emit('predeploy', this.componentSet.toArray());
+    await this.lifecycle.emit('predeploy', this.components);
     this.isRest = await this.isRestDeploy();
     this.ux.log(`*** Deleting with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
@@ -174,31 +177,36 @@ export class Delete extends DeployCommand {
     return this.deleteResultFormatter.getJson();
   }
 
-  private deleteFilesLocally(): void {
+  private async deleteFilesLocally(): Promise<void> {
     if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
-      this.componentSet.toArray().map((component: SourceComponent) => {
+      const filesToBeDeleted = new Set();
+      const directoriesToBeDeleted = new Set();
+      this.components.map((component: SourceComponent) => {
         // delete the content and/or the xml of the components
         if (component.content) {
           const stats = fs.lstatSync(component.content);
           if (stats.isDirectory()) {
-            fs.rmdirSync(component.content, { recursive: true });
+            directoriesToBeDeleted.add(fs.rmdir(component.content, { recursive: true }));
           } else {
-            fs.unlinkSync(component.content);
+            filesToBeDeleted.add(fs.unlink(component.content));
           }
         }
-        // the xml could've been deleted as part of a bundle type above
-        if (component.xml && fs.existsSync(component.xml)) {
-          fs.unlinkSync(component.xml);
+        if (component.xml) {
+          filesToBeDeleted.add(fs.unlink(component.xml));
         }
       });
+
+      await Promise.all(filesToBeDeleted);
+      await Promise.all(directoriesToBeDeleted);
     }
   }
 
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
-      const paths = this.componentSet
-        .toArray()
-        .flatMap((component: SourceComponent) => [component.xml, ...component.walkContent()]);
+      const paths = this.components.flatMap((component: SourceComponent) => [
+        component.xml,
+        ...component.walkContent(),
+      ]);
       const promptMessage = messages.getMessage('prompt', [[...new Set(paths)].join('\n')]);
 
       return confirm(promptMessage);
