@@ -21,7 +21,7 @@ import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
-import { StatusResult } from '../../../src/commands/force/source/beta/status';
+import { StatusResult } from '../../../src/formatters/statusFormatter';
 
 let session: TestSession;
 const classdir = 'force-app/main/default/classes';

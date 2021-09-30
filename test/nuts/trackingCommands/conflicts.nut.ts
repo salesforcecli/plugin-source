@@ -18,7 +18,7 @@ import { Connection, AuthInfo } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { StatusResult } from '../../../src/commands/force/source/beta/status';
+import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 
 let session: TestSession;

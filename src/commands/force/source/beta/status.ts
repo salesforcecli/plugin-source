@@ -18,12 +18,7 @@ import {
   ChangeResult,
 } from '@salesforce/source-tracking';
 
-export interface StatusResult {
-  state: string;
-  fullName: string;
-  type: string;
-  filePath?: string;
-}
+import { StatusResult, StatusFormatter } from '../../../../formatters/statusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
@@ -51,7 +46,7 @@ export default class SourceStatus extends SfdxCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected hidden = true;
-
+  protected results = new Array<StatusResult>();
   protected localAdds: ChangeResult[] = [];
 
   public async run(): Promise<StatusResult[]> {
@@ -77,7 +72,6 @@ export default class SourceStatus extends SfdxCommand {
       project: this.project,
       apiVersion: this.flags.apiversion as string,
     });
-    let outputRows: StatusResult[] = [];
 
     if (wantsLocal) {
       await tracking.ensureLocalTracking();
@@ -97,7 +91,7 @@ export default class SourceStatus extends SfdxCommand {
         excludeUnresolvable: true,
       });
 
-      outputRows = outputRows.concat(
+      this.results = this.results.concat(
         localAdds.flatMap((item) => this.statusResultToOutputRows(item, 'add')),
         localModifies.flatMap((item) => this.statusResultToOutputRows(item, 'changed')),
         localDeletes.flatMap((item) => this.statusResultToOutputRows(item, 'delete'))
@@ -111,7 +105,7 @@ export default class SourceStatus extends SfdxCommand {
         tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'delete', format: 'ChangeResult' }),
         tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'nondelete', format: 'ChangeResult' }),
       ]);
-      outputRows = outputRows.concat(
+      this.results = this.results.concat(
         remoteDeletes.flatMap((item) => this.statusResultToOutputRows(item)),
         remoteModifies.flatMap((item) => this.statusResultToOutputRows(item))
       );
@@ -121,7 +115,7 @@ export default class SourceStatus extends SfdxCommand {
       // keys like ApexClass__MyClass.cls
       const conflictKeys = (await tracking.getConflicts()).map((conflict) => getKeyFromObject(conflict));
       if (conflictKeys.length > 0) {
-        outputRows = outputRows.map((row) =>
+        this.results = this.results.map((row) =>
           conflictKeys.includes(getKeyFromStrings(row.type, row.fullName))
             ? { ...row, state: `${row.state} (Conflict)` }
             : row
@@ -129,27 +123,17 @@ export default class SourceStatus extends SfdxCommand {
       }
     }
 
-    // sort order is state, type, fullname
-    outputRows.sort((a, b) => {
-      if (a.state.toLowerCase() === b.state.toLowerCase()) {
-        if (a.type.toLowerCase() === b.type.toLowerCase()) {
-          return a.fullName.toLowerCase() < b.fullName.toLowerCase() ? -1 : 1;
-        }
-        return a.type.toLowerCase() < b.type.toLowerCase() ? -1 : 1;
-      }
-      return a.state.toLowerCase() < b.state.toLowerCase() ? -1 : 1;
-    });
-    this.ux.log(messages.getMessage('humanSuccess'));
-    this.ux.table(outputRows, {
-      columns: [
-        { label: 'STATE', key: 'state' },
-        { label: 'FULL NAME', key: 'fullName' },
-        { label: 'TYPE', key: 'type' },
-        { label: 'PROJECT PATH', key: 'filepath' },
-      ],
-    });
+    return this.formatResult();
+  }
 
-    return outputRows;
+  protected formatResult(): StatusResult[] {
+    const formatter = new StatusFormatter(this.logger, this.ux, {}, this.results);
+
+    if (!this.flags.json) {
+      formatter.display();
+    }
+
+    return formatter.getJson();
   }
 
   private statusResultToOutputRows(input: ChangeResult, localType?: 'delete' | 'changed' | 'add'): StatusResult[] {
