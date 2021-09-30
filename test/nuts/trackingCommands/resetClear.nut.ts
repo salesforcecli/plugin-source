@@ -17,7 +17,7 @@ import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { Connection, AuthInfo } from '@salesforce/core';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { StatusResult } from '../../../src/commands/force/source/beta/status';
+import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { SourceTrackingClearResult } from '../../../src/commands/force/source/beta/tracking/clear';
 
 let session: TestSession;
