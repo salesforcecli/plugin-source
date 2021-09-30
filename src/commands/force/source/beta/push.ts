@@ -52,7 +52,6 @@ export default class SourcePush extends DeployCommand {
 
   private isRest = false;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(): Promise<DeployCommandResult> {
     await this.deploy();
     this.resolveSuccess();

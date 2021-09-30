@@ -24,7 +24,6 @@ export default class SourcePull extends SfdxCommand {
     forceoverwrite: flags.boolean({
       char: 'f',
       description: messages.getMessage('flags.forceoverwrite'),
-      longDescription: messages.getMessage('flags.forceoverwriteLong'),
     }),
     // TODO: use shared flags from plugin-source
     wait: flags.minutes({
@@ -32,7 +31,6 @@ export default class SourcePull extends SfdxCommand {
       default: Duration.minutes(33),
       min: Duration.minutes(0), // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.waitLong'),
-      longDescription: messages.getMessage('flags.waitLong'),
     }),
   };
 
