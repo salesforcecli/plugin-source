@@ -9,7 +9,7 @@
     "@salesforce/command": "^4.1.2",
     "@salesforce/core": "^2.27.0",
     "@salesforce/source-deploy-retrieve": "^4.4.1",
-    "@salesforce/source-tracking": "^0.0.3",
+    "@salesforce/source-tracking": "0.1.0",
     "chalk": "^4.1.1",
     "cli-ux": "^5.6.3",
     "open": "^8.2.1",

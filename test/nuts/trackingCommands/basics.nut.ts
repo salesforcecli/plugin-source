@@ -18,7 +18,7 @@ import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { StatusResult } from '../../../src/commands/force/source/beta/status';
-import { PullResponse } from '../../../src/commands/force/source/beta/pull';
+import { PullResponse } from '../../../src/formatters/pullFormatter';
 
 let session: TestSession;
 let hubUsername: string;

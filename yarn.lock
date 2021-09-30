@@ -851,10 +851,10 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.0.3.tgz#67567b6ebf4abf2cebadccf679397145628f1c7b"
-  integrity sha512-BR6A6Rwl8Tsm/zC8VG7PVBNeVk7BGpgtB2QFz+AqiltbIquHOUc1ln/NzvmvTVsDHokPDHWJS9o6TiTOk1BZtg==
+"@salesforce/source-tracking@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.1.0.tgz#ecbae4d7a16370d2827ee76c377c8999840e77e7"
+  integrity sha512-shJ3pQzsZ/QdpoyREJWE75Q9C715J2AmdcOFeBsJZxEoZTDuEEMxrozHsGIzkLxU15yKkk3TJ84Um4P5Iy4gmw==
   dependencies:
     "@oclif/config" "^1.17.0"
     "@salesforce/core" "^2.27.0"
