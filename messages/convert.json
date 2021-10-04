@@ -12,7 +12,7 @@
     "sourcepath": "comma-separated list of paths to the local source files to convert",
     "metadata": "comma-separated list of metadata component names to convert"
   },
-    "flagsLong": {
+  "flagsLong": {
     "manifest": [
       "The complete path to the manifest (package.xml) file that specifies the metadata types to convert.",
       "If you specify this parameter, don’t specify --metadata or --sourcepath."
