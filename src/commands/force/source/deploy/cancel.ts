@@ -30,7 +30,7 @@ export class Cancel extends DeployCommand {
       default: Duration.minutes(DeployCommand.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait')
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     jobid: flags.id({
       char: 'i',
