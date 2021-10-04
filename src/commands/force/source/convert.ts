@@ -39,10 +39,12 @@ export class Convert extends SourceCommand {
     manifest: flags.string({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
+      longDescription: messages.getMessage('flagsLong.manifest'),
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
+      longDescription: messages.getMessage('flagsLong.sourcepath'),
       exclusive: ['manifest', 'metadata'],
     }),
     metadata: flags.array({
