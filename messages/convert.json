@@ -12,6 +12,16 @@
     "sourcepath": "comma-separated list of paths to the local source files to convert",
     "metadata": "comma-separated list of metadata component names to convert"
   },
+    "flagsLong": {
+    "manifest": [
+      "The complete path to the manifest (package.xml) file that specifies the metadata types to convert.",
+      "If you specify this parameter, don’t specify --metadata or --sourcepath."
+    ],
+    "sourcepath": [
+      "A comma-separated list of paths to the local source files to convert. The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all metadata types in the directory and its sub-directories).",
+      "If you specify this parameter, don’t specify --manifest or --metadata."
+    ]
+  },
   "success": "Source was successfully converted to Metadata API format and written to the location: %s",
   "convertFailed": "Failed to convert source"
 }
