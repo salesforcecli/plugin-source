@@ -97,7 +97,7 @@ export class create extends SourceCommand {
       this.outputPath = this.manifestName;
     }
 
-    return fs.writeFile(this.outputPath, componentSet.getPackageXml(), null);
+    return fs.writeFileSync(this.outputPath, componentSet.getPackageXml());
   }
 
   // noop this method because any errors will be reported by the createManifest method
