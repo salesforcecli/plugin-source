@@ -203,13 +203,33 @@ export class Delete extends DeployCommand {
 
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
-      const paths = this.components.flatMap((component: SourceComponent) => [
-        component.xml,
-        ...component.walkContent(),
-      ]);
-      const promptMessage = messages.getMessage('prompt', [[...new Set(paths)].join('\n')]);
+      const remote: string[] = [];
+      const local: string[] = [];
+      const message: string[] = [];
 
-      return confirm(promptMessage);
+      this.components.flatMap((component) => {
+        if (component instanceof SourceComponent) {
+          local.push(component.xml, ...component.walkContent());
+        } else {
+          // remote only metadata
+          remote.push(`${component.type.name}:${component.fullName}`);
+        }
+      });
+
+      if (remote.length) {
+        message.push(messages.getMessage('remotePrompt', [[...new Set(remote)].join('\n')]));
+      }
+
+      if (local.length) {
+        if (message.length) {
+          // add a whitespace between remote and local
+          message.push('\n');
+        }
+        message.push('\n', messages.getMessage('localPrompt', [[...new Set(local)].join('\n')]));
+      }
+
+      message.push(messages.getMessage('areYouSure'));
+      return confirm(message.join(''));
     }
     return true;
   }
