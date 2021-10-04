@@ -33,12 +33,12 @@ export class Report extends DeployCommand {
       default: Duration.minutes(DeployCommand.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait')
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     jobid: flags.id({
       char: 'i',
       description: messages.getMessage('flags.jobid'),
-      longDescription: messages.getMessage('flagsLong.jobid')
+      longDescription: messages.getMessage('flagsLong.jobid'),
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
