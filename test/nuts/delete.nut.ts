@@ -115,7 +115,7 @@ describe('source:delete NUTs', () => {
     ).jsonOutput.result;
     // remote only delete won't have an associated filepath
     expect(response.deletedSource).to.have.length(0);
-    expect(fs.fileExistsSync(pathToClass)).to.be.false;
+    expect(fs.existsSync(pathToClass)).to.be.false;
     soql = query();
     // the apex class has been deleted in the org
     expect(soql.result.records[0].IsNameObsolete).to.be.true;

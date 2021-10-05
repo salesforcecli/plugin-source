@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
@@ -72,7 +72,7 @@ describe('force:source:delete', () => {
         return exampleDeleteResponse;
       },
     });
-    fsUnlink = stubMethod(sandbox, fs, 'unlink').resolves(true);
+    fsUnlink = stubMethod(sandbox, fs, 'unlinkSync').returns(true);
 
     return cmd.runIt();
   };

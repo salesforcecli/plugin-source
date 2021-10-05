@@ -10,7 +10,7 @@ import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ComponentSet, MetadataComponent, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { Duration, once, env } from '@salesforce/kit';
+import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -88,7 +88,7 @@ export class Delete extends DeployCommand {
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
-    await this.deleteFilesLocally();
+    this.deleteFilesLocally();
     return result;
   }
 
@@ -181,27 +181,22 @@ export class Delete extends DeployCommand {
     return this.deleteResultFormatter.getJson();
   }
 
-  private async deleteFilesLocally(): Promise<void> {
+  private deleteFilesLocally(): void {
     if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
-      const filesToBeDeleted = new Set();
-      const directoriesToBeDeleted = new Set();
       this.components.map((component: SourceComponent) => {
         // delete the content and/or the xml of the components
         if (component.content) {
           const stats = fs.lstatSync(component.content);
           if (stats.isDirectory()) {
-            directoriesToBeDeleted.add(fs.rmdir(component.content, { recursive: true }));
+            fs.rmdirSync(component.content, { recursive: true });
           } else {
-            filesToBeDeleted.add(fs.unlink(component.content));
+            fs.unlinkSync(component.content);
           }
         }
         if (component.xml) {
-          filesToBeDeleted.add(fs.unlink(component.xml));
+          fs.unlinkSync(component.xml);
         }
       });
-
-      await Promise.all(filesToBeDeleted);
-      await Promise.all(directoriesToBeDeleted);
     }
   }
 
