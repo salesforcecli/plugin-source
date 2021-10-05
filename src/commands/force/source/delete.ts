@@ -5,11 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
+import * as fs from 'fs';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { ComponentSet, MetadataComponent, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { Duration, env, once } from '@salesforce/kit';
+import { Duration, once, env } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -33,17 +34,19 @@ export class Delete extends DeployCommand {
     checkonly: flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
-      longDescription: messages.getMessage('flags.checkonlyLong'),
+      longDescription: messages.getMessage('flagsLong.checkonly'),
     }),
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(Delete.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     testlevel: flags.enum({
       char: 'l',
       description: messages.getMessage('flags.testLevel'),
+      longDescription: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunLocalTests', 'RunAllTestsInOrg'],
       default: 'NoTestRun',
     }),
@@ -54,12 +57,13 @@ export class Delete extends DeployCommand {
     metadata: flags.array({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
+      longDescription: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
-      longDescription: messages.getMessage('flags.sourcepathLong'),
+      longDescription: messages.getMessage('flagsLong.sourcepath'),
       exclusive: ['manifest', 'metadata'],
     }),
     verbose: flags.builtin({

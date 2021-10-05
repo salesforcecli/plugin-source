@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { fs } from '@salesforce/core';
 import { exec } from 'shelljs';
 
 describe('source:delete NUTs', () => {
@@ -51,8 +51,8 @@ describe('source:delete NUTs', () => {
       }
     ).jsonOutput.result;
     expect(response.deletedSource).to.have.length(2);
-    expect(fs.fileExistsSync(pathToJson)).to.be.false;
-    expect(fs.fileExistsSync(pathToXml)).to.be.false;
+    expect(fs.existsSync(pathToJson)).to.be.false;
+    expect(fs.existsSync(pathToXml)).to.be.false;
   });
 
   it('should source:delete an ApexClass using the metadata param', () => {
@@ -64,7 +64,7 @@ describe('source:delete NUTs', () => {
       }
     ).jsonOutput.result;
     expect(response.deletedSource).to.have.length(2);
-    expect(fs.fileExistsSync(pathToClass)).to.be.false;
+    expect(fs.existsSync(pathToClass)).to.be.false;
   });
 
   it('should source:delete all Prompts using the sourcepath param', () => {
@@ -89,7 +89,7 @@ describe('source:delete NUTs', () => {
       }
     ).jsonOutput.result;
     expect(response.deletedSource).to.have.length(2);
-    expect(fs.fileExistsSync(pathToClass)).to.be.false;
+    expect(fs.existsSync(pathToClass)).to.be.false;
   });
 
   it('should source:delete a remote-only ApexClass from the org', async () => {
@@ -131,7 +131,7 @@ describe('source:delete NUTs', () => {
     ).jsonOutput.result;
     expect(response.deletedSource).to.have.length(2);
     expect(response.deletes[0].checkOnly).to.be.true;
-    expect(fs.fileExistsSync(pathToClass)).to.be.true;
+    expect(fs.existsSync(pathToClass)).to.be.true;
   });
 
   it('should run tests with a delete', async () => {
@@ -146,6 +146,6 @@ describe('source:delete NUTs', () => {
     expect(response.runTestsEnabled).to.be.true;
     expect(response.checkOnly).to.be.false;
     // ensure a failed delete attempt won't delete local files
-    expect(fs.fileExistsSync(pathToClass)).to.be.true;
+    expect(fs.existsSync(pathToClass)).to.be.true;
   });
 });

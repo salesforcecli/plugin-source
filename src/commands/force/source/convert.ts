@@ -7,8 +7,9 @@
 
 import * as os from 'os';
 import { join, resolve } from 'path';
+import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
 import { getString } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../sourceCommand';
@@ -39,10 +40,12 @@ export class Convert extends SourceCommand {
     manifest: flags.string({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
+      longDescription: messages.getMessage('flagsLong.manifest'),
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
+      longDescription: messages.getMessage('flagsLong.sourcepath'),
       exclusive: ['manifest', 'metadata'],
     }),
     metadata: flags.array({

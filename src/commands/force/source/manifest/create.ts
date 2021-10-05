@@ -6,8 +6,8 @@
  */
 import * as os from 'os';
 import { join } from 'path';
+import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { fs } from '@salesforce/core';
 import { Messages } from '@salesforce/core';
 import { SourceCommand } from '../../../../sourceCommand';
 import { ComponentSetBuilder } from '../../../../componentSetBuilder';
@@ -97,7 +97,7 @@ export class create extends SourceCommand {
       this.outputPath = this.manifestName;
     }
 
-    return fs.writeFile(this.outputPath, componentSet.getPackageXml());
+    return fs.writeFileSync(this.outputPath, componentSet.getPackageXml());
   }
 
   // noop this method because any errors will be reported by the createManifest method

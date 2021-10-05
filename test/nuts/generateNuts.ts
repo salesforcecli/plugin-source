@@ -7,15 +7,15 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as fs from 'fs';
 import * as shelljs from 'shelljs';
-import { fs } from '@salesforce/core';
 import { EXECUTABLES, RepoConfig, TEST_REPOS_MAP } from './testMatrix';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
 
-async function getSeedFiles(): Promise<string[]> {
+function getSeedFiles(): string[] {
   const seedDir = path.join(__dirname, 'seeds');
-  const files = await fs.readdir(seedDir);
+  const files = fs.readdirSync(seedDir);
   return files
     .filter((f) => f.endsWith('.seed.ts'))
     .filter((f) => f.includes(SEED_FILTER))
@@ -26,13 +26,13 @@ function parseRepoName(repo?: RepoConfig): string {
   return repo ? repo.gitUrl.split('/').reverse()[0].replace('.git', '') : '';
 }
 
-async function generateNut(
+function generateNut(
   generatedDir: string,
   seedName: string,
   seedContents: string,
   executable: string,
   repo?: RepoConfig
-): Promise<void> {
+): void {
   const repoName = parseRepoName(repo);
   const executableName = path.basename(executable);
   const nutFileName = repoName
@@ -49,25 +49,26 @@ async function generateNut(
     .replace(/%REPO_URL%/g, repo?.gitUrl)
     .replace(/%EXECUTABLE%/g, executable)
     .replace(/%REPO_NAME%/g, repoName);
-  await fs.writeFile(nutFilePath, contents);
+  fs.writeFileSync(nutFilePath, contents);
 }
 
-async function generateNuts(): Promise<void> {
+function generateNuts(): void {
   const generatedDir = path.resolve(__dirname, 'generated');
   shelljs.rm('-rf', generatedDir);
-  await fs.mkdirp(generatedDir);
-  const seeds = await getSeedFiles();
+  fs.mkdirSync(generatedDir, { recursive: true });
+  const seeds = getSeedFiles();
   for (const seed of seeds) {
     const seedName = path.basename(seed).replace('.seed.ts', '');
-    const seedContents = await fs.readFile(seed, 'UTF-8');
+    const seedContents = fs.readFileSync(seed).toString();
     for (const executable of EXECUTABLES.filter((e) => !e.skip)) {
       const hasRepo = /const\sREPO\s=\s/.test(seedContents);
       if (hasRepo) {
-        for (const repo of [...TEST_REPOS_MAP.values()].filter((r) => !r.skip)) {
-          await generateNut(generatedDir, seedName, seedContents, executable.path, repo);
+        const repos = Array.from(TEST_REPOS_MAP.values()).filter((r) => !r.skip);
+        for (const repo of repos) {
+          generateNut(generatedDir, seedName, seedContents, executable.path, repo);
         }
       } else {
-        await generateNut(generatedDir, seedName, seedContents, executable.path);
+        generateNut(generatedDir, seedName, seedContents, executable.path);
       }
     }
   }

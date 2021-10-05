@@ -7,12 +7,12 @@
 
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as open from 'open';
 import { getString } from '@salesforce/ts-types';
-import { fs, AuthInfo } from '@salesforce/core';
+import { AuthInfo, SfdcUrl } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, sfdc, SfdxError } from '@salesforce/core';
-import checkLightningDomain from '@salesforce/core/lib/util/checkLightningDomain';
 import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { OpenResultFormatter, OpenCommandResult } from '../../../formatters/openResultFormatter';
 import { SourceCommand } from '../../../sourceCommand';
@@ -81,7 +81,7 @@ export class Open extends SourceCommand {
   }
 
   private getTypeNameDefinitionByFileName(fsPath: string): string | undefined {
-    if (fs.fileExistsSync(fsPath)) {
+    if (fs.existsSync(fsPath)) {
       const metadataResolver = new MetadataResolver();
       const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
       return components[0].type.name;
@@ -121,7 +121,7 @@ export class Open extends SourceCommand {
     }
 
     try {
-      const result = await checkLightningDomain(url);
+      const result = await new SfdcUrl(url).checkLightningDomain();
 
       if (result) {
         return act();

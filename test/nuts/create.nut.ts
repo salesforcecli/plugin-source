@@ -5,11 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as fs from 'fs';
 import { join } from 'path';
 import { expect } from '@salesforce/command/lib/test';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
-import { fs } from '@salesforce/core';
 import { Dictionary } from '@salesforce/ts-types';
 
 describe('force:source:manifest:create', () => {
