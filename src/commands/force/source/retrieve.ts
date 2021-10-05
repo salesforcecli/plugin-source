@@ -37,6 +37,7 @@ export class Retrieve extends SourceCommand {
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
+      longDescription: messages.getMessage('flagsLong.sourcePath'),
       exclusive: ['manifest', 'metadata'],
     }),
     wait: flags.minutes({
@@ -44,15 +45,18 @@ export class Retrieve extends SourceCommand {
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     manifest: flags.filepath({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
+      longDescription: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
     metadata: flags.array({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
+      longDescription: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
     packagenames: flags.array({
