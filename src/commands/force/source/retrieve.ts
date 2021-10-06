@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
-import { RetrieveResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, RequestStatus, ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   RetrieveResultFormatter,
@@ -37,6 +37,7 @@ export class Retrieve extends SourceCommand {
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
+      longDescription: messages.getMessage('flagsLong.sourcePath'),
       exclusive: ['manifest', 'metadata'],
     }),
     wait: flags.minutes({
@@ -44,15 +45,18 @@ export class Retrieve extends SourceCommand {
       default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     manifest: flags.filepath({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
+      longDescription: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
     metadata: flags.array({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
+      longDescription: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
     packagenames: flags.array({
@@ -87,6 +91,13 @@ export class Retrieve extends SourceCommand {
         directoryPaths: this.getPackageDirs(),
       },
     });
+
+    if (this.getFlag<string>('manifest') || this.getFlag<string>('metadata')) {
+      if (this.wantsToRetrieveCustomFields()) {
+        this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
+        this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
+      }
+    }
 
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
@@ -130,5 +141,18 @@ export class Retrieve extends SourceCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private wantsToRetrieveCustomFields(): boolean {
+    const hasCustomField = this.componentSet.has({
+      type: { name: 'CustomField', id: 'customfield' },
+      fullName: ComponentSet.WILDCARD,
+    });
+
+    const hasCustomObject = this.componentSet.has({
+      type: { name: 'CustomObject', id: 'customobject' },
+      fullName: ComponentSet.WILDCARD,
+    });
+    return hasCustomField && !hasCustomObject;
   }
 }

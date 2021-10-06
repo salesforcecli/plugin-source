@@ -2,69 +2,85 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/salesforcecli/plugin-source/compare/v1.2.0...v1.2.1) (2021-10-05)
+
+### Bug Fixes
+
+- bump deps and use internal fs ([#242](https://github.com/salesforcecli/plugin-source/issues/242)) ([6e81996](https://github.com/salesforcecli/plugin-source/commit/6e81996187f32a9ade92a48e7400601ff41602ce))
+
+## [1.2.0](https://github.com/salesforcecli/plugin-source/compare/v1.1.1...v1.2.0) (2021-09-29)
+
+### Features
+
+- warning label for source:open ([#231](https://github.com/salesforcecli/plugin-source/issues/231)) ([62c7161](https://github.com/salesforcecli/plugin-source/commit/62c71614e2d0d4add9e29fda9c55dc7b639b56ea))
+
+### [1.1.1](https://github.com/salesforcecli/plugin-source/compare/v1.1.0...v1.1.1) (2021-09-27)
+
+## [1.1.0](https://github.com/salesforcecli/plugin-source/compare/v1.0.16...v1.1.0) (2021-09-24)
+
+### Features
+
+- source:delete ([#199](https://github.com/salesforcecli/plugin-source/issues/199)) ([4c443c8](https://github.com/salesforcecli/plugin-source/commit/4c443c818c64829e0043932fb6fc4c0823207ebd))
+
+### Bug Fixes
+
+- find server errors and display them with FileResponse errors ([#210](https://github.com/salesforcecli/plugin-source/issues/210)) ([99df1ca](https://github.com/salesforcecli/plugin-source/commit/99df1ca41e83eba15646545f94c1e2ff713a6da9))
+
 ### [1.0.16](https://github.com/salesforcecli/plugin-source/compare/v1.0.15...v1.0.16) (2021-09-10)
 
 ### [1.0.15](https://github.com/salesforcecli/plugin-source/compare/v1.0.14...v1.0.15) (2021-09-09)
 
-
 ### Bug Fixes
 
-* bump SDR to 4.4.1 ([#207](https://github.com/salesforcecli/plugin-source/issues/207)) ([d80ddf3](https://github.com/salesforcecli/plugin-source/commit/d80ddf30b7aa63129ffcbb40785c3873bc8c8f6d))
+- bump SDR to 4.4.1 ([#207](https://github.com/salesforcecli/plugin-source/issues/207)) ([d80ddf3](https://github.com/salesforcecli/plugin-source/commit/d80ddf30b7aa63129ffcbb40785c3873bc8c8f6d))
 
 ### [1.0.14](https://github.com/salesforcecli/plugin-source/compare/v1.0.13...v1.0.14) (2021-09-09)
 
-
 ### Bug Fixes
 
-* release with new SDR version ([e803bc8](https://github.com/salesforcecli/plugin-source/commit/e803bc84f8a498bd6cea1f7c363fb5482b45e034))
+- release with new SDR version ([e803bc8](https://github.com/salesforcecli/plugin-source/commit/e803bc84f8a498bd6cea1f7c363fb5482b45e034))
 
 ### [1.0.13](https://github.com/salesforcecli/plugin-source/compare/v1.0.12...v1.0.13) (2021-09-08)
 
 ### [1.0.12](https://github.com/salesforcecli/plugin-source/compare/v1.0.11...v1.0.12) (2021-08-26)
 
-
 ### Bug Fixes
 
-* force a release that updates SDR dependency ([b08ef1f](https://github.com/salesforcecli/plugin-source/commit/b08ef1f21d673353d483921a907d945f74584340))
+- force a release that updates SDR dependency ([b08ef1f](https://github.com/salesforcecli/plugin-source/commit/b08ef1f21d673353d483921a907d945f74584340))
 
 ### [1.0.11](https://github.com/salesforcecli/plugin-source/compare/v1.0.10...v1.0.11) (2021-08-26)
 
-
 ### Bug Fixes
 
-* trim metadata type, and name to prevent unnecessary errors ([#179](https://github.com/salesforcecli/plugin-source/issues/179)) ([2011caa](https://github.com/salesforcecli/plugin-source/commit/2011caae414c9c4ac6e51e9d3a1da50513d3dc77))
+- trim metadata type, and name to prevent unnecessary errors ([#179](https://github.com/salesforcecli/plugin-source/issues/179)) ([2011caa](https://github.com/salesforcecli/plugin-source/commit/2011caae414c9c4ac6e51e9d3a1da50513d3dc77))
 
 ### [1.0.10](https://github.com/salesforcecli/plugin-source/compare/v1.0.9...v1.0.10) (2021-08-20)
 
-
 ### Bug Fixes
 
-* wildcard metadata retrieves will now fetch source not in the project ([#177](https://github.com/salesforcecli/plugin-source/issues/177)) ([3e542c3](https://github.com/salesforcecli/plugin-source/commit/3e542c39bf9b6591c6afd4696809ea28e4b98678))
+- wildcard metadata retrieves will now fetch source not in the project ([#177](https://github.com/salesforcecli/plugin-source/issues/177)) ([3e542c3](https://github.com/salesforcecli/plugin-source/commit/3e542c39bf9b6591c6afd4696809ea28e4b98678))
 
 ### [1.0.9](https://github.com/salesforcecli/plugin-source/compare/v1.0.7...v1.0.9) (2021-08-12)
 
-
 ### Bug Fixes
 
-* update command long descriptions ([#174](https://github.com/salesforcecli/plugin-source/issues/174)) ([12f1301](https://github.com/salesforcecli/plugin-source/commit/12f1301bc387f3d7ddcb5f6393bbcf20d038eb1c))
+- update command long descriptions ([#174](https://github.com/salesforcecli/plugin-source/issues/174)) ([12f1301](https://github.com/salesforcecli/plugin-source/commit/12f1301bc387f3d7ddcb5f6393bbcf20d038eb1c))
 
 ### [1.0.7](https://github.com/salesforcecli/plugin-source/compare/v1.0.6...v1.0.7) (2021-08-05)
 
-
 ### Bug Fixes
 
-* bump SDR to 4.0.2 ([#169](https://github.com/salesforcecli/plugin-source/issues/169)) ([f750a3b](https://github.com/salesforcecli/plugin-source/commit/f750a3b9e841a9f6fe22e65093cb58886db69d93))
+- bump SDR to 4.0.2 ([#169](https://github.com/salesforcecli/plugin-source/issues/169)) ([f750a3b](https://github.com/salesforcecli/plugin-source/commit/f750a3b9e841a9f6fe22e65093cb58886db69d93))
 
 ### [1.0.6](https://github.com/salesforcecli/plugin-source/compare/v1.0.5...v1.0.6) (2021-07-30)
 
 ### [1.0.5](https://github.com/salesforcecli/plugin-source/compare/v1.0.3...v1.0.5) (2021-07-29)
 
-
 ### Bug Fixes
 
-* add verbose test detail when deploying with tests ([#151](https://github.com/salesforcecli/plugin-source/issues/151)) ([1485c0e](https://github.com/salesforcecli/plugin-source/commit/1485c0e47cba4faf22f0420a561f8986e229ada0))
-* bump to 1.0.5 ([#160](https://github.com/salesforcecli/plugin-source/issues/160)) ([b0716cf](https://github.com/salesforcecli/plugin-source/commit/b0716cf0096727137ecfaa1e9e687278d0a046fd))
-* missing metadata type error matches toolbelt ([#155](https://github.com/salesforcecli/plugin-source/issues/155)) ([45ec6d0](https://github.com/salesforcecli/plugin-source/commit/45ec6d069b7d50642daccb3214e6ae8d0bdb6db1))
+- add verbose test detail when deploying with tests ([#151](https://github.com/salesforcecli/plugin-source/issues/151)) ([1485c0e](https://github.com/salesforcecli/plugin-source/commit/1485c0e47cba4faf22f0420a561f8986e229ada0))
+- bump to 1.0.5 ([#160](https://github.com/salesforcecli/plugin-source/issues/160)) ([b0716cf](https://github.com/salesforcecli/plugin-source/commit/b0716cf0096727137ecfaa1e9e687278d0a046fd))
+- missing metadata type error matches toolbelt ([#155](https://github.com/salesforcecli/plugin-source/issues/155)) ([45ec6d0](https://github.com/salesforcecli/plugin-source/commit/45ec6d069b7d50642daccb3214e6ae8d0bdb6db1))
 
 ### [1.0.3](https://github.com/salesforcecli/plugin-source/compare/v1.0.2...v1.0.3) (2021-07-28)
 

@@ -5,13 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as fs from 'fs';
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
-import { AuthInfo, SfdxProject, Org, fs, MyDomainResolver } from '@salesforce/core';
+import { AuthInfo, SfdxProject, Org, MyDomainResolver } from '@salesforce/core';
 import { Open } from '../../../src/commands/force/source/open';
 import { OpenCommandResult } from '../../../src/formatters/openResultFormatter';
 
@@ -98,7 +99,7 @@ describe('force:source:open', () => {
           return frontDoorUrl;
         },
       });
-      stubMethod(sandbox, fs, 'fileExistsSync').returns(true);
+      stubMethod(sandbox, fs, 'existsSync').returns(true);
       getComponentsFromPathStub = stubMethod(sandbox, MetadataResolver.prototype, 'getComponentsFromPath').callsFake(
         (fsPath: string) => {
           if (fsPath.includes('flexipage')) {
