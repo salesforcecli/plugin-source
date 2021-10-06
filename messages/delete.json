@@ -37,5 +37,7 @@
       "If you don’t specify a test level, the default behavior depends on the contents of your deployment package. For more information, see “Running Tests in a Deployment” in the Metadata API Developer Guide."
     ]
   },
-  "prompt": "This operation will delete the following files on your computer and in your org: \n%s\n\nAre you sure you want to proceed (y/n)?"
+  "localPrompt": "This operation will delete the following files on your computer and in your org: \n%s",
+  "remotePrompt": "This operation will delete the following metadata in your org: \n%s",
+  "areYouSure": "\n\nAre you sure you want to proceed (y/n)?"
 }
