@@ -8,15 +8,7 @@
 import * as os from 'os';
 import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-
-import {
-  SourceTracking,
-  throwIfInvalid,
-  replaceRenamedCommands,
-  getKeyFromObject,
-  getKeyFromStrings,
-  ChangeResult,
-} from '@salesforce/source-tracking';
+import { SourceTracking, throwIfInvalid, replaceRenamedCommands, ChangeResult } from '@salesforce/source-tracking';
 
 import { StatusResult, StatusFormatter } from '../../../../formatters/statusFormatter';
 
@@ -92,9 +84,9 @@ export default class SourceStatus extends SfdxCommand {
       });
 
       this.results = this.results.concat(
-        localAdds.flatMap((item) => this.statusResultToOutputRows(item, 'add')),
-        localModifies.flatMap((item) => this.statusResultToOutputRows(item, 'changed')),
-        localDeletes.flatMap((item) => this.statusResultToOutputRows(item, 'delete'))
+        localAdds.flatMap((item) => this.changeResultToOutputRows(item, 'add')),
+        localModifies.flatMap((item) => this.changeResultToOutputRows(item, 'changed')),
+        localDeletes.flatMap((item) => this.changeResultToOutputRows(item, 'delete'))
       );
     }
 
@@ -103,22 +95,20 @@ export default class SourceStatus extends SfdxCommand {
       await tracking.ensureRemoteTracking(true);
       const [remoteDeletes, remoteModifies] = await Promise.all([
         tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'delete', format: 'ChangeResult' }),
-        tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'nondelete', format: 'ChangeResult' }),
+        tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'nondelete', format: 'ChangeResultWithPaths' }),
       ]);
       this.results = this.results.concat(
-        remoteDeletes.flatMap((item) => this.statusResultToOutputRows(item)),
-        remoteModifies.flatMap((item) => this.statusResultToOutputRows(item))
+        remoteDeletes.flatMap((item) => this.changeResultToOutputRows(item)),
+        remoteModifies.flatMap((item) => this.changeResultToOutputRows(item))
       );
     }
 
     if (wantsLocal && wantsRemote) {
       // keys like ApexClass__MyClass.cls
-      const conflictKeys = (await tracking.getConflicts()).map((conflict) => getKeyFromObject(conflict));
-      if (conflictKeys.length > 0) {
+      const conflictFiles = (await tracking.getConflicts()).flatMap((conflict) => conflict.filenames);
+      if (conflictFiles.length > 0) {
         this.results = this.results.map((row) =>
-          conflictKeys.includes(getKeyFromStrings(row.type, row.fullName))
-            ? { ...row, state: `${row.state} (Conflict)` }
-            : row
+          row.filePath && conflictFiles.includes(row.filePath) ? { ...row, state: `${row.state} (Conflict)` } : row
         );
       }
     }
@@ -136,7 +126,7 @@ export default class SourceStatus extends SfdxCommand {
     return formatter.getJson();
   }
 
-  private statusResultToOutputRows(input: ChangeResult, localType?: 'delete' | 'changed' | 'add'): StatusResult[] {
+  private changeResultToOutputRows(input: ChangeResult, localType?: 'delete' | 'changed' | 'add'): StatusResult[] {
     this.logger.debug('converting ChangeResult to a row', input);
 
     const state = (): string => {
@@ -163,7 +153,7 @@ export default class SourceStatus extends SfdxCommand {
     }
     return input.filenames.map((filename) => ({
       ...baseObject,
-      filepath: filename,
+      filePath: filename,
     }));
   }
 }
