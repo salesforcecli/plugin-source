@@ -122,8 +122,16 @@ export default class SourcePush extends DeployCommand {
 
   protected resolveSuccess(): void {
     // there might not be a deployResult if we exited early with an empty componentSet
-    if (this.deployResult && this.deployResult.response.status !== RequestStatus.Succeeded) {
-      this.setExitCode(1);
+    // Exit Codes from https://salesforce.quip.com/JoC2A2IlF9a3
+    const mappings = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.SucceededPartial, 68],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+    ]);
+    if (this.deployResult) {
+      this.setExitCode(mappings.get(this.deployResult.response.status));
     }
   }
 
