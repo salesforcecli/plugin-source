@@ -84,8 +84,8 @@
     "commands": "./lib/commands",
     "bin": "sfdx",
     "devPlugins": [
-      "@oclif/plugin-command-snapshot",
       "@oclif/plugin-help",
+      "@oclif/plugin-command-snapshot",
       "@salesforce/plugin-command-reference",
       "salesforcedx-templates",
       "@salesforce/plugin-config",
@@ -128,7 +128,7 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
     "test:nuts:convert": "PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:delete": "nyc mocha \"test/nuts/delete.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
