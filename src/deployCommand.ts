@@ -6,7 +6,7 @@
  */
 
 import { ComponentSet, DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
-import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
+import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
@@ -22,6 +22,17 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected deployResult: DeployResult;
 
+  protected validateFlags(): void {
+    // verify that the user defined one of the flag names specified in requiredFlags property
+    if (!Object.keys(this.flags).some((flag) => this.xorFlags.includes(flag))) {
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [this.xorFlags.join(', ')]);
+    }
+
+    if ((this.flags.predestructivechanges || this.flags.postdestructivechanges) && !this.flags.manifest) {
+      // --manifest is required when using destructive changes
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', ['manifest']);
+    }
+  }
   /**
    * Request a report of an in-progess or completed deployment.
    *

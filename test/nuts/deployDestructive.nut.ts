@@ -63,7 +63,7 @@ describe('source:delete NUTs', () => {
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'post');
 
-      execCmd('force:source:deploy --json --manifest package.xml --destructivechangespost destructiveChangesPost.xml', {
+      execCmd('force:source:deploy --json --manifest package.xml --postdestructivechanges destructiveChangesPost.xml', {
         ensureExitCode: 0,
       });
 
@@ -81,7 +81,7 @@ describe('source:delete NUTs', () => {
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'pre');
 
-      execCmd('force:source:deploy --json --manifest package.xml --destructivechangespre destructiveChangesPre.xml', {
+      execCmd('force:source:deploy --json --manifest package.xml --predestructivechanges destructiveChangesPre.xml', {
         ensureExitCode: 0,
       });
 
@@ -104,7 +104,7 @@ describe('source:delete NUTs', () => {
       createManifest(`ApexClass:${pre}`, 'pre');
 
       execCmd(
-        'force:source:deploy --json --manifest package.xml --destructivechangespost destructiveChangesPost.xml --destructivechangespre destructiveChangesPre.xml',
+        'force:source:deploy --json --manifest package.xml --postdestructivechanges destructiveChangesPost.xml --predestructivechanges destructiveChangesPre.xml',
         {
           ensureExitCode: 0,
         }
@@ -114,6 +114,27 @@ describe('source:delete NUTs', () => {
       soqlPost = query('ApexClass', post);
       expect(soqlPre.result.records[0].IsNameObsolete).to.be.true;
       expect(soqlPost.result.records[0].IsNameObsolete).to.be.true;
+    });
+  });
+
+  describe('errors', () => {
+    it('should throw an error when a destructive flag is passed without the manifest flag', () => {
+      const { apexName } = createApexClass();
+      const soql = query('ApexClass', apexName);
+
+      expect(soql.result.records[0].IsNameObsolete).to.be.false;
+      createManifest('ApexClass:GeocodingService', 'package');
+      createManifest(`ApexClass:${apexName}`, 'pre');
+
+      try {
+        execCmd('force:source:deploy --json --sourcepath force-app --predestructivechanges destructiveChangesPre.xml', {
+          ensureExitCode: 0,
+        });
+      } catch (e) {
+        const err = e as Error;
+        expect(err).to.not.be.undefined;
+        expect(err.message).to.include('Missing one of the following parameters: manifest');
+      }
     });
   });
 });

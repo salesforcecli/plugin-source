@@ -1,5 +1,5 @@
 {
-  "description": "deploy source to an org\nUse this command to deploy source (metadata that’s in source format) to an org.\nTo take advantage of change tracking with scratch orgs, use \"sfdx force:source:push\".\nTo deploy metadata that’s in metadata format, use \"sfdx force:mdapi:deploy\".\n\nThe source you deploy overwrites the corresponding metadata in your org. This command does not attempt to merge your source with the versions in your org.\n\nTo run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI.\nTo check the status of the job, use force:source:deploy:report.\n\nIf the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of double quotes. On Windows, if the list contains commas, also enclose the entire list in one set of double quotes.\n",
+  "description": "deploy source to an org\nUse this command to deploy source (metadata that’s in source format) to an org.\nTo take advantage of change tracking with scratch orgs, use \"sfdx force:source:push\".\nTo deploy metadata that’s in metadata format, use \"sfdx force:mdapi:deploy\".\n\nThe source you deploy overwrites the corresponding metadata in your org. This command does not attempt to merge your source with the versions in your org.\n\nTo run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI.\nTo check the status of the job, use force:source:deploy:report.\n\nIf the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of double quotes. On Windows, if the list contains commas, also enclose the entire list in one set of double quotes.\n If you use the --manifest, --predestructivechanges, or --postdestructivechanges parameters, run the force:source:manifest:create command to easily generate the different types of manifest files.",
   "examples": [
     "To deploy the source files in a directory:\n\t $ sfdx force:source:deploy -p path/to/source",
     "To deploy a specific Apex class and the objects whose source is in a directory: \n\t$ sfdx force:source:deploy -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
@@ -11,7 +11,9 @@
     "To deploy all components listed in a manifest:\n   $ sfdx force:source:deploy -x path/to/package.xml",
     "To run the tests that aren’t in any managed packages as part of a deployment:\n   $ sfdx force:source:deploy -m ApexClass -l RunLocalTests",
     "To check whether a deployment would succeed (to prepare for Quick Deploy):\n   $ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c",
-    "To deploy an already validated deployment (Quick Deploy):\n    $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`,"
+    "To deploy an already validated deployment (Quick Deploy):\n    $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`",
+    "To run a destructive operation before the deploy occurs:\n    $ sfdx force:source:deploy --manifest package.xml --predestructivechanges destructiveChangesPre.xml",
+    "To run a destructive operation after the deploy occurs:\n    $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml"
   ],
   "flags": {
     "sourcePath": "comma-separated list of source file paths to deploy",
@@ -26,8 +28,8 @@
     "ignoreWarnings": "whether a warning will allow a deployment to complete successfully",
     "validateDeployRequestId": "deploy request ID of the validated deployment to run a Quick Deploy",
     "soapDeploy": "deploy metadata with SOAP API instead of REST API",
-    "destructivechangespre": "file path for manifest (destructivechangespre.xml) of components to delete before the deploy",
-    "destructivechangespost": "file path for manifest (destructivechangespost.xml) of components to delete after the deploy"
+    "predestructivechanges": "file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy",
+    "postdestructivechanges": "file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy"
   },
   "flagsLong": {
     "sourcePath": [

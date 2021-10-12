@@ -106,11 +106,11 @@ export class Deploy extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
-    destructivechangespre: flags.filepath({
-      description: messages.getMessage('flags.destructivechangespre'),
+    predestructivechanges: flags.filepath({
+      description: messages.getMessage('flags.predestructivechanges'),
     }),
-    destructivechangespost: flags.filepath({
-      description: messages.getMessage('flags.destructivechangespre'),
+    postdestructivechanges: flags.filepath({
+      description: messages.getMessage('flags.postdestructivechanges'),
     }),
   };
   protected xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
@@ -154,8 +154,8 @@ export class Deploy extends DeployCommand {
         manifest: this.flags.manifest && {
           manifestPath: this.getFlag<string>('manifest'),
           directoryPaths: this.getPackageDirs(),
-          destructiveChangesPre: this.getFlag<string>('destructivechangespre'),
-          destructiveChangesPost: this.getFlag<string>('destructivechangespost'),
+          destructiveChangesPre: this.getFlag<string>('predestructivechanges'),
+          destructiveChangesPost: this.getFlag<string>('postdestructivechanges'),
         },
         metadata: this.flags.metadata && {
           metadataEntries: this.getFlag<string[]>('metadata'),
