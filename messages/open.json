@@ -13,5 +13,6 @@
   "SourceOpenPathDescription": "generate a navigation URL; don’t launch the editor",
   "SourceOpenCommandHumanSuccess": "Access org %s as user %s with the following URL: %s",
   "SourceOpenCommandTimeoutError": "Timeout error",
-  "SourceOpenCommandError": "Open failed"
+  "SourceOpenCommandError": "Open failed",
+  "SecurityWarning": "This command will expose sensitive information that allows for subsequent activity using your current authenticated session.\nSharing this information is equivalent to logging someone in under the current credential, resulting in unintended access and escalation of privilege.\nFor additional information, please review the authorization section of the https://developer.salesforce.com/docs/atlas.en-us.234.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm"
 }

@@ -32,6 +32,8 @@ export class OpenResultFormatter extends ResultFormatter {
 
   public display(): void {
     if (this.isSuccess()) {
+      this.ux.warn(messages.getMessage('SecurityWarning'));
+      this.ux.log();
       const { orgId, username, url } = this.result;
       this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
     } else {

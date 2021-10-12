@@ -4,11 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
+import * as fs from 'fs';
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { fs, Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
@@ -78,12 +80,8 @@ describe('force:source:delete', () => {
   beforeEach(() => {
     resolveProjectConfigStub = sandbox.stub();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
-      getSourceComponents: () => {
-        return {
-          toArray: () => {
-            return [exampleSourceComponent];
-          },
-        };
+      toArray: () => {
+        return [new SourceComponent(exampleSourceComponent)];
       },
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
@@ -121,7 +119,8 @@ describe('force:source:delete', () => {
     await runDeleteCmd(['--sourcepath', sourcepath[0], '--json', '-r']);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureHookArgs();
-    expect(fsUnlink.callCount).to.equal(1);
+    // deleting the component and its xml
+    expect(fsUnlink.callCount).to.equal(2);
   });
 
   it('should pass along metadata', async () => {

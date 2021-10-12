@@ -5,15 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as os from 'os';
+import * as fs from 'fs';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { fs, Messages } from '@salesforce/core';
-import {
-  ComponentSet,
-  DestructiveChangesType,
-  RequestStatus,
-  SourceComponent,
-} from '@salesforce/source-deploy-retrieve';
+import { Messages } from '@salesforce/core';
+import { ComponentSet, DestructiveChangesType, MetadataComponent, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
@@ -38,17 +34,19 @@ export class Delete extends DeployCommand {
     checkonly: flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
-      longDescription: messages.getMessage('flags.checkonlyLong'),
+      longDescription: messages.getMessage('flagsLong.checkonly'),
     }),
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(Delete.DEFAULT_SRC_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     testlevel: flags.enum({
       char: 'l',
       description: messages.getMessage('flags.testLevel'),
+      longDescription: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunLocalTests', 'RunAllTestsInOrg'],
       default: 'NoTestRun',
     }),
@@ -59,12 +57,13 @@ export class Delete extends DeployCommand {
     metadata: flags.array({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
+      longDescription: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
-      longDescription: messages.getMessage('flags.sourcepathLong'),
+      longDescription: messages.getMessage('flagsLong.sourcepath'),
       exclusive: ['manifest', 'metadata'],
     }),
     verbose: flags.builtin({
@@ -73,10 +72,10 @@ export class Delete extends DeployCommand {
   };
   protected xorFlags = ['metadata', 'sourcepath'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  private sourceComponents: SourceComponent[];
   private isRest = false;
   private deleteResultFormatter: DeleteResultFormatter;
   private aborted = false;
+  private components: MetadataComponent[];
 
   private updateDeployId = once((id) => {
     this.displayDeployId(id);
@@ -108,9 +107,9 @@ export class Delete extends DeployCommand {
       },
     });
 
-    this.sourceComponents = this.componentSet.getSourceComponents().toArray();
+    this.components = this.componentSet.toArray();
 
-    if (!this.sourceComponents.length) {
+    if (!this.components.length) {
       // if we didn't find any components to delete, let the user know and exit
       this.deleteResultFormatter.displayNoResultsFound();
       return;
@@ -118,8 +117,13 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
-    this.sourceComponents.map((component) => {
-      cs.add(component, DestructiveChangesType.POST);
+    this.components.map((component) => {
+      if (component instanceof SourceComponent) {
+        cs.add(component, DestructiveChangesType.POST);
+      } else {
+        // a remote-only delete
+        cs.add(new SourceComponent({ name: component.fullName, type: component.type }), DestructiveChangesType.POST);
+      }
     });
     this.componentSet = cs;
 
@@ -127,7 +131,7 @@ export class Delete extends DeployCommand {
     if (this.aborted) return;
 
     // fire predeploy event for the delete
-    await this.lifecycle.emit('predeploy', this.componentSet.toArray());
+    await this.lifecycle.emit('predeploy', this.components);
     this.isRest = await this.isRestDeploy();
     this.ux.log(`*** Deleting with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
@@ -179,7 +183,7 @@ export class Delete extends DeployCommand {
 
   private deleteFilesLocally(): void {
     if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
-      this.sourceComponents.map((component) => {
+      this.components.map((component: SourceComponent) => {
         // delete the content and/or the xml of the components
         if (component.content) {
           const stats = fs.lstatSync(component.content);
@@ -189,8 +193,7 @@ export class Delete extends DeployCommand {
             fs.unlinkSync(component.content);
           }
         }
-        // the xml could've been deleted as part of a bundle type above
-        if (component.xml && fs.existsSync(component.xml)) {
+        if (component.xml) {
           fs.unlinkSync(component.xml);
         }
       });
@@ -199,10 +202,33 @@ export class Delete extends DeployCommand {
 
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
-      const paths = this.sourceComponents.flatMap((component) => [component.xml, ...component.walkContent()]);
-      const promptMessage = messages.getMessage('prompt', [[...new Set(paths)].join('\n')]);
+      const remote: string[] = [];
+      const local: string[] = [];
+      const message: string[] = [];
 
-      return confirm(promptMessage);
+      this.components.flatMap((component) => {
+        if (component instanceof SourceComponent) {
+          local.push(component.xml, ...component.walkContent());
+        } else {
+          // remote only metadata
+          remote.push(`${component.type.name}:${component.fullName}`);
+        }
+      });
+
+      if (remote.length) {
+        message.push(messages.getMessage('remotePrompt', [[...new Set(remote)].join('\n')]));
+      }
+
+      if (local.length) {
+        if (message.length) {
+          // add a whitespace between remote and local
+          message.push('\n');
+        }
+        message.push('\n', messages.getMessage('localPrompt', [[...new Set(local)].join('\n')]));
+      }
+
+      message.push(messages.getMessage('areYouSure'));
+      return confirm(message.join(''));
     }
     return true;
   }
