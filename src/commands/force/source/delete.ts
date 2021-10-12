@@ -9,7 +9,13 @@ import * as fs from 'fs';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { ComponentSet, DestructiveChangesType, MetadataComponent, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  DestructiveChangesType,
+  MetadataComponent,
+  RequestStatus,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
