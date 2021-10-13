@@ -74,7 +74,8 @@ workflows:
               command:
                 - 'yarn test:nuts:convert'
                 - 'yarn test:nuts:delete'
-                - 'yarn test:nuts:deploy:async'
+                # this is disabled because of that memory/GC bug
+                # - 'yarn test:nuts:deploy:async'
                 - 'yarn test:nuts:deploy:manifest'
                 - 'yarn test:nuts:deploy:metadata'
                 - 'yarn test:nuts:deploy:quick'
