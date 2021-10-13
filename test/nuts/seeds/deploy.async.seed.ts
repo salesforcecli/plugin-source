@@ -62,20 +62,20 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       } else {
         // the deploy could be InProgress, Pending, or Queued, at this point
         expect(['Pending', 'InProgress', 'Queued']).to.include(getString(report.result, 'status'));
-        // await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
+        await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
       }
     });
 
     // sample-multiple-package-project deploys too quickly with SDR to cancel
-    if (REPO.gitUrl.includes('dreamhouse')) {
-      it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
-        // await testkit.deleteGlobs(['force-app/test/**/*']);
-        // const deploy = (await testkit.deploy({
-        //   args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-        // })) as Result<{ id: string; result: { id: string } }>;
-        // await testkit.deployCancel({ args: `-i ${deploy.result.id}` });
-        // testkit.expect.toHaveProperty(deploy.result, 'id');
-      });
-    }
+    // if (REPO.gitUrl.includes('dreamhouse')) {
+    // it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
+    // await testkit.deleteGlobs(['force-app/test/**/*']);
+    // const deploy = (await testkit.deploy({
+    //   args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
+    // })) as Result<{ id: string; result: { id: string } }>;
+    // await testkit.deployCancel({ args: `-i ${deploy.result.id}` });
+    // testkit.expect.toHaveProperty(deploy.result, 'id');
+    // });
+    // }
   });
 });
