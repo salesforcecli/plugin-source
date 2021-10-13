@@ -121,9 +121,7 @@ describe('source:delete NUTs', () => {
   describe('errors', () => {
     it('should throw an error when a pre destructive flag is passed without the manifest flag', async () => {
       const { apexName } = createApexClass();
-      const deleted = await isNameObsolete('ApexClass', apexName);
 
-      expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'pre');
 
@@ -138,9 +136,7 @@ describe('source:delete NUTs', () => {
 
     it('should throw an error when a post destructive flag is passed without the manifest flag', async () => {
       const { apexName } = createApexClass();
-      const deleted = await isNameObsolete('ApexClass', apexName);
 
-      expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'pre');
 
@@ -154,8 +150,10 @@ describe('source:delete NUTs', () => {
     });
 
     it("should throw an error when a destructive manifest is passed that doesn't exist", () => {
+      createManifest('ApexClass:GeocodingService', 'package');
+
       try {
-        execCmd('force:source:deploy --json --sourcepath force-app --predestructivechanges doesntexist.xml');
+        execCmd('force:source:deploy --json --manifest package.xml --predestructivechanges doesntexist.xml');
       } catch (e) {
         const err = e as Error;
         expect(err).to.not.be.undefined;
