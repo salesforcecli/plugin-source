@@ -74,7 +74,12 @@ workflows:
               command:
                 - 'yarn test:nuts:convert'
                 - 'yarn test:nuts:delete'
-                - 'yarn test:nuts:deploy'
+                - 'yarn test:nuts:deploy:async'
+                - 'yarn test:nuts:deploy:manifest'
+                - 'yarn test:nuts:deploy:metadata'
+                - 'yarn test:nuts:deploy:quick'
+                - 'yarn test:nuts:deploy:sourcepath'
+                - 'yarn test:nuts:deploy:testlevel'
                 - 'yarn test:nuts:manifest:create'
                 - 'yarn test:nuts:retrieve'
                 - 'yarn test:nuts:specialTypes'
