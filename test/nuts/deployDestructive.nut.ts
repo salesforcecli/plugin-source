@@ -10,7 +10,7 @@ import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { exec } from 'shelljs';
+import { AuthInfo, Connection } from '@salesforce/core';
 
 describe('source:delete NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
@@ -29,16 +29,17 @@ describe('source:delete NUTs', () => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype}`);
   };
 
-  const query = (
-    memberType: string,
-    memberName: string
-  ): { result: { records: Array<{ IsNameObsolete: boolean }> } } => {
-    return JSON.parse(
-      exec(
-        `sfdx force:data:soql:query -q "SELECT IsNameObsolete FROM SourceMember WHERE MemberType='${memberType}' AND MemberName='${memberName}'" -t --json`,
-        { silent: true }
-      )
-    ) as { result: { records: Array<{ IsNameObsolete: boolean }> } };
+  const isNameObsolete = async (memberType: string, memberName: string): Promise<boolean> => {
+    const connection = await Connection.create({
+      authInfo: await AuthInfo.create({ username: testkit.username }),
+    });
+
+    const res = await connection.singleRecordQuery<{ IsNameObsolete: boolean }>(
+      `SELECT IsNameObsolete FROM SourceMember WHERE MemberType='${memberType}' AND MemberName='${memberName}'`,
+      { tooling: true }
+    );
+
+    return res.IsNameObsolete;
   };
 
   before(async () => {
@@ -57,9 +58,9 @@ describe('source:delete NUTs', () => {
   describe('destructive changes POST', () => {
     it('should deploy and then delete an ApexClass ', async () => {
       const { apexName } = createApexClass();
-      let soql = query('ApexClass', apexName);
+      let deleted = await isNameObsolete('ApexClass', apexName);
 
-      expect(soql.result.records[0].IsNameObsolete).to.be.false;
+      expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'post');
 
@@ -67,17 +68,17 @@ describe('source:delete NUTs', () => {
         ensureExitCode: 0,
       });
 
-      soql = query('ApexClass', apexName);
-      expect(soql.result.records[0].IsNameObsolete).to.be.true;
+      deleted = await isNameObsolete('ApexClass', apexName);
+      expect(deleted).to.be.true;
     });
   });
 
   describe('destructive changes PRE', () => {
     it('should delete an ApexClass and then deploy a class', async () => {
       const { apexName } = createApexClass();
-      let soql = query('ApexClass', apexName);
+      let deleted = await isNameObsolete('ApexClass', apexName);
 
-      expect(soql.result.records[0].IsNameObsolete).to.be.false;
+      expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'pre');
 
@@ -85,8 +86,8 @@ describe('source:delete NUTs', () => {
         ensureExitCode: 0,
       });
 
-      soql = query('ApexClass', apexName);
-      expect(soql.result.records[0].IsNameObsolete).to.be.true;
+      deleted = await isNameObsolete('ApexClass', apexName);
+      expect(deleted).to.be.true;
     });
   });
 
@@ -94,11 +95,11 @@ describe('source:delete NUTs', () => {
     it('should delete a class, then deploy and then delete an ApexClass', async () => {
       const pre = createApexClass('pre').apexName;
       const post = createApexClass('post').apexName;
-      let soqlPre = query('ApexClass', pre);
-      let soqlPost = query('ApexClass', post);
+      let preDeleted = await isNameObsolete('ApexClass', pre);
+      let postDeleted = await isNameObsolete('ApexClass', post);
 
-      expect(soqlPre.result.records[0].IsNameObsolete).to.be.false;
-      expect(soqlPost.result.records[0].IsNameObsolete).to.be.false;
+      expect(preDeleted).to.be.false;
+      expect(postDeleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${post}`, 'post');
       createManifest(`ApexClass:${pre}`, 'pre');
@@ -110,30 +111,55 @@ describe('source:delete NUTs', () => {
         }
       );
 
-      soqlPre = query('ApexClass', pre);
-      soqlPost = query('ApexClass', post);
-      expect(soqlPre.result.records[0].IsNameObsolete).to.be.true;
-      expect(soqlPost.result.records[0].IsNameObsolete).to.be.true;
+      preDeleted = await isNameObsolete('ApexClass', pre);
+      postDeleted = await isNameObsolete('ApexClass', post);
+      expect(preDeleted).to.be.true;
+      expect(postDeleted).to.be.true;
     });
   });
 
   describe('errors', () => {
-    it('should throw an error when a destructive flag is passed without the manifest flag', () => {
+    it('should throw an error when a pre destructive flag is passed without the manifest flag', async () => {
       const { apexName } = createApexClass();
-      const soql = query('ApexClass', apexName);
+      const deleted = await isNameObsolete('ApexClass', apexName);
 
-      expect(soql.result.records[0].IsNameObsolete).to.be.false;
+      expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
       createManifest(`ApexClass:${apexName}`, 'pre');
 
       try {
-        execCmd('force:source:deploy --json --sourcepath force-app --predestructivechanges destructiveChangesPre.xml', {
-          ensureExitCode: 0,
-        });
+        execCmd('force:source:deploy --json --sourcepath force-app --predestructivechanges destructiveChangesPre.xml');
       } catch (e) {
         const err = e as Error;
         expect(err).to.not.be.undefined;
-        expect(err.message).to.include('Missing one of the following parameters: manifest');
+        expect(err.message).to.include('Error: --manifest= must also be provided when using --predestructivechanges=');
+      }
+    });
+
+    it('should throw an error when a post destructive flag is passed without the manifest flag', async () => {
+      const { apexName } = createApexClass();
+      const deleted = await isNameObsolete('ApexClass', apexName);
+
+      expect(deleted).to.be.false;
+      createManifest('ApexClass:GeocodingService', 'package');
+      createManifest(`ApexClass:${apexName}`, 'pre');
+
+      try {
+        execCmd('force:source:deploy --json --sourcepath force-app --postdestructivechanges destructiveChangesPre.xml');
+      } catch (e) {
+        const err = e as Error;
+        expect(err).to.not.be.undefined;
+        expect(err.message).to.include('Error: --manifest= must also be provided when using --postdestructivechanges=');
+      }
+    });
+
+    it("should throw an error when a destructive manifest is passed that doesn't exist", () => {
+      try {
+        execCmd('force:source:deploy --json --sourcepath force-app --predestructivechanges doesntexist.xml');
+      } catch (e) {
+        const err = e as Error;
+        expect(err).to.not.be.undefined;
+        expect(err.message).to.include("ENOENT: no such file or directory, open 'doesntexist.xml'");
       }
     });
   });

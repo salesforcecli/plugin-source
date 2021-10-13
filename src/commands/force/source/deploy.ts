@@ -108,9 +108,11 @@ export class Deploy extends DeployCommand {
     }),
     predestructivechanges: flags.filepath({
       description: messages.getMessage('flags.predestructivechanges'),
+      dependsOn: ['manifest'],
     }),
     postdestructivechanges: flags.filepath({
       description: messages.getMessage('flags.postdestructivechanges'),
+      dependsOn: ['manifest'],
     }),
   };
   protected xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];

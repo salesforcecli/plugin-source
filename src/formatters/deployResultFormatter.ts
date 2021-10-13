@@ -108,7 +108,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected displaySuccesses(): void {
     if (this.isSuccess() && this.fileResponses?.length) {
-      const successes = this.fileResponses.filter((f) => f.state !== 'Failed' && f.state !== 'Deleted');
+      const successes = this.fileResponses.filter((f) => !['Failed', 'Deleted'].includes(f.state));
       if (!successes.length) {
         return;
       }
