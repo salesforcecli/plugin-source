@@ -41,89 +41,14 @@ workflows:
   test-and-release:
     when: << pipeline.parameters.run-auto-workflows >>
     jobs:
-      - release-management/validate-pr:
-          filters:
-            branches:
-              ignore: main
-      - release-management/test-package:
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-              node_version:
-                - latest
-                - lts
-                - maintenance
-            exclude:
-              - os: windows
-                node_version: lts
-              - os: windows
-                node_version: maintenance
       - release-management/test-nut:
           sfdx_version: latest
           node_version: lts
-          size: large
-          requires:
-            - release-management/test-package
+          size: medium
           matrix:
             parameters:
               os:
                 - linux
-                - windows
+                # - windows
               command:
-                - 'yarn test:nuts:convert'
-                - 'yarn test:nuts:delete'
-                # this is disabled because of that memory/GC bug
-                # - 'yarn test:nuts:deploy:async'
-                - 'yarn test:nuts:deploy:manifest'
-                - 'yarn test:nuts:deploy:metadata'
-                - 'yarn test:nuts:deploy:quick'
-                - 'yarn test:nuts:deploy:sourcepath'
-                - 'yarn test:nuts:deploy:testlevel'
-                - 'yarn test:nuts:manifest:create'
-                - 'yarn test:nuts:retrieve'
-                - 'yarn test:nuts:specialTypes'
-      - release-management/release-package:
-          sign: true
-          github-release: true
-          requires:
-            - release-management/test-package
-          filters:
-            branches:
-              only: main
-          context: CLI_CTC
-  test-ts-update:
-    triggers:
-      - schedule:
-          cron: 0 0 * * *
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - release-management/test-ts-update
-  just-nuts:
-    when: << pipeline.parameters.run-just-nuts >>
-    jobs:
-      - release-management/test-nut:
-          name: just-nuts-<< matrix.os >>
-          sfdx_version: << pipeline.parameters.sfdx_version >>
-          sfdx_executable_path: sfdx
-          repo_tag: << pipeline.parameters.repo_tag >>
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-          npm_module_name: << pipeline.parameters.npm_module_name >>
-  dependabot-automerge:
-    triggers:
-      - schedule:
-          cron: '0 2,5,8,11 * * *'
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - release-management/dependabot-automerge
+                - 'yarn test:nuts:deploy:async'
