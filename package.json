@@ -141,7 +141,7 @@
     "test:nuts:convert": "cross-env PLUGIN_SOURCE_SEED_FILTER=convert ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:delete": "mocha \"test/nuts/delete.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
-    "test:nuts:deploy:async": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:async": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --retries 0",
     "test:nuts:deploy:manifest": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.manifest ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy:metadata": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.metadata ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy:quick": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.quick ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
