@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  release-management: salesforce/npm-release-management@dev:2a974bc
+  release-management: salesforce/npm-release-management@4
 parameters:
   run-auto-workflows:
     description: >
@@ -73,11 +73,11 @@ workflows:
                 - windows
               command:
                 - 'yarn test:nuts:convert'
-                - 'yarn test:nuts:retrieve'
                 - 'yarn test:nuts:delete'
                 - 'yarn test:nuts:deploy'
-                - 'yarn test:nuts:specialTypes'
                 - 'yarn test:nuts:manifest:create'
+                - 'yarn test:nuts:retrieve'
+                - 'yarn test:nuts:specialTypes'
       - release-management/release-package:
           sign: true
           github-release: true
