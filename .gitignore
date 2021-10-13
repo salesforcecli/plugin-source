@@ -39,6 +39,3 @@ node_modules
 # os specific files
 .DS_Store
 .idea
-
-# ignore generated nut tests
-test/nuts/generated/
