@@ -71,8 +71,10 @@ describe('conflict detection and resolution', () => {
     const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
       ensureExitCode: 0,
     }).jsonOutput.result;
-    // profile and customApplication
-    expect(result, JSON.stringify(result)).to.have.lengthOf(2);
+    expect(
+      result.filter((r) => r.type === 'CustomApplication'),
+      JSON.stringify(result)
+    ).to.have.lengthOf(1);
   });
   it('edits a local file', async () => {
     const filePath = path.join(
@@ -89,10 +91,26 @@ describe('conflict detection and resolution', () => {
     );
   });
   it('can see the conflict in status', () => {
-    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), { ensureExitCode: 0 })
-      .jsonOutput.result;
-    expect(result, JSON.stringify(result)).to.have.lengthOf(3);
-    result.filter((app) => app.type === 'CustomApplication').map((app) => expect(app.state).to.include('(Conflict)'));
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
+      ensureExitCode: 0,
+    }).jsonOutput.result.filter((app) => app.type === 'CustomApplication');
+    // json is not sorted.  This relies on the implementation of getConflicts()
+    expect(result).to.deep.equal([
+      {
+        type: 'CustomApplication',
+        state: 'local Changed (Conflict)',
+        fullName: 'EBikes',
+        filePath: 'force-app/main/default/applications/EBikes.app-meta.xml',
+        ignored: false,
+      },
+      {
+        type: 'CustomApplication',
+        state: 'remote Changed (Conflict)',
+        fullName: 'EBikes',
+        filePath: 'force-app/main/default/applications/EBikes.app-meta.xml',
+        ignored: false,
+      },
+    ]);
   });
 
   it('gets conflict error on push', () => {

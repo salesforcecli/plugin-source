@@ -50,8 +50,7 @@ export class StatusFormatter extends ResultFormatter {
         { label: 'STATE', key: 'state' },
         { label: 'FULL NAME', key: 'fullName' },
         { label: 'TYPE', key: 'type' },
-        { label: 'PROJECT PATH', key: 'filepath' },
-        { label: 'IGNORED', key: 'ignored' },
+        { label: 'PROJECT PATH', key: 'filePath' },
       ],
     });
   }

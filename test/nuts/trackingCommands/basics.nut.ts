@@ -69,7 +69,6 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const remoteResult = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(remoteResult.length).to.equal(1);
       expect(remoteResult.some((item) => item.type === 'Profile')).to.equal(true);
     });
 
@@ -77,14 +76,20 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const pullResult = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(pullResult.some((item) => item.type === 'Profile')).to.equal(true);
+      expect(
+        pullResult.some((item) => item.type === 'Profile'),
+        JSON.stringify(pullResult)
+      ).to.equal(true);
     });
 
     it('sees no local or remote changes', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.have.length(0);
+      expect(
+        result.filter((r) => r.type === 'Profile'),
+        JSON.stringify(result)
+      ).to.have.length(0);
     });
 
     it('sees a local delete in local status', async () => {
@@ -101,13 +106,13 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
           type: 'ApexClass',
           state: 'local Delete',
           fullName: 'TestOrderController',
-          filepath: path.normalize('force-app/main/default/classes/TestOrderController.cls'),
+          filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls'),
         },
         {
           type: 'ApexClass',
           state: 'local Delete',
           fullName: 'TestOrderController',
-          filepath: path.normalize('force-app/main/default/classes/TestOrderController.cls-meta.xml'),
+          filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls-meta.xml'),
         },
       ]);
     });
@@ -115,20 +120,23 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.have.length(0);
+      expect(
+        result.filter((r) => r.fullName === 'TestOrderController'),
+        JSON.stringify(result)
+      ).to.have.length(0);
     });
 
     it('pushes the local delete to the org', () => {
       const result = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result.deployedSource).to.be.an.instanceof(Array).with.length(2);
+      expect(result.deployedSource, JSON.stringify(result.deployedSource)).to.be.an.instanceof(Array).with.length(2);
     });
     it('sees no local changes', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.be.an.instanceof(Array).with.length(0);
+      expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(0);
     });
   });
 
