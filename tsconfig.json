@@ -2,11 +2,7 @@
   "extends": "@salesforce/dev-config/tsconfig",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
-    "baseUrl": ".",
-    "paths": {
-      "@salesforce/kit": ["node_modules/@salesforce/kit"]
-    }
+    "rootDir": "src"
   },
   "include": ["./src/**/*.ts"]
 }
