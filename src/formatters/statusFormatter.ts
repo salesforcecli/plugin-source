@@ -16,6 +16,7 @@ export interface StatusResult {
   fullName: string;
   type: string;
   filePath?: string;
+  ignored?: boolean;
 }
 
 // sort order is state, type, fullname
@@ -50,6 +51,7 @@ export class StatusFormatter extends ResultFormatter {
         { label: 'FULL NAME', key: 'fullName' },
         { label: 'TYPE', key: 'type' },
         { label: 'PROJECT PATH', key: 'filepath' },
+        { label: 'IGNORED', key: 'ignored' },
       ],
     });
   }

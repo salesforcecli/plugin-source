@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-
+import { ForceIgnore } from '@salesforce/source-deploy-retrieve';
 import {
   SourceTracking,
   throwIfInvalid,
@@ -138,6 +138,7 @@ export default class SourceStatus extends SfdxCommand {
 
   private statusResultToOutputRows(input: ChangeResult, localType?: 'delete' | 'changed' | 'add'): StatusResult[] {
     this.logger.debug('converting ChangeResult to a row', input);
+    const forceIgnore = new ForceIgnore();
 
     const state = (): string => {
       if (localType) {
@@ -158,12 +159,13 @@ export default class SourceStatus extends SfdxCommand {
     };
     this.logger.debug(baseObject);
 
-    if (!input.filenames) {
-      return [baseObject];
+    if (input.filenames?.length) {
+      return input.filenames.map((filename) => ({
+        ...baseObject,
+        filepath: filename,
+        ignored: forceIgnore.denies(filename),
+      }));
     }
-    return input.filenames.map((filename) => ({
-      ...baseObject,
-      filepath: filename,
-    }));
+    return [baseObject];
   }
 }
