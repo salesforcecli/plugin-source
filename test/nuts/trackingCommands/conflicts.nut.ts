@@ -55,7 +55,7 @@ describe('conflict detection and resolution', () => {
   it('edits a remote file', async () => {
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: (session.setup[1] as { result: { username: string } }).result?.username,
       }),
     });
     const app = await conn.singleRecordQuery<{ Id: string; Metadata: any }>(

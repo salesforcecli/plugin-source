@@ -37,7 +37,7 @@ describe('remote changes', () => {
     });
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: (session.setup[1] as { result: { username: string } }).result?.username,
       }),
     });
   });
