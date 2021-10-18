@@ -823,6 +823,22 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
+"@salesforce/source-deploy-retrieve@^4.5.11":
+  version "4.5.11"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.5.11.tgz#ce469e1230f4cab2eadfbfc9436314cfe4318b9a"
+  integrity sha512-xbrFwOQsO4xztaur1MUeSLcnHWiXiXUOKZ5pj22Ml7ptrhmXPNLX/ueCTTelYYxse/l2uUhxBzbA3yR6JE1jNg==
+  dependencies:
+    "@salesforce/core" "2.28.0"
+    "@salesforce/kit" "^1.5.0"
+    "@salesforce/ts-types" "^1.4.2"
+    archiver "^5.3.0"
+    fast-xml-parser "^3.17.4"
+    graceful-fs "^4.2.8"
+    ignore "^5.1.8"
+    mime "2.4.6"
+    unzipper "0.10.11"
+    xmldom-sfdx-encoding "^0.1.29"
+
 "@salesforce/source-testkit@^0.0.15":
   version "0.0.15"
   resolved "https://registry.npmjs.org/@salesforce/source-testkit/-/source-testkit-0.0.15.tgz#0587a4cb050cd4f52c292c5aae164f2d09d3f5ee"
@@ -3782,7 +3798,7 @@ got@^6.2.0:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4:
+graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.8:
   version "4.2.8"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
   integrity sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==
