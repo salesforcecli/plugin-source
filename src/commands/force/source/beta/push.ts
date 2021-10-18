@@ -22,7 +22,7 @@ import { processConflicts } from '../../../../formatters/conflicts';
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
-export default class SourcePush extends DeployCommand {
+export default class Push extends DeployCommand {
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {

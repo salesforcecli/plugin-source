@@ -23,7 +23,7 @@ import { PullResponse, PullResultFormatter } from '../../../../formatters/pullFo
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
-export default class SourcePull extends SourceCommand {
+export default class Pull extends SourceCommand {
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {

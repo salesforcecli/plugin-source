@@ -23,15 +23,10 @@ import { StatusResult, StatusFormatter } from '../../../../formatters/statusForm
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
-export default class SourceStatus extends SfdxCommand {
+export default class Status extends SfdxCommand {
   public static description = messages.getMessage('description');
   public static readonly examples = replaceRenamedCommands(messages.getMessage('examples')).split(os.EOL);
   protected static flagsConfig: FlagsConfig = {
-    all: flags.boolean({
-      char: 'a',
-      description: messages.getMessage('flags.all'),
-      longDescription: messages.getMessage('flags.allLong'),
-    }),
     local: flags.boolean({
       char: 'l',
       description: messages.getMessage('flags.local'),
@@ -56,10 +51,9 @@ export default class SourceStatus extends SfdxCommand {
       toValidate: 'plugin-source',
       command: replaceRenamedCommands('force:source:status'),
     });
-    const wantsLocal =
-      (this.flags.local as boolean) || (this.flags.all as boolean) || (!this.flags.remote && !this.flags.all);
-    const wantsRemote =
-      (this.flags.remote as boolean) || (this.flags.all as boolean) || (!this.flags.local && !this.flags.all);
+
+    const wantsLocal = (this.flags.local as boolean) || (!this.flags.remote && !this.flags.local);
+    const wantsRemote = (this.flags.remote as boolean) || (!this.flags.remote && !this.flags.local);
 
     this.logger.debug(
       `project is ${this.project.getPath()} and pkgDirs are ${this.project

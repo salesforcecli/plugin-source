@@ -18,7 +18,7 @@ export type SourceTrackingResetResult = {
   localPathsSynced: number;
 };
 
-export class SourceTrackingResetCommand extends SfdxCommand {
+export class Reset extends SfdxCommand {
   public static readonly description = replaceRenamedCommands(messages.getMessage('resetDescription'));
 
   public static readonly requiresProject = true;
