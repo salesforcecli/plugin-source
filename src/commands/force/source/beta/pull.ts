@@ -148,7 +148,7 @@ export default class Pull extends SourceCommand {
     await this.lifecycle.emit('preretrieve', componentSet.toArray());
     this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
 
-    // assume: remote deletes that get deleted locally don't fire hooks?
+    // Assume: remote deletes that get deleted locally don't fire hooks.
     await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());
   }
 
