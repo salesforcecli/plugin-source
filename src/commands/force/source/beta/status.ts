@@ -31,11 +31,13 @@ export default class Status extends SfdxCommand {
       char: 'l',
       description: messages.getMessage('flags.local'),
       longDescription: messages.getMessage('flags.localLong'),
+      exclusive: ['remote'],
     }),
     remote: flags.boolean({
       char: 'r',
       description: messages.getMessage('flags.remote'),
       longDescription: messages.getMessage('flags.remoteLong'),
+      exclusive: ['local'],
     }),
   };
   protected static requiresUsername = true;
