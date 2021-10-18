@@ -64,6 +64,19 @@ describe('forceignore changes', () => {
       expect(output.deployedSource).to.deep.equal([]);
     });
 
+    it('shows the file in status as ignored', () => {
+      const output = execCmd<StatusResult>(replaceRenamedCommands('force:source:status --json'), {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+      expect(output).to.deep.include({
+        state: 'Changed',
+        fullName: 'IgnoreTest',
+        type: 'Apex Class',
+        filePath: path.join(classdir, 'IgnoreTest.cls'),
+        ignored: true,
+      });
+    });
+
     it('will ignore a class in the ignore file before it was created', async () => {
       // setup a forceIgnore with some file
       const newForceIgnore =

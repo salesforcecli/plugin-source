@@ -48,6 +48,7 @@ export class StatusFormatter extends ResultFormatter {
     this.ux.table(this.statusRows.sort(rowSortFunction), {
       columns: [
         { label: 'STATE', key: 'state' },
+        { label: 'IGNORED', key: 'ignored' },
         { label: 'FULL NAME', key: 'fullName' },
         { label: 'TYPE', key: 'type' },
         { label: 'PROJECT PATH', key: 'filePath' },

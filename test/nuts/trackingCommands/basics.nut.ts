@@ -107,12 +107,14 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
           state: 'local Delete',
           fullName: 'TestOrderController',
           filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls'),
+          ignored: false,
         },
         {
           type: 'ApexClass',
           state: 'local Delete',
           fullName: 'TestOrderController',
           filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls-meta.xml'),
+          ignored: false,
         },
       ]);
     });
