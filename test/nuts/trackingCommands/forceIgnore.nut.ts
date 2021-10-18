@@ -32,10 +32,9 @@ describe('forceignore changes', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
+        name: 'forceIngoreTest',
       },
       setupCommands: [
-        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
         `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
         `sfdx force:apex:class:create -n IgnoreTest --outputdir ${classdir}`,
       ],
@@ -43,7 +42,7 @@ describe('forceignore changes', () => {
     originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[1] as { result: { username: string } }).result?.username,
+        username: (session.setup[0] as { result: { username: string } }).result?.username,
       }),
     });
   });
