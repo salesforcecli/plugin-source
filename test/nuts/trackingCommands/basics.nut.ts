@@ -36,6 +36,11 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       ],
     });
     hubUsername = ensureString(env.getString('TESTKIT_HUB_USERNAME'));
+
+    // we also need to remove profiles from the forceignore
+    const originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
+    const newForceIgnore = originalForceIgnore.replace('**/profiles/**', '');
+    await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), newForceIgnore);
   });
 
   after(async () => {
