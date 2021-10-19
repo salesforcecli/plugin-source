@@ -98,17 +98,23 @@ describe('conflict detection and resolution', () => {
     expect(result).to.deep.equal([
       {
         type: 'CustomApplication',
-        state: 'local Changed (Conflict)',
+        state: 'Local Changed (Conflict)',
         fullName: 'EBikes',
         filePath: 'force-app/main/default/applications/EBikes.app-meta.xml',
         ignored: false,
+        conflict: true,
+        origin: 'Local',
+        actualState: 'Changed',
       },
       {
         type: 'CustomApplication',
-        state: 'remote Changed (Conflict)',
+        state: 'Remote Changed (Conflict)',
         fullName: 'EBikes',
         filePath: 'force-app/main/default/applications/EBikes.app-meta.xml',
         ignored: false,
+        conflict: true,
+        origin: 'Remote',
+        actualState: 'Changed',
       },
     ]);
   });

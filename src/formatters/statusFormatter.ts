@@ -11,12 +11,18 @@ import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
+type StatusActualState = 'Deleted' | 'Add' | 'Changed' | 'Unchanged';
+type StatusOrigin = 'Local' | 'Remote';
+type StatusStateString = `${StatusOrigin} ${StatusActualState}` | `${StatusOrigin} ${StatusActualState} (Conflict)`;
 export interface StatusResult {
-  state: string;
+  state: StatusStateString;
   fullName: string;
   type: string;
   filePath?: string;
   ignored?: boolean;
+  conflict?: boolean;
+  actualState?: StatusActualState;
+  origin: StatusOrigin;
 }
 
 // sort order is state, type, fullname
@@ -48,7 +54,6 @@ export class StatusFormatter extends ResultFormatter {
     this.ux.table(this.statusRows.sort(rowSortFunction), {
       columns: [
         { label: 'STATE', key: 'state' },
-        { label: 'IGNORED', key: 'ignored' },
         { label: 'FULL NAME', key: 'fullName' },
         { label: 'TYPE', key: 'type' },
         { label: 'PROJECT PATH', key: 'filePath' },

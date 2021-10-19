@@ -8,10 +8,13 @@
 import * as os from 'os';
 import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { SourceTracking, throwIfInvalid, replaceRenamedCommands, ChangeResult } from '@salesforce/source-tracking';
-import { ForceIgnore, RegistryAccess, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { MetadataTransformerFactory } from '@salesforce/source-deploy-retrieve/lib/src/convert/transformers/metadataTransformerFactory';
-import { ConvertContext } from '@salesforce/source-deploy-retrieve/lib/src/convert/convertContext';
+import {
+  SourceTracking,
+  throwIfInvalid,
+  replaceRenamedCommands,
+  ChangeResult,
+  StatusOutputRow,
+} from '@salesforce/source-tracking';
 import { StatusResult, StatusFormatter } from '../../../../formatters/statusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -43,10 +46,6 @@ export default class SourceStatus extends SfdxCommand {
   protected results = new Array<StatusResult>();
   protected localAdds: ChangeResult[] = [];
 
-  private registry: RegistryAccess;
-  private transformerFactory: MetadataTransformerFactory;
-  private forceIgnore: ForceIgnore;
-
   public async run(): Promise<StatusResult[]> {
     throwIfInvalid({
       org: this.org,
@@ -70,55 +69,8 @@ export default class SourceStatus extends SfdxCommand {
       project: this.project,
       apiVersion: this.flags.apiversion as string,
     });
-
-    if (wantsLocal) {
-      await tracking.ensureLocalTracking();
-      const localDeletes = tracking.populateTypesAndNames({
-        elements: await tracking.getChanges<ChangeResult>({ origin: 'local', state: 'delete', format: 'ChangeResult' }),
-        excludeUnresolvable: true,
-        resolveDeleted: true,
-      });
-
-      const localAdds = tracking.populateTypesAndNames({
-        elements: await tracking.getChanges<ChangeResult>({ origin: 'local', state: 'add', format: 'ChangeResult' }),
-        excludeUnresolvable: true,
-      });
-
-      const localModifies = tracking.populateTypesAndNames({
-        elements: await tracking.getChanges<ChangeResult>({ origin: 'local', state: 'modify', format: 'ChangeResult' }),
-        excludeUnresolvable: true,
-      });
-
-      this.results = this.results.concat(
-        localAdds.flatMap((item) => this.localChangesToOutputRow(item, 'add')),
-        localModifies.flatMap((item) => this.localChangesToOutputRow(item, 'changed')),
-        localDeletes.flatMap((item) => this.localChangesToOutputRow(item, 'delete'))
-      );
-    }
-
-    if (wantsRemote) {
-      // by initializeWithQuery true, one query runs so that parallel getChanges aren't doing parallel queries
-      await tracking.ensureRemoteTracking(true);
-      const [remoteDeletes, remoteModifies] = await Promise.all([
-        tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'delete', format: 'ChangeResult' }),
-        tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'nondelete', format: 'ChangeResultWithPaths' }),
-      ]);
-      this.results = this.results.concat(
-        (
-          await Promise.all(remoteDeletes.concat(remoteModifies).map((item) => this.remoteChangesToOutputRows(item)))
-        ).flat(1)
-      );
-    }
-
-    if (wantsLocal && wantsRemote) {
-      // keys like ApexClass__MyClass.cls
-      const conflictFiles = (await tracking.getConflicts()).flatMap((conflict) => conflict.filenames);
-      if (conflictFiles.length > 0) {
-        this.results = this.results.map((row) =>
-          row.filePath && conflictFiles.includes(row.filePath) ? { ...row, state: `${row.state} (Conflict)` } : row
-        );
-      }
-    }
+    const stlStatusResult = await tracking.getStatus({ local: wantsLocal, remote: wantsRemote });
+    this.results = stlStatusResult.map((result) => resultConverter(result));
 
     return this.formatResult();
   }
@@ -132,75 +84,38 @@ export default class SourceStatus extends SfdxCommand {
 
     return formatter.getJson();
   }
-
-  // TODO: This goes in SDR on SourceComponent
-  // we don't have a local copy of the component
-  // this uses SDR's approach to determine what the filePath would be if the component were written locally
-  private async filesPathFromNonLocalSourceComponent({
-    fullName,
-    typeName,
-  }: {
-    fullName: string;
-    typeName: string;
-  }): Promise<string[]> {
-    this.registry = this.registry ?? new RegistryAccess();
-    const component = new SourceComponent({ name: fullName, type: this.registry.getTypeByName(typeName) });
-    this.transformerFactory =
-      this.transformerFactory ?? new MetadataTransformerFactory(new RegistryAccess(), new ConvertContext());
-    const transformer = this.transformerFactory.getTransformer(component);
-    const writePaths = await transformer.toSourceFormat(component);
-    return writePaths.map((writePath) => writePath.output);
-  }
-
-  private localChangesToOutputRow(input: ChangeResult, localType: 'delete' | 'changed' | 'add'): StatusResult[] {
-    this.logger.debug('converting ChangeResult to a row', input);
-    this.forceIgnore = this.forceIgnore ?? new ForceIgnore();
-
-    const baseObject = {
-      type: input.type ?? '',
-      state: `${input.origin} ${localType[0].toUpperCase() + localType.substring(1)}`,
-      fullName: input.name ?? '',
-    };
-
-    return input.filenames.map((filename) => ({
-      ...baseObject,
-      filePath: filename,
-      ignored: this.forceIgnore.denies(filename),
-    }));
-  }
-
-  private async remoteChangesToOutputRows(input: ChangeResult): Promise<StatusResult[]> {
-    this.logger.debug('converting ChangeResult to a row', input);
-    this.forceIgnore = this.forceIgnore ?? new ForceIgnore();
-    const baseObject = {
-      type: input.type ?? '',
-      state: `${input.origin} ${this.stateFromChangeResult(input)}`,
-      fullName: input.name ?? '',
-    };
-    // it's easy to check ignores if the filePaths exist locally
-    if (input.filenames?.length) {
-      return input.filenames.map((filename) => ({
-        ...baseObject,
-        filePath: filename,
-        ignored: this.forceIgnore.denies(filename),
-      }));
-    }
-    // when the file doesn't exist locally, there are no filePaths.
-    // we can determine where the filePath *would* go using SDR's transformers stuff
-    const fakeFilePaths = await this.filesPathFromNonLocalSourceComponent({
-      fullName: baseObject.fullName,
-      typeName: baseObject.type,
-    });
-    return [{ ...baseObject, ignored: fakeFilePaths.some((path) => this.forceIgnore.denies(path)) }];
-  }
-
-  private stateFromChangeResult(input: ChangeResult): string {
-    if (input.deleted) {
-      return 'Delete';
-    }
-    if (input.modified) {
-      return 'Changed';
-    }
-    return 'Add';
-  }
 }
+
+/**
+ * STL provides a more useful json output.
+ * This function makes it consistent with the Status command's json.
+ */
+const resultConverter = (input: StatusOutputRow): StatusResult => {
+  const { fullName, type, ignored, filePath, conflict } = input;
+  const origin = originMap.get(input.origin);
+  const actualState = stateMap.get(input.state);
+  return {
+    fullName,
+    type,
+    // this string became the place to store information.
+    // The JSON now breaks out that info but preserves this property for backward compatibility
+    state: `${origin} ${actualState}${conflict ? ' (Conflict)' : ''}`,
+    ignored,
+    filePath,
+    origin,
+    actualState,
+    conflict,
+  };
+};
+
+const originMap = new Map<StatusOutputRow['origin'], StatusResult['origin']>([
+  ['local', 'Local'],
+  ['remote', 'Remote'],
+]);
+
+const stateMap = new Map<StatusOutputRow['state'], StatusResult['actualState']>([
+  ['delete', 'Deleted'],
+  ['add', 'Add'],
+  ['modify', 'Changed'],
+  ['nondelete', 'Changed'],
+]);

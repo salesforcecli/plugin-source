@@ -104,17 +104,21 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result).to.deep.equal([
         {
           type: 'ApexClass',
-          state: 'local Delete',
+          state: 'Local Deleted',
           fullName: 'TestOrderController',
           filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls'),
           ignored: false,
+          actualState: 'Deleted',
+          origin: 'Local',
         },
         {
           type: 'ApexClass',
-          state: 'local Delete',
+          state: 'Local Deleted',
           fullName: 'TestOrderController',
           filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls-meta.xml'),
           ignored: false,
+          actualState: 'Deleted',
+          origin: 'Local',
         },
       ]);
     });
