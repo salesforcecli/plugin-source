@@ -22,7 +22,7 @@ import { processConflicts } from '../../../../formatters/conflicts';
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
-export default class SourcePush extends DeployCommand {
+export default class Push extends DeployCommand {
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
@@ -87,15 +87,11 @@ export default class SourcePush extends DeployCommand {
 
     // fire predeploy event for sync and async deploys
     await this.lifecycle.emit('predeploy', componentSet.toArray());
-    this.ux.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
+    this.ux.log(`*** Pushing with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
-      apiOptions: {
-        ignoreWarnings: (this.flags.ignoreWarnings as boolean) || false,
-        rest: this.isRest,
-        testLevel: 'NoTestRun',
-      },
+      apiOptions: { ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false), rest: this.isRest, testLevel: 'NoTestRun', },
     });
 
     // we're not print JSON output
@@ -113,9 +109,12 @@ export default class SourcePush extends DeployCommand {
     const successNonDeletes = successes.filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted);
     const successDeletes = successes.filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted);
 
-    await Promise.all([
+    if (this.deployResult) {
       // Only fire the postdeploy event when we have results. I.e., not async.
-      this.deployResult ? this.lifecycle.emit('postdeploy', this.deployResult) : Promise.resolve(),
+      await this.lifecycle.emit('postdeploy', this.deployResult);
+    }
+
+    await Promise.all([
       tracking.updateLocalTracking({
         files: successNonDeletes.map((fileResponse) => fileResponse.filePath),
         deletedFiles: successDeletes.map((fileResponse) => fileResponse.filePath),

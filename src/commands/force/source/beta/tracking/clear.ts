@@ -17,7 +17,7 @@ export type SourceTrackingClearResult = {
   clearedFiles: string[];
 };
 
-export class SourceTrackingClearCommand extends SfdxCommand {
+export class Clear extends SfdxCommand {
   public static readonly description = replaceRenamedCommands(messages.getMessage('clearDescription'));
 
   public static readonly requiresProject = true;
