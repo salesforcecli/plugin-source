@@ -68,12 +68,15 @@ describe('forceignore changes', () => {
       const output = execCmd<StatusResult>(replaceRenamedCommands('force:source:status --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(output).to.deep.include({
-        state: 'Changed',
+      expect(output, JSON.stringify(output)).to.deep.include({
+        state: 'Local Add',
         fullName: 'IgnoreTest',
-        type: 'Apex Class',
+        type: 'ApexClass',
+        origin: 'Local',
         filePath: path.join(classdir, 'IgnoreTest.cls'),
         ignored: true,
+        conflict: false,
+        actualState: 'Add',
       });
     });
 
