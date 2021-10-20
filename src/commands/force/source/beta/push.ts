@@ -91,7 +91,11 @@ export default class Push extends DeployCommand {
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
-      apiOptions: { ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false), rest: this.isRest, testLevel: 'NoTestRun', },
+      apiOptions: {
+        ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+        rest: this.isRest,
+        testLevel: 'NoTestRun',
+      },
     });
 
     // we're not print JSON output
