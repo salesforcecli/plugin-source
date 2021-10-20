@@ -10,5 +10,8 @@
   "NonScratchOrgPull": "We can\"t retrieve your changes. \"force:source:pull\" is only available for orgs that have source tracking enabled. Use \"force:source:retrieve\" or \"force:mdapi:retrieve\" instead.",
   "sourceConflictDetected": "Source conflict(s) detected.",
   "pull": "Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time.",
-  "retrievedSourceHeader": "Retrieved Source"
+  "retrievedSourceHeader": "Retrieved Source",
+  "NoResultsFound": "No results found",
+  "retrievedSourceWarningsHeader": "Retrieved Source Warnings",
+  "retrieveTimeout": "Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time."
 }

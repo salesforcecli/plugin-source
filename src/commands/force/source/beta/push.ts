@@ -91,7 +91,11 @@ export default class SourcePush extends DeployCommand {
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
-      apiOptions: { ignoreWarnings: (this.flags.ignoreWarnings as boolean) || false, rest: this.isRest },
+      apiOptions: {
+        ignoreWarnings: (this.flags.ignoreWarnings as boolean) || false,
+        rest: this.isRest,
+        testLevel: 'NoTestRun',
+      },
     });
 
     // we're not print JSON output
