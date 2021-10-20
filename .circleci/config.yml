@@ -52,7 +52,7 @@ workflows:
                 - linux
                 - windows
               node_version:
-                - latest
+                # - latest
                 - lts
                 - maintenance
             exclude:
