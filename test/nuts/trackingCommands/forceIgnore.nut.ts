@@ -19,7 +19,7 @@ import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Connection, AuthInfo } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { PushResponse } from '../../../src/formatters/pushResultFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 import { StatusResult } from '../../../src/formatters/statusFormatter';
 
@@ -58,10 +58,10 @@ describe('forceignore changes', () => {
       const newForceIgnore = originalForceIgnore + '\n' + `${classdir}/IgnoreTest.cls`;
       await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), newForceIgnore);
       // nothing should push
-      const output = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const output = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(output.deployedSource).to.deep.equal([]);
+      expect(output).to.deep.equal([]);
     });
 
     it('shows the file in status as ignored', () => {
@@ -92,11 +92,11 @@ describe('forceignore changes', () => {
         silent: true,
       });
       // pushes with no results
-      const ignoredOutput = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const ignoredOutput = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
       // nothing should have been pushed
-      expect(ignoredOutput.deployedSource).to.deep.equal([]);
+      expect(ignoredOutput).to.deep.equal([]);
     });
 
     it('will push files that are now un-ignored', async () => {
@@ -104,13 +104,13 @@ describe('forceignore changes', () => {
       await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), originalForceIgnore);
 
       // verify file pushed in results
-      const unIgnoredOutput = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const unIgnoredOutput = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
 
       // all 4 files should have been pushed
-      expect(unIgnoredOutput.deployedSource).to.have.length(4);
-      unIgnoredOutput.deployedSource.map((result) => {
+      expect(unIgnoredOutput).to.have.length(4);
+      unIgnoredOutput.map((result) => {
         expect(result.type === 'ApexClass');
         expect(result.state === ComponentStatus.Created);
       });

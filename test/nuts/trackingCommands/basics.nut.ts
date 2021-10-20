@@ -16,7 +16,7 @@ import { Env } from '@salesforce/kit';
 import { ensureString } from '@salesforce/ts-types';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { PushResponse } from '../../../src/formatters/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 
@@ -58,13 +58,13 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('pushes the initial metadata to the org', () => {
-      const result = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result.deployedSource).to.be.an.instanceof(Array);
-      expect(result.deployedSource, JSON.stringify(result)).to.have.lengthOf(234);
+      expect(result).to.be.an.instanceof(Array);
+      expect(result, JSON.stringify(result)).to.have.lengthOf(234);
       expect(
-        result.deployedSource.every((r) => r.state !== ComponentStatus.Failed),
+        result.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(result)
       ).to.equal(true);
     });
@@ -141,10 +141,10 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     });
 
     it('pushes the local delete to the org', () => {
-      const result = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result.deployedSource, JSON.stringify(result.deployedSource)).to.be.an.instanceof(Array).with.length(2);
+      expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
     });
     it('sees no local changes', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
@@ -162,16 +162,36 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       }).jsonOutput as unknown as { name: string };
       expect(failure.name).to.equal('NonSourceTrackedOrgError');
     });
-    it('should not poll for SourceMembers when SFDX_DISABLE_SOURCE_MEMBER_POLLING=true');
-
-    describe('push partial success', () => {
-      it('can deploy source with some failures and show correct exit code');
-      it('can see failures remaining in local tracking, but successes are gone');
-    });
 
     describe('push failures', () => {
-      it('handles failed push');
-      it('has no changes to local tracking');
+      it('writes a bad class', async () => {
+        const classdir = path.join(session.project.dir, 'force-app', 'main', 'default', 'classes');
+        // add a file in the local source
+        await Promise.all([
+          fs.promises.writeFile(path.join(classdir, 'badClass.cls'), 'bad'),
+          fs.promises.writeFile(
+            path.join(classdir, 'badClass.cls-meta.xml'),
+            `<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+</ApexClass>`
+          ),
+        ]);
+      });
+      it('fails to push', () => {
+        const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+          ensureExitCode: 1,
+        }).jsonOutput.result;
+        expect(result.every((r) => r.type === 'ApexClass' && r.state === 'Failed')).to.equal(true);
+      });
+      it('classes that failed to deploy are still in local status', () => {
+        it('sees no local changes', () => {
+          const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
+            ensureExitCode: 0,
+          }).jsonOutput.result;
+          expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
+        });
+      });
     });
   });
 });
