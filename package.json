@@ -33,6 +33,7 @@
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.4",
     "chai-each": "^0.0.1",
+    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
     "debug": "^4.3.2",
     "eslint": "^7.32.0",
@@ -103,6 +104,14 @@
               },
               "manifest": {
                 "description": "create a manifest to use in a deploy/retrieve"
+              },
+              "beta": {
+                "description": "new versions of source tracking commands",
+                "subtopics": {
+                  "tracking": {
+                    "description": "new versions of source tracking commands"
+                  }
+                }
               }
             }
           }
@@ -128,15 +137,22 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:convert": "PLUGIN_SOURCE_SEED_FILTER=\"convert\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:delete": "nyc mocha \"test/nuts/delete.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:deploy:destructive": "nyc mocha \"test/nuts/deployDestructive.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:deploy": "PLUGIN_SOURCE_SEED_FILTER=\"deploy\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:folders": "nyc mocha \"test/nuts/folderTypes.nut.ts\" --slow 3000 --timeout 600000",
-    "test:nuts:manifest:create": "nyc mocha \"test/nuts/create.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:retrieve": "PLUGIN_SOURCE_SEED_FILTER=\"retrieve\" ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
-    "test:nuts:territory2": "nyc mocha \"test/nuts/territory2.nut.ts\" --slow 4500 --timeout 600000 --retries 0",
+    "test:nuts": "PLUGIN_SOURCE_SEED_EXCLUDE=deploy.async ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:convert": "cross-env PLUGIN_SOURCE_SEED_FILTER=convert ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:delete": "mocha \"test/nuts/delete.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy PLUGIN_SOURCE_SEED_EXCLUDE=async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:async": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:manifest": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.manifest ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:metadata": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.metadata ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:quick": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.quick ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:sourcepath": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.sourcepath ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:deploy:testlevel": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.testlevel ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:folders": "mocha \"test/nuts/folderTypes.nut.ts\" --slow 4500 --timeout 600000",
+    "test:nuts:manifest:create": "mocha \"test/nuts/create.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:retrieve": "cross-env PLUGIN_SOURCE_SEED_FILTER=retrieve ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts:specialTypes": "mocha \"test/nuts/territory2.nut.ts\" \"test/nuts/folderTypes.nut.ts\" --slow 4500 --timeout 600000 --retries 0 --parallel",
+    "test:nuts:territory2": "mocha \"test/nuts/territory2.nut.ts\" --slow 4500 --timeout 600000 --retries 0",
+    "test:nuts:deploy:destructive": "mocha \"test/nuts/deployDestructive.nut.ts\" --slow 3000 --timeout 600000 --parallel --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {

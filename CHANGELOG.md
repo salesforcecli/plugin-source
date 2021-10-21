@@ -6,11 +6,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [1.2.3](https://github.com/salesforcecli/plugin-source/compare/v1.2.1...v1.2.3) (2021-10-11)
 
-
 ### Bug Fixes
 
-* add back missing long parameter descriptions for some force:source commands ([#241](https://github.com/salesforcecli/plugin-source/issues/241)) ([d87671b](https://github.com/salesforcecli/plugin-source/commit/d87671b4987317d395873d6ef382e6a3ca2080e5))
-* remote-only deletes now supported ([#220](https://github.com/salesforcecli/plugin-source/issues/220)) ([fed3ff4](https://github.com/salesforcecli/plugin-source/commit/fed3ff496e732c6b960ae5838ea302e6b51e9029))
+- add back missing long parameter descriptions for some force:source commands ([#241](https://github.com/salesforcecli/plugin-source/issues/241)) ([d87671b](https://github.com/salesforcecli/plugin-source/commit/d87671b4987317d395873d6ef382e6a3ca2080e5))
+- remote-only deletes now supported ([#220](https://github.com/salesforcecli/plugin-source/issues/220)) ([fed3ff4](https://github.com/salesforcecli/plugin-source/commit/fed3ff496e732c6b960ae5838ea302e6b51e9029))
 
 ### [1.2.1](https://github.com/salesforcecli/plugin-source/compare/v1.2.0...v1.2.1) (2021-10-05)
 
