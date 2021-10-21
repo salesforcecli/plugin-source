@@ -6,7 +6,7 @@
  */
 
 import { ComponentSet, DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
-import { SfdxError, ConfigFile, ConfigAggregator, PollingClient, StatusResult } from '@salesforce/core';
+import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
@@ -21,7 +21,6 @@ export abstract class DeployCommand extends SourceCommand {
   });
 
   protected deployResult: DeployResult;
-
   /**
    * Request a report of an in-progess or completed deployment.
    *

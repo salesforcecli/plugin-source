@@ -8,14 +8,14 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getBoolean, getString, getNumber, asString } from '@salesforce/ts-types';
+import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
-  DeployResult,
   CodeCoverage,
+  DeployMessage,
+  DeployResult,
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
-  DeployMessage,
 } from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
@@ -76,6 +76,7 @@ export class DeployResultFormatter extends ResultFormatter {
       throw new SfdxError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
     }
     this.displaySuccesses();
+    this.displayDeletions();
     this.displayFailures();
     this.displayTestResults();
 
@@ -107,7 +108,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected displaySuccesses(): void {
     if (this.isSuccess() && this.fileResponses?.length) {
-      const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
+      const successes = this.fileResponses.filter((f) => !['Failed', 'Deleted'].includes(f.state));
       if (!successes.length) {
         return;
       }
@@ -124,6 +125,25 @@ export class DeployResultFormatter extends ResultFormatter {
         ],
       });
     }
+  }
+
+  protected displayDeletions(): void {
+    const deletions = this.fileResponses.filter((f) => f.state === 'Deleted');
+    if (!deletions.length) {
+      return;
+    }
+    this.sortFileResponses(deletions);
+    this.asRelativePaths(deletions);
+
+    this.ux.log('');
+    this.ux.styledHeader(chalk.blue('Deleted Source'));
+    this.ux.table(deletions, {
+      columns: [
+        { key: 'fullName', label: 'FULL NAME' },
+        { key: 'type', label: 'TYPE' },
+        { key: 'filePath', label: 'PROJECT PATH' },
+      ],
+    });
   }
 
   protected displayFailures(): void {
