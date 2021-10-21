@@ -155,6 +155,11 @@
     "test:nuts:specialTypes": "mocha \"test/nuts/territory2.nut.ts\" \"test/nuts/folderTypes.nut.ts\" --slow 4500 --timeout 600000 --retries 0 --parallel",
     "test:nuts:territory2": "mocha \"test/nuts/territory2.nut.ts\" --slow 4500 --timeout 600000 --retries 0",
     "test:nuts:tracking": "mocha \"test/nuts/trackingCommands/*.nut.ts\" --slow 4500 --timeout 600000 --retries 0 --parallel",
+    "test:nuts:tracking:basics": "mocha \"test/nuts/trackingCommands/basics.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:conflicts": "mocha \"test/nuts/trackingCommands/conflicts.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:forceignore": "mocha \"test/nuts/trackingCommands/forceIgnore.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:resetClear": "mocha \"test/nuts/trackingCommands/resetClear.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {
