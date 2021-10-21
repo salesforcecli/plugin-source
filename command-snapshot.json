@@ -7,7 +7,7 @@
   {
     "command": "force:source:beta:push",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "forceoverwrite", "ignorewarnings", "json", "loglevel", "targetusername", "wait"]
+    "flags": ["apiversion", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "targetusername", "wait"]
   },
   {
     "command": "force:source:beta:status",

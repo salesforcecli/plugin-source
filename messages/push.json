@@ -9,7 +9,8 @@
     "replacetokens": "replace tokens in source files prior to deployment",
     "replacetokensLong": "Replaces tokens in source files prior to deployment.",
     "ignorewarnings": "deploy changes even if warnings are generated",
-    "ignorewarningsLong": "Completes the deployment even if warnings are generated."
+    "ignorewarningsLong": "Completes the deployment even if warnings are generated.",
+    "quiet": "minimize json and sdtout output on success"
   },
   "sourcepushFailed": "Push failed.",
   "conflictMsg": "We couldn't complete the push operation due to conflicts. Verify that you want to keep the local versions, then run \"sfdx force:source:push -f\" with the --forceoverwrite (-f) option."

@@ -13,6 +13,7 @@ import { getBoolean, getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
+  quiet?: boolean;
   waitTime?: number;
 }
 
@@ -42,6 +43,10 @@ export abstract class ResultFormatter {
 
   public isVerbose(): boolean {
     return getBoolean(this.options, 'verbose', false);
+  }
+
+  public isQuiet(): boolean {
+    return getBoolean(this.options, 'quiet', false);
   }
 
   // Sort by type > filePath > fullName

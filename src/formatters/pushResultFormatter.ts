@@ -33,7 +33,9 @@ export class PushResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): PushResponse[] {
-    return this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
+    return this.isQuiet()
+      ? []
+      : this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
   }
 
   /**
@@ -59,6 +61,9 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displaySuccesses(): void {
+    if (this.isQuiet()) {
+      return;
+    }
     if (this.isSuccess() && this.fileResponses?.length) {
       const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
       if (!successes.length) {

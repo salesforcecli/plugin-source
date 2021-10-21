@@ -138,7 +138,7 @@
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
-    "test:nuts": "PLUGIN_SOURCE_SEED_EXCLUDE=deploy.async ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:nuts": "cross-env PLUGIN_SOURCE_SEED_EXCLUDE=deploy.async ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:convert": "cross-env PLUGIN_SOURCE_SEED_FILTER=convert ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:delete": "mocha \"test/nuts/delete.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:deploy": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy PLUGIN_SOURCE_SEED_EXCLUDE=async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
