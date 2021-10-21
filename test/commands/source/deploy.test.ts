@@ -10,14 +10,14 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Org, SfdxProject, Messages } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
 import {
-  DeployCommandAsyncResult,
   DeployAsyncResultFormatter,
+  DeployCommandAsyncResult,
 } from '../../../src/formatters/deployAsyncResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
@@ -223,6 +223,8 @@ describe('force:source:deploy', () => {
       manifest: {
         manifestPath: manifest,
         directoryPaths: [defaultDir],
+        destructiveChangesPost: undefined,
+        destructiveChangesPre: undefined,
       },
     });
     ensureDeployArgs();
@@ -240,6 +242,8 @@ describe('force:source:deploy', () => {
       manifest: {
         manifestPath: manifest,
         directoryPaths: [defaultDir],
+        destructiveChangesPost: undefined,
+        destructiveChangesPre: undefined,
       },
     });
     ensureDeployArgs();
@@ -258,6 +262,8 @@ describe('force:source:deploy', () => {
       manifest: {
         manifestPath: manifest,
         directoryPaths: [defaultDir],
+        destructiveChangesPost: undefined,
+        destructiveChangesPre: undefined,
       },
     });
     ensureDeployArgs();
@@ -284,6 +290,8 @@ describe('force:source:deploy', () => {
       manifest: {
         manifestPath: manifest,
         directoryPaths: [defaultDir],
+        destructiveChangesPost: undefined,
+        destructiveChangesPre: undefined,
       },
     });
 

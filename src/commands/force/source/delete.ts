@@ -9,7 +9,13 @@ import * as fs from 'fs';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { ComponentSet, MetadataComponent, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  DestructiveChangesType,
+  MetadataComponent,
+  RequestStatus,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
@@ -119,10 +125,10 @@ export class Delete extends DeployCommand {
     const cs = new ComponentSet([]);
     this.components.map((component) => {
       if (component instanceof SourceComponent) {
-        cs.add(component, true);
+        cs.add(component, DestructiveChangesType.POST);
       } else {
         // a remote-only delete
-        cs.add(new SourceComponent({ name: component.fullName, type: component.type }), true);
+        cs.add(new SourceComponent({ name: component.fullName, type: component.type }), DestructiveChangesType.POST);
       }
     });
     this.componentSet = cs;
