@@ -26,7 +26,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
       setupCommands: [
-        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
+        // 'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
         `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
       ],
     });
@@ -151,7 +151,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
   describe('non-successes', () => {
     it('should throw an err when attempting to pull from a non scratch-org', () => {
       const hubUsername = (
-        JSON.parse(shelljs.exec('sfdx force:config:get defaultdevhubusername --json')) as {
+        JSON.parse(shelljs.exec('sfdx force:config:get defaultdevhubusername --json', { silent: true })) as {
           result: [{ location: string; value: string }];
         }
       ).result.find((config) => config.location === 'Local').value;
