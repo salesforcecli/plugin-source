@@ -12,6 +12,7 @@ import * as shelljs from 'shelljs';
 import { EXECUTABLES, RepoConfig, TEST_REPOS_MAP } from './testMatrix';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
+const SEED_EXCLUDE = process.env.PLUGIN_SOURCE_SEED_EXCLUDE;
 
 function getSeedFiles(): string[] {
   const seedDir = path.join(__dirname, 'seeds');
@@ -19,6 +20,7 @@ function getSeedFiles(): string[] {
   return files
     .filter((f) => f.endsWith('.seed.ts'))
     .filter((f) => f.includes(SEED_FILTER))
+    .filter((f) => !SEED_EXCLUDE || !f.includes(SEED_EXCLUDE))
     .map((f) => path.resolve(path.join(seedDir, f)));
 }
 

@@ -42,6 +42,3 @@ node_modules
 
 # ignore generated nut tests
 test/nuts/generated/
-
-# this branch
-ignoreStatusProj
