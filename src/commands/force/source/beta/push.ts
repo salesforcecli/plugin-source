@@ -47,7 +47,6 @@ export default class Push extends DeployCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  protected hidden = true;
 
   private isRest = false;
 

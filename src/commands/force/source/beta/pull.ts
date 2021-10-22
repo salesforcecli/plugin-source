@@ -42,7 +42,6 @@ export default class Pull extends SourceCommand {
 
   protected static requiresUsername = true;
   protected static requiresProject = true;
-  protected hidden = true;
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected tracking: SourceTracking;
   protected retrieveResult: RetrieveResult;
