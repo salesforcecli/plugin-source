@@ -12,7 +12,7 @@
   {
     "command": "force:source:beta:status",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["all", "apiversion", "json", "local", "loglevel", "remote", "targetusername"]
+    "flags": ["apiversion", "json", "local", "loglevel", "remote", "targetusername"]
   },
   {
     "command": "force:source:beta:tracking:clear",
@@ -58,6 +58,8 @@
       "loglevel",
       "manifest",
       "metadata",
+      "postdestructivechanges",
+      "predestructivechanges",
       "runtests",
       "soapdeploy",
       "sourcepath",

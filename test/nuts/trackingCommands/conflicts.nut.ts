@@ -17,7 +17,7 @@ import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Connection, AuthInfo } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { PushResponse } from '../../../src/formatters/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 
@@ -26,9 +26,12 @@ describe('conflict detection and resolution', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        sourceDir: path.join('test', 'nuts', 'ebikes-lwc'),
+        gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      setupCommands: [
+        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
+        `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
+      ],
     });
   });
 
@@ -39,12 +42,12 @@ describe('conflict detection and resolution', () => {
 
   it('pushes to initiate the remote', () => {
     // This would go in setupCommands but we want it to use the bin/run version
-    const pushResult = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+    const pushResult = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result;
-    expect(pushResult.deployedSource, JSON.stringify(pushResult)).to.have.lengthOf(234);
+    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(234);
     expect(
-      pushResult.deployedSource.every((r) => r.state !== ComponentStatus.Failed),
+      pushResult.every((r) => r.state !== ComponentStatus.Failed),
       JSON.stringify(pushResult)
     ).to.equal(true);
   });
@@ -52,7 +55,7 @@ describe('conflict detection and resolution', () => {
   it('edits a remote file', async () => {
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: (session.setup[1] as { result: { username: string } }).result?.username,
       }),
     });
     const app = await conn.singleRecordQuery<{ Id: string; Metadata: any }>(
@@ -71,8 +74,10 @@ describe('conflict detection and resolution', () => {
     const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
       ensureExitCode: 0,
     }).jsonOutput.result;
-    // profile and customApplication
-    expect(result, JSON.stringify(result)).to.have.lengthOf(2);
+    expect(
+      result.filter((r) => r.type === 'CustomApplication'),
+      JSON.stringify(result)
+    ).to.have.lengthOf(1);
   });
   it('edits a local file', async () => {
     const filePath = path.join(
@@ -89,20 +94,42 @@ describe('conflict detection and resolution', () => {
     );
   });
   it('can see the conflict in status', () => {
-    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), { ensureExitCode: 0 })
-      .jsonOutput.result;
-    expect(result, JSON.stringify(result)).to.have.lengthOf(3);
-    result.filter((app) => app.type === 'CustomApplication').map((app) => expect(app.state).to.include('(Conflict)'));
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
+      ensureExitCode: 0,
+    }).jsonOutput.result.filter((app) => app.type === 'CustomApplication');
+    // json is not sorted.  This relies on the implementation of getConflicts()
+    expect(result).to.deep.equal([
+      {
+        type: 'CustomApplication',
+        state: 'Local Changed (Conflict)',
+        fullName: 'EBikes',
+        filePath: path.normalize('force-app/main/default/applications/EBikes.app-meta.xml'),
+        ignored: false,
+        conflict: true,
+        origin: 'Local',
+        actualState: 'Changed',
+      },
+      {
+        type: 'CustomApplication',
+        state: 'Remote Changed (Conflict)',
+        fullName: 'EBikes',
+        filePath: path.normalize('force-app/main/default/applications/EBikes.app-meta.xml'),
+        ignored: false,
+        conflict: true,
+        origin: 'Remote',
+        actualState: 'Changed',
+      },
+    ]);
   });
 
   it('gets conflict error on push', () => {
-    execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
+    execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
   });
   it('gets conflict error on pull', () => {
     execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 1 });
   });
   it('can push with forceoverwrite', () => {
-    execCmd<DeployCommandResult[]>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
+    execCmd<PushResponse[][]>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
       ensureExitCode: 0,
     });
   });

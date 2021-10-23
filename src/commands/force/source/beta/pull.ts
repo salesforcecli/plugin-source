@@ -23,7 +23,7 @@ import { PullResponse, PullResultFormatter } from '../../../../formatters/pullFo
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
-export default class SourcePull extends SourceCommand {
+export default class Pull extends SourceCommand {
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
@@ -42,7 +42,6 @@ export default class SourcePull extends SourceCommand {
 
   protected static requiresUsername = true;
   protected static requiresProject = true;
-  protected hidden = true;
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected tracking: SourceTracking;
   protected retrieveResult: RetrieveResult;
@@ -148,7 +147,7 @@ export default class SourcePull extends SourceCommand {
     await this.lifecycle.emit('preretrieve', componentSet.toArray());
     this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
 
-    // assume: remote deletes that get deleted locally don't fire hooks?
+    // Assume: remote deletes that get deleted locally don't fire hooks.
     await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());
   }
 

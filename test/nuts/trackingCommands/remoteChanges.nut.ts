@@ -17,7 +17,7 @@ import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { Connection, AuthInfo } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { PushResponse } from '../../../src/formatters/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 
@@ -28,13 +28,16 @@ describe('remote changes', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        sourceDir: path.join('test', 'nuts', 'ebikes-lwc'),
+        gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      setupCommands: [
+        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
+        `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
+      ],
     });
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: (session.setup[1] as { result: { username: string } }).result?.username,
       }),
     });
   });
@@ -46,12 +49,12 @@ describe('remote changes', () => {
 
   describe('remote changes: delete', () => {
     it('pushes to initiate the remote', () => {
-      const pushResult = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const pushResult = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(pushResult.deployedSource, JSON.stringify(pushResult)).to.have.lengthOf(234);
+      expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(234);
       expect(
-        pushResult.deployedSource.every((r) => r.state !== ComponentStatus.Failed),
+        pushResult.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(pushResult)
       ).to.equal(true);
     });
@@ -85,20 +88,23 @@ describe('remote changes', () => {
         ensureExitCode: 0,
       }).jsonOutput.result;
       // it shows up as one class on the server, but 2 files when pulled
-      expect(result.filter((r) => r.state.includes('Delete'))).to.have.length(1);
+      expect(
+        result.filter((r) => r.state.includes('Delete')),
+        JSON.stringify(result)
+      ).to.have.length(1);
     });
     it('does not see any change in local status', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.have.length(0);
+      expect(result).to.deep.equal([]);
     });
     it('can pull the delete', () => {
       const result = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
         .jsonOutput.result;
       // the 2 files for the apexClass, and possibly one for the Profile (depending on whether it got created in time)
-      expect(result).to.have.length.greaterThanOrEqual(2);
-      expect(result).to.have.length.lessThanOrEqual(3);
+      expect(result, JSON.stringify(result)).to.have.length.greaterThanOrEqual(2);
+      expect(result, JSON.stringify(result)).to.have.length.lessThanOrEqual(4);
       result.filter((r) => r.fullName === 'TestOrderController').map((r) => expect(r.state).to.equal('Deleted'));
     });
     it('local file was deleted', () => {
@@ -117,19 +123,20 @@ describe('remote changes', () => {
       const remoteResult = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(remoteResult.filter((r) => r.state.includes('Remote Deleted'))).to.have.length(0);
+      expect(remoteResult.filter((r) => r.state.includes('Remote Deleted'))).to.deep.equal([]);
 
       const localStatus = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(localStatus).to.have.length(0);
+      expect(localStatus).to.deep.equal([]);
     });
   });
 
   describe('remote changes: add', () => {
+    const className = 'CreatedClass';
     it('adds on the server', async () => {
       const createResult = await conn.tooling.create('ApexClass', {
-        Name: 'CreatedClass',
+        Name: className,
         Body: 'public class CreatedClass {}',
         Status: 'Active',
       });
@@ -141,27 +148,30 @@ describe('remote changes', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      // it shows up as one class on the server, plus Admin Profile
-      expect(result.filter((r) => r.state.includes('Add'))).to.have.length(2);
-      expect(result.some((r) => r.fullName === 'CreatedClass')).to.equal(true);
+      expect(
+        result.some((r) => r.fullName === className),
+        JSON.stringify(result)
+      ).to.equal(true);
     });
     it('can pull the add', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
         .jsonOutput.result;
-      expect(result).to.have.length(3); // 2 files for the apexClass, plus AdminProfile
       // SDR marks all retrieves as 'Changed' even if it creates new local files.  This is different from toolbelt, which marked those as 'Created'
-      result.filter((r) => r.fullName === 'CreatedClass').map((r) => expect(r.state).to.equal('Changed'));
+      result.filter((r) => r.fullName === className).map((r) => expect(r.state, JSON.stringify(r)).to.equal('Created'));
     });
     it('sees correct local and remote status', () => {
       const remoteResult = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(remoteResult).to.have.length(0);
+      expect(
+        remoteResult.filter((r) => r.fullName === className),
+        JSON.stringify(remoteResult)
+      ).deep.equal([]);
 
       const localStatus = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(localStatus).to.have.length(0);
+      expect(localStatus).to.deep.equal([]);
     });
   });
 

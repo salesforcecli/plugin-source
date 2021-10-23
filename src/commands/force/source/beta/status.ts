@@ -8,44 +8,37 @@
 import * as os from 'os';
 import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-
 import {
   SourceTracking,
   throwIfInvalid,
   replaceRenamedCommands,
-  getKeyFromObject,
-  getKeyFromStrings,
   ChangeResult,
+  StatusOutputRow,
 } from '@salesforce/source-tracking';
-
 import { StatusResult, StatusFormatter } from '../../../../formatters/statusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
-export default class SourceStatus extends SfdxCommand {
+export default class Status extends SfdxCommand {
   public static description = messages.getMessage('description');
   public static readonly examples = replaceRenamedCommands(messages.getMessage('examples')).split(os.EOL);
   protected static flagsConfig: FlagsConfig = {
-    all: flags.boolean({
-      char: 'a',
-      description: messages.getMessage('flags.all'),
-      longDescription: messages.getMessage('flags.allLong'),
-    }),
     local: flags.boolean({
       char: 'l',
       description: messages.getMessage('flags.local'),
       longDescription: messages.getMessage('flags.localLong'),
+      exclusive: ['remote'],
     }),
     remote: flags.boolean({
       char: 'r',
       description: messages.getMessage('flags.remote'),
       longDescription: messages.getMessage('flags.remoteLong'),
+      exclusive: ['local'],
     }),
   };
   protected static requiresUsername = true;
   protected static requiresProject = true;
-  protected hidden = true;
   protected results = new Array<StatusResult>();
   protected localAdds: ChangeResult[] = [];
 
@@ -56,10 +49,9 @@ export default class SourceStatus extends SfdxCommand {
       toValidate: 'plugin-source',
       command: replaceRenamedCommands('force:source:status'),
     });
-    const wantsLocal =
-      (this.flags.local as boolean) || (this.flags.all as boolean) || (!this.flags.remote && !this.flags.all);
-    const wantsRemote =
-      (this.flags.remote as boolean) || (this.flags.all as boolean) || (!this.flags.local && !this.flags.all);
+
+    const wantsLocal = (this.flags.local as boolean) || (!this.flags.remote && !this.flags.local);
+    const wantsRemote = (this.flags.remote as boolean) || (!this.flags.remote && !this.flags.local);
 
     this.logger.debug(
       `project is ${this.project.getPath()} and pkgDirs are ${this.project
@@ -72,56 +64,8 @@ export default class SourceStatus extends SfdxCommand {
       project: this.project,
       apiVersion: this.flags.apiversion as string,
     });
-
-    if (wantsLocal) {
-      await tracking.ensureLocalTracking();
-      const localDeletes = tracking.populateTypesAndNames({
-        elements: await tracking.getChanges<ChangeResult>({ origin: 'local', state: 'delete', format: 'ChangeResult' }),
-        excludeUnresolvable: true,
-        resolveDeleted: true,
-      });
-
-      const localAdds = tracking.populateTypesAndNames({
-        elements: await tracking.getChanges<ChangeResult>({ origin: 'local', state: 'add', format: 'ChangeResult' }),
-        excludeUnresolvable: true,
-      });
-
-      const localModifies = tracking.populateTypesAndNames({
-        elements: await tracking.getChanges<ChangeResult>({ origin: 'local', state: 'modify', format: 'ChangeResult' }),
-        excludeUnresolvable: true,
-      });
-
-      this.results = this.results.concat(
-        localAdds.flatMap((item) => this.statusResultToOutputRows(item, 'add')),
-        localModifies.flatMap((item) => this.statusResultToOutputRows(item, 'changed')),
-        localDeletes.flatMap((item) => this.statusResultToOutputRows(item, 'delete'))
-      );
-    }
-
-    if (wantsRemote) {
-      // by initializeWithQuery true, one query runs so that parallel getChanges aren't doing parallel queries
-      await tracking.ensureRemoteTracking(true);
-      const [remoteDeletes, remoteModifies] = await Promise.all([
-        tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'delete', format: 'ChangeResult' }),
-        tracking.getChanges<ChangeResult>({ origin: 'remote', state: 'nondelete', format: 'ChangeResult' }),
-      ]);
-      this.results = this.results.concat(
-        remoteDeletes.flatMap((item) => this.statusResultToOutputRows(item)),
-        remoteModifies.flatMap((item) => this.statusResultToOutputRows(item))
-      );
-    }
-
-    if (wantsLocal && wantsRemote) {
-      // keys like ApexClass__MyClass.cls
-      const conflictKeys = (await tracking.getConflicts()).map((conflict) => getKeyFromObject(conflict));
-      if (conflictKeys.length > 0) {
-        this.results = this.results.map((row) =>
-          conflictKeys.includes(getKeyFromStrings(row.type, row.fullName))
-            ? { ...row, state: `${row.state} (Conflict)` }
-            : row
-        );
-      }
-    }
+    const stlStatusResult = await tracking.getStatus({ local: wantsLocal, remote: wantsRemote });
+    this.results = stlStatusResult.map((result) => resultConverter(result));
 
     return this.formatResult();
   }
@@ -135,35 +79,38 @@ export default class SourceStatus extends SfdxCommand {
 
     return formatter.getJson();
   }
-
-  private statusResultToOutputRows(input: ChangeResult, localType?: 'delete' | 'changed' | 'add'): StatusResult[] {
-    this.logger.debug('converting ChangeResult to a row', input);
-
-    const state = (): string => {
-      if (localType) {
-        return localType[0].toUpperCase() + localType.substring(1);
-      }
-      if (input.deleted) {
-        return 'Delete';
-      }
-      if (input.modified) {
-        return 'Changed';
-      }
-      return 'Add';
-    };
-    const baseObject = {
-      type: input.type ?? '',
-      state: `${input.origin} ${state()}`,
-      fullName: input.name ?? '',
-    };
-    this.logger.debug(baseObject);
-
-    if (!input.filenames) {
-      return [baseObject];
-    }
-    return input.filenames.map((filename) => ({
-      ...baseObject,
-      filepath: filename,
-    }));
-  }
 }
+
+/**
+ * STL provides a more useful json output.
+ * This function makes it consistent with the Status command's json.
+ */
+const resultConverter = (input: StatusOutputRow): StatusResult => {
+  const { fullName, type, ignored, filePath, conflict } = input;
+  const origin = originMap.get(input.origin);
+  const actualState = stateMap.get(input.state);
+  return {
+    fullName,
+    type,
+    // this string became the place to store information.
+    // The JSON now breaks out that info but preserves this property for backward compatibility
+    state: `${origin} ${actualState}${conflict ? ' (Conflict)' : ''}`,
+    ignored,
+    filePath,
+    origin,
+    actualState,
+    conflict,
+  };
+};
+
+const originMap = new Map<StatusOutputRow['origin'], StatusResult['origin']>([
+  ['local', 'Local'],
+  ['remote', 'Remote'],
+]);
+
+const stateMap = new Map<StatusOutputRow['state'], StatusResult['actualState']>([
+  ['delete', 'Deleted'],
+  ['add', 'Add'],
+  ['modify', 'Changed'],
+  ['nondelete', 'Changed'],
+]);

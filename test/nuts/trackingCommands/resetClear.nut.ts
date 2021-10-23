@@ -44,15 +44,18 @@ describe('reset and clear', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        sourceDir: path.join('test', 'nuts', 'ebikes-lwc'),
+        gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      setupCommands: [
+        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
+        `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
+      ],
     });
-    orgId = (session.setup[0] as { result: { orgId: string } }).result?.orgId;
+    orgId = (session.setup[1] as { result: { orgId: string } }).result?.orgId;
     trackingFileFolder = path.join(session?.project.dir, '.sfdx', 'orgs', orgId);
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: (session.setup[1] as { result: { username: string } }).result?.username,
       }),
     });
   });

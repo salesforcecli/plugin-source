@@ -10,29 +10,31 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
-
+import * as shelljs from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
-import { Env } from '@salesforce/kit';
-import { ensureString } from '@salesforce/ts-types';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { PushResponse } from '../../../src/formatters/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 
 let session: TestSession;
-let hubUsername: string;
 describe('end-to-end-test for tracking with an org (single packageDir)', () => {
-  const env = new Env();
-
   before(async () => {
     session = await TestSession.create({
       project: {
-        sourceDir: path.join('test', 'nuts', 'ebikes-lwc'),
+        gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      setupCommands: [
+        // 'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
+        `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
+      ],
     });
-    hubUsername = ensureString(env.getString('TESTKIT_HUB_USERNAME'));
+
+    // we also need to remove profiles from the forceignore
+    const originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
+    const newForceIgnore = originalForceIgnore.replace('**/profiles/**', '');
+    await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), newForceIgnore);
   });
 
   after(async () => {
@@ -50,13 +52,13 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('pushes the initial metadata to the org', () => {
-      const result = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result.deployedSource).to.be.an.instanceof(Array);
-      expect(result.deployedSource, JSON.stringify(result)).to.have.lengthOf(234);
+      expect(result).to.be.an.instanceof(Array);
+      expect(result, JSON.stringify(result)).to.have.lengthOf(234);
       expect(
-        result.deployedSource.every((r) => r.state !== ComponentStatus.Failed),
+        result.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(result)
       ).to.equal(true);
     });
@@ -69,7 +71,6 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const remoteResult = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(remoteResult.length).to.equal(1);
       expect(remoteResult.some((item) => item.type === 'Profile')).to.equal(true);
     });
 
@@ -77,14 +78,20 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const pullResult = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(pullResult.some((item) => item.type === 'Profile')).to.equal(true);
+      expect(
+        pullResult.some((item) => item.type === 'Profile'),
+        JSON.stringify(pullResult)
+      ).to.equal(true);
     });
 
     it('sees no local or remote changes', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.have.length(0);
+      expect(
+        result.filter((r) => r.type === 'Profile'),
+        JSON.stringify(result)
+      ).to.have.length(0);
     });
 
     it('sees a local delete in local status', async () => {
@@ -99,15 +106,21 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result).to.deep.equal([
         {
           type: 'ApexClass',
-          state: 'local Delete',
+          state: 'Local Deleted',
           fullName: 'TestOrderController',
-          filepath: path.normalize('force-app/main/default/classes/TestOrderController.cls'),
+          filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls'),
+          ignored: false,
+          actualState: 'Deleted',
+          origin: 'Local',
         },
         {
           type: 'ApexClass',
-          state: 'local Delete',
+          state: 'Local Deleted',
           fullName: 'TestOrderController',
-          filepath: path.normalize('force-app/main/default/classes/TestOrderController.cls-meta.xml'),
+          filePath: path.normalize('force-app/main/default/classes/TestOrderController.cls-meta.xml'),
+          ignored: false,
+          actualState: 'Deleted',
+          origin: 'Local',
         },
       ]);
     });
@@ -115,41 +128,68 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.have.length(0);
+      expect(
+        result.filter((r) => r.fullName === 'TestOrderController'),
+        JSON.stringify(result)
+      ).to.have.length(0);
     });
 
     it('pushes the local delete to the org', () => {
-      const result = execCmd<DeployCommandResult>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result.deployedSource).to.be.an.instanceof(Array).with.length(2);
+      expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
     });
     it('sees no local changes', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.be.an.instanceof(Array).with.length(0);
+      expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(0);
     });
   });
 
   describe('non-successes', () => {
     it('should throw an err when attempting to pull from a non scratch-org', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const hubUsername = (
+        JSON.parse(shelljs.exec('sfdx force:config:get defaultdevhubusername --json', { silent: true })) as {
+          result: [{ location: string; value: string }];
+        }
+      ).result.find((config) => config.location === 'Local').value;
       const failure = execCmd(replaceRenamedCommands(`force:source:status -u ${hubUsername} --remote --json`), {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };
       expect(failure.name).to.equal('NonSourceTrackedOrgError');
     });
-    it('should not poll for SourceMembers when SFDX_DISABLE_SOURCE_MEMBER_POLLING=true');
-
-    describe('push partial success', () => {
-      it('can deploy source with some failures and show correct exit code');
-      it('can see failures remaining in local tracking, but successes are gone');
-    });
 
     describe('push failures', () => {
-      it('handles failed push');
-      it('has no changes to local tracking');
+      it('writes a bad class', async () => {
+        const classdir = path.join(session.project.dir, 'force-app', 'main', 'default', 'classes');
+        // add a file in the local source
+        await Promise.all([
+          fs.promises.writeFile(path.join(classdir, 'badClass.cls'), 'bad'),
+          fs.promises.writeFile(
+            path.join(classdir, 'badClass.cls-meta.xml'),
+            `<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+</ApexClass>`
+          ),
+        ]);
+      });
+      it('fails to push', () => {
+        const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+          ensureExitCode: 1,
+        }).jsonOutput.result;
+        expect(result.every((r) => r.type === 'ApexClass' && r.state === 'Failed')).to.equal(true);
+      });
+      it('classes that failed to deploy are still in local status', () => {
+        it('sees no local changes', () => {
+          const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
+            ensureExitCode: 0,
+          }).jsonOutput.result;
+          expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
+        });
+      });
     });
   });
 });

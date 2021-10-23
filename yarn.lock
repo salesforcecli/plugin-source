@@ -808,7 +808,7 @@
   resolved "https://registry.npmjs.org/@salesforce/schemas/-/schemas-1.1.0.tgz#bbf94a11ee036f2b0ec6ba82306cd9565a6ba26b"
   integrity sha512-6D7DvE6nFxpLyyTnrOIbbAeCJw2r/EpinFAcMh6gU0gA/CGfSbwV/8uR3uHLYL2zCyCZLH8jJ4dZ3BzCMqc+Eg==
 
-"@salesforce/source-deploy-retrieve@^4.0.2", "@salesforce/source-deploy-retrieve@^4.5.2":
+"@salesforce/source-deploy-retrieve@^4.0.2":
   version "4.5.2"
   resolved "https://registry.npmjs.org/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-4.5.2.tgz#4fbc3c40f1d3631885b26dd39d943b430a720b38"
   integrity sha512-McUQSZRQJCUPokmt8n7KJffeN6gPiHQzyl7r7QoHFzteEVm0ual/alS3749KSxPHHb8qjTxJq3sXOPpG0a4gKg==
@@ -818,6 +818,22 @@
     "@salesforce/ts-types" "^1.4.2"
     archiver "^5.3.0"
     fast-xml-parser "^3.17.4"
+    ignore "^5.1.8"
+    mime "2.4.6"
+    unzipper "0.10.11"
+    xmldom-sfdx-encoding "^0.1.29"
+
+"@salesforce/source-deploy-retrieve@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.0.1.tgz#b4add87b3de0cb27e2432e64638ef145ae81d561"
+  integrity sha512-dcQv0ehKyXs+TzX/gHLhs1pV+cC2VmwsYe+sRjrqTxKsQ5qo+ByF8FhkbwtlYLdUOpRkaIS+/JwCpEwKgPKvKg==
+  dependencies:
+    "@salesforce/core" "2.28.0"
+    "@salesforce/kit" "^1.5.0"
+    "@salesforce/ts-types" "^1.4.2"
+    archiver "^5.3.0"
+    fast-xml-parser "^3.17.4"
+    graceful-fs "^4.2.8"
     ignore "^5.1.8"
     mime "2.4.6"
     unzipper "0.10.11"
@@ -840,15 +856,14 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.2.2.tgz#c1d0da0dfe382ef2ba4f07caac01c011ad34e816"
-  integrity sha512-Ih6dZDEYwFqm1wjrvqJTArreHbRQmYLCRgOBPTrEOirtk22QpjKWHbIpCWgEjAIybuZlDKdO1+BnZ/Cq8Zt+xQ==
+"@salesforce/source-tracking@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.4.0.tgz#fef1d22de4996967c57f15e4a14a0c5677e941de"
+  integrity sha512-7G4fdoMk921dSIkNzsZOmnI/YU4H+V+jRgAe2INMDs1oc8QmsQ6pgTDfV3OlzANPio4OVJDEzhYxyxjdCxMKXQ==
   dependencies:
-    "@oclif/config" "^1.17.0"
     "@salesforce/core" "^2.28.0"
     "@salesforce/kit" "^1.5.17"
-    "@salesforce/source-deploy-retrieve" "^4.5.2"
+    "@salesforce/source-deploy-retrieve" "^5.0.1"
     isomorphic-git "^1.9.2"
     ts-retry-promise "^0.6.0"
 
@@ -2267,6 +2282,13 @@ create-require@^1.1.0:
   resolved "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
+cross-env@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
+  dependencies:
+    cross-spawn "^7.0.1"
+
 cross-spawn@^6.0.0, cross-spawn@^6.0.5:
   version "6.0.5"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -2278,7 +2300,7 @@ cross-spawn@^6.0.0, cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
@@ -3782,7 +3804,7 @@ got@^6.2.0:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4:
+graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.8:
   version "4.2.8"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
   integrity sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==
