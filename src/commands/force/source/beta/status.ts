@@ -39,7 +39,6 @@ export default class Status extends SfdxCommand {
   };
   protected static requiresUsername = true;
   protected static requiresProject = true;
-  protected hidden = true;
   protected results = new Array<StatusResult>();
   protected localAdds: ChangeResult[] = [];
 

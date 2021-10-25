@@ -10,10 +10,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
-
+import * as shelljs from 'shelljs';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
-import { Env } from '@salesforce/kit';
-import { ensureString } from '@salesforce/ts-types';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { PushResponse } from '../../../src/formatters/pushResultFormatter';
@@ -21,21 +19,17 @@ import { StatusResult } from '../../../src/formatters/statusFormatter';
 import { PullResponse } from '../../../src/formatters/pullFormatter';
 
 let session: TestSession;
-let hubUsername: string;
 describe('end-to-end-test for tracking with an org (single packageDir)', () => {
-  const env = new Env();
-
   before(async () => {
     session = await TestSession.create({
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
       setupCommands: [
-        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
+        // 'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
         `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
       ],
     });
-    hubUsername = ensureString(env.getString('TESTKIT_HUB_USERNAME'));
 
     // we also need to remove profiles from the forceignore
     const originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
@@ -156,7 +150,11 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
 
   describe('non-successes', () => {
     it('should throw an err when attempting to pull from a non scratch-org', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const hubUsername = (
+        JSON.parse(shelljs.exec('sfdx force:config:get defaultdevhubusername --json', { silent: true })) as {
+          result: [{ location: string; value: string }];
+        }
+      ).result.find((config) => config.location === 'Local').value;
       const failure = execCmd(replaceRenamedCommands(`force:source:status -u ${hubUsername} --remote --json`), {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };

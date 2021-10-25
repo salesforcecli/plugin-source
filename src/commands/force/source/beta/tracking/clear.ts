@@ -30,7 +30,6 @@ export class Clear extends SfdxCommand {
       required: false,
     }),
   };
-  protected hidden = true;
 
   public async run(): Promise<SourceTrackingClearResult> {
     throwIfInvalid({
