@@ -9,7 +9,13 @@ import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { getString } from '@salesforce/ts-types';
-import { DeployResult, FileResponse, RequestStatus, DeployMessage } from '@salesforce/source-deploy-retrieve';
+import {
+  DeployResult,
+  FileResponse,
+  RequestStatus,
+  DeployMessage,
+  ComponentStatus,
+} from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -34,7 +40,9 @@ export class PushResultFormatter extends ResultFormatter {
    */
   public getJson(): PushResponse[] {
     return this.isQuiet()
-      ? []
+      ? this.fileResponses
+          .filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)
+          .map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
       : this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
   }
 
