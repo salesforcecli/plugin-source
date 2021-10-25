@@ -10,10 +10,9 @@ import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { RequestStatus, ComponentStatus } from '@salesforce/source-deploy-retrieve';
 
-// TODO: move to plugin-source
 import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
 import { DeployCommand } from '../../../../deployCommand';
-import { DeployResultFormatter, DeployCommandResult } from '../../../../formatters/deployResultFormatter';
+import { PushResponse, PushResultFormatter } from '../../../../formatters/pushResultFormatter';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
@@ -48,11 +47,10 @@ export default class Push extends DeployCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  protected hidden = true;
 
   private isRest = false;
 
-  public async run(): Promise<DeployCommandResult> {
+  public async run(): Promise<PushResponse[]> {
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();
@@ -77,6 +75,7 @@ export default class Push extends DeployCommand {
       processConflicts(await tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
     }
     const componentSet = await tracking.localChangesAsComponentSet();
+    componentSet.sourceApiVersion = await this.getSourceApiVersion();
 
     // there might have been components in local tracking, but they might be ignored by SDR or unresolvable.
     // SDR will throw when you try to resolve them, so don't
@@ -87,11 +86,15 @@ export default class Push extends DeployCommand {
 
     // fire predeploy event for sync and async deploys
     await this.lifecycle.emit('predeploy', componentSet.toArray());
-    this.ux.log(`*** Pushing with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
+    this.ux.log(`*** Pushing with ${this.isRest ? 'REST' : 'SOAP'} API v${componentSet.sourceApiVersion} ***`);
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
-      apiOptions: { ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false), rest: this.isRest },
+      apiOptions: {
+        ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+        rest: this.isRest,
+        testLevel: 'NoTestRun',
+      },
     });
 
     // we're not print JSON output
@@ -130,7 +133,7 @@ export default class Push extends DeployCommand {
     }
   }
 
-  protected formatResult(): DeployCommandResult {
+  protected formatResult(): PushResponse[] {
     if (!this.deployResult) {
       this.ux.log('No results found');
     }
@@ -138,7 +141,7 @@ export default class Push extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
     };
 
-    const formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+    const formatter = new PushResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {

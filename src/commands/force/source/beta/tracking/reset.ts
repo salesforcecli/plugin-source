@@ -35,7 +35,6 @@ export class Reset extends SfdxCommand {
       description: messages.getMessage('nopromptDescription'),
     }),
   };
-  protected hidden = true;
 
   public async run(): Promise<SourceTrackingResetResult> {
     throwIfInvalid({

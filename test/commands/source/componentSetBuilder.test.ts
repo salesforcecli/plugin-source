@@ -321,6 +321,8 @@ describe('ComponentSetBuilder', () => {
         forceAddWildcards: true,
         manifestPath: options.manifest.manifestPath,
         resolveSourcePaths: [packageDir1],
+        destructivePre: undefined,
+        destructivePost: undefined,
       });
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
@@ -348,6 +350,8 @@ describe('ComponentSetBuilder', () => {
         forceAddWildcards: true,
         manifestPath: options.manifest.manifestPath,
         resolveSourcePaths: [packageDir1, packageDir2],
+        destructivePre: undefined,
+        destructivePost: undefined,
       });
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
