@@ -39,11 +39,12 @@ export class PushResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): PushResponse[] {
-    return this.isQuiet()
-      ? this.fileResponses
-          .filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)
-          .map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
-      : this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
+    // quiet returns only failures
+    const toReturn = this.isQuiet()
+      ? this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)
+      : this.fileResponses;
+
+    return toReturn.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
   }
 
   /**
