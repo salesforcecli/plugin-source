@@ -7,7 +7,7 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import { Lifecycle, SfdxError } from '@salesforce/core';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 
@@ -21,6 +21,15 @@ export type ProgressBar = {
 
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_SRC_WAIT_MINUTES = 33;
+  public static readonly StatusCodeMap = new Map<RequestStatus, number>([
+    [RequestStatus.Succeeded, 0],
+    [RequestStatus.Canceled, 0],
+    [RequestStatus.Failed, 1],
+    [RequestStatus.SucceededPartial, 68],
+    [RequestStatus.InProgress, 69],
+    [RequestStatus.Pending, 69],
+    [RequestStatus.Canceling, 69],
+  ]);
   protected xorFlags: string[] = [];
   protected progressBar?: ProgressBar;
   protected lifecycle = Lifecycle.getInstance();

@@ -7,9 +7,9 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
-import { getString, isString } from '@salesforce/ts-types';
+import { isString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -17,6 +17,7 @@ import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../f
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -206,10 +207,7 @@ export class Deploy extends DeployCommand {
    */
   protected resolveSuccess(): void {
     if (!this.isAsync) {
-      const status = getString(this.deployResult, 'response.status');
-      if (status !== RequestStatus.Succeeded) {
-        this.setExitCode(1);
-      }
+      this.setExitCode(SourceCommand.StatusCodeMap.get(this.deployResult.response.status) ?? 1);
     }
   }
 
