@@ -76,6 +76,7 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
+    this.ux.startSpinner(messages.getMessage('spinnerMessages.componentSetBuild'));
     this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
       sourceapiversion: await this.getSourceApiVersion(),
@@ -100,6 +101,9 @@ export class Retrieve extends SourceCommand {
 
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
+    this.ux.setSpinnerStatus(
+      messages.getMessage('spinnerMessages.sendingRequest', [this.componentSet.sourceApiVersion])
+    );
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
@@ -107,9 +111,11 @@ export class Retrieve extends SourceCommand {
       packageOptions: this.getFlag<string[]>('packagenames'),
     });
 
+    this.ux.setSpinnerStatus(messages.getMessage('spinnerMessages.polling'));
     this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());
+    this.ux.stopSpinner();
   }
 
   protected resolveSuccess(): void {
