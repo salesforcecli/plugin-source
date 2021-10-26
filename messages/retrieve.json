@@ -50,7 +50,7 @@
   "wantsToRetrieveCustomFields": "Because you're retrieving one or more CustomFields, we're also retrieving the CustomObject to which it's associated.",
   "spinnerMessages": {
     "componentSetBuild": "Preparing retrieve request",
-    "sendingRequest": "Sending request to org (metadata API version (%s)",
+    "sendingRequest": "Sending request to org (metadata API version %s)",
     "polling": "Waiting for the org to respond"
   }
 }

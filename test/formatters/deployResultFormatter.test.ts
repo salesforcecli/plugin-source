@@ -20,6 +20,7 @@ describe('DeployResultFormatter', () => {
 
   const deployResultSuccess = getDeployResult('successSync');
   const deployResultFailure = getDeployResult('failed');
+  const deployResultPartialSuccess = getDeployResult('partialSuccessSync');
   const deployResultTestFailure = getDeployResult('failedTest');
   const deployResultTestSuccess = getDeployResult('passedTest');
   const deployResultTestSuccessAndFailure = getDeployResult('passedAndFailedTest');
@@ -74,6 +75,16 @@ describe('DeployResultFormatter', () => {
       expectedFailureResults.deploys = [deployResponse];
       const formatter = new DeployResultFormatter(logger, ux, {}, deployResultFailure);
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
+    });
+
+    it('should return expected json for a partial success', () => {
+      const deployResponse = JSON.parse(JSON.stringify(deployResultPartialSuccess.response)) as DeployCommandResult;
+      const expectedPartialSuccessResponse = deployResultPartialSuccess.response as DeployCommandResult;
+      expectedPartialSuccessResponse.deployedSource = deployResultPartialSuccess.getFileResponses();
+      expectedPartialSuccessResponse.outboundFiles = [];
+      expectedPartialSuccessResponse.deploys = [deployResponse];
+      const formatter = new DeployResultFormatter(logger, ux, {}, deployResultPartialSuccess);
+      expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
     });
   });
 
@@ -134,6 +145,16 @@ describe('DeployResultFormatter', () => {
       expect(styledHeaderStub.args[1][0]).to.include('Test Failures [2]');
       expect(styledHeaderStub.args[2][0]).to.include('Test Success [1]');
       expect(styledHeaderStub.args[3][0]).to.include('Apex Code Coverage');
+    });
+
+    it.only('shows success AND failures for partialSucceeded', async () => {
+      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultPartialSuccess);
+      formatter.display();
+      expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
+      expect(logStub.callCount, 'logStub.callCount').to.equal(3);
+      expect(tableStub.callCount, 'tableStub.callCount').to.equal(2);
+      expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
+      expect(styledHeaderStub.args[1][0]).to.include('Component Failures');
     });
   });
 });

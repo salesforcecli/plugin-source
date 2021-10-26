@@ -147,7 +147,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    if (this.hasStatus(RequestStatus.Failed)) {
+    if (this.hasStatus(RequestStatus.Failed) || this.hasStatus(RequestStatus.SucceededPartial)) {
       const failures: Array<FileResponse | DeployMessage> = [];
       const fileResponseFailures: Map<string, string> = new Map<string, string>();
 

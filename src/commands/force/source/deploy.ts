@@ -207,7 +207,7 @@ export class Deploy extends DeployCommand {
    */
   protected resolveSuccess(): void {
     if (!this.isAsync) {
-      this.setExitCode(SourceCommand.StatusCodeMap.get(this.deployResult.response.status) ?? 1);
+      this.setExitCode(SourceCommand.StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
     }
   }
 

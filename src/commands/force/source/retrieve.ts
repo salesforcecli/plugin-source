@@ -102,7 +102,9 @@ export class Retrieve extends SourceCommand {
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
     this.ux.setSpinnerStatus(
-      messages.getMessage('spinnerMessages.sendingRequest', [this.componentSet.sourceApiVersion])
+      messages.getMessage('spinnerMessages.sendingRequest', [
+        this.componentSet.sourceApiVersion || this.componentSet.apiVersion,
+      ])
     );
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
