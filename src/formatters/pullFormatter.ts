@@ -40,10 +40,12 @@ export class PullResultFormatter extends ResultFormatter {
     this.fileResponses = (retrieveResult?.getFileResponses ? retrieveResult.getFileResponses() : []).concat(
       deleteResult
     );
-    const warnMessages = get(retrieveResult, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
+    const warnMessages = retrieveResult?.response?.messages ?? ([] as RetrieveMessage | RetrieveMessage[]);
     this.warnings = toArray(warnMessages);
-    // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
-    delete this.result.response.zipFile;
+    if (this.result?.response?.zipFile) {
+      // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
+      delete this.result.response.zipFile;
+    }
   }
 
   /**
@@ -114,7 +116,10 @@ export class PullResultFormatter extends ResultFormatter {
 
   private displayErrors(): void {
     // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
-    const errorMessage = get(this.result.response, 'errorMessage') as string;
+    if (!this.result) {
+      return;
+    }
+    const errorMessage = getString(this.result.response, 'errorMessage');
     if (errorMessage) {
       throw new SfdxError(errorMessage);
     }

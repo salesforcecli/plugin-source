@@ -163,10 +163,6 @@ export default class Pull extends SourceCommand {
   }
 
   protected formatResult(): PullResponse[] {
-    if (!this.retrieveResult && (!this.deleteFileResponses.length || !this.deleteFileResponses)) {
-      this.ux.log('No results found');
-      return [];
-    }
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
     };
