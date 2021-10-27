@@ -147,7 +147,7 @@ describe('DeployResultFormatter', () => {
       expect(styledHeaderStub.args[3][0]).to.include('Apex Code Coverage');
     });
 
-    it.only('shows success AND failures for partialSucceeded', async () => {
+    it('shows success AND failures for partialSucceeded', async () => {
       const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultPartialSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
