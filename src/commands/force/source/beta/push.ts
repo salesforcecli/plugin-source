@@ -43,6 +43,9 @@ export default class Push extends DeployCommand {
       description: messages.getMessage('flags.ignorewarnings'),
       longDescription: messages.getMessage('flags.ignorewarningsLong'),
     }),
+    quiet: flags.builtin({
+      description: messages.getMessage('flags.quiet'),
+    }),
   };
   protected static requiresUsername = true;
   protected static requiresProject = true;
@@ -138,7 +141,7 @@ export default class Push extends DeployCommand {
       this.ux.log('No results found');
     }
     const formatterOptions = {
-      verbose: this.getFlag<boolean>('verbose', false),
+      quiet: this.getFlag<boolean>('quiet', false),
     };
 
     const formatter = new PushResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);

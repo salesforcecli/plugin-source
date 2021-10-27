@@ -9,7 +9,13 @@ import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { getString } from '@salesforce/ts-types';
-import { DeployResult, FileResponse, RequestStatus, DeployMessage } from '@salesforce/source-deploy-retrieve';
+import {
+  DeployResult,
+  FileResponse,
+  RequestStatus,
+  DeployMessage,
+  ComponentStatus,
+} from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -33,7 +39,12 @@ export class PushResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): PushResponse[] {
-    return this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
+    // quiet returns only failures
+    const toReturn = this.isQuiet()
+      ? this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)
+      : this.fileResponses;
+
+    return toReturn.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
   }
 
   /**
@@ -59,6 +70,9 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displaySuccesses(): void {
+    if (this.isQuiet()) {
+      return;
+    }
     if (this.isSuccess() && this.fileResponses?.length) {
       const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
       if (!successes.length) {
