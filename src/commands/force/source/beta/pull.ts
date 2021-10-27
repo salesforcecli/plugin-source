@@ -94,6 +94,10 @@ export default class Pull extends SourceCommand {
   protected async updateTrackingFilesWithRetrieve(): Promise<void> {
     this.ux.setSpinnerStatus('Updating source tracking files');
 
+    // might not exist if we exited from retrieve early
+    if (!this.retrieveResult) {
+      return;
+    }
     const successes = this.retrieveResult
       .getFileResponses()
       .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
@@ -159,8 +163,9 @@ export default class Pull extends SourceCommand {
   }
 
   protected formatResult(): PullResponse[] {
-    if (!this.retrieveResult && !this.deleteFileResponses) {
+    if (!this.retrieveResult && (!this.deleteFileResponses.length || !this.deleteFileResponses)) {
       this.ux.log('No results found');
+      return [];
     }
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
