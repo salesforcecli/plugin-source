@@ -51,13 +51,16 @@ export class StatusFormatter extends ResultFormatter {
       return;
     }
     this.ux.log(messages.getMessage('humanSuccess'));
+    const baseColumns = [
+      { label: 'STATE', key: 'state' },
+      { label: 'FULL NAME', key: 'fullName' },
+      { label: 'TYPE', key: 'type' },
+      { label: 'PROJECT PATH', key: 'filePath' },
+    ];
     this.ux.table(this.statusRows.sort(rowSortFunction), {
-      columns: [
-        { label: 'STATE', key: 'state' },
-        { label: 'FULL NAME', key: 'fullName' },
-        { label: 'TYPE', key: 'type' },
-        { label: 'PROJECT PATH', key: 'filePath' },
-      ],
+      columns: this.statusRows.some((row) => row.ignored)
+        ? [...baseColumns, { label: 'IGNORED', key: 'ignored' }]
+        : baseColumns,
     });
   }
 }
