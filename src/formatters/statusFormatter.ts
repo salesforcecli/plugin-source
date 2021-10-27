@@ -59,7 +59,7 @@ export class StatusFormatter extends ResultFormatter {
     ];
     this.ux.table(this.statusRows.sort(rowSortFunction), {
       columns: this.statusRows.some((row) => row.ignored)
-        ? [...baseColumns, { label: 'IGNORED', key: 'ignored' }]
+        ? [{ label: 'IGNORED', key: 'ignored' }, ...baseColumns]
         : baseColumns,
     });
   }
