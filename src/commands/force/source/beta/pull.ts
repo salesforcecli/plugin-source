@@ -74,9 +74,9 @@ export default class Pull extends SourceCommand {
     });
 
     await this.tracking.ensureRemoteTracking(true);
-    this.ux.setSpinnerStatus('Checking for conflicts');
 
     if (!this.flags.forceoverwrite) {
+      this.ux.setSpinnerStatus('Checking for conflicts');
       processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('sourceConflictDetected'));
     }
   }
