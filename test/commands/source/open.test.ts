@@ -81,29 +81,15 @@ describe('force:source:open', () => {
       const orgStub = fromStub(
         stubInterface<Org>(sandbox, {
           getUsername: () => username,
+          getOrgId: () => orgId,
           getConnection: () => ({
             getAuthInfoFields: () => ({
               username,
               orgId,
             }),
-            tooling: {
-              query: () => ({
-                size: 1,
-                totalSize: 1,
-                done: true,
-                queryLocator: null,
-                entityTypeName: 'FlexiPage',
-                records: [
-                  {
-                    attributes: {
-                      type: 'FlexiPage',
-                      url: '/services/data/v52.0/tooling/sobjects/FlexiPage/0M0J0000000Q0vmKAC',
-                    },
-                    Id: recordId,
-                  },
-                ],
-              }),
-            },
+            singleRecordQuery: () => ({
+              Id: recordId,
+            }),
           }),
         })
       );

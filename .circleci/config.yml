@@ -52,12 +52,10 @@ workflows:
                 - linux
                 - windows
               node_version:
-                - latest
+                # - latest
                 - lts
                 - maintenance
             exclude:
-              - os: windows
-                node_version: lts
               - os: windows
                 node_version: maintenance
       - release-management/test-nut:
@@ -79,6 +77,7 @@ workflows:
                 - 'yarn test:nuts:retrieve'
                 - 'yarn test:nuts:specialTypes'
                 - 'yarn test:nuts:deploy:destructive'
+                - 'yarn test:nuts:tracking'
       - release-management/release-package:
           sign: true
           github-release: true
