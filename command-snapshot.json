@@ -105,5 +105,10 @@
       "verbose",
       "wait"
     ]
+  },
+  {
+    "command": "force:mdapi:listmetadata",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "json", "loglevel", "resultfile", "targetusername", "metadatatype", "folder"]
   }
 ]

@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { Optional } from '@salesforce/ts-types';
-import { FileProperties, ListMetadataQuery } from 'jsforce'
+import { FileProperties, ListMetadataQuery } from 'jsforce';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -19,12 +19,16 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.list');
 
 export type ListMetadataCommandResult = FileProperties[];
 
+interface FsError extends Error {
+  code: string;
+}
 export class ListMetadata extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     apiversion: flags.builtin({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore force char override for backward compat
       char: 'a',
       description: messages.getMessage('flags.apiversion'),
@@ -57,17 +61,15 @@ export class ListMetadata extends SourceCommand {
   }
 
   protected async list(): Promise<void> {
-    const { apiversion, metadatatype: type, folder } = this.flags;
+    const apiversion = this.getFlag<string>('apiversion');
+    const type = this.getFlag<string>('metadatatype');
+    const folder = this.getFlag<string>('folder');
 
     this.validateResultFile();
 
-    const query: ListMetadataQuery = { type };
-    if (folder) {
-      query.folder = folder;
-    }
-
+    const query: ListMetadataQuery = { type, folder };
     const connection = this.org.getConnection();
-    const result = await connection.metadata.list(query, apiversion) || [];
+    const result = (await connection.metadata.list(query, apiversion)) || [];
     this.listResult = Array.isArray(result) ? result : [result];
   }
 
@@ -102,8 +104,9 @@ export class ListMetadata extends SourceCommand {
         if (!stat.isFile()) {
           throw SfdxError.create('@salesforce/plugin-source', 'md.list', 'invalidResultFile', [this.targetFilePath]);
         }
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
+      } catch (err: unknown) {
+        const e = err as FsError;
+        if (e.code !== 'ENOENT') {
           throw err;
         }
       }
