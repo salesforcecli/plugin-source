@@ -78,7 +78,10 @@ export default class Push extends DeployCommand {
       processConflicts(await tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
     }
     const componentSet = await tracking.localChangesAsComponentSet();
-    componentSet.sourceApiVersion = await this.getSourceApiVersion();
+    const sourceApiVersion = await this.getSourceApiVersion();
+    if (sourceApiVersion) {
+      componentSet.sourceApiVersion = sourceApiVersion;
+    }
 
     // there might have been components in local tracking, but they might be ignored by SDR or unresolvable.
     // SDR will throw when you try to resolve them, so don't
@@ -89,7 +92,11 @@ export default class Push extends DeployCommand {
 
     // fire predeploy event for sync and async deploys
     await this.lifecycle.emit('predeploy', componentSet.toArray());
-    this.ux.log(`*** Pushing with ${this.isRest ? 'REST' : 'SOAP'} API v${componentSet.sourceApiVersion} ***`);
+    this.ux.log(
+      `*** Pushing with ${this.isRest ? 'REST' : 'SOAP'}${
+        componentSet.sourceApiVersion ? ` API v${componentSet.sourceApiVersion}` : ''
+      } ***`
+    );
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
