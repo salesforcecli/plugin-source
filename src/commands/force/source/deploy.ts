@@ -7,7 +7,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, DeployResult } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
 import { isString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
@@ -17,7 +17,6 @@ import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../f
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -206,8 +205,17 @@ export class Deploy extends DeployCommand {
    * unsuccessful in oclif.
    */
   protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.SucceededPartial, 68],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
     if (!this.isAsync) {
-      this.setExitCode(SourceCommand.StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
     }
   }
 

@@ -137,9 +137,17 @@ export default class Push extends DeployCommand {
   }
 
   protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
     // there might not be a deployResult if we exited early with an empty componentSet
-    if (this.deployResult && this.deployResult.response.status !== RequestStatus.Succeeded) {
-      this.setExitCode(1);
+    if (this.deployResult && this.deployResult.response.status) {
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response.status) || 1);
     }
   }
 

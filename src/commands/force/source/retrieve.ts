@@ -10,7 +10,7 @@ import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { RetrieveResult, ComponentSet } from '@salesforce/source-deploy-retrieve';
+import { RetrieveResult, ComponentSet, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   RetrieveResultFormatter,
@@ -121,7 +121,16 @@ export class Retrieve extends SourceCommand {
   }
 
   protected resolveSuccess(): void {
-    this.setExitCode(SourceCommand.StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
+
+    this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
   }
 
   protected async formatResult(): Promise<RetrieveCommandResult> {
