@@ -11,7 +11,6 @@ import { Logger, Messages, SfdxError } from '@salesforce/core';
 import { get, getString, getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
-  MetadataApiRetrieveStatus,
   ComponentStatus,
   FileResponse,
   RequestStatus,
@@ -20,53 +19,42 @@ import {
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
-export interface PackageRetrieval {
-  name: string;
-  path: string;
-}
+export type PullResponse = Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>;
 
-export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
-  packages?: PackageRetrieval[];
-}
-
-export interface RetrieveCommandResult {
-  inboundFiles: FileResponse[];
-  packages: PackageRetrieval[];
-  warnings: RetrieveMessage[];
-  response: MetadataApiRetrieveStatus;
-}
-
-export class RetrieveResultFormatter extends ResultFormatter {
-  protected packages: PackageRetrieval[] = [];
+export class PullResultFormatter extends ResultFormatter {
   protected result: RetrieveResult;
   protected fileResponses: FileResponse[];
   protected warnings: RetrieveMessage[];
 
-  public constructor(logger: Logger, ux: UX, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
+  public constructor(
+    logger: Logger,
+    ux: UX,
+    options: ResultFormatterOptions,
+    retrieveResult: RetrieveResult,
+    deleteResult: FileResponse[] = []
+  ) {
     super(logger, ux, options);
-    this.result = result;
-    this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
-    const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
+    this.result = retrieveResult;
+    this.fileResponses = (retrieveResult?.getFileResponses ? retrieveResult.getFileResponses() : []).concat(
+      deleteResult
+    );
+    const warnMessages = retrieveResult?.response?.messages ?? ([] as RetrieveMessage | RetrieveMessage[]);
     this.warnings = toArray(warnMessages);
-    this.packages = options.packages || [];
-    // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
-    delete this.result.response.zipFile;
+    if (this.result?.response?.zipFile) {
+      // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
+      delete this.result.response.zipFile;
+    }
   }
 
   /**
-   * Get the JSON output from the RetrieveResult.
+   * Get the JSON output from the PullCommandResult.
    *
    * @returns RetrieveCommandResult
    */
-  public getJson(): RetrieveCommandResult {
-    return {
-      inboundFiles: this.fileResponses,
-      packages: this.packages,
-      warnings: this.warnings,
-      response: this.result.response,
-    };
+  public getJson(): PullResponse[] {
+    return this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
   }
 
   /**
@@ -93,16 +81,6 @@ export class RetrieveResultFormatter extends ResultFormatter {
     } else {
       this.displayErrors();
     }
-
-    // Display any package retrievals
-    if (this.packages && this.packages.length) {
-      this.ux.log('');
-      this.ux.styledHeader(blue('Retrieved Packages'));
-      this.packages.forEach((pkg) => {
-        this.ux.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
-      });
-      this.ux.log('');
-    }
   }
 
   protected hasStatus(status: RequestStatus): boolean {
@@ -126,17 +104,22 @@ export class RetrieveResultFormatter extends ResultFormatter {
   private displaySuccesses(retrievedFiles: FileResponse[]): void {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
-    const columns = [
-      { key: 'fullName', label: 'FULL NAME' },
-      { key: 'type', label: 'TYPE' },
-      { key: 'filePath', label: 'PROJECT PATH' },
-    ];
-    this.ux.table(retrievedFiles, { columns });
+    this.ux.table(retrievedFiles, {
+      columns: [
+        { label: 'STATE', key: 'state' },
+        { label: 'FULL NAME', key: 'fullName' },
+        { label: 'TYPE', key: 'type' },
+        { label: 'PROJECT PATH', key: 'filePath' },
+      ],
+    });
   }
 
   private displayErrors(): void {
     // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
-    const errorMessage = get(this.result.response, 'errorMessage') as string;
+    if (!this.result) {
+      return;
+    }
+    const errorMessage = getString(this.result.response, 'errorMessage');
     if (errorMessage) {
       throw new SfdxError(errorMessage);
     }
