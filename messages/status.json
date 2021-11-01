@@ -15,5 +15,6 @@
     "remote": "list the changes that have been made in the scratch org",
     "remoteLong": "Lists the changes that have been made in the scratch org."
   },
-  "humanSuccess": "Source Status"
+  "humanSuccess": "Source Status",
+  "noResults": "No local or remote changes found."
 }
