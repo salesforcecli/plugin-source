@@ -124,7 +124,7 @@ export default class Push extends DeployCommand {
   }
 
   protected async updateTrackingFiles(): Promise<void> {
-    if (process.exitCode !== 0) {
+    if (process.exitCode !== 0 || !this.deployResult) {
       return;
     }
     const successes = this.deployResult
