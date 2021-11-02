@@ -115,6 +115,9 @@
                 }
               }
             }
+          },
+          "mdapi": {
+            "description": "retrieve and deploy metadata using Metadata API"
           }
         }
       }
