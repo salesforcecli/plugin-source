@@ -166,7 +166,7 @@ export default class Pull extends SourceCommand {
     ]);
     // there might not be a retrieveResult if we don't have anything to retrieve
     if (this.retrieveResult && this.retrieveResult.response.status) {
-      this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status));
+      this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
     }
   }
 

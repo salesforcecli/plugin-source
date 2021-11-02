@@ -147,7 +147,7 @@ export default class Push extends DeployCommand {
     ]);
     // there might not be a deployResult if we exited early with an empty componentSet
     if (this.deployResult && this.deployResult.response.status) {
-      this.setExitCode(StatusCodeMap.get(this.deployResult.response.status) || 1);
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response.status) ?? 1);
     }
   }
 
