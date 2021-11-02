@@ -51,7 +51,6 @@ export default class Push extends DeployCommand {
   protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  private isRest = false;
   private tracking: SourceTracking;
 
   public async run(): Promise<PushResponse[]> {
@@ -68,7 +67,6 @@ export default class Push extends DeployCommand {
       toValidate: 'plugin-source',
       command: replaceRenamedCommands('force:source:push'),
     });
-    this.isRest = await this.isRestDeploy();
 
     this.tracking = await SourceTracking.create({
       org: this.org,
@@ -93,8 +91,10 @@ export default class Push extends DeployCommand {
 
     // fire predeploy event for sync and async deploys
     await this.lifecycle.emit('predeploy', componentSet.toArray());
+
+    const isRest = await this.isRestDeploy();
     this.ux.log(
-      `*** Pushing with ${this.isRest ? 'REST' : 'SOAP'}${
+      `*** Pushing with ${isRest ? 'REST' : 'SOAP'}${
         componentSet.sourceApiVersion ? ` API v${componentSet.sourceApiVersion}` : ''
       } ***`
     );
@@ -103,7 +103,7 @@ export default class Push extends DeployCommand {
       usernameOrConnection: this.org.getUsername(),
       apiOptions: {
         ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
-        rest: this.isRest,
+        rest: isRest,
         testLevel: 'NoTestRun',
       },
     });
