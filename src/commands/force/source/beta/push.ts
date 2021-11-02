@@ -52,10 +52,12 @@ export default class Push extends DeployCommand {
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private isRest = false;
+  private tracking: SourceTracking;
 
   public async run(): Promise<PushResponse[]> {
     await this.deploy();
     this.resolveSuccess();
+    await this.updateTrackingFiles();
     return this.formatResult();
   }
 
@@ -66,18 +68,17 @@ export default class Push extends DeployCommand {
       toValidate: 'plugin-source',
       command: replaceRenamedCommands('force:source:push'),
     });
-    const waitDuration = this.getFlag<Duration>('wait');
     this.isRest = await this.isRestDeploy();
 
-    const tracking = await SourceTracking.create({
+    this.tracking = await SourceTracking.create({
       org: this.org,
       project: this.project,
       apiVersion: this.flags.apiversion as string,
     });
     if (!this.flags.forceoverwrite) {
-      processConflicts(await tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
+      processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
     }
-    const componentSet = await tracking.localChangesAsComponentSet();
+    const componentSet = await this.tracking.localChangesAsComponentSet();
     const sourceApiVersion = await this.getSourceApiVersion();
     if (sourceApiVersion) {
       componentSet.sourceApiVersion = sourceApiVersion;
@@ -114,25 +115,30 @@ export default class Push extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
+    this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
 
+    if (this.deployResult) {
+      // Only fire the postdeploy event when we have results. I.e., not async.
+      await this.lifecycle.emit('postdeploy', this.deployResult);
+    }
+  }
+
+  protected async updateTrackingFiles(): Promise<void> {
+    if (process.exitCode !== 0) {
+      return;
+    }
     const successes = this.deployResult
       .getFileResponses()
       .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
     const successNonDeletes = successes.filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted);
     const successDeletes = successes.filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted);
 
-    if (this.deployResult) {
-      // Only fire the postdeploy event when we have results. I.e., not async.
-      await this.lifecycle.emit('postdeploy', this.deployResult);
-    }
-
     await Promise.all([
-      tracking.updateLocalTracking({
+      this.tracking.updateLocalTracking({
         files: successNonDeletes.map((fileResponse) => fileResponse.filePath),
         deletedFiles: successDeletes.map((fileResponse) => fileResponse.filePath),
       }),
-      tracking.updateRemoteTracking(successes),
+      this.tracking.updateRemoteTracking(successes),
     ]);
   }
 
@@ -148,6 +154,13 @@ export default class Push extends DeployCommand {
     // there might not be a deployResult if we exited early with an empty componentSet
     if (this.deployResult && this.deployResult.response.status) {
       this.setExitCode(StatusCodeMap.get(this.deployResult.response.status) ?? 1);
+      // special override case for "only warnings about deleted things that are already deleted"
+      if (
+        this.deployResult.response.status === RequestStatus.Failed &&
+        this.deployResult.getFileResponses().every((fr) => fr.state !== 'Failed')
+      ) {
+        this.setExitCode(0);
+      }
     }
   }
 
