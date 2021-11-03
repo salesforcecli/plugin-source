@@ -33,11 +33,8 @@ describe('mdapi NUTs', () => {
     it('should successfully execute listmetadata', () => {
       const result = execCmd('force:mdapi:listmetadata --json --metadatatype CustomObject');
       expect(result.jsonOutput.status).to.equal(0);
-      expect(result.jsonOutput.result)
-        .to.be.an('array')
-        .with.length.greaterThan(100);
-      expect(result.jsonOutput.result[0])
-        .to.have.property('type', 'CustomObject');
+      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(100);
+      expect(result.jsonOutput.result[0]).to.have.property('type', 'CustomObject');
     });
   });
 
@@ -121,5 +118,4 @@ describe('mdapi NUTs', () => {
   //     })
   //   });
   // });
-
 });
