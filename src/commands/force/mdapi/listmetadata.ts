@@ -22,6 +22,7 @@ export type ListMetadataCommandResult = FileProperties[];
 interface FsError extends Error {
   code: string;
 }
+
 export class ListMetadata extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -73,7 +74,7 @@ export class ListMetadata extends SourceCommand {
     this.listResult = Array.isArray(result) ? result : [result];
   }
 
-  // No-op implementation since any DeployResult status would be a success.
+  // No-op implementation since any list metadata status would be a success.
   // The only time this command would report an error is if it failed
   // flag parsing or some error during the request, and those are captured
   // by the command framework.
