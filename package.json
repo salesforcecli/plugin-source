@@ -163,6 +163,7 @@
     "test:nuts:tracking:forceignore": "mocha \"test/nuts/trackingCommands/forceIgnore.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:resetClear": "mocha \"test/nuts/trackingCommands/resetClear.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:mdapi": "mocha \"test/nuts/mdapi.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "version": "oclif-dev readme"
   },
   "husky": {
