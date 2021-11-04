@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { DescribeMetadataResult } from 'jsforce';
 
 let session: TestSession;
 
@@ -35,6 +35,26 @@ describe('mdapi NUTs', () => {
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(100);
       expect(result.jsonOutput.result[0]).to.have.property('type', 'CustomObject');
+    });
+  });
+
+  describe('mdapiDescribemetadataCommand', () => {
+    it('should successfully execute describemetadata', () => {
+      const result = execCmd<DescribeMetadataResult>('force:mdapi:describemetadata --json');
+      expect(result.jsonOutput.status).to.equal(0);
+      const json = result.jsonOutput.result;
+      expect(json).to.have.property('metadataObjects');
+      const mdObjects = json.metadataObjects;
+      expect(mdObjects).to.be.an('array').with.length.greaterThan(100);
+      const customLabelsDef = mdObjects.find((md) => md.xmlName === 'CustomLabels');
+      expect(customLabelsDef).to.deep.equal({
+        childXmlNames: ['CustomLabel'],
+        directoryName: 'labels',
+        inFolder: false,
+        metaFile: false,
+        suffix: 'labels',
+        xmlName: 'CustomLabels',
+      });
     });
   });
 
@@ -97,28 +117,6 @@ describe('mdapi NUTs', () => {
   //       );
   //       expect(reportCommandResponse).to.include('INVALID_CROSS_REFERENCE_KEY: invalid cross reference id');
   //     });
-  //   });
-  // });
-
-  // describe('mdapiDescribemetadataCommand', () => {
-  //   it('should successfully execute describemetadata', () => {
-  //     const result = execCmd('force:mdapi:describemetadata --json');
-  //     expect(result.jsonOutput.status).to.equal(0);
-  //     const json = result.jsonOutput.result as any;
-  //     expect(json).to.have.property('metadataObjects');
-  //     const mdObjects: any[] = json.metadataObjects;
-  //     expect(mdObjects)
-  //       .to.be.an('array')
-  //       .with.length.greaterThan(100);
-  //     const customLabelsDef = mdObjects.find(md => md.xmlName === 'CustomLabels');
-  //     expect(customLabelsDef).to.deep.equal({
-  //       childXmlNames: ['CustomLabel'],
-  //       directoryName: 'labels',
-  //       inFolder: false,
-  //       metaFile: false,
-  //       suffix: 'labels',
-  //       xmlName: 'CustomLabels'
-  //     })
   //   });
   // });
 });
