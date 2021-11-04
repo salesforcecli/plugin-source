@@ -38,6 +38,9 @@ describe('mdapi NUTs', () => {
     });
   });
 
+  // *** More NUTs will be added/uncommented here as commands are moved from toolbelt to
+  //     this plugin.  Keeping these toolbelt tests here for reference.
+
   // describe('Test stash', () => {
   //   describe('Deploy using soap with non default username', () => {
   //     it('should deploy zip file to the scratch org and request deploy report', () => {
