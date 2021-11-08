@@ -67,7 +67,12 @@ export abstract class DeployCommand extends SourceCommand {
           const stashFilePath = stash.getPath();
           const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
           fs.renameSync(stashFilePath, corruptFilePath);
-          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'InvalidStashFile', [corruptFilePath]);
+          const invalidStashErr = SfdxError.create('@salesforce/plugin-source', 'deploy', 'InvalidStashFile', [
+            corruptFilePath,
+          ]);
+          invalidStashErr.message = `${invalidStashErr.message}\n${error.message}`;
+          invalidStashErr.stack = `${invalidStashErr.stack}\nDue to:\n${error.stack}`;
+          throw invalidStashErr;
         }
         if (error.code === 'ENOENT') {
           throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
