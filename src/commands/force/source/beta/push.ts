@@ -11,7 +11,7 @@ import { Messages } from '@salesforce/core';
 import { RequestStatus, ComponentStatus } from '@salesforce/source-deploy-retrieve';
 
 import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommand } from '../../../../deployCommand';
+import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
 import { PushResponse, PushResultFormatter } from '../../../../formatters/pushResultFormatter';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
@@ -93,11 +93,7 @@ export default class Push extends DeployCommand {
     await this.lifecycle.emit('predeploy', componentSet.toArray());
 
     const isRest = await this.isRestDeploy();
-    this.ux.log(
-      `*** Pushing with ${isRest ? 'REST' : 'SOAP'}${
-        componentSet.sourceApiVersion ? ` API v${componentSet.sourceApiVersion}` : ''
-      } ***`
-    );
+    this.ux.log(getVersionMessage('Pushing', componentSet, isRest));
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),

@@ -110,3 +110,32 @@ export abstract class DeployCommand extends SourceCommand {
     return new ConfigFile({ isGlobal: true, filename: 'stash.json' });
   }
 }
+
+export const getVersionMessage = (
+  action: 'Deploying' | 'Pushing',
+  componentSet: ComponentSet,
+  isRest: boolean
+): string => {
+  // commands pass in the.componentSet, which may not exist in some tests
+  if (!componentSet) {
+    return;
+  }
+  // neither
+  if (!componentSet.sourceApiVersion && !componentSet.apiVersion) {
+    return `*** ${action} with ${isRest ? 'REST' : 'SOAP'} ***`;
+  }
+  // either OR both match (SDR will use either)
+  if (
+    !componentSet.sourceApiVersion ||
+    !componentSet.apiVersion ||
+    componentSet.sourceApiVersion === componentSet.apiVersion
+  ) {
+    return `*** ${action} with ${isRest ? 'REST' : 'SOAP'} API v${
+      componentSet.apiVersion ?? componentSet.sourceApiVersion
+    } ***`;
+  }
+  // has both but they don't match
+  return `*** ${action} v${componentSet.sourceApiVersion} metadata with ${isRest ? 'REST' : 'SOAP'} API v${
+    componentSet.apiVersion
+  } connection ***`;
+};
