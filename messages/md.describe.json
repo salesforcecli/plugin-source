@@ -1,5 +1,5 @@
 {
-  "description": "Displays details about metadata types enabled for your org. Use this information to identify the syntax needed for a <name> element in package.xml. The most recent API version is the default, or you can specify an older version.",
+  "description": "display the metadata types enabled for your org",
   "examples": [
     "$ sfdx force:mdapi:describemetadata -a 43.0",
     "$ sfdx force:mdapi:describemetadata -u me@example.com",
