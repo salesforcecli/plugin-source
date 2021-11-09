@@ -81,6 +81,8 @@ describe('force:source:retrieve', () => {
       cmd.setOrg(orgStub);
     });
     stubMethod(sandbox, UX.prototype, 'log');
+    stubMethod(sandbox, UX.prototype, 'styledHeader');
+    stubMethod(sandbox, UX.prototype, 'table');
     return cmd.runIt();
   };
 
