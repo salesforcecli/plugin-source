@@ -156,9 +156,17 @@ export default class Pull extends SourceCommand {
   }
 
   protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
     // there might not be a retrieveResult if we don't have anything to retrieve
-    if (this.retrieveResult && this.retrieveResult.response.status !== RequestStatus.Succeeded) {
-      this.setExitCode(1);
+    if (this.retrieveResult && this.retrieveResult.response.status) {
+      this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
     }
   }
 

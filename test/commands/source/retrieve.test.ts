@@ -80,7 +80,11 @@ describe('force:source:retrieve', () => {
       );
       cmd.setOrg(orgStub);
     });
+    // keep the stdout from showing up in the test output
     stubMethod(sandbox, UX.prototype, 'log');
+    stubMethod(sandbox, UX.prototype, 'setSpinnerStatus');
+    stubMethod(sandbox, UX.prototype, 'startSpinner');
+    stubMethod(sandbox, UX.prototype, 'stopSpinner');
     stubMethod(sandbox, UX.prototype, 'styledHeader');
     stubMethod(sandbox, UX.prototype, 'table');
     return cmd.runIt();

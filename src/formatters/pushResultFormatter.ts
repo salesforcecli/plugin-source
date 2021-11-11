@@ -8,7 +8,6 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { getString } from '@salesforce/ts-types';
 import {
   DeployResult,
   FileResponse,
@@ -66,7 +65,7 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected hasStatus(status: RequestStatus): boolean {
-    return getString(this.result, 'response.status') === status;
+    return this.result.response.status === status;
   }
 
   protected displaySuccesses(): void {
