@@ -823,26 +823,10 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.1.1.tgz#066c931c5cb509f4bf13892fcfd70682c00a1195"
-  integrity sha512-wZjWv/9PmvOWpGpe3A4TAZp/Pg8Nkt5+l/Xo18E0tuKMDXmuBoltwT2i8M8dfTfpMgVcg0xYUz1yeItKGhLhkw==
-  dependencies:
-    "@salesforce/core" "2.28.0"
-    "@salesforce/kit" "^1.5.0"
-    "@salesforce/ts-types" "^1.4.2"
-    archiver "^5.3.0"
-    fast-xml-parser "^3.17.4"
-    graceful-fs "^4.2.8"
-    ignore "^5.1.8"
-    mime "2.4.6"
-    unzipper "0.10.11"
-    xmldom-sfdx-encoding "^0.1.29"
-
-"@salesforce/source-deploy-retrieve@^5.3.0":
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.3.0.tgz#b3024fa0b44ccce340496f31ca9c272c6b8e5b73"
-  integrity sha512-8iV3jO7CmGwddvN87AR5PSsh1FU707JHauEUYTetNGrVffk4HkeQIVFVHYYKgQDIzjCKhBmtU19MpwjPh4rzzA==
+"@salesforce/source-deploy-retrieve@^5.1.1", "@salesforce/source-deploy-retrieve@^5.3.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.5.0.tgz#1612c1e2c971a51040f9e53fab37a65a63e9feca"
+  integrity sha512-3TaSKRDWx5IZsxQdRueRW2El8YiZaGuMPujcIqEbSCKaF/21uVGb49ASXE0vpwY6SlzHy4kExTGhmXbO3zeLLw==
   dependencies:
     "@salesforce/core" "2.28.0"
     "@salesforce/kit" "^1.5.0"
