@@ -1,0 +1,30 @@
+{
+  "description": "convert metadata from the Metadata API format into the source format",
+  "examples": [
+    "$ sfdx force:mdapi:convert -r path/to/metadata",
+    "$ sfdx force:mdapi:convert -r path/to/metadata -d path/to/outputdir"
+  ],
+  "flags": {
+    "rootdir": "the root directory containing the Metadata API–formatted metadata",
+    "outputdir": "the output directory to store the source–formatted files",
+    "manifest": "file path to manifest (package.xml) of metadata types to convert.",
+    "metadatapath": "comma-separated list of metadata file paths to convert",
+    "metadata": "comma-separated list of metadata component names to convert"
+  },
+  "flagsLong": {
+    "rootdir": "The root directory that contains the metadata you retrieved using Metadata API.",
+    "outputdir": "The directory to store your files in after they’re converted to the source format. Can be an absolute or relative path.",
+    "manifest": [
+      "The complete path to the manifest (package.xml) file that specifies the metadata types to convert.",
+      "If you specify this parameter, don’t specify --metadata or --sourcepath."
+    ],
+    "metadatapath": [
+      "A comma-separated list of paths to the local metadata files to convert. The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all metadata types in the directory and its sub-directories).",
+      "If you specify this parameter, don’t specify --manifest or --metadata."
+    ],
+    "metadata": "A comma-separated list of metadata component names to convert."
+  },
+  "success": "Metadata was successfully converted to source format and written to the location: %s",
+  "convertFailed": "Failed to convert metadata to source format.",
+  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s"
+}
