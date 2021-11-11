@@ -144,7 +144,6 @@ export class Deploy extends DeployCommand {
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
-    this.ux.log(getVersionMessage('Deploying', this.componentSet, this.isRest));
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
@@ -166,6 +165,7 @@ export class Deploy extends DeployCommand {
       });
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', this.componentSet.toArray());
+      this.ux.log(getVersionMessage('Deploying', this.componentSet, this.isRest));
 
       const deploy = await this.componentSet.deploy({
         usernameOrConnection: this.org.getUsername(),
