@@ -85,6 +85,7 @@ describe('force:source:retrieve', () => {
     stubMethod(sandbox, UX.prototype, 'setSpinnerStatus');
     stubMethod(sandbox, UX.prototype, 'startSpinner');
     stubMethod(sandbox, UX.prototype, 'stopSpinner');
+    stubMethod(sandbox, UX.prototype, 'styledHeader');
     stubMethod(sandbox, UX.prototype, 'table');
     return cmd.runIt();
   };

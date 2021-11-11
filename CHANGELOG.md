@@ -2,19 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.3.1](https://github.com/salesforcecli/plugin-source/compare/v1.3.0...v1.3.1) (2021-10-28)
-
-
-### Bug Fixes
-
-* bump SDR to 5.1.1 ([#266](https://github.com/salesforcecli/plugin-source/issues/266)) ([ff6a4f7](https://github.com/salesforcecli/plugin-source/commit/ff6a4f74401668faec6404f941ce5cf73da426ff))
-
-## [1.3.0](https://github.com/salesforcecli/plugin-source/compare/v1.2.6...v1.3.0) (2021-10-28)
-
+## [1.4.0](https://github.com/salesforcecli/plugin-source/compare/v1.3.1...v1.4.0) (2021-11-09)
 
 ### Features
 
-* source tracking beta commands ([b871774](https://github.com/salesforcecli/plugin-source/commit/b87177498c184580db7e3bd81f164ddc77e6de0b)), closes [#253](https://github.com/salesforcecli/plugin-source/issues/253) [#251](https://github.com/salesforcecli/plugin-source/issues/251) [#230](https://github.com/salesforcecli/plugin-source/issues/230) [#260](https://github.com/salesforcecli/plugin-source/issues/260) [#259](https://github.com/salesforcecli/plugin-source/issues/259)
+- listmetadata and describemetadata ([b00a59a](https://github.com/salesforcecli/plugin-source/commit/b00a59a3c06cd81b121c306b6b9af3ee581a61ad))
+
+### [1.3.1](https://github.com/salesforcecli/plugin-source/compare/v1.3.0...v1.3.1) (2021-10-28)
+
+### Bug Fixes
+
+- bump SDR to 5.1.1 ([#266](https://github.com/salesforcecli/plugin-source/issues/266)) ([ff6a4f7](https://github.com/salesforcecli/plugin-source/commit/ff6a4f74401668faec6404f941ce5cf73da426ff))
+
+## [1.3.0](https://github.com/salesforcecli/plugin-source/compare/v1.2.6...v1.3.0) (2021-10-28)
+
+### Features
+
+- source tracking beta commands ([b871774](https://github.com/salesforcecli/plugin-source/commit/b87177498c184580db7e3bd81f164ddc77e6de0b)), closes [#253](https://github.com/salesforcecli/plugin-source/issues/253) [#251](https://github.com/salesforcecli/plugin-source/issues/251) [#230](https://github.com/salesforcecli/plugin-source/issues/230) [#260](https://github.com/salesforcecli/plugin-source/issues/260) [#259](https://github.com/salesforcecli/plugin-source/issues/259)
 
 ### [1.2.6](https://github.com/salesforcecli/plugin-source/compare/v1.2.5...v1.2.6) (2021-10-21)
 
