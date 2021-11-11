@@ -117,7 +117,7 @@ describe('force:mdapi:describemetadata', () => {
     expect(uxLogStub.called).to.be.true; // called but not actually written to console
     expect(uxStyledJsonStub.called).to.be.false;
     expect(fsWriteFileStub.firstCall.args[0]).to.include(resultfile);
-    expect(JSON.parse(fsWriteFileStub.firstCall.args[1])).to.deep.equal(describeResponse);
+    expect(JSON.parse(fsWriteFileStub.firstCall.args[1] as string)).to.deep.equal(describeResponse);
   });
 
   it('should report to a file (display)', async () => {
@@ -130,7 +130,7 @@ describe('force:mdapi:describemetadata', () => {
     expect(uxLogStub.firstCall.args[0]).to.include(resultfile);
     expect(uxStyledJsonStub.called).to.be.false;
     expect(fsWriteFileStub.firstCall.args[0]).to.include(resultfile);
-    expect(JSON.parse(fsWriteFileStub.firstCall.args[1])).to.deep.equal(describeResponse);
+    expect(JSON.parse(fsWriteFileStub.firstCall.args[1] as string)).to.deep.equal(describeResponse);
   });
 
   it('should report with a specific API version', async () => {
