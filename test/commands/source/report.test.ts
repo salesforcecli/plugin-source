@@ -6,8 +6,9 @@
  */
 
 import { join } from 'path';
+import * as fs from 'fs';
 import * as sinon from 'sinon';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile, Org, SfdxProject } from '@salesforce/core';
 import { IConfig } from '@oclif/config';
@@ -37,6 +38,7 @@ describe('force:source:report', () => {
   let checkDeployStatusStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let pollStatusStub: sinon.SinonStub;
+  let readSyncStub: sinon.SinonStub;
 
   class TestReport extends Report {
     public async runIt() {
@@ -80,12 +82,15 @@ describe('force:source:report', () => {
       cmd.setOrg(orgStub);
     });
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, ConfigFile.prototype, 'readSync');
     stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
     checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
 
     return cmd.runIt();
   };
+
+  beforeEach(() => {
+    readSyncStub = stubMethod(sandbox, ConfigFile.prototype, 'readSync');
+  });
 
   afterEach(() => {
     sandbox.restore();
@@ -105,6 +110,21 @@ describe('force:source:report', () => {
     expect(result).to.deep.equal(expectedResults);
     expect(uxLogStub.firstCall.args[0]).to.contain(stashedDeployId);
     expect(progressBarStub.calledOnce).to.equal(true);
+  });
+
+  it('should rename corrupt stash.json and throw an error', async () => {
+    const jsonParseError = new Error();
+    jsonParseError.name = 'JsonParseError';
+    readSyncStub.throws(jsonParseError);
+    const renameSyncStub = stubMethod(sandbox, fs, 'renameSync');
+    try {
+      await runReportCmd(['--json']);
+      assert(false, 'Expected report command to throw a JsonParseError');
+    } catch (error: unknown) {
+      const err = error as Error;
+      expect(err.name).to.equal('InvalidStashFile');
+      expect(renameSyncStub.calledOnce).to.be.true;
+    }
   });
 
   it('should use the jobid flag', async () => {
