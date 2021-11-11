@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/salesforcecli/plugin-source/compare/v1.4.1...v1.4.2) (2021-11-11)
+
+
+### Bug Fixes
+
+* handle a corrupt stash.json file ([#291](https://github.com/salesforcecli/plugin-source/issues/291)) ([ac15a24](https://github.com/salesforcecli/plugin-source/commit/ac15a2433977bbd801fe54e70568bcf176ec0f1b))
+
 ### [1.4.1](https://github.com/salesforcecli/plugin-source/compare/v1.4.0...v1.4.1) (2021-11-11)
 
 ## [1.4.0](https://github.com/salesforcecli/plugin-source/compare/v1.3.1...v1.4.0) (2021-11-09)
