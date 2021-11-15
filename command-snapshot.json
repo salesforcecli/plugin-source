@@ -1,5 +1,10 @@
 [
   {
+    "command": "force:mdapi:beta:convert",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["outputdir", "metadata", "metadatapath", "rootdir", "manifest", "json", "loglevel"]
+  },
+  {
     "command": "force:source:beta:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"]
