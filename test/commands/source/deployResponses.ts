@@ -76,14 +76,22 @@ export type DeployResponseType =
   | 'failed'
   | 'failedTest'
   | 'passedTest'
-  | 'passedAndFailedTest';
+  | 'passedAndFailedTest'
+  | 'partialSuccessSync';
 
 export const getDeployResponse = (
   type: DeployResponseType,
   overrides?: Partial<MetadataApiDeployStatus>
 ): MetadataApiDeployStatus => {
-  // stringify --> parse to get a clone that doesn't affedt the base deploy response
+  // stringify --> parse to get a clone that doesn't affect the base deploy response
   const response = JSON.parse(JSON.stringify({ ...baseDeployResponse, ...overrides })) as MetadataApiDeployStatus;
+
+  if (type === 'inProgress') {
+    response.status = RequestStatus.InProgress;
+    response.success = false;
+    response.done = false;
+    response.details = {};
+  }
 
   if (type === 'canceled') {
     response.canceledBy = '0051h000006BHOq';
@@ -251,6 +259,27 @@ export const getDeployResponse = (
         numLocationsNotCovered: '5',
       },
     ];
+  }
+  if (type === 'partialSuccessSync') {
+    response.status = RequestStatus.SucceededPartial;
+    response.success = true;
+    response.details.componentFailures = {
+      componentType: 'ApexClass',
+      success: 'false',
+      lineNumber: '1',
+      changed: false,
+      fileName: 'classes/testClass1',
+      createdDate: '2021-04-27T22:18:07.000Z',
+      created: false,
+      deleted: false,
+      id: '01p2100000A6XiqAAF',
+      fullName: 'testClass1',
+    } as DeployMessage;
+    response.rollbackOnError = true;
+    response.numberComponentErrors = 1;
+    response.numberComponentsTotal = 2;
+    response.details.componentFailures.problemType = 'Error';
+    response.details.componentFailures.problem = 'This component has some problems';
   }
 
   return response;

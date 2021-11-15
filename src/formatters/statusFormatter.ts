@@ -47,7 +47,7 @@ export class StatusFormatter extends ResultFormatter {
 
   public display(): void {
     if (this.statusRows.length === 0) {
-      this.ux.log('No results found');
+      this.ux.log(messages.getMessage('noResults'));
       return;
     }
     this.ux.log(messages.getMessage('humanSuccess'));

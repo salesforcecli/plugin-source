@@ -5,11 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as fs from 'fs';
 import { ComponentSet, DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
+
+interface StashFile {
+  isGlobal: boolean;
+  filename: string;
+}
 
 export abstract class DeployCommand extends SourceCommand {
   protected static readonly STASH_KEY = 'SOURCE_DEPLOY';
@@ -45,17 +51,29 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected resolveDeployId(id: string): string {
+    let stash: ConfigFile<StashFile>;
     if (id) {
       return id;
     } else {
       try {
-        const stash = this.getStash();
+        stash = this.getStash();
         stash.readSync(true);
         const deployId = asString((stash.get(DeployCommand.STASH_KEY) as { jobid: string }).jobid);
         this.logger.debug(`Using deploy ID: ${deployId} from ${stash.getPath()}`);
         return deployId;
       } catch (err: unknown) {
         const error = err as Error & { code: string };
+        if (error.name === 'JsonParseError') {
+          const stashFilePath = stash.getPath();
+          const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
+          fs.renameSync(stashFilePath, corruptFilePath);
+          const invalidStashErr = SfdxError.create('@salesforce/plugin-source', 'deploy', 'InvalidStashFile', [
+            corruptFilePath,
+          ]);
+          invalidStashErr.message = `${invalidStashErr.message}\n${error.message}`;
+          invalidStashErr.stack = `${invalidStashErr.stack}\nDue to:\n${error.stack}`;
+          throw invalidStashErr;
+        }
         if (error.code === 'ENOENT') {
           throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
         }
@@ -106,7 +124,36 @@ export abstract class DeployCommand extends SourceCommand {
     return pollingClient.subscribe() as unknown as Promise<DeployResult>;
   }
 
-  private getStash(): ConfigFile<{ isGlobal: true; filename: 'stash.json' }> {
+  private getStash(): ConfigFile<StashFile> {
     return new ConfigFile({ isGlobal: true, filename: 'stash.json' });
   }
 }
+
+export const getVersionMessage = (
+  action: 'Deploying' | 'Pushing',
+  componentSet: ComponentSet,
+  isRest: boolean
+): string => {
+  // commands pass in the.componentSet, which may not exist in some tests
+  if (!componentSet) {
+    return;
+  }
+  // neither
+  if (!componentSet.sourceApiVersion && !componentSet.apiVersion) {
+    return `*** ${action} with ${isRest ? 'REST' : 'SOAP'} ***`;
+  }
+  // either OR both match (SDR will use either)
+  if (
+    !componentSet.sourceApiVersion ||
+    !componentSet.apiVersion ||
+    componentSet.sourceApiVersion === componentSet.apiVersion
+  ) {
+    return `*** ${action} with ${isRest ? 'REST' : 'SOAP'} API v${
+      componentSet.apiVersion ?? componentSet.sourceApiVersion
+    } ***`;
+  }
+  // has both but they don't match
+  return `*** ${action} v${componentSet.sourceApiVersion} metadata with ${isRest ? 'REST' : 'SOAP'} API v${
+    componentSet.apiVersion
+  } connection ***`;
+};

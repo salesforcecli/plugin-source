@@ -21,6 +21,7 @@ export type ProgressBar = {
 
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_SRC_WAIT_MINUTES = 33;
+
   protected xorFlags: string[] = [];
   protected progressBar?: ProgressBar;
   protected lifecycle = Lifecycle.getInstance();

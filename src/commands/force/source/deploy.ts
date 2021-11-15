@@ -9,8 +9,8 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { AsyncResult, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
-import { getString, isString } from '@salesforce/ts-types';
-import { DeployCommand } from '../../../deployCommand';
+import { isString } from '@salesforce/ts-types';
+import { DeployCommand, getVersionMessage } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../formatters/deployAsyncResultFormatter';
@@ -144,7 +144,6 @@ export class Deploy extends DeployCommand {
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
-    this.ux.log(`*** Deploying with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
@@ -166,6 +165,7 @@ export class Deploy extends DeployCommand {
       });
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', this.componentSet.toArray());
+      this.ux.log(getVersionMessage('Deploying', this.componentSet, this.isRest));
 
       const deploy = await this.componentSet.deploy({
         usernameOrConnection: this.org.getUsername(),
@@ -205,11 +205,17 @@ export class Deploy extends DeployCommand {
    * unsuccessful in oclif.
    */
   protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.SucceededPartial, 68],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
     if (!this.isAsync) {
-      const status = getString(this.deployResult, 'response.status');
-      if (status !== RequestStatus.Succeeded) {
-        this.setExitCode(1);
-      }
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
     }
   }
 

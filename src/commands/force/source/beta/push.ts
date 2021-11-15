@@ -11,7 +11,7 @@ import { Messages } from '@salesforce/core';
 import { RequestStatus, ComponentStatus } from '@salesforce/source-deploy-retrieve';
 
 import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
-import { DeployCommand } from '../../../../deployCommand';
+import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
 import { PushResponse, PushResultFormatter } from '../../../../formatters/pushResultFormatter';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
@@ -51,11 +51,12 @@ export default class Push extends DeployCommand {
   protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
-  private isRest = false;
+  private tracking: SourceTracking;
 
   public async run(): Promise<PushResponse[]> {
     await this.deploy();
     this.resolveSuccess();
+    await this.updateTrackingFiles();
     return this.formatResult();
   }
 
@@ -66,19 +67,20 @@ export default class Push extends DeployCommand {
       toValidate: 'plugin-source',
       command: replaceRenamedCommands('force:source:push'),
     });
-    const waitDuration = this.getFlag<Duration>('wait');
-    this.isRest = await this.isRestDeploy();
 
-    const tracking = await SourceTracking.create({
+    this.tracking = await SourceTracking.create({
       org: this.org,
       project: this.project,
       apiVersion: this.flags.apiversion as string,
     });
     if (!this.flags.forceoverwrite) {
-      processConflicts(await tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
+      processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
     }
-    const componentSet = await tracking.localChangesAsComponentSet();
-    componentSet.sourceApiVersion = await this.getSourceApiVersion();
+    const componentSet = await this.tracking.localChangesAsComponentSet();
+    const sourceApiVersion = await this.getSourceApiVersion();
+    if (sourceApiVersion) {
+      componentSet.sourceApiVersion = sourceApiVersion;
+    }
 
     // there might have been components in local tracking, but they might be ignored by SDR or unresolvable.
     // SDR will throw when you try to resolve them, so don't
@@ -89,13 +91,15 @@ export default class Push extends DeployCommand {
 
     // fire predeploy event for sync and async deploys
     await this.lifecycle.emit('predeploy', componentSet.toArray());
-    this.ux.log(`*** Pushing with ${this.isRest ? 'REST' : 'SOAP'} API v${componentSet.sourceApiVersion} ***`);
+
+    const isRest = await this.isRestDeploy();
+    this.ux.log(getVersionMessage('Pushing', componentSet, isRest));
 
     const deploy = await componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
       apiOptions: {
         ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
-        rest: this.isRest,
+        rest: isRest,
         testLevel: 'NoTestRun',
       },
     });
@@ -107,32 +111,52 @@ export default class Push extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
+    this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
 
+    if (this.deployResult) {
+      // Only fire the postdeploy event when we have results. I.e., not async.
+      await this.lifecycle.emit('postdeploy', this.deployResult);
+    }
+  }
+
+  protected async updateTrackingFiles(): Promise<void> {
+    if (process.exitCode !== 0 || !this.deployResult) {
+      return;
+    }
     const successes = this.deployResult
       .getFileResponses()
       .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
     const successNonDeletes = successes.filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted);
     const successDeletes = successes.filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted);
 
-    if (this.deployResult) {
-      // Only fire the postdeploy event when we have results. I.e., not async.
-      await this.lifecycle.emit('postdeploy', this.deployResult);
-    }
-
     await Promise.all([
-      tracking.updateLocalTracking({
+      this.tracking.updateLocalTracking({
         files: successNonDeletes.map((fileResponse) => fileResponse.filePath),
         deletedFiles: successDeletes.map((fileResponse) => fileResponse.filePath),
       }),
-      tracking.updateRemoteTracking(successes),
+      this.tracking.updateRemoteTracking(successes),
     ]);
   }
 
   protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
     // there might not be a deployResult if we exited early with an empty componentSet
-    if (this.deployResult && this.deployResult.response.status !== RequestStatus.Succeeded) {
-      this.setExitCode(1);
+    if (this.deployResult && this.deployResult.response.status) {
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response.status) ?? 1);
+      // special override case for "only warnings about deleted things that are already deleted"
+      if (
+        this.deployResult.response.status === RequestStatus.Failed &&
+        this.deployResult.getFileResponses().every((fr) => fr.state !== 'Failed')
+      ) {
+        this.setExitCode(0);
+      }
     }
   }
 

@@ -38,7 +38,7 @@ export abstract class ResultFormatter {
   // Command success is determined by the command so it can set the
   // exit code on the process, which is done before formatting.
   public isSuccess(): boolean {
-    return getNumber(process, 'exitCode', 0) === 0;
+    return [0, 69].includes(getNumber(process, 'exitCode', 0));
   }
 
   public isVerbose(): boolean {
