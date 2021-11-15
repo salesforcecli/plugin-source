@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.3](https://github.com/salesforcecli/plugin-source/compare/v1.4.2...v1.4.3) (2021-11-15)
+
+
+### Bug Fixes
+
+* add back missing help for listmetadata/describemetadata ([#295](https://github.com/salesforcecli/plugin-source/issues/295)) ([f641d83](https://github.com/salesforcecli/plugin-source/commit/f641d8311905d4aa68bcba4679674e4afa8868c1))
+
 ### [1.4.2](https://github.com/salesforcecli/plugin-source/compare/v1.4.1...v1.4.2) (2021-11-11)
 
 
