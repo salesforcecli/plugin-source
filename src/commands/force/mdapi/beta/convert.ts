@@ -6,18 +6,26 @@
  */
 
 import * as os from 'os';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
 import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
-import { getString } from '@salesforce/ts-types';
+import { Optional } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../../sourceCommand';
-import { ConvertResultFormatter, ConvertCommandResult } from '../../../../formatters/convertResultFormatter';
+import { ConvertResultFormatter, ConvertCommandResult } from '../../../../formatters/mdapi/convertResultFormatter';
 import { ComponentSetBuilder } from '../../../../componentSetBuilder';
+import { FsError } from '../../../../types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.convert');
+
+interface EnsureFlagOptions {
+  flagName: string;
+  path: string;
+  type: 'dir' | 'file' | 'any';
+  throwOnENOENT?: boolean;
+}
 
 export class Convert extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -56,8 +64,7 @@ export class Convert extends SourceCommand {
 
   private rootDir: string;
   private outputDir: string;
-
-  protected convertResult: ConvertResult;
+  private convertResult: ConvertResult;
 
   public async run(): Promise<ConvertCommandResult> {
     await this.convert();
@@ -66,21 +73,36 @@ export class Convert extends SourceCommand {
   }
 
   protected async convert(): Promise<void> {
-    this.rootDir = this.resolveRootDir(this.getFlag<string>(this.flags.rootdir));
-    this.outputDir = this.resolveOutputDir(this.getFlag<string>(this.flags.outputdir));
-    const metadatapath = this.getFlag<string[]>(this.flags.metadatapath);
+    this.rootDir = this.resolveRootDir(this.getFlag<string>('rootdir'));
+    this.outputDir = this.resolveOutputDir(this.getFlag<string>('outputdir'));
+    const metadatapath = this.resolveMetadataPaths(this.getFlag<string[]>('metadatapath'));
+    const manifest = this.resolveManifest(this.getFlag<string>('manifest'));
+    const metadata = this.getFlag<string[]>('metadata');
+
+    let paths: string[];
+    if (metadatapath) {
+      paths = metadatapath;
+    } else if (!manifest && !metadata) {
+      paths = [this.rootDir];
+    }
 
     this.componentSet = await ComponentSetBuilder.build({
-      sourcepath: metadatapath || [this.rootDir],
-      manifest: this.flags.manifest && {
-        manifestPath: this.getFlag<string>('manifest'),
+      sourcepath: paths,
+      manifest: manifest && {
+        manifestPath: manifest,
         directoryPaths: [this.rootDir],
       },
-      metadata: this.flags.metadata && {
-        metadataEntries: this.getFlag<string[]>('metadata'),
+      metadata: metadata && {
+        metadataEntries: metadata,
         directoryPaths: [this.rootDir],
       },
     });
+
+    const numOfComponents = this.componentSet.getSourceComponents().toArray().length;
+    if (numOfComponents === 0) {
+      throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'NoMetadataFound', [this.rootDir]);
+    }
+    this.ux.startSpinner(`Converting ${numOfComponents} metadata components`);
 
     const converter = new MetadataConverter();
     this.convertResult = await converter.convert(this.componentSet, 'source', {
@@ -88,13 +110,13 @@ export class Convert extends SourceCommand {
       outputDirectory: this.outputDir,
       genUniqueDir: false,
     });
+    this.ux.stopSpinner();
   }
 
-  protected resolveSuccess(): void {
-    if (!getString(this.convertResult, 'packagePath')) {
-      this.setExitCode(1);
-    }
-  }
+  // No-op.  Any failure would throw an error.  If no error, it's successful.
+  // The framework provides this behavior.
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  protected resolveSuccess(): void {}
 
   protected formatResult(): ConvertCommandResult {
     const formatter = new ConvertResultFormatter(this.logger, this.ux, this.convertResult);
@@ -105,21 +127,37 @@ export class Convert extends SourceCommand {
     return formatter.getJson();
   }
 
-  private ensureFlagPath(flagName: string, path: string) {
-    const stats = fs.statSync(path);
-
-    if (stats) {
-      if (!stats.isDirectory()) {
-        throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path]);
+  private ensureFlagPath(options: EnsureFlagOptions): void {
+    const { flagName, path, type, throwOnENOENT } = options;
+    try {
+      const stats = fs.statSync(path);
+      if (type !== 'any') {
+        const isDir = stats.isDirectory();
+        if ((type === 'dir' && !isDir) || (type === 'file' && isDir)) {
+          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path]);
+        }
       }
-    } else {
-      fs.mkdirSync(path, { recursive: true });
+    } catch (error: unknown) {
+      const err = error as FsError;
+      if (err.code !== 'ENOENT') {
+        throw err;
+      } else {
+        if (throwOnENOENT) {
+          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path]);
+        }
+        fs.mkdirSync(path, { recursive: true });
+      }
     }
   }
 
   private resolveRootDir(rootDir: string): string {
     const resolvedRootDir = resolve(rootDir.trim());
-    this.ensureFlagPath('rootdir', resolvedRootDir);
+    this.ensureFlagPath({
+      flagName: 'rootdir',
+      path: resolvedRootDir,
+      type: 'dir',
+      throwOnENOENT: true,
+    });
     return resolvedRootDir;
   }
 
@@ -130,8 +168,49 @@ export class Convert extends SourceCommand {
     } else {
       resolvedOutputDir = this.project.getDefaultPackage().path;
     }
-    this.ensureFlagPath('outputdir', resolvedOutputDir);
+    this.ensureFlagPath({
+      flagName: 'outputdir',
+      path: resolvedOutputDir,
+      type: 'dir',
+    });
 
     return resolvedOutputDir;
+  }
+
+  private resolveManifest(manifestPath = ''): Optional<string> {
+    const trimmedManifestPath = manifestPath.trim();
+    let resolvedManifest: string;
+
+    if (trimmedManifestPath.length) {
+      resolvedManifest = resolve(trimmedManifestPath);
+      this.ensureFlagPath({
+        flagName: 'manifest',
+        path: resolvedManifest,
+        type: 'file',
+        throwOnENOENT: true,
+      });
+    }
+    return resolvedManifest;
+  }
+
+  private resolveMetadataPaths(metadataPaths: string[] = []): Optional<string[]> {
+    const resolvedMetadataPaths: string[] = [];
+
+    if (metadataPaths.length) {
+      metadataPaths.forEach((p) => {
+        const trimmedPath = p.trim();
+        if (trimmedPath.length) {
+          const resolvedPath = resolve(trimmedPath);
+          this.ensureFlagPath({
+            flagName: 'metadataPath',
+            path: resolvedPath,
+            type: 'any',
+            throwOnENOENT: true,
+          });
+          resolvedMetadataPaths.push(resolvedPath);
+        }
+      });
+    }
+    return resolvedMetadataPaths.length ? resolvedMetadataPaths : undefined;
   }
 }

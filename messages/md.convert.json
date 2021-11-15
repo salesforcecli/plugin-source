@@ -26,5 +26,6 @@
   },
   "success": "Metadata was successfully converted to source format and written to the location: %s",
   "convertFailed": "Failed to convert metadata to source format.",
-  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s"
+  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s",
+  "NoMetadataFound": "No metadata found in directory: %s"
 }
