@@ -1,5 +1,20 @@
 [
   {
+    "command": "force:mdapi:deploy:cancel",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
+  },
+  {
+    "command": "force:mdapi:describemetadata",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "filterknown", "json", "loglevel", "resultfile", "targetusername"]
+  },
+  {
+    "command": "force:mdapi:listmetadata",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "folder", "json", "loglevel", "metadatatype", "resultfile", "targetusername"]
+  },
+  {
     "command": "force:source:beta:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"]
@@ -105,15 +120,5 @@
       "verbose",
       "wait"
     ]
-  },
-  {
-    "command": "force:mdapi:listmetadata",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "resultfile", "targetusername", "metadatatype", "folder"]
-  },
-  {
-    "command": "force:mdapi:describemetadata",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "resultfile", "targetusername", "filterknown"]
   }
 ]

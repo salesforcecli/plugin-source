@@ -6,7 +6,12 @@
  */
 
 import * as fs from 'fs';
-import { ComponentSet, DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  DeployResult,
+  MetadataApiDeploy,
+  MetadataApiDeployStatus,
+} from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
@@ -18,17 +23,19 @@ interface StashFile {
 }
 
 export abstract class DeployCommand extends SourceCommand {
-  protected static readonly STASH_KEY = 'SOURCE_DEPLOY';
+  protected static readonly SOURCE_STASH_KEY = 'SOURCE_DEPLOY';
+  protected static readonly MDAPI_STASH_KEY = 'MDAPI_DEPLOY';
 
   protected displayDeployId = once((id: string) => {
     if (!this.isJsonOutput()) {
       this.ux.log(`Deploy ID: ${id}`);
     }
   });
-
+  // used to determine the correct stash.json key
+  protected isSourceStash = true;
   protected deployResult: DeployResult;
   /**
-   * Request a report of an in-progess or completed deployment.
+   * Request a report of an in-progress or completed deployment.
    *
    * @param id the Deploy ID of a deployment request
    * @returns DeployResult
@@ -47,10 +54,25 @@ export abstract class DeployCommand extends SourceCommand {
   protected setStash(deployId: string): void {
     const file = this.getStash();
     this.logger.debug(`Stashing deploy ID: ${deployId} in ${file.getPath()}`);
-    file.writeSync({ [DeployCommand.STASH_KEY]: { jobid: deployId } });
+    file.writeSync({
+      [this.getStashKey()]: { jobid: deployId },
+    });
   }
 
-  protected resolveDeployId(id: string): string {
+  /**
+   * This method is here to provide a workaround to stubbing a constructor in the tests.
+   *
+   * @param id
+   */
+  protected createDeploy(id?: string): MetadataApiDeploy {
+    return new MetadataApiDeploy({ usernameOrConnection: this.org.getUsername(), id });
+  }
+
+  protected getStashKey(): string {
+    return this.isSourceStash ? DeployCommand.SOURCE_STASH_KEY : DeployCommand.MDAPI_STASH_KEY;
+  }
+
+  protected resolveDeployId(id?: string): string {
     let stash: ConfigFile<StashFile>;
     if (id) {
       return id;
@@ -58,7 +80,13 @@ export abstract class DeployCommand extends SourceCommand {
       try {
         stash = this.getStash();
         stash.readSync(true);
-        const deployId = asString((stash.get(DeployCommand.STASH_KEY) as { jobid: string }).jobid);
+        const deployId = asString(
+          (
+            stash.get(this.getStashKey()) as {
+              jobid: string;
+            }
+          ).jobid
+        );
         this.logger.debug(`Using deploy ID: ${deployId} from ${stash.getPath()}`);
         return deployId;
       } catch (err: unknown) {

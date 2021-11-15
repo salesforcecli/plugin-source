@@ -9,7 +9,6 @@ import * as os from 'os';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
@@ -30,7 +29,7 @@ export class Report extends DeployCommand {
   public static readonly flagsConfig: FlagsConfig = {
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(DeployCommand.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
       longDescription: messages.getMessage('flagsLong.wait'),
@@ -48,15 +47,6 @@ export class Report extends DeployCommand {
     await this.doReport();
     this.resolveSuccess();
     return this.formatResult();
-  }
-
-  /**
-   * This method is here to provide a workaround to stubbing a constructor in the tests.
-   *
-   * @param id
-   */
-  public createDeploy(id?: string): MetadataApiDeploy {
-    return new MetadataApiDeploy({ usernameOrConnection: this.org.getUsername(), id });
   }
 
   protected async doReport(): Promise<void> {
