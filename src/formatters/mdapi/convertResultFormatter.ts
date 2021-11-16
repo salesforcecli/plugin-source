@@ -32,7 +32,7 @@ export class ConvertResultFormatter extends ResultFormatter {
   public getJson(): ConvertCommandResult {
     if (!this.convertResults) {
       this.convertResults = [];
-      this.result.converted.forEach((component) => {
+      this.result?.converted.forEach((component) => {
         if (component.xml) {
           this.convertResults.push({
             fullName: component.fullName,
@@ -56,13 +56,18 @@ export class ConvertResultFormatter extends ResultFormatter {
   }
 
   public display(): void {
-    this.ux.table(this.getJson(), {
-      columns: [
-        { key: 'state', label: 'STATE' },
-        { key: 'fullName', label: 'FULL NAME' },
-        { key: 'type', label: 'TYPE' },
-        { key: 'filePath', label: 'PROJECT PATH' },
-      ],
-    });
+    const convertData = this.getJson();
+    if (convertData?.length) {
+      this.ux.table(convertData, {
+        columns: [
+          { key: 'state', label: 'STATE' },
+          { key: 'fullName', label: 'FULL NAME' },
+          { key: 'type', label: 'TYPE' },
+          { key: 'filePath', label: 'PROJECT PATH' },
+        ],
+      });
+    } else {
+      this.ux.log('No metadata found to convert');
+    }
   }
 }

@@ -99,18 +99,17 @@ export class Convert extends SourceCommand {
     });
 
     const numOfComponents = this.componentSet.getSourceComponents().toArray().length;
-    if (numOfComponents === 0) {
-      throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'NoMetadataFound', [this.rootDir]);
-    }
-    this.ux.startSpinner(`Converting ${numOfComponents} metadata components`);
+    if (numOfComponents > 0) {
+      this.ux.startSpinner(`Converting ${numOfComponents} metadata components`);
 
-    const converter = new MetadataConverter();
-    this.convertResult = await converter.convert(this.componentSet, 'source', {
-      type: 'directory',
-      outputDirectory: this.outputDir,
-      genUniqueDir: false,
-    });
-    this.ux.stopSpinner();
+      const converter = new MetadataConverter();
+      this.convertResult = await converter.convert(this.componentSet, 'source', {
+        type: 'directory',
+        outputDirectory: this.outputDir,
+        genUniqueDir: false,
+      });
+      this.ux.stopSpinner();
+    }
   }
 
   // No-op.  Any failure would throw an error.  If no error, it's successful.
@@ -202,7 +201,7 @@ export class Convert extends SourceCommand {
         if (trimmedPath.length) {
           const resolvedPath = resolve(trimmedPath);
           this.ensureFlagPath({
-            flagName: 'metadataPath',
+            flagName: 'metadatapath',
             path: resolvedPath,
             type: 'any',
             throwOnENOENT: true,
