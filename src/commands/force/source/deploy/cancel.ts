@@ -9,7 +9,6 @@ import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { getString } from '@salesforce/ts-types';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
 import {
@@ -54,7 +53,7 @@ export class Cancel extends DeployCommand {
   }
 
   protected resolveSuccess(): void {
-    const status = getString(this.deployResult, 'response.status');
+    const status = this.deployResult.response.status;
     if (status !== RequestStatus.Canceled) {
       this.setExitCode(1);
     }

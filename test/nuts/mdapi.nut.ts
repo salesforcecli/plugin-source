@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { DescribeMetadataResult } from 'jsforce';
 import { exec } from 'shelljs';
-import { getString } from '@salesforce/ts-types';
+import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
 
 let session: TestSession;
 
@@ -67,13 +67,13 @@ describe('mdapi NUTs', () => {
       const deploy = JSON.parse(exec('sfdx force:mdapi:deploy -d mdapi -w 0 --json', { silent: true })) as {
         result: { id: string };
       };
-      const result = execCmd('force:mdapi:deploy:cancel --json');
+      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
       expect(result.jsonOutput.status).to.equal(0);
       const json = result.jsonOutput.result;
       expect(json).to.have.property('canceledBy');
       expect(json).to.have.property('status');
-      expect(getString(json, 'status')).to.equal('Canceled');
-      expect(getString(json, 'id')).to.equal(deploy.result.id);
+      expect(json.status).to.equal('Canceled');
+      expect(json.id).to.equal(deploy.result.id);
     });
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
@@ -82,13 +82,13 @@ describe('mdapi NUTs', () => {
       const deploy = JSON.parse(exec('sfdx force:mdapi:deploy -d mdapi -w 0 --json', { silent: true })) as {
         result: { id: string };
       };
-      const result = execCmd(`force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`);
+      const result = execCmd<DeployCancelCommandResult>(`force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`);
       expect(result.jsonOutput.status).to.equal(0);
       const json = result.jsonOutput.result;
       expect(json).to.have.property('canceledBy');
       expect(json).to.have.property('status');
-      expect(getString(json, 'status')).to.equal('Canceled');
-      expect(getString(json, 'id')).to.equal(deploy.result.id);
+      expect(json.status).to.equal('Canceled');
+      expect(json.id).to.equal(deploy.result.id);
     });
   });
 

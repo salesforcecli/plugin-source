@@ -13,7 +13,7 @@ import {
   MetadataApiDeployStatus,
 } from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
-import { AnyJson, asString, getBoolean } from '@salesforce/ts-types';
+import { AnyJson, getBoolean } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 
@@ -80,13 +80,11 @@ export abstract class DeployCommand extends SourceCommand {
       try {
         stash = this.getStash();
         stash.readSync(true);
-        const deployId = asString(
-          (
-            stash.get(this.getStashKey()) as {
-              jobid: string;
-            }
-          ).jobid
-        );
+        const deployId = (
+          stash.get(this.getStashKey()) as {
+            jobid: string;
+          }
+        ).jobid;
         this.logger.debug(`Using deploy ID: ${deployId} from ${stash.getPath()}`);
         return deployId;
       } catch (err: unknown) {
