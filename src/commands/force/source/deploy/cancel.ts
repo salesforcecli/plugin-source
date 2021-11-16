@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
@@ -34,6 +34,13 @@ export class Cancel extends DeployCommand {
     jobid: flags.id({
       char: 'i',
       description: messages.getMessage('flags.jobid'),
+      validate: (val) => {
+        if (val.startsWith('0Af')) {
+          return true;
+        } else {
+          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
+        }
+      },
     }),
   };
 
@@ -45,11 +52,18 @@ export class Cancel extends DeployCommand {
 
   protected async cancel(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+    try {
+      const deploy = this.createDeploy(deployId);
+      await deploy.cancel();
 
-    const deploy = this.createDeploy(deployId);
-    await deploy.cancel();
-
-    this.deployResult = await this.poll(deployId);
+      this.deployResult = await this.poll(deployId);
+    } catch (e) {
+      if (e instanceof Error) {
+        throw SfdxError.create('@salesforce/plugin-source', 'cancel', 'CancelFailed', [e.message]);
+      } else {
+        throw SfdxError.wrap(e);
+      }
+    }
   }
 
   protected resolveSuccess(): void {

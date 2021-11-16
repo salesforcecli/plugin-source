@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { Messages, SfdxProject } from '@salesforce/core';
+import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { DeployCommand } from '../../../../deployCommand';
@@ -38,6 +38,13 @@ export class Report extends DeployCommand {
       char: 'i',
       description: messages.getMessage('flags.jobid'),
       longDescription: messages.getMessage('flagsLong.jobid'),
+      validate: (val) => {
+        if (val.startsWith('0Af')) {
+          return true;
+        } else {
+          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
+        }
+      },
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),

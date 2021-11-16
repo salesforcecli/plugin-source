@@ -90,7 +90,7 @@ export abstract class DeployCommand extends SourceCommand {
       } catch (err: unknown) {
         const error = err as Error & { code: string };
         if (error.name === 'JsonParseError') {
-          const stashFilePath = stash.getPath();
+          const stashFilePath = stash?.getPath();
           const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
           fs.renameSync(stashFilePath, corruptFilePath);
           const invalidStashErr = SfdxError.create('@salesforce/plugin-source', 'deploy', 'InvalidStashFile', [
@@ -100,7 +100,8 @@ export abstract class DeployCommand extends SourceCommand {
           invalidStashErr.stack = `${invalidStashErr.stack}\nDue to:\n${error.stack}`;
           throw invalidStashErr;
         }
-        if (error.code === 'ENOENT') {
+        if (error.code === 'ENOENT' || !stash?.get(this.getStashKey())) {
+          // if the file doesn't exist, or the key doesn't exist in the stash
           throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
         }
         throw SfdxError.wrap(error);

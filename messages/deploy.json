@@ -81,5 +81,6 @@
   "deployFailed": "Deploy failed.",
   "asyncDeployQueued": "Deploy has been queued.",
   "asyncDeployCancel": "Run sfdx force:source:deploy:cancel -i %s to cancel the deploy.",
-  "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s to get the latest status."
+  "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s to get the latest status.",
+  "invalidDeployId": "The provided ID is invalid, deploy IDs must start with '0Af'"
 }

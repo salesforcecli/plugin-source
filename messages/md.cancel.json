@@ -9,12 +9,12 @@
 
   "examples": [
     "Deploy a directory of files to the org",
-    "$ sfdx force:mdapi:deploy -d <directory>",
+    "  $ sfdx force:mdapi:deploy -d <directory>",
     "Now cancel this deployment and wait two minutes",
-    "$ sfdx force:mdapi:deploy:cancel -w 2",
+    "  $ sfdx force:mdapi:deploy:cancel -w 2",
     "If you have multiple deployments in progress and want to cancel a specific one, specify the job ID",
-    "$ sfdx force:mdapi:deploy:cancel -i <jobid>",
+    "  $ sfdx force:mdapi:deploy:cancel -i <jobid>",
     "Check the status of the cancel job",
-    "$ sfdx force:mdapi:deploy:report"
+    "  $ sfdx force:mdapi:deploy:report"
   ]
 }
