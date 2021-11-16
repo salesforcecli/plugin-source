@@ -41,13 +41,13 @@ const expectedConvertResult = [
   {
     fullName: 'TestProductController',
     type: 'ApexClass',
-    filePath: 'myPkg/src/classes/TestProductController.cls-meta.xml',
+    filePath: join('myPkg', 'src', 'classes', 'TestProductController.cls-meta.xml'),
     state: 'Add',
   },
   {
     fullName: 'TestProductController',
     type: 'ApexClass',
-    filePath: 'myPkg/src/classes/TestProductController.cls',
+    filePath: join('myPkg', 'src', 'classes', 'TestProductController.cls'),
     state: 'Add',
   },
 ];
