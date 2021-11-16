@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/salesforcecli/plugin-source/compare/v1.4.3...v1.5.0) (2021-11-16)
+
+
+### Features
+
+* add mdapi:deploy:cancel command, refactor base classes to support MDAPI and SOURCE stash keys ([#301](https://github.com/salesforcecli/plugin-source/issues/301)) ([9dcc3e7](https://github.com/salesforcecli/plugin-source/commit/9dcc3e7bc1be13d1dcb0df13b3f7710407f9e977))
+
 ### [1.4.3](https://github.com/salesforcecli/plugin-source/compare/v1.4.2...v1.4.3) (2021-11-15)
 
 
