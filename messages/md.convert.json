@@ -1,5 +1,5 @@
 {
-  "description": "convert metadata from the Metadata API format into the source format",
+  "description": "convert metadata from the Metadata API format into the source format\nConverts metadata retrieved via Metadata API into the source format used in Salesforce DX projects.\nTo use Salesforce CLI to work with components that you retrieved via Metadata API, first convert your files from the metadata format to the source format using \"sfdx force:mdapi:convert\".\n\nTo convert files from the source format back to the metadata format, so that you can deploy them using \"sfdx force:mdapi:deploy\", run \"sfdx force:source:convert\".",
   "examples": [
     "$ sfdx force:mdapi:convert -r path/to/metadata",
     "$ sfdx force:mdapi:convert -r path/to/metadata -d path/to/outputdir"
@@ -24,8 +24,5 @@
     ],
     "metadata": "A comma-separated list of metadata component names to convert."
   },
-  "success": "Metadata was successfully converted to source format and written to the location: %s",
-  "convertFailed": "Failed to convert metadata to source format.",
-  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s",
-  "NoMetadataFound": "No metadata found in directory: %s"
+  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s"
 }
