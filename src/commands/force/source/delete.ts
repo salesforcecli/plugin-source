@@ -44,7 +44,7 @@ export class Delete extends DeployCommand {
     }),
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(Delete.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(Delete.DEFAULT_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
       longDescription: messages.getMessage('flagsLong.wait'),

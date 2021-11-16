@@ -13,12 +13,12 @@ import { ConfigFile, Org, SfdxProject } from '@salesforce/core';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
+import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { getDeployResult } from './deployResponses';
+import { getDeployResult } from '../source/deployResponses';
 
-describe('force:source:deploy:cancel', () => {
+describe('force:source:mdapi:cancel', () => {
   const sandbox = sinon.createSandbox();
   const username = 'cancel-test@org.com';
   const defaultDir = join('my', 'default', 'package');
