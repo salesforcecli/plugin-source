@@ -33,10 +33,10 @@ describe('mdapi NUTs', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
-      // setupCommands: [
-      //   // default org
-      //   'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
-      // ],
+      setupCommands: [
+        // default org
+        'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+      ],
     });
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
