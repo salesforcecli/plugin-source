@@ -10,12 +10,12 @@ import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { RetrieveResult, ComponentSet, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 import {
-  RetrieveResultFormatter,
-  RetrieveCommandResult,
   PackageRetrieval,
+  RetrieveCommandResult,
+  RetrieveResultFormatter,
 } from '../../../formatters/retrieveResultFormatter';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 
@@ -41,7 +41,7 @@ export class Retrieve extends SourceCommand {
     }),
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(SourceCommand.DEFAULT_SRC_WAIT_MINUTES),
+      default: Duration.minutes(SourceCommand.DEFAULT_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
       longDescription: messages.getMessage('flagsLong.wait'),

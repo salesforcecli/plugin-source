@@ -17,7 +17,7 @@ import {
 } from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');
 
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
@@ -29,7 +29,7 @@ export class Cancel extends DeployCommand {
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
       min: Duration.minutes(1),
       description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      longDescription: messages.getMessage('flags.waitLong'),
     }),
     jobid: flags.id({
       char: 'i',
@@ -43,6 +43,8 @@ export class Cancel extends DeployCommand {
       },
     }),
   };
+  // The most important difference between this and source:deploy:cancel
+  public isSourceStash = false;
 
   public async run(): Promise<DeployCancelCommandResult> {
     await this.cancel();
