@@ -628,10 +628,23 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^1.2.0", "@salesforce/cli-plugins-testkit@^1.4.10":
+"@salesforce/cli-plugins-testkit@^1.2.0":
   version "1.4.10"
   resolved "https://registry.npmjs.org/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.4.10.tgz#f4a6c2a721e878c0008605b71cc70b613e3c1fa9"
   integrity sha512-zilWlu+dRnFGdsT3WuXLUwec7JOIWjfQomHeyE91eaQRGZOrKlFA0P5yXur9BTYTF8U560N0vDeU6rSzktOfag==
+  dependencies:
+    "@salesforce/core" "^2.24.0"
+    "@salesforce/kit" "^1.5.13"
+    "@salesforce/ts-types" "^1.5.17"
+    archiver "^5.2.0"
+    debug "^4.3.1"
+    shelljs "^0.8.4"
+    strip-ansi "6.0.1"
+
+"@salesforce/cli-plugins-testkit@^1.2.1":
+  version "1.4.17"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.4.17.tgz#7463e36181e2990687bf5e12fcd751db148f12b1"
+  integrity sha512-NT89k6tWy8sZdSEti9eUnpz7KcCEmKmfuFC0HTSOkzyAiFoCQnxLS6rAAGgDrgZ5wsgZhm1ZomnR/tbBcM3IGQ==
   dependencies:
     "@salesforce/core" "^2.24.0"
     "@salesforce/kit" "^1.5.13"
