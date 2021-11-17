@@ -126,10 +126,17 @@ export class Convert extends SourceCommand {
     return formatter.getJson();
   }
 
-  private ensureFlagPath(options: EnsureFlagOptions): void {
+  private ensureFlagPath(options: EnsureFlagOptions): string {
     const { flagName, path, type, throwOnENOENT } = options;
+
+    const trimmedPath = path?.trim();
+    let resolvedPath: string;
+    if (trimmedPath?.length) {
+      resolvedPath = resolve(trimmedPath);
+    }
+
     try {
-      const stats = fs.statSync(path);
+      const stats = fs.statSync(resolvedPath);
       if (type !== 'any') {
         const isDir = stats.isDirectory();
         if ((type === 'dir' && !isDir) || (type === 'file' && isDir)) {
@@ -144,69 +151,54 @@ export class Convert extends SourceCommand {
         if (throwOnENOENT) {
           throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path]);
         }
-        fs.mkdirSync(path, { recursive: true });
+        fs.mkdirSync(resolvedPath, { recursive: true });
       }
     }
+    return resolvedPath;
   }
 
   private resolveRootDir(rootDir: string): string {
-    const resolvedRootDir = resolve(rootDir.trim());
-    this.ensureFlagPath({
+    return this.ensureFlagPath({
       flagName: 'rootdir',
-      path: resolvedRootDir,
+      path: rootDir,
       type: 'dir',
       throwOnENOENT: true,
     });
-    return resolvedRootDir;
   }
 
   private resolveOutputDir(outputDir?: string): string {
-    let resolvedOutputDir: string;
-    if (outputDir) {
-      resolvedOutputDir = resolve(outputDir.trim());
-    } else {
-      resolvedOutputDir = this.project.getDefaultPackage().path;
-    }
-    this.ensureFlagPath({
+    return this.ensureFlagPath({
       flagName: 'outputdir',
-      path: resolvedOutputDir,
+      path: outputDir || this.project.getDefaultPackage().path,
       type: 'dir',
     });
-
-    return resolvedOutputDir;
   }
 
-  private resolveManifest(manifestPath = ''): Optional<string> {
-    const trimmedManifestPath = manifestPath.trim();
-    let resolvedManifest: string;
-
-    if (trimmedManifestPath.length) {
-      resolvedManifest = resolve(trimmedManifestPath);
-      this.ensureFlagPath({
+  private resolveManifest(manifestPath?: string): Optional<string> {
+    if (manifestPath?.length) {
+      return this.ensureFlagPath({
         flagName: 'manifest',
-        path: resolvedManifest,
+        path: manifestPath,
         type: 'file',
         throwOnENOENT: true,
       });
     }
-    return resolvedManifest;
   }
 
-  private resolveMetadataPaths(metadataPaths: string[] = []): Optional<string[]> {
+  private resolveMetadataPaths(metadataPaths: string[]): Optional<string[]> {
     const resolvedMetadataPaths: string[] = [];
 
-    if (metadataPaths.length) {
-      metadataPaths.forEach((p) => {
-        const trimmedPath = p.trim();
-        if (trimmedPath.length) {
-          const resolvedPath = resolve(trimmedPath);
-          this.ensureFlagPath({
-            flagName: 'metadatapath',
-            path: resolvedPath,
-            type: 'any',
-            throwOnENOENT: true,
-          });
-          resolvedMetadataPaths.push(resolvedPath);
+    if (metadataPaths?.length) {
+      metadataPaths.forEach((mdPath) => {
+        if (mdPath?.length) {
+          resolvedMetadataPaths.push(
+            this.ensureFlagPath({
+              flagName: 'metadatapath',
+              path: mdPath,
+              type: 'any',
+              throwOnENOENT: true,
+            })
+          );
         }
       });
     }

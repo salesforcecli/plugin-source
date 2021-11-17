@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { expect } from 'chai';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 
@@ -32,10 +33,10 @@ describe('mdapi NUTs', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
-      setupCommands: [
-        // default org
-        'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
-      ],
+      // setupCommands: [
+      //   // default org
+      //   'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+      // ],
     });
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
@@ -123,6 +124,41 @@ describe('mdapi NUTs', () => {
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
       expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+    });
+
+    it('should convert the dreamhouse project and back again', () => {
+      const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_mdapi');
+      const convertedToMd2 = path.join(session.dir, 'convertedToMdPath_dh_backAgain');
+      const result = execCmd<ConvertCommandResult>(
+        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
+      );
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+
+      // Now source:convert back and compare dirs
+      execCmd(`force:source:convert --json -r ${convertedToSrcPath} -d ${convertedToMd2}`, { ensureExitCode: 0 });
+
+      const mdCompSet1 = ComponentSet.fromSource(convertedToMdPath);
+      const mdCompSet2 = ComponentSet.fromSource(convertedToMd2);
+      expect(mdCompSet1.size).to.equal(mdCompSet2.size).and.be.greaterThan(10);
+      for (const comp of mdCompSet1) {
+        const srcComp2 = mdCompSet2.find(
+          (c) => c.fullName === comp.fullName && c.type.name === comp.type.name
+        ) as SourceComponent;
+        expect(srcComp2).to.be.ok;
+        const srcComp = comp as SourceComponent;
+        if (srcComp.xml) {
+          const size1 = fs.statSync(srcComp.xml).size;
+          const size2 = fs.statSync(srcComp2.xml).size;
+          expect(size1).to.equal(size2);
+        }
+        if (srcComp.content) {
+          const size1 = fs.statSync(srcComp.content).size;
+          const size2 = fs.statSync(srcComp2.content).size;
+          // Content files can differ slightly due to compression
+          expect(size1 / size2).to.be.within(0.98, 1.02);
+        }
+      }
     });
   });
 

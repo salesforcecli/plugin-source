@@ -157,8 +157,10 @@ describe(`force:${commandName}`, () => {
     const fileName = ' nonexistant.txt '; // spaces ensure trim() is done
     const trimmedFileName = fileName.trim();
     const resolvedFilePath = resolve(trimmedFileName);
+    const resolvedOutputDir = resolve(defaultDir);
     fsStatStub.withArgs(defaultDir).returns({ isDirectory: () => true });
     fsStatStub.withArgs(resolvedRootDir).returns({ isDirectory: () => true });
+    fsStatStub.withArgs(resolvedOutputDir).returns({ isDirectory: () => true });
     const err = new Error('') as FsError;
     err.code = 'ENOENT';
     fsStatStub.withArgs(resolvedFilePath).throws(err);
@@ -179,8 +181,10 @@ describe(`force:${commandName}`, () => {
     const fileName = ' nonexistant.txt '; // spaces ensure trim() is done
     const trimmedFileName = fileName.trim();
     const resolvedFilePath = resolve(trimmedFileName);
+    const resolvedOutputDir = resolve(defaultDir);
     fsStatStub.withArgs(defaultDir).returns({ isDirectory: () => true });
     fsStatStub.withArgs(resolvedRootDir).returns({ isDirectory: () => true });
+    fsStatStub.withArgs(resolvedOutputDir).returns({ isDirectory: () => true });
     const err = new Error('') as FsError;
     err.code = 'ENOENT';
     fsStatStub.withArgs(resolvedFilePath).throws(err);
