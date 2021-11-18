@@ -1,5 +1,5 @@
 {
-  "description": "delete source from your project and from a non-source-tracked org \n Use this command to delete components from orgs that don’t have source tracking.\nTo remove deleted items from scratch orgs, which have change tracking, use \"sfdx force:source:push\".",
+  "description": "delete source from your project and from a non-source-tracked org\nIMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained certain terms to avoid any effect on customer implementations.\n\nUse this command to delete components from orgs that don’t have source tracking.\nTo remove deleted items from scratch orgs, which have change tracking, use \"sfdx force:source:push\".",
   "examples": ["$ sfdx force:source:delete -m <metadata>", "$ sfdx force:source:delete -p path/to/source"],
   "flags": {
     "sourcepath": "comma-separated list of source file paths to delete",
