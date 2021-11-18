@@ -2,6 +2,12 @@
   "extends": "@salesforce/dev-config/tsconfig-test",
   "include": ["./**/*.ts"],
   "compilerOptions": {
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "..",
+    "paths": {
+      "@salesforce/kit": ["node_modules/@salesforce/kit"],
+      "@salesforce/source-deploy-retrieve": ["node_modules/@salesforce/source-deploy-retrieve"],
+      "@salesforce/core": ["node_modules/@salesforce/core"]
+    }
   }
 }
