@@ -117,7 +117,12 @@
             }
           },
           "mdapi": {
-            "description": "retrieve and deploy metadata using Metadata API"
+            "description": "retrieve and deploy metadata using Metadata API",
+            "subtopics": {
+              "beta": {
+                "description": "new versions of mdapi commands"
+              }
+            }
           }
         }
       }

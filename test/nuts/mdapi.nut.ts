@@ -4,13 +4,30 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
+import * as fs from 'fs';
+import * as path from 'path';
 import { expect } from 'chai';
-import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce';
 import { exec } from 'shelljs';
+import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
 
 let session: TestSession;
+
+const writeManifest = (manifestPath: string, contents?: string) => {
+  contents ??= `<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>*</members>
+        <name>ApexClass</name>
+    </types>
+    <version>53.0</version>
+</Package>`;
+  fs.writeFileSync(manifestPath, contents);
+};
 
 describe('mdapi NUTs', () => {
   before(async () => {
@@ -40,7 +57,7 @@ describe('mdapi NUTs', () => {
     });
   });
 
-  describe('mdapiDescribemetadataCommand', () => {
+  describe('mdapi:describemetadata', () => {
     it('should successfully execute describemetadata', () => {
       const result = execCmd<DescribeMetadataResult>('force:mdapi:describemetadata --json');
       expect(result.jsonOutput.status).to.equal(0);
@@ -57,6 +74,93 @@ describe('mdapi NUTs', () => {
         suffix: 'labels',
         xmlName: 'CustomLabels',
       });
+    });
+  });
+
+  describe('mdapi:beta:convert', () => {
+    let convertedToMdPath: string;
+
+    before(() => {
+      convertedToMdPath = path.join(session.dir, 'convertedToMdPath_dh');
+      execCmd(`force:source:convert --json -d ${convertedToMdPath}`, { ensureExitCode: 0 });
+    });
+
+    it('should convert the dreamhouse project', () => {
+      const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_all');
+      const result = execCmd<ConvertCommandResult>(
+        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
+      );
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
+      expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+    });
+
+    it('should convert the dreamhouse project using metadata flag', () => {
+      const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_metadataFlag');
+      const result = execCmd<ConvertCommandResult>(
+        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -m ApexClass --json`
+      );
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
+      expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+    });
+
+    it('should convert the dreamhouse project using metadatapath flag', () => {
+      const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_metadatapathFlag');
+      const metadataPath = path.join(convertedToMdPath, 'classes', 'PagedResult.cls');
+      const result = execCmd<ConvertCommandResult>(
+        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -p ${metadataPath} --json`
+      );
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(result.jsonOutput.result).to.be.an('array').with.lengthOf(2);
+      expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+    });
+
+    it('should convert the dreamhouse project using manifest flag', () => {
+      const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_manifestFlag');
+      const manifestPath = path.join(session.dir, 'manifestFlag-package.xml');
+      writeManifest(manifestPath);
+      const result = execCmd<ConvertCommandResult>(
+        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -x ${manifestPath} --json`
+      );
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
+      expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+    });
+
+    it('should convert the dreamhouse project and back again', () => {
+      const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_mdapi');
+      const convertedToMd2 = path.join(session.dir, 'convertedToMdPath_dh_backAgain');
+      const result = execCmd<ConvertCommandResult>(
+        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
+      );
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(fs.existsSync(convertedToSrcPath)).to.be.true;
+
+      // Now source:convert back and compare dirs
+      execCmd(`force:source:convert --json -r ${convertedToSrcPath} -d ${convertedToMd2}`, { ensureExitCode: 0 });
+
+      const mdCompSet1 = ComponentSet.fromSource(convertedToMdPath);
+      const mdCompSet2 = ComponentSet.fromSource(convertedToMd2);
+      expect(mdCompSet1.size).to.equal(mdCompSet2.size).and.be.greaterThan(10);
+      for (const comp of mdCompSet1) {
+        const srcComp2 = mdCompSet2.find(
+          (c) => c.fullName === comp.fullName && c.type.name === comp.type.name
+        ) as SourceComponent;
+        expect(srcComp2).to.be.ok;
+        const srcComp = comp as SourceComponent;
+        if (srcComp.xml) {
+          const size1 = fs.statSync(srcComp.xml).size;
+          const size2 = fs.statSync(srcComp2.xml).size;
+          expect(size1).to.equal(size2);
+        }
+        if (srcComp.content) {
+          const size1 = fs.statSync(srcComp.content).size;
+          const size2 = fs.statSync(srcComp2.content).size;
+          // Content files can differ slightly due to compression
+          expect(size1 / size2).to.be.within(0.98, 1.02);
+        }
+      }
     });
   });
 
