@@ -69,12 +69,12 @@ export class Convert extends SourceCommand {
     const { sourcepath, metadata, manifest, rootdir } = this.flags;
 
     if (sourcepath) {
-      paths.push(...sourcepath);
+      paths.push(...(sourcepath as string[]));
     }
 
     // rootdir behaves exclusively to sourcepath, metadata, and manifest... to maintain backwards compatibility
     // we will check here, instead of adding the exclusive option to the flag definition so we don't break scripts
-    if (rootdir && !sourcepath && !metadata && !manifest) {
+    if (rootdir && !sourcepath && !metadata && !manifest && typeof rootdir === 'string') {
       // only rootdir option passed
       paths.push(rootdir);
     }

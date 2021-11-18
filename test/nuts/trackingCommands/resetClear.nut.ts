@@ -36,7 +36,7 @@ type MemberRevision = {
 const getRevisionsAsArray = async (): Promise<MemberRevision[]> => {
   const revisionFile = JSON.parse(
     await fs.promises.readFile(path.join(trackingFileFolder, 'maxRevision.json'), 'utf8')
-  );
+  ) as Record<string, MemberRevision>;
   return Reflect.ownKeys(revisionFile.sourceMembers).map((key) => revisionFile.sourceMembers[key] as MemberRevision);
 };
 
@@ -121,10 +121,10 @@ describe('reset and clear', () => {
         await fs.promises.readFile(path.join(trackingFileFolder, 'maxRevision.json'), 'utf8')
       );
       lowestRevision = revisions.reduce(
-        (previousValue, revision) => Math.min(previousValue, revision.serverRevisionCounter),
+        (previousValue: number, revision) => Math.min(previousValue, revision.serverRevisionCounter),
         revisionFile.serverMaxRevisionCounter
       );
-      expect(lowestRevision).lessThan(revisionFile.serverMaxRevisionCounter);
+      expect(lowestRevision).lessThan(revisionFile.serverMaxRevisionCounter as number);
       // revisions are not retrieved
       revisions.map((revision) => {
         expect(revision.serverRevisionCounter !== revision.lastRetrievedFromServer).to.equal(true);

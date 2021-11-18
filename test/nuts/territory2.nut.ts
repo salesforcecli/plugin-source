@@ -13,8 +13,8 @@ import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormat
 
 describe('territories', () => {
   let session: TestSession;
-  let projectPath;
-  let modelPath;
+  let projectPath: string;
+  let modelPath: string;
 
   before(async () => {
     session = await TestSession.create({

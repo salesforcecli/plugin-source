@@ -98,7 +98,7 @@ export class DescribeMetadata extends SourceCommand {
 
   private validateResultFile(): void {
     if (this.flags.resultfile) {
-      this.targetFilePath = path.resolve(this.flags.resultfile);
+      this.targetFilePath = path.resolve(this.getFlag('resultfile'));
       // Ensure path exists
       fs.mkdirSync(path.dirname(this.targetFilePath), { recursive: true });
       try {

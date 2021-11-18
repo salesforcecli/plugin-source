@@ -27,6 +27,7 @@ describe('DeployResultFormatter', () => {
 
   const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
   let ux;
+
   let logStub: sinon.SinonStub;
   let styledHeaderStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;
@@ -58,7 +59,7 @@ describe('DeployResultFormatter', () => {
     it('should return expected json for a success', async () => {
       const deployResponse = JSON.parse(JSON.stringify(deployResultSuccess.response)) as DeployCommandResult;
       const expectedSuccessResults = deployResultSuccess.response as DeployCommandResult;
-      const formatter = new DeployResultFormatter(logger, ux, {}, deployResultSuccess);
+      const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
       const json = formatter.getJson();
 
       expectedSuccessResults.deployedSource = deployResultSuccess.getFileResponses();
@@ -73,7 +74,7 @@ describe('DeployResultFormatter', () => {
       expectedFailureResults.deployedSource = deployResultFailure.getFileResponses();
       expectedFailureResults.outboundFiles = [];
       expectedFailureResults.deploys = [deployResponse];
-      const formatter = new DeployResultFormatter(logger, ux, {}, deployResultFailure);
+      const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultFailure);
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
     });
 
@@ -83,14 +84,14 @@ describe('DeployResultFormatter', () => {
       expectedPartialSuccessResponse.deployedSource = deployResultPartialSuccess.getFileResponses();
       expectedPartialSuccessResponse.outboundFiles = [];
       expectedPartialSuccessResponse.deploys = [deployResponse];
-      const formatter = new DeployResultFormatter(logger, ux, {}, deployResultPartialSuccess);
+      const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultPartialSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
     });
   });
 
   describe('display', () => {
     it('should output as expected for a success', async () => {
-      const formatter = new DeployResultFormatter(logger, ux, {}, deployResultSuccess);
+      const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
       expect(logStub.calledOnce).to.equal(true);
@@ -102,7 +103,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for a failure and exclude duplicate information', async () => {
-      const formatter = new DeployResultFormatter(logger, ux, {}, deployResultFailure);
+      const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultFailure);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
       expect(logStub.calledTwice).to.equal(true);
@@ -114,7 +115,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for a test failure with verbose', async () => {
-      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestFailure);
+      const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestFailure);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
       expect(logStub.callCount).to.equal(7);
@@ -125,7 +126,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for passing tests with verbose', async () => {
-      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestSuccess);
+      const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestSuccess);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
       expect(logStub.callCount).to.equal(7);
@@ -136,7 +137,12 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for passing and failing tests with verbose', async () => {
-      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultTestSuccessAndFailure);
+      const formatter = new DeployResultFormatter(
+        logger,
+        ux as UX,
+        { verbose: true },
+        deployResultTestSuccessAndFailure
+      );
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(4);
       expect(logStub.callCount).to.equal(8);
@@ -148,7 +154,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('shows success AND failures for partialSucceeded', async () => {
-      const formatter = new DeployResultFormatter(logger, ux, { verbose: true }, deployResultPartialSuccess);
+      const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultPartialSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
       expect(logStub.callCount, 'logStub.callCount').to.equal(3);

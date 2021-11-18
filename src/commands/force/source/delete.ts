@@ -83,7 +83,7 @@ export class Delete extends DeployCommand {
   private aborted = false;
   private components: MetadataComponent[];
 
-  private updateDeployId = once((id) => {
+  private updateDeployId = once((id: string) => {
     this.displayDeployId(id);
     this.setStash(id);
   });

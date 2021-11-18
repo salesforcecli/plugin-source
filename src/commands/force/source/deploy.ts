@@ -122,7 +122,7 @@ export class Deploy extends DeployCommand {
   private isRest = false;
   private asyncDeployResult: AsyncResult;
 
-  private updateDeployId = once((id) => {
+  private updateDeployId = once((id: string) => {
     this.displayDeployId(id);
     this.setStash(id);
   });

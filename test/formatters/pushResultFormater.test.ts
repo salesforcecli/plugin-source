@@ -59,18 +59,18 @@ describe('PushResultFormatter', () => {
 
   describe('human output', () => {
     it('returns expected output for success', () => {
-      const formatter = new PushResultFormatter(logger, uxMock, {}, deployResultSuccess);
+      const formatter = new PushResultFormatter(logger, uxMock as UX, {}, deployResultSuccess);
       formatter.display();
       expect(tableStub.callCount).to.equal(1);
     });
     describe('quiet', () => {
       it('does not display successes for quiet', () => {
-        const formatter = new PushResultFormatter(logger, uxMock, { quiet: true }, deployResultSuccess);
+        const formatter = new PushResultFormatter(logger, uxMock as UX, { quiet: true }, deployResultSuccess);
         formatter.display();
         expect(tableStub.callCount).to.equal(0);
       });
       it('displays errors for quiet', () => {
-        const formatter = new PushResultFormatter(logger, uxMock, { quiet: true }, deployResultFailure);
+        const formatter = new PushResultFormatter(logger, uxMock as UX, { quiet: true }, deployResultFailure);
         formatter.display();
         expect(tableStub.callCount).to.equal(1);
       });
