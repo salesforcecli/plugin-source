@@ -22,7 +22,7 @@ const repo = {
       {
         toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
         toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
     ],
     metadata: [
@@ -30,14 +30,14 @@ const repo = {
       {
         toDeploy: 'ApexClass,CustomObject:Broker__c',
         toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/Broker__c/**/*'],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
     ],
     manifest: [
       {
         toDeploy: 'force-app/main/default/classes,force-app/main/default/objects',
         toVerify: ['force-app/main/default/classes/*', 'force-app/main/default/objects/**/*'],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
     ],
   },

@@ -22,7 +22,7 @@ const repo = {
       {
         toDeploy: '"force-app, my-app, foo-bar"',
         toVerify: ['force-app/**/*', 'my-app/**/*', 'foo-bar/**/*'],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
       {
         toDeploy:
@@ -31,19 +31,19 @@ const repo = {
           'force-app/main/default/labels/CustomLabels.labels-meta.xml',
           'my-app/labels/CustomLabels.labels-meta.xml',
         ],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
       {
         toDeploy: 'force-app/main/default/labels/CustomLabels.labels-meta.xml',
         toVerify: ['force-app/main/default/labels/CustomLabels.labels-meta.xml'],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
     ],
     metadata: [
       {
         toDeploy: 'CustomObject',
         toVerify: ['force-app/main/default/objects/**/*', 'my-app/objects/**/*'],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
       {
         toDeploy: 'CustomLabels',
@@ -51,7 +51,7 @@ const repo = {
           'force-app/main/default/labels/CustomLabels.labels-meta.xml',
           'my-app/labels/CustomLabels.labels-meta.xml',
         ],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
     ],
     manifest: [
@@ -63,7 +63,7 @@ const repo = {
           'my-app/labels/CustomLabels.labels-meta.xml',
           'my-app/objects/MyObj__c/fields/MyField__c.field-meta.xml',
         ],
-        toIgnore: [],
+        toIgnore: [] as string[],
       },
       // { toDeploy: '"force-app, my-app"', toVerify: ['force-app/**/*', 'my-app/**/*'] }, SDR BUG
     ],

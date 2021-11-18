@@ -89,7 +89,7 @@ export class ListMetadata extends SourceCommand {
       if (this.listResult.length) {
         this.ux.styledJSON(this.listResult);
       } else {
-        this.ux.log(messages.getMessage('noMatchingMetadata', [this.flags.metadatatype, this.org.getUsername()]));
+        this.ux.log(messages.getMessage('noMatchingMetadata', [this.getFlag('metadatatype'), this.org.getUsername()]));
       }
     }
     return this.listResult;
@@ -97,7 +97,7 @@ export class ListMetadata extends SourceCommand {
 
   private validateResultFile(): void {
     if (this.flags.resultfile) {
-      this.targetFilePath = path.resolve(this.flags.resultfile);
+      this.targetFilePath = path.resolve(this.getFlag('resultfile'));
       // Ensure path exists
       fs.mkdirSync(path.dirname(this.targetFilePath), { recursive: true });
       try {
