@@ -139,8 +139,12 @@ export class Convert extends SourceCommand {
       const stats = fs.statSync(resolvedPath);
       if (type !== 'any') {
         const isDir = stats.isDirectory();
-        if ((type === 'dir' && !isDir) || (type === 'file' && isDir)) {
-          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path]);
+        if (type === 'dir' && !isDir) {
+          const msg = 'Expected a directory but found a file';
+          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path, msg]);
+        } else if (type === 'file' && isDir) {
+          const msg = 'Expected a file but found a directory';
+          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path, msg]);
         }
       }
     } catch (error: unknown) {
@@ -149,7 +153,12 @@ export class Convert extends SourceCommand {
         throw err;
       } else {
         if (throwOnENOENT) {
-          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path]);
+          const enoent = 'No such file or directory';
+          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [
+            flagName,
+            path,
+            enoent,
+          ]);
         }
         fs.mkdirSync(resolvedPath, { recursive: true });
       }
