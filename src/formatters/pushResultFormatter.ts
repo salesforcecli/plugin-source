@@ -8,13 +8,7 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import {
-  DeployResult,
-  FileResponse,
-  RequestStatus,
-  DeployMessage,
-  ComponentStatus,
-} from '@salesforce/source-deploy-retrieve';
+import { DeployResult, FileResponse, DeployMessage, ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -23,13 +17,13 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 export type PushResponse = Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>;
 
 export class PushResultFormatter extends ResultFormatter {
-  protected result: DeployResult;
   protected fileResponses: FileResponse[];
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: DeployResult) {
+  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, protected results: DeployResult[]) {
     super(logger, ux, options);
-    this.result = result;
-    this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
+    this.fileResponses = results.some((result) => result.getFileResponses().length)
+      ? results.flatMap((result) => result.getFileResponses())
+      : [];
   }
 
   /**
@@ -64,10 +58,6 @@ export class PushResultFormatter extends ResultFormatter {
     }
   }
 
-  protected hasStatus(status: RequestStatus): boolean {
-    return this.result.response.status === status;
-  }
-
   protected displaySuccesses(): void {
     if (this.isQuiet()) {
       return;
@@ -94,44 +84,44 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    if (this.hasStatus(RequestStatus.Failed)) {
-      const failures: Array<FileResponse | DeployMessage> = [];
-      const fileResponseFailures: Map<string, string> = new Map<string, string>();
+    const failures: Array<FileResponse | DeployMessage> = [];
+    const fileResponseFailures: Map<string, string> = new Map<string, string>();
 
-      if (this.fileResponses?.length) {
-        const fileResponses: FileResponse[] = [];
-        this.fileResponses
-          .filter((f) => f.state === 'Failed')
-          .map((f: FileResponse & { error: string }) => {
-            fileResponses.push(f);
-            fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
-          });
-        this.sortFileResponses(fileResponses);
-        this.asRelativePaths(fileResponses);
-        failures.push(...fileResponses);
-      }
-
-      const deployMessages = toArray(this.result?.response?.details?.componentFailures);
-      if (deployMessages.length > failures.length) {
-        // if there's additional failures in the API response, find the failure and add it to the output
-        deployMessages.map((deployMessage) => {
-          if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
-            // duplicate the problem message to the error property for displaying in the table
-            failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
-          }
+    if (this.fileResponses?.length) {
+      const fileResponses: FileResponse[] = [];
+      this.fileResponses
+        .filter((f) => f.state === 'Failed')
+        .map((f: FileResponse & { error: string }) => {
+          fileResponses.push(f);
+          fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
         });
-      }
-
-      this.ux.log('');
-      this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
-      this.ux.table(failures, {
-        columns: [
-          { key: 'problemType', label: 'Type' },
-          { key: 'fullName', label: 'Name' },
-          { key: 'error', label: 'Problem' },
-        ],
-      });
-      this.ux.log('');
+      this.sortFileResponses(fileResponses);
+      this.asRelativePaths(fileResponses);
+      failures.push(...fileResponses);
     }
+
+    const deployMessages = this.results?.flatMap((result) => toArray(result.response?.details?.componentFailures));
+    if (deployMessages.length > failures.length) {
+      // if there's additional failures in the API response, find the failure and add it to the output
+      deployMessages.map((deployMessage) => {
+        if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
+          // duplicate the problem message to the error property for displaying in the table
+          failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+        }
+      });
+    }
+    if (!failures.length) {
+      return;
+    }
+    this.ux.log('');
+    this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
+    this.ux.table(failures, {
+      columns: [
+        { key: 'problemType', label: 'Type' },
+        { key: 'fullName', label: 'Name' },
+        { key: 'error', label: 'Problem' },
+      ],
+    });
+    this.ux.log('');
   }
 }
