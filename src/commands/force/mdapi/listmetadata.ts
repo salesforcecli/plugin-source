@@ -68,7 +68,10 @@ export class ListMetadata extends SourceCommand {
 
     this.validateResultFile();
 
-    const query: ListMetadataQuery = { type, folder };
+    const query: ListMetadataQuery = { type };
+    if (folder) {
+      query.folder = folder;
+    }
     const connection = this.org.getConnection();
     const result = (await connection.metadata.list(query, apiversion)) || [];
     this.listResult = Array.isArray(result) ? result : [result];

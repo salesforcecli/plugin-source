@@ -49,11 +49,21 @@ describe('mdapi NUTs', () => {
   });
 
   describe('mdapi:listmetadata', () => {
-    it('should successfully execute listmetadata', () => {
+    it('should successfully execute listmetadata for type CustomObject', () => {
       const result = execCmd('force:mdapi:listmetadata --json --metadatatype CustomObject');
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(100);
       expect(result.jsonOutput.result[0]).to.have.property('type', 'CustomObject');
+    });
+
+    it('should successfully execute listmetadata for type ListView', () => {
+      // ListView is sensitive to how the connection.metadata.list() call is made.
+      // e.g., if you pass { type: 'ListView', folder: undefined } it will not return
+      // any ListViews but if you pass { type: 'ListView' } it returns all ListViews.
+      const result = execCmd('force:mdapi:listmetadata --json --metadatatype ListView');
+      expect(result.jsonOutput.status).to.equal(0);
+      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
+      expect(result.jsonOutput.result[0]).to.have.property('type', 'ListView');
     });
   });
 
