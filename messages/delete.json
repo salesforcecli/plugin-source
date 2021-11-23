@@ -39,5 +39,6 @@
   },
   "localPrompt": "This operation will delete the following files on your computer and in your org: \n%s",
   "remotePrompt": "This operation will delete the following metadata in your org: \n%s",
+  "deployPrompt": "This operation will deploying the following: \n%s",
   "areYouSure": "\n\nAre you sure you want to proceed (y/n)?"
 }

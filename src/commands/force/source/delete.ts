@@ -6,12 +6,15 @@
  */
 import * as os from 'os';
 import * as fs from 'fs';
+import * as path from 'path';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import {
   ComponentSet,
+  ComponentStatus,
   DestructiveChangesType,
+  FileResponse,
   MetadataComponent,
   RequestStatus,
   SourceComponent,
@@ -20,7 +23,7 @@ import { Duration, env, once } from '@salesforce/kit';
 import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
-import { DeployCommandResult } from '../../../formatters/deployResultFormatter';
+import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeleteResultFormatter } from '../../../formatters/deleteResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
@@ -79,9 +82,12 @@ export class Delete extends DeployCommand {
   protected xorFlags = ['metadata', 'sourcepath'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   private isRest = false;
-  private deleteResultFormatter: DeleteResultFormatter;
+  private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
   private aborted = false;
   private components: MetadataComponent[];
+  // create the delete FileResponse as we're parsing the comp. set to use in the output
+  private mixedDeployDelete: { deploy: string[]; delete: FileResponse[] } = { delete: [], deploy: [] };
+  private stashPath: string;
 
   private updateDeployId = once((id: string) => {
     this.displayDeployId(id);
@@ -102,11 +108,12 @@ export class Delete extends DeployCommand {
     this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
     // verify that the user defined one of: metadata, sourcepath
     this.validateFlags();
+    const sourcepaths = this.getFlag<string[]>('sourcepath');
 
     this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
       sourceapiversion: await this.getSourceApiVersion(),
-      sourcepath: this.getFlag<string[]>('sourcepath'),
+      sourcepath: sourcepaths,
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
         directoryPaths: this.getPackageDirs(),
@@ -117,7 +124,7 @@ export class Delete extends DeployCommand {
 
     if (!this.components.length) {
       // if we didn't find any components to delete, let the user know and exit
-      this.deleteResultFormatter.displayNoResultsFound();
+      (this.deleteResultFormatter as DeleteResultFormatter).displayNoResultsFound();
       return;
     }
 
@@ -132,6 +139,24 @@ export class Delete extends DeployCommand {
       }
     });
     this.componentSet = cs;
+
+    if (sourcepaths) {
+      // determine if user is trying to delete a single file from a bundle, which is actually just an fs delete operation
+      // and then a constructive deploy on the "new" bundle
+      this.components
+        .filter((comp) => {
+          if (comp.type.strategies?.adapter === 'bundle' && comp instanceof SourceComponent) return true;
+        })
+        .map((bundle: SourceComponent) => {
+          sourcepaths.map((sourcepath) => {
+            const contents = bundle.walkContent();
+            // walkContent returns absolute paths while sourcepath will usually be relative
+            if (contents.find((content) => content.lastIndexOf(sourcepath))) {
+              this.moveBundleToManifest(bundle, sourcepath);
+            }
+          });
+        });
+    }
 
     this.aborted = !(await this.handlePrompt());
     if (this.aborted) return;
@@ -170,6 +195,16 @@ export class Delete extends DeployCommand {
     if (status !== RequestStatus.Succeeded && !this.aborted) {
       this.setExitCode(1);
     }
+    // if deploy failed OR the operation was cancelled, restore the stashed files if they exist
+    else if (status !== RequestStatus.Succeeded || this.aborted) {
+      this.mixedDeployDelete.delete.map((file) => {
+        fs.copyFileSync(this.stashPath, file.fullName);
+        fs.unlinkSync(this.stashPath);
+      });
+    } else if (this.mixedDeployDelete.delete.length) {
+      // successful delete -> delete the stashed file
+      fs.rmSync(this.stashPath, { recursive: true, force: true });
+    }
   }
 
   protected formatResult(): DeployCommandResult {
@@ -177,11 +212,34 @@ export class Delete extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
     };
 
-    this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+    this.deleteResultFormatter = this.mixedDeployDelete.deploy.length
+      ? new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult)
+      : new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
       this.deleteResultFormatter.display();
+    }
+
+    if (this.mixedDeployDelete.deploy.length && !this.aborted) {
+      // override JSON output when we actually deployed
+      const json = this.deleteResultFormatter.getJson();
+      json.deletedSource = this.mixedDeployDelete.delete; // to match toolbelt json output
+      json.outboundFiles = []; // to match toolbelt version
+      json.deletes = json.deploys; // to match toolbelt version
+      delete json.deploys;
+      return json;
+    }
+
+    if (this.aborted) {
+      return {
+        status: 0,
+        result: {
+          deletedSource: [],
+          outboundFiles: [],
+          deletes: [{}],
+        },
+      } as unknown as DeployCommandResult;
     }
 
     return this.deleteResultFormatter.getJson();
@@ -190,26 +248,53 @@ export class Delete extends DeployCommand {
   private deleteFilesLocally(): void {
     if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
       this.components.map((component: SourceComponent) => {
-        // delete the content and/or the xml of the components
-        if (component.content) {
-          const stats = fs.lstatSync(component.content);
-          if (stats.isDirectory()) {
-            fs.rmdirSync(component.content, { recursive: true });
-          } else {
-            fs.unlinkSync(component.content);
+        // mixed delete/deploy operations have already been deleted and stashed
+        if (!this.mixedDeployDelete.delete.length) {
+          if (component.content) {
+            const stats = fs.lstatSync(component.content);
+            if (stats.isDirectory()) {
+              fs.rmdirSync(component.content, { recursive: true });
+            } else {
+              fs.unlinkSync(component.content);
+            }
+          }
+          if (component.xml) {
+            fs.unlinkSync(component.xml);
           }
         }
-        if (component.xml) {
-          fs.unlinkSync(component.xml);
-        }
+        // delete the content and/or the xml of the components
       });
     }
+  }
+
+  private moveBundleToManifest(bundle: SourceComponent, sourcepath: string): void {
+    // if one of the passed in sourcepaths is to a bundle component
+    const fileName = path.basename(sourcepath);
+    const dirname = path.dirname(sourcepath);
+    this.mixedDeployDelete.delete.push({
+      state: ComponentStatus.Deleted,
+      fullName: path.join(dirname, fileName),
+      type: bundle.type.name,
+      filePath: sourcepath,
+    });
+    this.stashPath = path.join(os.tmpdir(), 'source_delete', fileName);
+    fs.mkdirSync(path.dirname(this.stashPath), { recursive: true });
+    fs.copyFileSync(sourcepath, this.stashPath);
+    fs.unlinkSync(sourcepath);
+    // re-walk the directory to avoid picking up the deleted file
+    this.mixedDeployDelete.deploy.push(...bundle.walkContent());
+
+    // now remove the bundle from destructive changes and add to manifest
+    // set the bundle as NOT marked for delete
+    this.componentSet.destructiveChangesPost.delete(`${bundle.type.id}#${bundle.fullName}`);
+    bundle.setMarkedForDelete(false);
+    this.componentSet.add(bundle);
   }
 
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
       const remote: string[] = [];
-      const local: string[] = [];
+      let local: string[] = [];
       const message: string[] = [];
 
       this.components.flatMap((component) => {
@@ -220,6 +305,14 @@ export class Delete extends DeployCommand {
           remote.push(`${component.type.name}:${component.fullName}`);
         }
       });
+
+      if (this.mixedDeployDelete.delete.length) {
+        local = this.mixedDeployDelete.delete.map((fr) => fr.fullName);
+      }
+
+      if (this.mixedDeployDelete.deploy.length) {
+        message.push(messages.getMessage('deployPrompt', [[...new Set(this.mixedDeployDelete.deploy)].join('\n')]));
+      }
 
       if (remote.length) {
         message.push(messages.getMessage('remotePrompt', [[...new Set(remote)].join('\n')]));
