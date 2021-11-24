@@ -22,6 +22,7 @@ describe('force:source:delete', () => {
   const sandbox = sinon.createSandbox();
   const username = 'delete-test@org.com';
   const defaultPackagePath = 'defaultPackagePath';
+  let confirm = true;
 
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
 
@@ -30,6 +31,9 @@ describe('force:source:delete', () => {
   let lifecycleEmitStub: sinon.SinonStub;
   let resolveProjectConfigStub: sinon.SinonStub;
   let fsUnlink: sinon.SinonStub;
+  let moveToStashStub: sinon.SinonStub;
+  let restoreFromStashStub: sinon.SinonStub;
+  let deleteStashStub: sinon.SinonStub;
 
   class TestDelete extends Delete {
     public async runIt() {
@@ -72,7 +76,11 @@ describe('force:source:delete', () => {
         return exampleDeleteResponse;
       },
     });
+    stubMethod(sandbox, cmd, 'handlePrompt').returns(confirm);
     fsUnlink = stubMethod(sandbox, fs, 'unlinkSync').returns(true);
+    moveToStashStub = stubMethod(sandbox, cmd, 'moveFileToStash');
+    restoreFromStashStub = stubMethod(sandbox, cmd, 'restoreFileFromStash');
+    deleteStashStub = stubMethod(sandbox, cmd, 'deleteStash');
 
     return cmd.runIt();
   };
@@ -169,42 +177,68 @@ describe('force:source:delete', () => {
     ensureHookArgs();
   });
 
-  // it('tests stash', async () => {
-  //   buildComponentSetStub.restore();
-  //   const comp = new SourceComponent({
-  //     name: 'mylwc',
-  //     type: {
-  //       id: 'lightningcomponentbundle',
-  //       name: 'LightningComponentBundle',
-  //       strategies: {
-  //         adapter: 'bundle',
-  //       },
-  //     },
-  //     xml: '/dreamhouse-lwc/force-app/main/default/lwc/mylwc/mylwc.js-meta.xml',
-  //     content: '/dreamhouse-lwc/force-app/main/default/lwc/mylwc',
-  //   });
-  //   stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
-  //     toArray: () => {
-  //       return [comp];
-  //     },
-  //   });
-  //
-  //   stubMethod(sandbox, comp, 'walkContent').returns([
-  //     '/dreamhouse-lwc/force-app/main/default/lwc/mylwc/mylwc.js',
-  //     '/dreamhouse-lwc/force-app/main/default/lwc/mylwc/helper.js',
-  //   ]);
-  //
-  //   const mkdirStub = stubMethod(sandbox, fs, 'mkdirSync');
-  //   const copyStub = stubMethod(sandbox, fs, 'copyFileSync');
-  //   stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
-  //
-  //   const sourcepath = ['/dreamhouse-lwc/force-app/main/default/lwc/mylwc/helper.js'];
-  //   await runDeleteCmd(['--sourcepath', sourcepath[0], '--json', '-r']);
-  //   ensureCreateComponentSetArgs({ sourcepath });
-  //   ensureHookArgs();
-  //   expect(mkdirStub.calledOnce).to.be.true;
-  //   expect(copyStub.calledOnce).to.be.true;
-  //   // deleting the component and its xml
-  //   expect(fsUnlink.callCount).to.equal(2);
-  // });
+  const stubLWC = (): string => {
+    buildComponentSetStub.restore();
+    const comp = new SourceComponent({
+      name: 'mylwc',
+      type: {
+        id: 'lightningcomponentbundle',
+        name: 'LightningComponentBundle',
+        strategies: {
+          adapter: 'bundle',
+        },
+      },
+    });
+    stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+      toArray: () => {
+        return [comp];
+      },
+    });
+    const helperPath = join('dreamhouse-lwc', 'force-app', 'main', 'default', 'lwc', 'mylwc', 'helper.js');
+
+    stubMethod(sandbox, comp, 'walkContent').returns([
+      join('dreamhouse-lwc', 'force-app', 'main', 'default', 'lwc', 'mylwc', 'mylwc.js'),
+      helperPath,
+    ]);
+
+    stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
+    return helperPath;
+  };
+
+  it('will use stash and delete stash upon successful delete', async () => {
+    const sourcepath = stubLWC();
+    const result = await runDeleteCmd(['--sourcepath', sourcepath, '--json', '-r']);
+    // successful delete will move files to the stash, delete the stash, and won't restore from it
+    expect(moveToStashStub.calledOnce).to.be.true;
+    expect(deleteStashStub.calledOnce).to.be.true;
+    expect(restoreFromStashStub.called).to.be.false;
+    expect(result.deletedSource).to.deep.equal([
+      {
+        filePath: sourcepath,
+        fullName: sourcepath,
+        state: 'Deleted',
+        type: 'LightningComponentBundle',
+      },
+    ]);
+  });
+
+  it('restores from stash during aborted delete', async () => {
+    const sourcepath = stubLWC();
+
+    confirm = false;
+    const result = await runDeleteCmd(['--sourcepath', sourcepath, '--json', '-r']);
+    // aborted delete will move files to the stash, and restore from it
+    expect(moveToStashStub.calledOnce).to.be.true;
+    expect(deleteStashStub.called).to.be.false;
+    expect(restoreFromStashStub.calledOnce).to.be.true;
+    // ensure JSON output from aborted delete
+    expect(result).to.deep.equal({
+      result: {
+        deletedSource: [],
+        deletes: [{}],
+        outboundFiles: [],
+      },
+      status: 0,
+    });
+  });
 });
