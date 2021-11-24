@@ -215,7 +215,7 @@ describe('force:source:delete', () => {
     expect(result.deletedSource).to.deep.equal([
       {
         filePath: sourcepath,
-        fullName: sourcepath,
+        fullName: join('mylwc', 'helper.js'),
         state: 'Deleted',
         type: 'LightningComponentBundle',
       },

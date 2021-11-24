@@ -87,7 +87,9 @@ export class Delete extends DeployCommand {
   private components: MetadataComponent[];
   // create the delete FileResponse as we're parsing the comp. set to use in the output
   private mixedDeployDelete: { deploy: string[]; delete: FileResponse[] } = { delete: [], deploy: [] };
-  private stashPath: string;
+  // map of component in project, to where it is stashed
+  private stashPath = new Map<string, string>();
+  private tempDir = path.join(os.tmpdir(), 'source_delete');
 
   private updateDeployId = once((id: string) => {
     this.displayDeployId(id);
@@ -149,9 +151,8 @@ export class Delete extends DeployCommand {
         })
         .map((bundle: SourceComponent) => {
           sourcepaths.map((sourcepath) => {
-            const contents = bundle.walkContent();
             // walkContent returns absolute paths while sourcepath will usually be relative
-            if (contents.find((content) => content.lastIndexOf(sourcepath))) {
+            if (bundle.walkContent().find((content) => content.endsWith(sourcepath))) {
               this.moveBundleToManifest(bundle, sourcepath);
             }
           });
@@ -198,10 +199,11 @@ export class Delete extends DeployCommand {
     // if deploy failed OR the operation was cancelled, restore the stashed files if they exist
     else if (status !== RequestStatus.Succeeded || this.aborted) {
       this.mixedDeployDelete.delete.map((file) => {
-        this.restoreFileFromStash(file.fullName);
+        this.restoreFileFromStash(file.filePath);
       });
     } else if (this.mixedDeployDelete.delete.length) {
       // successful delete -> delete the stashed file
+
       this.deleteStash();
     }
   }
@@ -267,32 +269,32 @@ export class Delete extends DeployCommand {
   }
 
   private moveFileToStash(file: string): void {
-    fs.mkdirSync(path.dirname(this.stashPath), { recursive: true });
-    fs.copyFileSync(file, this.stashPath);
+    fs.mkdirSync(path.dirname(this.stashPath.get(file)), { recursive: true });
+    fs.copyFileSync(file, this.stashPath.get(file));
     fs.unlinkSync(file);
   }
 
   private restoreFileFromStash(file: string): void {
-    fs.copyFileSync(this.stashPath, file);
-    fs.unlinkSync(this.stashPath);
+    fs.copyFileSync(this.stashPath.get(file), file);
+    fs.unlinkSync(this.stashPath.get(file));
   }
 
   private deleteStash(): void {
-    fs.rmSync(this.stashPath, { recursive: true, force: true });
+    fs.rmSync(this.tempDir, { recursive: true, force: true });
   }
 
   private moveBundleToManifest(bundle: SourceComponent, sourcepath: string): void {
     // if one of the passed in sourcepaths is to a bundle component
     const fileName = path.basename(sourcepath);
-    const dirname = path.dirname(sourcepath);
+    const fullName = path.join(bundle.name, fileName);
     this.mixedDeployDelete.delete.push({
       state: ComponentStatus.Deleted,
-      fullName: path.join(dirname, fileName),
+      fullName,
       type: bundle.type.name,
       filePath: sourcepath,
     });
     // stash the file in case we need to restore it due to failed deploy/aborted command
-    this.stashPath = path.join(os.tmpdir(), 'source_delete', fileName);
+    this.stashPath.set(sourcepath, path.join(this.tempDir, fullName));
     this.moveFileToStash(sourcepath);
 
     // re-walk the directory to avoid picking up the deleted file
