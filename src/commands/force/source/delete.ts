@@ -277,6 +277,7 @@ export class Delete extends DeployCommand {
       type: bundle.type.name,
       filePath: sourcepath,
     });
+    // stash the file in case we need to restore it due to failed deploy/aborted command
     this.stashPath = path.join(os.tmpdir(), 'source_delete', fileName);
     fs.mkdirSync(path.dirname(this.stashPath), { recursive: true });
     fs.copyFileSync(sourcepath, this.stashPath);

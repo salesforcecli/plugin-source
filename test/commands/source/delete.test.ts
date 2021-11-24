@@ -168,4 +168,43 @@ describe('force:source:delete', () => {
     });
     ensureHookArgs();
   });
+
+  // it('tests stash', async () => {
+  //   buildComponentSetStub.restore();
+  //   const comp = new SourceComponent({
+  //     name: 'mylwc',
+  //     type: {
+  //       id: 'lightningcomponentbundle',
+  //       name: 'LightningComponentBundle',
+  //       strategies: {
+  //         adapter: 'bundle',
+  //       },
+  //     },
+  //     xml: '/dreamhouse-lwc/force-app/main/default/lwc/mylwc/mylwc.js-meta.xml',
+  //     content: '/dreamhouse-lwc/force-app/main/default/lwc/mylwc',
+  //   });
+  //   stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
+  //     toArray: () => {
+  //       return [comp];
+  //     },
+  //   });
+  //
+  //   stubMethod(sandbox, comp, 'walkContent').returns([
+  //     '/dreamhouse-lwc/force-app/main/default/lwc/mylwc/mylwc.js',
+  //     '/dreamhouse-lwc/force-app/main/default/lwc/mylwc/helper.js',
+  //   ]);
+  //
+  //   const mkdirStub = stubMethod(sandbox, fs, 'mkdirSync');
+  //   const copyStub = stubMethod(sandbox, fs, 'copyFileSync');
+  //   stubMethod(sandbox, fs, 'lstatSync').returns({ isDirectory: () => false });
+  //
+  //   const sourcepath = ['/dreamhouse-lwc/force-app/main/default/lwc/mylwc/helper.js'];
+  //   await runDeleteCmd(['--sourcepath', sourcepath[0], '--json', '-r']);
+  //   ensureCreateComponentSetArgs({ sourcepath });
+  //   ensureHookArgs();
+  //   expect(mkdirStub.calledOnce).to.be.true;
+  //   expect(copyStub.calledOnce).to.be.true;
+  //   // deleting the component and its xml
+  //   expect(fsUnlink.callCount).to.equal(2);
+  // });
 });
