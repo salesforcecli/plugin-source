@@ -7,25 +7,25 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { join } from 'path';
 import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { exec } from 'shelljs';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-
-const queryOrgAndFS = (name: string, fsPath: string): void => {
-  const cmd = `force:data:soql:query -q "SELECT IsNameObsolete FROM SourceMember WHERE MemberType='LightningComponentBundle' AND MemberName='${name}'" -t --json`;
-  const query1 = execCmd<{ records: [{ IsNameObsolete: boolean }] }>(cmd);
-  // ensure the LWC is still in the org
-  expect(query1.jsonOutput.result.records[0].IsNameObsolete).to.be.false;
-  // while the helper.js file was deleted
-  expect(fs.existsSync(fsPath)).to.be.false;
-};
+import { isNameObsolete } from './deployDestructive.nut';
 
 describe('source:delete NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
   let testkit: SourceTestkit;
+
+  const queryOrgAndFS = async (name: string, fsPath: string): Promise<void> => {
+    // ensure the LWC is still in the org
+    expect(await isNameObsolete(testkit.username, 'LightningComponentBundle', name)).to.be.false;
+    // while the helper.js file was deleted
+    expect(fs.existsSync(fsPath)).to.be.false;
+  };
 
   const createApexClass = () => {
     // create and deploy an ApexClass that can be deleted without dependency issues
@@ -174,7 +174,7 @@ describe('source:delete NUTs', () => {
     expect(deleteResult.deletedSource[0].state, 'state').to.equal('Deleted');
     expect(deleteResult.deletedSource[0].type, 'type').to.equal('LightningComponentBundle');
 
-    queryOrgAndFS('brokerCard', lwcPath);
+    await queryOrgAndFS('brokerCard', lwcPath);
   });
 
   it('should delete a bundle component and deploy as a "new" bundle to two different bundles', async () => {
@@ -200,7 +200,25 @@ describe('source:delete NUTs', () => {
     expect(deleteResult.deletedSource[1].state, 'state').to.equal('Deleted');
     expect(deleteResult.deletedSource[1].type, 'type').to.equal('LightningComponentBundle');
 
-    queryOrgAndFS('brokerCard', lwcPath1);
-    queryOrgAndFS('daysOnMarket', lwcPath2);
+    await queryOrgAndFS('brokerCard', lwcPath1);
+    await queryOrgAndFS('daysOnMarket', lwcPath2);
+  });
+
+  it('should delete an entire LWC', async () => {
+    const lwcPath = path.join(testkit.projectDir, 'force-app', 'main', 'default', 'lwc', 'mylwc');
+    execCmd(`force:lightning:component:create -n mylwc --type lwc -d ${join('force-app', 'main', 'default', 'lwc')}`);
+    execCmd(`force:source:deploy -p ${lwcPath}`);
+    const deleteResult = execCmd<{ deletedSource: [FileResponse] }>(
+      `force:source:delete -p ${lwcPath} --noprompt --json`
+    ).jsonOutput.result;
+
+    expect(deleteResult.deletedSource.length).to.equal(3);
+    expect(deleteResult.deletedSource[0].filePath, 'filepath').to.include(lwcPath);
+    expect(deleteResult.deletedSource[0].fullName, 'fullname').to.include(path.join('mylwc'));
+    expect(deleteResult.deletedSource[0].state, 'state').to.equal('Deleted');
+    expect(deleteResult.deletedSource[0].type, 'type').to.equal('LightningComponentBundle');
+
+    expect(await isNameObsolete(testkit.username, 'LightningComponentBundle', 'mylwc')).to.be.true;
+    expect(fs.existsSync(lwcPath)).to.be.false;
   });
 });

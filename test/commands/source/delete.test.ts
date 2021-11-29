@@ -18,6 +18,8 @@ import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/component
 import { Delete } from '../../../src/commands/force/source/delete';
 import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
 
+const fsPromises = fs.promises;
+
 describe('force:source:delete', () => {
   const sandbox = sinon.createSandbox();
   const username = 'delete-test@org.com';
@@ -77,7 +79,7 @@ describe('force:source:delete', () => {
       },
     });
     stubMethod(sandbox, cmd, 'handlePrompt').returns(confirm);
-    fsUnlink = stubMethod(sandbox, fs, 'unlinkSync').returns(true);
+    fsUnlink = stubMethod(sandbox, fsPromises, 'unlink').resolves(true);
     moveToStashStub = stubMethod(sandbox, cmd, 'moveFileToStash');
     restoreFromStashStub = stubMethod(sandbox, cmd, 'restoreFileFromStash');
     deleteStashStub = stubMethod(sandbox, cmd, 'deleteStash');

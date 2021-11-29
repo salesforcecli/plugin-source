@@ -20,7 +20,6 @@ import {
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
-import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -28,6 +27,8 @@ import { DeleteResultFormatter } from '../../../formatters/deleteResultFormatter
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+
+const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'delete');
@@ -98,11 +99,11 @@ export class Delete extends DeployCommand {
 
   public async run(): Promise<DeployCommandResult> {
     await this.delete();
-    this.resolveSuccess();
+    await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
-    this.deleteFilesLocally();
+    await this.deleteFilesLocally();
     return result;
   }
 
@@ -146,14 +147,12 @@ export class Delete extends DeployCommand {
       // determine if user is trying to delete a single file from a bundle, which is actually just an fs delete operation
       // and then a constructive deploy on the "new" bundle
       this.components
-        .filter((comp) => {
-          if (comp.type.strategies?.adapter === 'bundle' && comp instanceof SourceComponent) return true;
-        })
+        .filter((comp) => comp.type.strategies?.adapter === 'bundle' && comp instanceof SourceComponent)
         .map((bundle: SourceComponent) => {
-          sourcepaths.map((sourcepath) => {
+          sourcepaths.map(async (sourcepath) => {
             // walkContent returns absolute paths while sourcepath will usually be relative
             if (bundle.walkContent().find((content) => content.endsWith(sourcepath))) {
-              this.moveBundleToManifest(bundle, sourcepath);
+              await this.moveBundleToManifest(bundle, sourcepath);
             }
           });
         });
@@ -191,20 +190,22 @@ export class Delete extends DeployCommand {
   /**
    * Checks the response status to determine whether the delete was successful.
    */
-  protected resolveSuccess(): void {
-    const status = getString(this.deployResult, 'response.status');
+  protected async resolveSuccess(): Promise<void> {
+    const status = this.deployResult?.response?.status ?? undefined;
     if (status !== RequestStatus.Succeeded && !this.aborted) {
       this.setExitCode(1);
     }
     // if deploy failed OR the operation was cancelled, restore the stashed files if they exist
     else if (status !== RequestStatus.Succeeded || this.aborted) {
-      this.mixedDeployDelete.delete.map((file) => {
-        this.restoreFileFromStash(file.filePath);
-      });
+      await Promise.all(
+        this.mixedDeployDelete.delete.map((file) => {
+          return this.restoreFileFromStash(file.filePath);
+        })
+      );
     } else if (this.mixedDeployDelete.delete.length) {
       // successful delete -> delete the stashed file
 
-      this.deleteStash();
+      await this.deleteStash();
     }
   }
 
@@ -246,44 +247,44 @@ export class Delete extends DeployCommand {
     return this.deleteResultFormatter.getJson();
   }
 
-  private deleteFilesLocally(): void {
-    if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
+  private async deleteFilesLocally(): Promise<void> {
+    if (!this.getFlag('checkonly') && this.deployResult?.response?.status === RequestStatus.Succeeded) {
+      const promises = [];
       this.components.map((component: SourceComponent) => {
         // mixed delete/deploy operations have already been deleted and stashed
         if (!this.mixedDeployDelete.delete.length) {
           if (component.content) {
             const stats = fs.lstatSync(component.content);
             if (stats.isDirectory()) {
-              fs.rmdirSync(component.content, { recursive: true });
+              promises.push(fsPromises.rmdir(component.content, { recursive: true }));
             } else {
-              fs.unlinkSync(component.content);
+              promises.push(fsPromises.unlink(component.content));
             }
           }
           if (component.xml) {
-            fs.unlinkSync(component.xml);
+            promises.push(fsPromises.unlink(component.xml));
           }
         }
-        // delete the content and/or the xml of the components
       });
+      await Promise.all(promises);
     }
   }
 
-  private moveFileToStash(file: string): void {
-    fs.mkdirSync(path.dirname(this.stashPath.get(file)), { recursive: true });
-    fs.copyFileSync(file, this.stashPath.get(file));
-    fs.unlinkSync(file);
+  private async moveFileToStash(file: string): Promise<void> {
+    await fsPromises.mkdir(path.dirname(this.stashPath.get(file)), { recursive: true });
+    await fsPromises.copyFile(file, this.stashPath.get(file));
+    await fsPromises.unlink(file);
   }
 
-  private restoreFileFromStash(file: string): void {
-    fs.copyFileSync(this.stashPath.get(file), file);
-    fs.unlinkSync(this.stashPath.get(file));
+  private async restoreFileFromStash(file: string): Promise<void> {
+    await fsPromises.rename(this.stashPath.get(file), file);
   }
 
-  private deleteStash(): void {
-    fs.rmSync(this.tempDir, { recursive: true, force: true });
+  private async deleteStash(): Promise<void> {
+    await fsPromises.rm(this.tempDir, { recursive: true, force: true });
   }
 
-  private moveBundleToManifest(bundle: SourceComponent, sourcepath: string): void {
+  private async moveBundleToManifest(bundle: SourceComponent, sourcepath: string): Promise<void> {
     // if one of the passed in sourcepaths is to a bundle component
     const fileName = path.basename(sourcepath);
     const fullName = path.join(bundle.name, fileName);
@@ -295,7 +296,7 @@ export class Delete extends DeployCommand {
     });
     // stash the file in case we need to restore it due to failed deploy/aborted command
     this.stashPath.set(sourcepath, path.join(this.tempDir, fullName));
-    this.moveFileToStash(sourcepath);
+    await this.moveFileToStash(sourcepath);
 
     // re-walk the directory to avoid picking up the deleted file
     this.mixedDeployDelete.deploy.push(...bundle.walkContent());
