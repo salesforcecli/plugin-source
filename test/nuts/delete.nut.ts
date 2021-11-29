@@ -7,7 +7,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { join } from 'path';
 import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
@@ -205,20 +204,42 @@ describe('source:delete NUTs', () => {
   });
 
   it('should delete an entire LWC', async () => {
-    const lwcPath = path.join(testkit.projectDir, 'force-app', 'main', 'default', 'lwc', 'mylwc');
-    execCmd(`force:lightning:component:create -n mylwc --type lwc -d ${join('force-app', 'main', 'default', 'lwc')}`);
-    execCmd(`force:source:deploy -p ${lwcPath}`);
+    const lwcPath = path.join(testkit.projectDir, 'force-app', 'main', 'default', 'lwc');
+    const mylwcPath = path.join(lwcPath, 'mylwc');
+    execCmd(`force:lightning:component:create -n mylwc --type lwc -d ${lwcPath}`);
+    execCmd(`force:source:deploy -p ${mylwcPath}`);
+    expect(await isNameObsolete(testkit.username, 'LightningComponentBundle', 'mylwc')).to.be.false;
     const deleteResult = execCmd<{ deletedSource: [FileResponse] }>(
-      `force:source:delete -p ${lwcPath} --noprompt --json`
+      `force:source:delete -p ${mylwcPath} --noprompt --json`
     ).jsonOutput.result;
 
     expect(deleteResult.deletedSource.length).to.equal(3);
-    expect(deleteResult.deletedSource[0].filePath, 'filepath').to.include(lwcPath);
+    expect(deleteResult.deletedSource[0].filePath, 'filepath').to.include(mylwcPath);
     expect(deleteResult.deletedSource[0].fullName, 'fullname').to.include(path.join('mylwc'));
     expect(deleteResult.deletedSource[0].state, 'state').to.equal('Deleted');
     expect(deleteResult.deletedSource[0].type, 'type').to.equal('LightningComponentBundle');
 
+    expect(fs.existsSync(mylwcPath)).to.be.false;
     expect(await isNameObsolete(testkit.username, 'LightningComponentBundle', 'mylwc')).to.be.true;
-    expect(fs.existsSync(lwcPath)).to.be.false;
+  });
+
+  it('a failed delete will NOT delete files locally', async () => {
+    const lwcPath = path.join(testkit.projectDir, 'force-app', 'main', 'default', 'lwc');
+    const brokerPath = path.join(lwcPath, 'brokerCard');
+    const deleteResult = execCmd<{ deletedSource: [FileResponse & { error: string }] }>(
+      `force:source:delete -p ${brokerPath} --noprompt --json`,
+      { ensureExitCode: 1 }
+    ).jsonOutput.result;
+
+    expect(deleteResult.deletedSource.length).to.equal(1);
+    expect(deleteResult.deletedSource[0].fullName, 'fullname').to.include(path.join('brokerCard'));
+    expect(deleteResult.deletedSource[0].state, 'state').to.equal('Failed');
+    expect(deleteResult.deletedSource[0].type, 'type').to.equal('LightningComponentBundle');
+    expect(deleteResult.deletedSource[0].error, 'error').to.include(
+      'Referenced by a component instance inside the Lightning page Property Record Page : Lightning Page.'
+    );
+
+    expect(await isNameObsolete(testkit.username, 'LightningComponentBundle', 'brokerCard')).to.be.false;
+    expect(fs.existsSync(brokerPath)).to.be.true;
   });
 });

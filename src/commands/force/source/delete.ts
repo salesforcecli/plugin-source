@@ -256,7 +256,7 @@ export class Delete extends DeployCommand {
           if (component.content) {
             const stats = fs.lstatSync(component.content);
             if (stats.isDirectory()) {
-              promises.push(fsPromises.rmdir(component.content, { recursive: true }));
+              promises.push(fsPromises.rm(component.content, { recursive: true }));
             } else {
               promises.push(fsPromises.unlink(component.content));
             }

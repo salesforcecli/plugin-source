@@ -12,7 +12,7 @@ import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
 
-export async function isNameObsolete(username: string, memberType: string, memberName: string): Promise<boolean> {
+export const isNameObsolete = async (username: string, memberType: string, memberName: string): Promise<boolean> => {
   const connection = await Connection.create({
     authInfo: await AuthInfo.create({ username }),
   });
@@ -23,9 +23,9 @@ export async function isNameObsolete(username: string, memberType: string, membe
   );
 
   return res.IsNameObsolete;
-}
+};
 
-describe('source:delete NUTs', () => {
+describe('source:deploy --destructive NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
   let testkit: SourceTestkit;
 
