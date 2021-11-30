@@ -191,20 +191,19 @@ export class Delete extends DeployCommand {
    * Checks the response status to determine whether the delete was successful.
    */
   protected async resolveSuccess(): Promise<void> {
-    const status = this.deployResult?.response?.status ?? undefined;
+    const status = this.deployResult?.response?.status;
     if (status !== RequestStatus.Succeeded && !this.aborted) {
       this.setExitCode(1);
     }
     // if deploy failed OR the operation was cancelled, restore the stashed files if they exist
     else if (status !== RequestStatus.Succeeded || this.aborted) {
       await Promise.all(
-        this.mixedDeployDelete.delete.map((file) => {
-          return this.restoreFileFromStash(file.filePath);
+        this.mixedDeployDelete.delete.map(async (file) => {
+          await this.restoreFileFromStash(file.filePath);
         })
       );
     } else if (this.mixedDeployDelete.delete.length) {
       // successful delete -> delete the stashed file
-
       await this.deleteStash();
     }
   }
