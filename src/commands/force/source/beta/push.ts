@@ -136,6 +136,7 @@ export default class Push extends DeployCommand {
       .flatMap((result) => result.getFileResponses())
       .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
     const successNonDeletes = successes.filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted);
+    // deleted bundleMembers might not be in here, but we can get them from tracking files and compare their parent bundle
     const successDeletes = successes.filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted);
 
     await Promise.all([
