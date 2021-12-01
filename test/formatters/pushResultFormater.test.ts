@@ -39,8 +39,7 @@ describe('PushResultFormatter', () => {
   describe('json', () => {
     it('returns expected json for success', () => {
       const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultSuccess);
-      // expect(formatter.getJson()).to.have.lengthOf(1);
-      expect(formatter.getJson()).to.deep.equal([
+      expect(formatter.getJson().pushedSource).to.deep.equal([
         {
           filePath: 'classes/ProductController.cls',
           fullName: 'ProductController',
@@ -52,11 +51,11 @@ describe('PushResultFormatter', () => {
     describe('json with quiet', () => {
       it('honors quiet flag for json successes', () => {
         const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultSuccess);
-        expect(formatter.getJson()).to.deep.equal([]);
+        expect(formatter.getJson().pushedSource).to.deep.equal([]);
       });
       it('honors quiet flag for json successes', () => {
         const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultFailure);
-        expect(formatter.getJson()).to.have.length(1);
+        expect(formatter.getJson().pushedSource).to.have.length(1);
       });
     });
   });
@@ -75,7 +74,7 @@ describe('PushResultFormatter', () => {
         const formatter = new PushResultFormatter(logger, uxMock as UX, { quiet: true }, deployResultSuccess);
         formatter.display();
         expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(0);
-        expect(formatter.getJson()).to.deep.equal([]);
+        expect(formatter.getJson().pushedSource).to.deep.equal([]);
         expect(tableStub.callCount).to.equal(0);
       });
       it('displays errors and throws for quiet', () => {
