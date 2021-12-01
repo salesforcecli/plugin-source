@@ -132,7 +132,12 @@ export default class Push extends DeployCommand {
         // Only fire the postdeploy event when we have results. I.e., not async.
         await this.lifecycle.emit('postdeploy', result);
         this.deployResults.push(result);
-        if (result.response.status !== RequestStatus.Succeeded) {
+        if (
+          result.response.status !== RequestStatus.Succeeded &&
+          isSequentialDeploy &&
+          this.project.hasMultiplePackages()
+        ) {
+          this.ux.log(messages.getMessage('sequentialFail'));
           break;
         }
       }
