@@ -14,7 +14,7 @@ import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormat
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
-export type PushResponse = Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>;
+export type PushResponse = { pushedSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
 
 export class PushResultFormatter extends ResultFormatter {
   protected fileResponses: FileResponse[];
@@ -31,13 +31,15 @@ export class PushResultFormatter extends ResultFormatter {
    *
    * @returns a JSON formatted result matching the provided type.
    */
-  public getJson(): PushResponse[] {
+  public getJson(): PushResponse {
     // quiet returns only failures
     const toReturn = this.isQuiet()
       ? this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)
       : this.fileResponses;
 
-    return toReturn.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
+    return {
+      pushedSource: toReturn.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
+    };
   }
 
   /**

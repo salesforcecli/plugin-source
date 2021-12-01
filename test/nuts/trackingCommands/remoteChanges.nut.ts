@@ -49,9 +49,9 @@ describe('remote changes', () => {
 
   describe('remote changes: delete', () => {
     it('pushes to initiate the remote', () => {
-      const pushResult = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const pushResult = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
       expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(234);
       expect(
         pushResult.every((r) => r.state !== ComponentStatus.Failed),

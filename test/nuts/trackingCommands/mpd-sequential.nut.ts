@@ -50,9 +50,9 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
 
   describe('mpd sequential', () => {
     it('pushes using MPD', () => {
-      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
       // the fields should be populated
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);

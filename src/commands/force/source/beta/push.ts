@@ -55,7 +55,7 @@ export default class Push extends DeployCommand {
 
   private tracking: SourceTracking;
 
-  public async run(): Promise<PushResponse[]> {
+  public async run(): Promise<PushResponse> {
     await this.prechecks();
     await this.deploy();
     this.resolveSuccess();
@@ -81,7 +81,7 @@ export default class Push extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    const isMPD = getBoolean(await this.project.resolveProjectConfig(), 'pushPackageDirectoriesSequentially');
+    const isMPD = getBoolean(await this.project.resolveProjectConfig(), 'pushPackageDirectoriesSequentially', false);
     const componentSets = await this.tracking.localChangesAsComponentSet(isMPD);
     const sourceApiVersion = await this.getSourceApiVersion();
     const isRest = await this.isRestDeploy();
@@ -191,7 +191,7 @@ export default class Push extends DeployCommand {
     this.setExitCode(1);
   }
 
-  protected formatResult(): PushResponse[] {
+  protected formatResult(): PushResponse {
     if (!this.deployResults.length) {
       this.ux.log('No results found');
     }

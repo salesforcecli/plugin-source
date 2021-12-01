@@ -36,7 +36,7 @@ describe('lwc', () => {
   });
 
   it('pushes the repo to get source tracking started', () => {
-    execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     });
   });
@@ -53,9 +53,9 @@ describe('lwc', () => {
   });
 
   it('pushes lwc css change', () => {
-    const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+    const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
-    }).jsonOutput.result;
+    }).jsonOutput.result.pushedSource;
     // we get a result for each bundle member, even though only one changed
     expect(result.filter((r) => r.fullName === 'heroDetails')).to.have.length(4);
   });
@@ -85,9 +85,9 @@ describe('lwc', () => {
   });
 
   it('pushes lwc subcomponent delete', () => {
-    const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+    const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
-    }).jsonOutput.result;
+    }).jsonOutput.result.pushedSource;
     const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(3);
     expect(bundleMembers);
@@ -123,9 +123,9 @@ describe('lwc', () => {
   });
 
   it('push deletes the LWC remotely', () => {
-    const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+    const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
-    }).jsonOutput.result;
+    }).jsonOutput.result.pushedSource;
     // there'll also be changes for the changed Hero component html, but we've already tested changing a bundle member
     const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(3);

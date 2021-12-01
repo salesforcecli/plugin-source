@@ -58,9 +58,9 @@ describe('forceignore changes', () => {
       const newForceIgnore = originalForceIgnore + '\n' + `${classdir}/IgnoreTest.cls`;
       await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), newForceIgnore);
       // nothing should push
-      const output = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const output = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
       expect(output).to.deep.equal([]);
     });
 
@@ -92,9 +92,9 @@ describe('forceignore changes', () => {
         silent: true,
       });
       // pushes with no results
-      const ignoredOutput = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const ignoredOutput = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
       // nothing should have been pushed
       expect(ignoredOutput).to.deep.equal([]);
     });
@@ -104,9 +104,9 @@ describe('forceignore changes', () => {
       await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), originalForceIgnore);
 
       // verify file pushed in results
-      const unIgnoredOutput = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const unIgnoredOutput = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
 
       // all 4 files should have been pushed
       expect(unIgnoredOutput).to.have.length(4);

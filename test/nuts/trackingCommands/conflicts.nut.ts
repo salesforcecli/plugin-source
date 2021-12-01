@@ -42,9 +42,9 @@ describe('conflict detection and resolution', () => {
 
   it('pushes to initiate the remote', () => {
     // This would go in setupCommands but we want it to use the bin/run version
-    const pushResult = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+    const pushResult = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
-    }).jsonOutput.result;
+    }).jsonOutput.result.pushedSource;
     expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(234);
     expect(
       pushResult.every((r) => r.state !== ComponentStatus.Failed),
@@ -123,13 +123,13 @@ describe('conflict detection and resolution', () => {
   });
 
   it('gets conflict error on push', () => {
-    execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
   });
   it('gets conflict error on pull', () => {
     execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 1 });
   });
   it('can push with forceoverwrite', () => {
-    execCmd<PushResponse[][]>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
       ensureExitCode: 0,
     });
   });
