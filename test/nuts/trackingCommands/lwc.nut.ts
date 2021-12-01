@@ -89,9 +89,9 @@ describe('lwc', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
     const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
-    expect(bundleMembers).to.have.length(3);
-    expect(bundleMembers);
-    expect(bundleMembers.every((r) => r.state === 'Changed')).to.be.true;
+    expect(bundleMembers).to.have.length(4);
+    expect(bundleMembers.filter((r) => r.state === 'Deleted')).to.have.length(1);
+    expect(bundleMembers.filter((r) => r.state === 'Changed')).to.have.length(3);
   });
 
   it('sees no local changes', () => {

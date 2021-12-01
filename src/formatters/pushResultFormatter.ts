@@ -4,11 +4,20 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
+import { resolve as pathResolve } from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { DeployResult, FileResponse, DeployMessage, ComponentStatus } from '@salesforce/source-deploy-retrieve';
+import {
+  DeployResult,
+  FileResponse,
+  DeployMessage,
+  ComponentStatus,
+  MetadataResolver,
+  VirtualTreeContainer,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
+import { isString } from '@salesforce/ts-types';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -19,13 +28,16 @@ export type PushResponse = { pushedSource: Array<Pick<FileResponse, 'filePath' |
 export class PushResultFormatter extends ResultFormatter {
   protected fileResponses: FileResponse[];
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, protected results: DeployResult[]) {
+  public constructor(
+    logger: Logger,
+    ux: UX,
+    options: ResultFormatterOptions,
+    protected results: DeployResult[],
+    // if your push included deletes that are bundle subcomponents, we'll need to add those deletes to the results even though they aren't included in fileResponses
+    protected deletes: string[] = []
+  ) {
     super(logger, ux, options);
-    this.fileResponses = results.some((result) => result.getFileResponses().length)
-      ? results.flatMap((result) =>
-          result.getFileResponses().filter((fileResponse) => fileResponse.state !== 'Unchanged')
-        )
-      : [];
+    this.fileResponses = this.correctFileResponses();
   }
 
   /**
@@ -60,6 +72,50 @@ export class PushResultFormatter extends ResultFormatter {
     if (!this.isSuccess()) {
       throw new SfdxError(messages.getMessage('sourcepushFailed'), 'PushFailed');
     }
+  }
+
+  protected correctFileResponses(): FileResponse[] {
+    const withoutUnchanged = this.results.some((result) => result.getFileResponses().length)
+      ? this.results.flatMap((result) =>
+          result.getFileResponses().filter((fileResponse) => fileResponse.state !== 'Unchanged')
+        )
+      : [];
+    if (!this.deletes.length) {
+      return withoutUnchanged;
+    }
+    const bundlesDeployed = withoutUnchanged.filter((fileResponse) =>
+      ['LightningComponentBundle', 'AuraDefinitionBundle', 'WaveTemplateBundle'].includes(fileResponse.type)
+    );
+    if (bundlesDeployed.length === 0) {
+      return withoutUnchanged;
+    }
+    // "content" property of the bundles as a string
+    const contentFilePathFromDeployedBundles = this.componentsFromFilenames(
+      bundlesDeployed.map((fileResponse) => fileResponse.filePath)
+    )
+      .map((c) => c.content)
+      .filter(isString);
+
+    // there may be deletes not represented in the file responses (if bundle type)
+    const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(this.deletes));
+    return this.deletes
+      .map((filePath) => {
+        const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
+        if (
+          cmp instanceof SourceComponent &&
+          cmp.type.strategies?.adapter === 'bundle' &&
+          contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content))
+        ) {
+          return {
+            state: ComponentStatus.Deleted,
+            fullName: cmp.fullName,
+            type: cmp.type.name,
+            filePath,
+          } as FileResponse;
+        }
+      })
+      .filter((fileResponse) => fileResponse)
+      .concat(withoutUnchanged);
   }
 
   protected displaySuccesses(): void {
@@ -127,5 +183,21 @@ export class PushResultFormatter extends ResultFormatter {
       ],
     });
     this.ux.log('');
+  }
+
+  private componentsFromFilenames(filenames: string[]): SourceComponent[] {
+    const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(filenames));
+    return filenames
+      .flatMap((filename) => this.resolveComponentsOrWarn(filename, resolver))
+      .filter((cmp) => cmp instanceof SourceComponent);
+  }
+
+  private resolveComponentsOrWarn(filename: string, resolver: MetadataResolver): SourceComponent[] {
+    try {
+      return resolver.getComponentsFromPath(filename);
+    } catch (e) {
+      this.logger.warn(`unable to resolve ${filename}`);
+      return [];
+    }
   }
 }

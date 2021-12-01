@@ -53,6 +53,7 @@ export default class Push extends DeployCommand {
 
   private deployResults: DeployResult[] = [];
   private tracking: SourceTracking;
+  private deletes: string[];
 
   public async run(): Promise<PushResponse> {
     await this.prechecks();
@@ -77,6 +78,8 @@ export default class Push extends DeployCommand {
     if (!this.flags.forceoverwrite) {
       processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
     }
+    // we need these later to show deletes in results
+    this.deletes = await this.tracking.getChanges<string>({ origin: 'local', state: 'delete', format: 'string' });
   }
 
   protected async deploy(): Promise<void> {
@@ -200,7 +203,7 @@ export default class Push extends DeployCommand {
       quiet: this.getFlag<boolean>('quiet', false),
     };
 
-    const formatter = new PushResultFormatter(this.logger, this.ux, formatterOptions, this.deployResults);
+    const formatter = new PushResultFormatter(this.logger, this.ux, formatterOptions, this.deployResults, this.deletes);
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
