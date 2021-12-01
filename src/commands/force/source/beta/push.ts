@@ -31,7 +31,6 @@ export default class Push extends DeployCommand {
       description: messages.getMessage('flags.forceoverwrite'),
       longDescription: messages.getMessage('flags.forceoverwriteLong'),
     }),
-    // TODO: use shared flags from plugin-source?
     wait: flags.minutes({
       char: 'w',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
@@ -51,8 +50,8 @@ export default class Push extends DeployCommand {
   protected static requiresUsername = true;
   protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  private deployResults: DeployResult[] = [];
 
+  private deployResults: DeployResult[] = [];
   private tracking: SourceTracking;
 
   public async run(): Promise<PushResponse> {
@@ -82,9 +81,11 @@ export default class Push extends DeployCommand {
 
   protected async deploy(): Promise<void> {
     const isMPD = getBoolean(await this.project.resolveProjectConfig(), 'pushPackageDirectoriesSequentially', false);
-    const componentSets = await this.tracking.localChangesAsComponentSet(isMPD);
-    const sourceApiVersion = await this.getSourceApiVersion();
-    const isRest = await this.isRestDeploy();
+    const [componentSets, sourceApiVersion, isRest] = await Promise.all([
+      this.tracking.localChangesAsComponentSet(isMPD),
+      this.getSourceApiVersion(),
+      this.isRestDeploy(),
+    ]);
     for (const componentSet of componentSets) {
       if (sourceApiVersion) {
         componentSet.sourceApiVersion = sourceApiVersion;
