@@ -83,9 +83,13 @@ export default class Push extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    const isMPD = getBoolean(await this.project.resolveProjectConfig(), 'pushPackageDirectoriesSequentially', false);
+    const isSequentialDeploy = getBoolean(
+      await this.project.resolveProjectConfig(),
+      'pushPackageDirectoriesSequentially',
+      false
+    );
     const [componentSets, sourceApiVersion, isRest] = await Promise.all([
-      this.tracking.localChangesAsComponentSet(isMPD),
+      this.tracking.localChangesAsComponentSet(isSequentialDeploy),
       this.getSourceApiVersion(),
       this.isRestDeploy(),
     ]);
@@ -128,6 +132,9 @@ export default class Push extends DeployCommand {
         // Only fire the postdeploy event when we have results. I.e., not async.
         await this.lifecycle.emit('postdeploy', result);
         this.deployResults.push(result);
+        if (result.response.status !== RequestStatus.Succeeded) {
+          break;
+        }
       }
     }
   }
