@@ -22,15 +22,10 @@ export class PushResultFormatter extends ResultFormatter {
   public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, protected results: DeployResult[]) {
     super(logger, ux, options);
     this.fileResponses = results.some((result) => result.getFileResponses().length)
-      ? results.flatMap((result) => result.getFileResponses())
+      ? results.flatMap((result) =>
+          result.getFileResponses().filter((fileResponse) => fileResponse.state !== 'Unchanged')
+        )
       : [];
-    // in a mpd scenario, we could have duplicate results for the files (when the same file is in multiple pkgDirs)
-    if (results.length > 1) {
-      this.fileResponses = this.fileResponses.filter(
-        // only keeps the first result for each file
-        (fileResponse, index) => this.fileResponses.findIndex((f) => f.filePath === fileResponse.filePath) === index
-      );
-    }
   }
 
   /**
