@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
@@ -42,10 +41,10 @@ describe('conflict detection and resolution', () => {
 
   it('pushes to initiate the remote', () => {
     // This would go in setupCommands but we want it to use the bin/run version
-    const pushResult = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+    const pushResult = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
-    }).jsonOutput.result;
-    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(234);
+    }).jsonOutput.result.pushedSource;
+    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(232);
     expect(
       pushResult.every((r) => r.state !== ComponentStatus.Failed),
       JSON.stringify(pushResult)
@@ -123,13 +122,13 @@ describe('conflict detection and resolution', () => {
   });
 
   it('gets conflict error on push', () => {
-    execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
   });
   it('gets conflict error on pull', () => {
     execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 1 });
   });
   it('can push with forceoverwrite', () => {
-    execCmd<PushResponse[][]>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
       ensureExitCode: 0,
     });
   });

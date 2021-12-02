@@ -6,9 +6,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable no-console */
 
 import * as path from 'path';
 import * as fs from 'fs';
@@ -127,7 +125,7 @@ describe('reset and clear', () => {
       expect(lowestRevision).lessThan(revisionFile.serverMaxRevisionCounter as number);
       // revisions are not retrieved
       revisions.map((revision) => {
-        expect(revision.serverRevisionCounter !== revision.lastRetrievedFromServer).to.equal(true);
+        expect(revision.serverRevisionCounter).to.not.equal(revision.lastRetrievedFromServer);
         expect(revision.lastRetrievedFromServer).to.equal(null);
       });
     });
@@ -138,11 +136,9 @@ describe('reset and clear', () => {
       const revisions = await getRevisionsAsArray();
 
       revisions.map((revision) => {
-        if (revision.serverRevisionCounter === lowestRevision) {
-          expect(revision.serverRevisionCounter === revision.lastRetrievedFromServer).to.equal(true);
-        } else {
-          expect(revision.serverRevisionCounter !== revision.lastRetrievedFromServer).to.equal(true);
-        }
+        revision.serverRevisionCounter === lowestRevision
+          ? expect(revision.serverRevisionCounter).to.equal(revision.lastRetrievedFromServer)
+          : expect(revision.serverRevisionCounter).to.not.equal(revision.lastRetrievedFromServer);
       });
     });
 

@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/* eslint-disable no-console */
-
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
@@ -52,11 +50,11 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('pushes the initial metadata to the org', () => {
-      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
-      expect(result, JSON.stringify(result)).to.have.lengthOf(234);
+      expect(result, JSON.stringify(result)).to.have.lengthOf(232);
       expect(
         result.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(result)
@@ -135,9 +133,9 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     });
 
     it('pushes the local delete to the org', () => {
-      const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput.result.pushedSource;
       expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
     });
     it('sees no local changes', () => {
@@ -177,9 +175,9 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         ]);
       });
       it('fails to push', () => {
-        const result = execCmd<PushResponse[]>(replaceRenamedCommands('force:source:push --json'), {
+        const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
           ensureExitCode: 1,
-        }).jsonOutput.result;
+        }).jsonOutput.result.pushedSource;
         expect(result.every((r) => r.type === 'ApexClass' && r.state === 'Failed')).to.equal(true);
       });
       it('classes that failed to deploy are still in local status', () => {

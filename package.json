@@ -9,7 +9,7 @@
     "@salesforce/command": "^4.2.0",
     "@salesforce/core": "^2.31.0",
     "@salesforce/source-deploy-retrieve": "^5.8.0",
-    "@salesforce/source-tracking": "^0.4.4",
+    "@salesforce/source-tracking": "^0.5.0",
     "chalk": "^4.1.2",
     "cli-ux": "^5.6.3",
     "open": "^8.2.1",
@@ -144,6 +144,7 @@
     "prepare": "sf-install",
     "pretest": "sf-compile-test",
     "test": "sf-test",
+    "test:watch": "mocha --watch \"./test/**/*.test.ts\"",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/run snapshot:compare",
     "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 600000 --parallel --retries 0",
@@ -169,6 +170,7 @@
     "test:nuts:tracking:forceignore": "mocha \"test/nuts/trackingCommands/forceIgnore.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:resetClear": "mocha \"test/nuts/trackingCommands/resetClear.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:lwc": "mocha \"test/nuts/trackingCommands/lwc.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "version": "oclif-dev readme"
   },
   "publishConfig": {
