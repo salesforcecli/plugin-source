@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/salesforcecli/plugin-source/compare/v1.5.5...v1.6.0) (2021-12-02)
+
+### Features
+
+- bump deps ([#339](https://github.com/salesforcecli/plugin-source/issues/339)) ([ef58621](https://github.com/salesforcecli/plugin-source/commit/ef5862195a3e5c777ab8df0d2fc5782b1d692ff0))
+
 ### [1.5.5](https://github.com/salesforcecli/plugin-source/compare/v1.5.4...v1.5.5) (2021-12-01)
 
 ### Bug Fixes
