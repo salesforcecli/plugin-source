@@ -6,25 +6,29 @@
  */
 import * as os from 'os';
 import * as fs from 'fs';
+import * as path from 'path';
 import { confirm } from 'cli-ux/lib/prompt';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import {
   ComponentSet,
+  ComponentStatus,
   DestructiveChangesType,
+  FileResponse,
   MetadataComponent,
   RequestStatus,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
 import { Duration, env, once } from '@salesforce/kit';
-import { getString } from '@salesforce/ts-types';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
-import { DeployCommandResult } from '../../../formatters/deployResultFormatter';
+import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeleteResultFormatter } from '../../../formatters/deleteResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+
+const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'delete');
@@ -79,9 +83,14 @@ export class Delete extends DeployCommand {
   protected xorFlags = ['metadata', 'sourcepath'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   private isRest = false;
-  private deleteResultFormatter: DeleteResultFormatter;
+  private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
   private aborted = false;
   private components: MetadataComponent[];
+  // create the delete FileResponse as we're parsing the comp. set to use in the output
+  private mixedDeployDelete: { deploy: string[]; delete: FileResponse[] } = { delete: [], deploy: [] };
+  // map of component in project, to where it is stashed
+  private stashPath = new Map<string, string>();
+  private tempDir = path.join(os.tmpdir(), 'source_delete');
 
   private updateDeployId = once((id: string) => {
     this.displayDeployId(id);
@@ -90,11 +99,11 @@ export class Delete extends DeployCommand {
 
   public async run(): Promise<DeployCommandResult> {
     await this.delete();
-    this.resolveSuccess();
+    await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
-    this.deleteFilesLocally();
+    await this.deleteFilesLocally();
     return result;
   }
 
@@ -102,11 +111,12 @@ export class Delete extends DeployCommand {
     this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
     // verify that the user defined one of: metadata, sourcepath
     this.validateFlags();
+    const sourcepaths = this.getFlag<string[]>('sourcepath');
 
     this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
       sourceapiversion: await this.getSourceApiVersion(),
-      sourcepath: this.getFlag<string[]>('sourcepath'),
+      sourcepath: sourcepaths,
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
         directoryPaths: this.getPackageDirs(),
@@ -117,7 +127,7 @@ export class Delete extends DeployCommand {
 
     if (!this.components.length) {
       // if we didn't find any components to delete, let the user know and exit
-      this.deleteResultFormatter.displayNoResultsFound();
+      (this.deleteResultFormatter as DeleteResultFormatter).displayNoResultsFound();
       return;
     }
 
@@ -132,6 +142,21 @@ export class Delete extends DeployCommand {
       }
     });
     this.componentSet = cs;
+
+    if (sourcepaths) {
+      // determine if user is trying to delete a single file from a bundle, which is actually just an fs delete operation
+      // and then a constructive deploy on the "new" bundle
+      this.components
+        .filter((comp) => comp.type.strategies?.adapter === 'bundle' && comp instanceof SourceComponent)
+        .map((bundle: SourceComponent) => {
+          sourcepaths.map(async (sourcepath) => {
+            // walkContent returns absolute paths while sourcepath will usually be relative
+            if (bundle.walkContent().find((content) => content.endsWith(sourcepath))) {
+              await this.moveBundleToManifest(bundle, sourcepath);
+            }
+          });
+        });
+    }
 
     this.aborted = !(await this.handlePrompt());
     if (this.aborted) return;
@@ -165,10 +190,21 @@ export class Delete extends DeployCommand {
   /**
    * Checks the response status to determine whether the delete was successful.
    */
-  protected resolveSuccess(): void {
-    const status = getString(this.deployResult, 'response.status');
+  protected async resolveSuccess(): Promise<void> {
+    const status = this.deployResult?.response?.status;
     if (status !== RequestStatus.Succeeded && !this.aborted) {
       this.setExitCode(1);
+    }
+    // if deploy failed OR the operation was cancelled, restore the stashed files if they exist
+    else if (status !== RequestStatus.Succeeded || this.aborted) {
+      await Promise.all(
+        this.mixedDeployDelete.delete.map(async (file) => {
+          await this.restoreFileFromStash(file.filePath);
+        })
+      );
+    } else if (this.mixedDeployDelete.delete.length) {
+      // successful delete -> delete the stashed file
+      await this.deleteStash();
     }
   }
 
@@ -177,39 +213,104 @@ export class Delete extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
     };
 
-    this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+    this.deleteResultFormatter = this.mixedDeployDelete.deploy.length
+      ? new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult)
+      : new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
       this.deleteResultFormatter.display();
     }
 
+    if (this.mixedDeployDelete.deploy.length && !this.aborted) {
+      // override JSON output when we actually deployed
+      const json = this.deleteResultFormatter.getJson();
+      json.deletedSource = this.mixedDeployDelete.delete; // to match toolbelt json output
+      json.outboundFiles = []; // to match toolbelt version
+      json.deletes = json.deploys; // to match toolbelt version
+      delete json.deploys;
+      return json;
+    }
+
+    if (this.aborted) {
+      return {
+        status: 0,
+        result: {
+          deletedSource: [],
+          outboundFiles: [],
+          deletes: [{}],
+        },
+      } as unknown as DeployCommandResult;
+    }
+
     return this.deleteResultFormatter.getJson();
   }
 
-  private deleteFilesLocally(): void {
-    if (!this.getFlag('checkonly') && getString(this.deployResult, 'response.status') === 'Succeeded') {
+  private async deleteFilesLocally(): Promise<void> {
+    if (!this.getFlag('checkonly') && this.deployResult?.response?.status === RequestStatus.Succeeded) {
+      const promises = [];
       this.components.map((component: SourceComponent) => {
-        // delete the content and/or the xml of the components
-        if (component.content) {
-          const stats = fs.lstatSync(component.content);
-          if (stats.isDirectory()) {
-            fs.rmdirSync(component.content, { recursive: true });
-          } else {
-            fs.unlinkSync(component.content);
+        // mixed delete/deploy operations have already been deleted and stashed
+        if (!this.mixedDeployDelete.delete.length) {
+          if (component.content) {
+            const stats = fs.lstatSync(component.content);
+            if (stats.isDirectory()) {
+              promises.push(fsPromises.rm(component.content, { recursive: true }));
+            } else {
+              promises.push(fsPromises.unlink(component.content));
+            }
+          }
+          if (component.xml) {
+            promises.push(fsPromises.unlink(component.xml));
           }
         }
-        if (component.xml) {
-          fs.unlinkSync(component.xml);
-        }
       });
+      await Promise.all(promises);
     }
+  }
+
+  private async moveFileToStash(file: string): Promise<void> {
+    await fsPromises.mkdir(path.dirname(this.stashPath.get(file)), { recursive: true });
+    await fsPromises.copyFile(file, this.stashPath.get(file));
+    await fsPromises.unlink(file);
+  }
+
+  private async restoreFileFromStash(file: string): Promise<void> {
+    await fsPromises.rename(this.stashPath.get(file), file);
+  }
+
+  private async deleteStash(): Promise<void> {
+    await fsPromises.rm(this.tempDir, { recursive: true, force: true });
+  }
+
+  private async moveBundleToManifest(bundle: SourceComponent, sourcepath: string): Promise<void> {
+    // if one of the passed in sourcepaths is to a bundle component
+    const fileName = path.basename(sourcepath);
+    const fullName = path.join(bundle.name, fileName);
+    this.mixedDeployDelete.delete.push({
+      state: ComponentStatus.Deleted,
+      fullName,
+      type: bundle.type.name,
+      filePath: sourcepath,
+    });
+    // stash the file in case we need to restore it due to failed deploy/aborted command
+    this.stashPath.set(sourcepath, path.join(this.tempDir, fullName));
+    await this.moveFileToStash(sourcepath);
+
+    // re-walk the directory to avoid picking up the deleted file
+    this.mixedDeployDelete.deploy.push(...bundle.walkContent());
+
+    // now remove the bundle from destructive changes and add to manifest
+    // set the bundle as NOT marked for delete
+    this.componentSet.destructiveChangesPost.delete(`${bundle.type.id}#${bundle.fullName}`);
+    bundle.setMarkedForDelete(false);
+    this.componentSet.add(bundle);
   }
 
   private async handlePrompt(): Promise<boolean> {
     if (!this.getFlag('noprompt')) {
       const remote: string[] = [];
-      const local: string[] = [];
+      let local: string[] = [];
       const message: string[] = [];
 
       this.components.flatMap((component) => {
@@ -220,6 +321,14 @@ export class Delete extends DeployCommand {
           remote.push(`${component.type.name}:${component.fullName}`);
         }
       });
+
+      if (this.mixedDeployDelete.delete.length) {
+        local = this.mixedDeployDelete.delete.map((fr) => fr.fullName);
+      }
+
+      if (this.mixedDeployDelete.deploy.length) {
+        message.push(messages.getMessage('deployPrompt', [[...new Set(this.mixedDeployDelete.deploy)].join('\n')]));
+      }
 
       if (remote.length) {
         message.push(messages.getMessage('remotePrompt', [[...new Set(remote)].join('\n')]));

@@ -12,7 +12,20 @@ import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
 
-describe('source:delete NUTs', () => {
+export const isNameObsolete = async (username: string, memberType: string, memberName: string): Promise<boolean> => {
+  const connection = await Connection.create({
+    authInfo: await AuthInfo.create({ username }),
+  });
+
+  const res = await connection.singleRecordQuery<{ IsNameObsolete: boolean }>(
+    `SELECT IsNameObsolete FROM SourceMember WHERE MemberType='${memberType}' AND MemberName='${memberName}'`,
+    { tooling: true }
+  );
+
+  return res.IsNameObsolete;
+};
+
+describe('source:deploy --destructive NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
   let testkit: SourceTestkit;
 
@@ -27,19 +40,6 @@ describe('source:delete NUTs', () => {
 
   const createManifest = (metadata: string, manifesttype: string) => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype}`);
-  };
-
-  const isNameObsolete = async (memberType: string, memberName: string): Promise<boolean> => {
-    const connection = await Connection.create({
-      authInfo: await AuthInfo.create({ username: testkit.username }),
-    });
-
-    const res = await connection.singleRecordQuery<{ IsNameObsolete: boolean }>(
-      `SELECT IsNameObsolete FROM SourceMember WHERE MemberType='${memberType}' AND MemberName='${memberName}'`,
-      { tooling: true }
-    );
-
-    return res.IsNameObsolete;
   };
 
   before(async () => {
@@ -58,7 +58,7 @@ describe('source:delete NUTs', () => {
   describe('destructive changes POST', () => {
     it('should deploy and then delete an ApexClass ', async () => {
       const { apexName } = createApexClass();
-      let deleted = await isNameObsolete('ApexClass', apexName);
+      let deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
 
       expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
@@ -68,7 +68,7 @@ describe('source:delete NUTs', () => {
         ensureExitCode: 0,
       });
 
-      deleted = await isNameObsolete('ApexClass', apexName);
+      deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
       expect(deleted).to.be.true;
     });
   });
@@ -76,7 +76,7 @@ describe('source:delete NUTs', () => {
   describe('destructive changes PRE', () => {
     it('should delete an ApexClass and then deploy a class', async () => {
       const { apexName } = createApexClass();
-      let deleted = await isNameObsolete('ApexClass', apexName);
+      let deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
 
       expect(deleted).to.be.false;
       createManifest('ApexClass:GeocodingService', 'package');
@@ -86,7 +86,7 @@ describe('source:delete NUTs', () => {
         ensureExitCode: 0,
       });
 
-      deleted = await isNameObsolete('ApexClass', apexName);
+      deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
       expect(deleted).to.be.true;
     });
   });
@@ -95,8 +95,8 @@ describe('source:delete NUTs', () => {
     it('should delete a class, then deploy and then delete an ApexClass', async () => {
       const pre = createApexClass('pre').apexName;
       const post = createApexClass('post').apexName;
-      let preDeleted = await isNameObsolete('ApexClass', pre);
-      let postDeleted = await isNameObsolete('ApexClass', post);
+      let preDeleted = await isNameObsolete(testkit.username, 'ApexClass', pre);
+      let postDeleted = await isNameObsolete(testkit.username, 'ApexClass', post);
 
       expect(preDeleted).to.be.false;
       expect(postDeleted).to.be.false;
@@ -111,8 +111,8 @@ describe('source:delete NUTs', () => {
         }
       );
 
-      preDeleted = await isNameObsolete('ApexClass', pre);
-      postDeleted = await isNameObsolete('ApexClass', post);
+      preDeleted = await isNameObsolete(testkit.username, 'ApexClass', pre);
+      postDeleted = await isNameObsolete(testkit.username, 'ApexClass', post);
       expect(preDeleted).to.be.true;
       expect(postDeleted).to.be.true;
     });
