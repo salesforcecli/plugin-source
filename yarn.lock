@@ -822,28 +822,6 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@2.31.0", "@salesforce/core@^2.31.0":
-  version "2.31.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.31.0.tgz#cdeaa9968060afb52f40c12bf5a4f9844a2a1909"
-  integrity sha512-ROEjX/M0ZHpGlmRfNUoDKsE4ppOZUU5Hcl3XHr2pCO7F505imAmhKg8I+XfGSxXyj4bL/kftkNTK5xFffJ+6mw==
-  dependencies:
-    "@salesforce/bunyan" "^2.0.0"
-    "@salesforce/kit" "^1.5.0"
-    "@salesforce/schemas" "^1.0.1"
-    "@salesforce/ts-types" "^1.5.13"
-    "@types/graceful-fs" "^4.1.5"
-    "@types/jsforce" "^1.9.35"
-    "@types/mkdirp" "^1.0.1"
-    debug "^3.1.0"
-    graceful-fs "^4.2.4"
-    jsen "0.6.6"
-    jsforce "^1.11.0"
-    jsonwebtoken "8.5.0"
-    mkdirp "1.0.4"
-    semver "^7.3.5"
-    sfdx-faye "^1.0.9"
-    ts-retry-promise "^0.6.0"
-
 "@salesforce/dev-config@^2.1.2":
   version "2.1.2"
   resolved "https://registry.npmjs.org/@salesforce/dev-config/-/dev-config-2.1.2.tgz#b4e206f860e87065d068bf8ba3994a032389ad81"
@@ -999,10 +977,10 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.5.0.tgz#df3b2b754438acc943ef466b149dad1d5cbb499b"
-  integrity sha512-szZu2pLmgoqRo3W8T684WTdy65nIaS1Zlq+99wxl6Kkui6D/mukUZAAcQMof2XmCqL9rmppRcNBbnK0zB9D1yA==
+"@salesforce/source-tracking@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.5.1.tgz#1be69d4cd5ec51e6a09a863d0a1b15ac8f4af7be"
+  integrity sha512-unbwKIwCg/ZwHC5cNjm65oxhkpQBT3Pc5XEwTtRNpgyGhHMuNS74zcZSmABjXrGbQDsYf4TbwC+NMKwvErY3Qg==
   dependencies:
     "@salesforce/core" "^2.31.0"
     "@salesforce/kit" "^1.5.17"
