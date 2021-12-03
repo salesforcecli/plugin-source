@@ -100,6 +100,11 @@ export class Deploy extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.sourcePath'),
       exclusive: ['manifest', 'metadata'],
     }),
+    filter: flags.filepath({
+      description: messages.getMessage('flags.filter'),
+      longDescription: messages.getMessage('flagsLong.filter'),
+      dependsOn: ['sourcepath'],
+    }),
     manifest: flags.filepath({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
@@ -152,6 +157,7 @@ export class Deploy extends DeployCommand {
         apiversion: this.getFlag<string>('apiversion'),
         sourceapiversion: await this.getSourceApiVersion(),
         sourcepath: this.getFlag<string[]>('sourcepath'),
+        filterpath: this.getFlag<string>('filter'),
         manifest: this.flags.manifest && {
           manifestPath: this.getFlag<string>('manifest'),
           directoryPaths: this.getPackageDirs(),

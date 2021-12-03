@@ -17,6 +17,7 @@
   ],
   "flags": {
     "sourcePath": "comma-separated list of source file paths to deploy",
+    "filter": "file path for manifest (package.xml) of components to filter components in source file paths",
     "manifest": "file path for manifest (package.xml) of components to deploy",
     "metadata": "comma-separated list of metadata component names",
     "wait": "wait time for command to finish in minutes",
@@ -35,6 +36,10 @@
     "sourcePath": [
       "A comma-separated list of paths to the local source files to deploy. The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all metadata types in the directory and its sub-directories).",
       "If you specify this parameter, don’t specify --manifest or --metadata."
+    ],
+    "filter": [
+      "The complete path for the manifest (package.xml) file that specifies the components to include. Only the specified child components are included.",
+      "If you specify this parameter, specify --sourcepath."
     ],
     "manifest": [
       "The complete path for the manifest (package.xml) file that specifies the components to deploy. All child components are included.",

@@ -139,6 +139,7 @@ describe('force:source:deploy', () => {
       manifest: undefined,
       metadata: undefined,
       apiversion: undefined,
+      filterpath: undefined,
       sourceapiversion: undefined,
     };
     const expectedArgs = { ...defaultArgs, ...overrides };

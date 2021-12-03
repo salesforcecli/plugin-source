@@ -58,7 +58,7 @@ describe('ComponentSetBuilder', () => {
         metadata: undefined,
       });
 
-      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])] };
+      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])], include: undefined };
       expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
@@ -78,7 +78,7 @@ describe('ComponentSetBuilder', () => {
       });
       const expectedPath1 = path.resolve(sourcepath[0]);
       const expectedPath2 = path.resolve(sourcepath[1]);
-      const expectedArg = { fsPaths: [expectedPath1, expectedPath2] };
+      const expectedArg = { fsPaths: [expectedPath1, expectedPath2], include: undefined };
       expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(2);
       expect(compSet.has(apexClassComponent)).to.equal(true);
@@ -97,7 +97,7 @@ describe('ComponentSetBuilder', () => {
       };
 
       const compSet = await ComponentSetBuilder.build(options);
-      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])] };
+      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])], include: undefined };
       expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(0);
       expect(compSet.apiVersion).to.equal(options.apiversion);
@@ -115,7 +115,7 @@ describe('ComponentSetBuilder', () => {
       };
 
       const compSet = await ComponentSetBuilder.build(options);
-      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])] };
+      const expectedArg = { fsPaths: [path.resolve(sourcepath[0])], include: undefined };
       expect(fromSourceStub.calledOnceWith(expectedArg)).to.equal(true);
       expect(compSet.size).to.equal(0);
       expect(compSet.sourceApiVersion).to.equal(options.sourceapiversion);

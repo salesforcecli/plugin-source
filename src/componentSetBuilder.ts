@@ -23,7 +23,7 @@ export type ComponentSetOptions = {
   packagenames?: string[];
   sourcepath?: string[];
   manifest?: ManifestOption;
-
+  filterpath?: string;
   metadata?: MetadataOption;
   apiversion?: string;
   sourceapiversion?: string;
@@ -42,7 +42,7 @@ export class ComponentSetBuilder {
     const logger = Logger.childFromRoot('createComponentSet');
     let componentSet: ComponentSet;
 
-    const { sourcepath, manifest, metadata, packagenames, apiversion, sourceapiversion } = options;
+    const { sourcepath, manifest, metadata, packagenames, apiversion, sourceapiversion, filterpath } = options;
     try {
       if (sourcepath) {
         logger.debug(`Building ComponentSet from sourcepath: ${sourcepath.toString()}`);
@@ -53,7 +53,16 @@ export class ComponentSetBuilder {
           }
           fsPaths.push(path.resolve(filepath));
         });
-        componentSet = ComponentSet.fromSource({ fsPaths });
+        let include: ComponentSet;
+
+        if (filterpath) {
+          include = await ComponentSet.fromManifest({
+            manifestPath: filterpath,
+            resolveSourcePaths: fsPaths,
+          });
+        }
+
+        componentSet = ComponentSet.fromSource({ fsPaths, include });
       }
 
       // Return empty ComponentSet and use packageNames in the library via `.retrieve` options
