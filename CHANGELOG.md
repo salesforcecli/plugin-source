@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/salesforcecli/plugin-source/compare/v1.6.1...v1.6.2) (2021-12-03)
+
+### Bug Fixes
+
+- bump stl for customField status and pull ([#346](https://github.com/salesforcecli/plugin-source/issues/346)) ([7a657dd](https://github.com/salesforcecli/plugin-source/commit/7a657dde6dc8ffb1222034be11bd239b294b074f))
+
 ### [1.6.1](https://github.com/salesforcecli/plugin-source/compare/v1.6.0...v1.6.1) (2021-12-02)
 
 ## [1.6.0](https://github.com/salesforcecli/plugin-source/compare/v1.5.5...v1.6.0) (2021-12-02)
