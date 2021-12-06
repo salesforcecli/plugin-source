@@ -1,5 +1,7 @@
 # plugin-source (beta)
 
+[![NPM](https://img.shields.io/npm/v/@salesforce/plugin-source.svg?label=@salesforce/plugin-source)](https://www.npmjs.com/package/@salesforce/plugin-source) [![CircleCI](https://circleci.com/gh/salesforcecli/plugin-source/tree/main.svg?style=shield)](https://circleci.com/gh/salesforcecli/plugin-source/tree/main) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-source.svg)](https://npmjs.org/package/@salesforce/plugin-source) [![License](https://img.shields.io/badge/License-BSD%203--Clause-brightgreen.svg)](https://raw.githubusercontent.com/salesforcecli/plugin-source/main/LICENSE.txt)
+
 Source commands for Salesforce CLI
 
 #### Current List of Commands
