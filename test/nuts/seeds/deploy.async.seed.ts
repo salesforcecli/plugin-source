@@ -9,7 +9,9 @@ import { SourceTestkit } from '@salesforce/source-testkit';
 import { getBoolean, getString } from '@salesforce/ts-types';
 import { expect } from '@salesforce/command/lib/test';
 import { Result } from '@salesforce/source-testkit/lib/types';
+import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { TEST_REPOS_MAP } from '../testMatrix';
+import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelResultFormatter';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
@@ -77,6 +79,22 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         await testkit.deployCancel({ args: `-i ${deploy.result.id}` });
 
         testkit.expect.toHaveProperty(deploy.result, 'id');
+
+        const cancel = execCmd<DeployCancelCommandResult>(
+          `force:source:deploy:cancel -i ${deploy.result.id} --json`
+        ).jsonOutput;
+        if (cancel.status === 0) {
+          // successful cancel
+          expect(cancel.result.status).to.equal('Canceled');
+          expect(cancel.result.canceledBy).to.not.be.undefined;
+          expect(cancel.result.canceledByName).to.not.be.undefined;
+          expect(cancel.result.success).to.be.false;
+        } else {
+          // the deploy likely already finished
+          expect(cancel.status).to.equal(1);
+          expect(cancel.name).to.equal('CancelFailed');
+          expect(cancel.message).to.include('Deployment already completed');
+        }
       });
     }
   });
