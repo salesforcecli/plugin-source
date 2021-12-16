@@ -161,9 +161,9 @@ export const getVersionMessage = (
   componentSet: ComponentSet,
   isRest: boolean
 ): string => {
-  // commands pass in the.componentSet, which may not exist in some tests
+  // commands pass in the.componentSet, which may not exist in some tests or mdapi deploys
   if (!componentSet) {
-    return;
+    return `*** ${action} with ${isRest ? 'REST' : 'SOAP'} ***`;
   }
   // neither
   if (!componentSet.sourceApiVersion && !componentSet.apiVersion) {
