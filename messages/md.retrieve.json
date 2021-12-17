@@ -1,0 +1,34 @@
+{
+  "description": "retrieve metadata from an org using Metadata API\nUses Metadata API to retrieve a .zip of XML files that represent metadata from the targeted org. The default target username is the admin user for the default scratch org. You can retrieve and deploy up to 10,000 files or 400 MB (39 MB compressed) at one time.",
+  "examples": [
+    "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir",
+    "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir -k package.xml"
+  ],
+  "flags": {
+    "retrievetargetdir": "directory root for the retrieved files",
+    "unpackaged": "file path of manifest of components to retrieve",
+    "sourcedir": "source dir to use instead of the default package dir in sfdx-project.json",
+    "packagenames": "a comma-separated list of packages to retrieve",
+    "singlepackage": "indicates that the zip file points to a directory structure for a single package",
+    "zipfilename": "file name to use for the retrieved zip file",
+    "unzip": "extract all files from the retrieved zip file",
+    "wait": "wait time for command to finish in minutes (default: -1 (no limit))",
+    "apiversion": "target API version for the retrieve",
+    "verbose": "verbose output of retrieve result"
+  },
+  "flagsLong": {
+    "retrievetargetdir": "The root of the directory structure where the retrieved .zip or metadata files are put.",
+    "unpackaged": "The complete path for the manifest file that specifies the components to retrieve.",
+    "sourcedir": "The source directory to use instead of the default package directory specified in sfdx-project.json",
+    "packagenames": "A comma-separated list of package names to retrieve.",
+    "singlepackage": "Indicates that the specified .zip file points to a directory structure for a single package. By default, the CLI assumes the directory is structured for a set of packages.",
+    "zipfilename": "The file name to use for the retrieved zip file.",
+    "unzip": "Extract all files from the retrieved zip file.",
+    "wait": "The number of minutes to wait for the command to complete.",
+    "apiversion": "Use to override the default, which is the latest version supported by your CLI plug-in, with the version in your package.xml file.",
+    "verbose": "Indicates that you want verbose output from the retrieve operation."
+  },
+  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s\n%s",
+  "InvalidPackageNames": "You specified [%s]. Try again and specify only one package when using --singlepackage.",
+  "checkStatus": "To check the status of this retrieve, run \"sfdx force:mdapi:beta:retrieve:report %s\""
+}

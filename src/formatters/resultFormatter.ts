@@ -8,7 +8,7 @@
 import * as path from 'path';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
-import { FileResponse, Failures, Successes } from '@salesforce/source-deploy-retrieve';
+import { FileResponse, FileProperties, Failures, Successes } from '@salesforce/source-deploy-retrieve';
 import { getBoolean, getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
@@ -50,7 +50,7 @@ export abstract class ResultFormatter {
   }
 
   // Sort by type > filePath > fullName
-  protected sortFileResponses(fileResponses: FileResponse[]): void {
+  protected sortFileResponses(fileResponses: FileResponse[] | FileProperties[]): void {
     fileResponses.sort((i, j) => {
       if (i.type === j.type) {
         if (i.filePath === j.filePath) {
