@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 2020, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+import { Messages } from '@salesforce/core';
+import { flags, FlagsConfig } from '@salesforce/command';
+import { Duration, env } from '@salesforce/kit';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+
+import { MdDeployResult, MdDeployResultFormatter } from '../../../../../formatters/mdDeployResultFormatter';
+import { DeployCommand } from '../../../../../deployCommand';
+import { ProgressFormatter } from '../../../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../../../formatters/deployProgressStatusFormatter';
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployreport');
+
+export class Report extends DeployCommand {
+  public static readonly description = messages.getMessage('description');
+  public static readonly requiresUsername = true;
+
+  public static readonly flagsConfig: FlagsConfig = {
+    wait: flags.minutes({
+      char: 'w',
+      default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
+      min: Duration.minutes(1),
+      description: messages.getMessage('flags.wait', [DeployCommand.DEFAULT_WAIT_MINUTES]),
+      longDescription: messages.getMessage('flagsLong.wait', [DeployCommand.DEFAULT_WAIT_MINUTES]),
+    }),
+    jobid: flags.id({
+      char: 'i',
+      description: messages.getMessage('flags.jobId'),
+      longDescription: messages.getMessage('flagsLong.jobId'),
+    }),
+    verbose: flags.builtin({
+      description: messages.getMessage('flags.verbose'),
+      longDescription: messages.getMessage('flagsLong.verbose'),
+    }),
+  };
+
+  public async run(): Promise<MdDeployResult> {
+    await this.deploy();
+    this.resolveSuccess();
+    return this.formatResult();
+  }
+
+  protected async deploy(): Promise<void> {
+    if (this.flags.verbose) {
+      this.ux.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
+    }
+    const deploy = this.createDeploy(this.flags.jobid);
+    this.displayDeployId(deploy.id);
+    if (!this.isJsonOutput()) {
+      const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
+        ? new DeployProgressBarFormatter(this.logger, this.ux)
+        : new DeployProgressStatusFormatter(this.logger, this.ux);
+      progressFormatter.progress(deploy);
+    }
+    this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
+    // this.deployResult = await this.report(this.flags.jobid);
+  }
+
+  protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.SucceededPartial, 68],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
+    this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
+  }
+
+  protected formatResult(): MdDeployResult {
+    // const formatterOptions = {
+    //   verbose: this.getFlag<boolean>('verbose', false),
+    // };
+    const formatter = new MdDeployResultFormatter(this.logger, this.ux, {}, this.deployResult);
+
+    // Only display results to console when JSON flag is unset.
+    if (!this.isJsonOutput()) {
+      formatter.display();
+    }
+
+    return formatter.getJson();
+  }
+}
