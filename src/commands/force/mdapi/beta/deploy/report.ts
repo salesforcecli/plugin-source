@@ -48,11 +48,14 @@ export class Report extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
+    this.isSourceStash = false;
     if (this.flags.verbose) {
       this.ux.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
     }
-    const deploy = this.createDeploy(this.flags.jobid);
-    this.displayDeployId(deploy.id);
+    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+    this.displayDeployId(deployId);
+
+    const deploy = this.createDeploy(deployId);
     if (!this.isJsonOutput()) {
       const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
         ? new DeployProgressBarFormatter(this.logger, this.ux)
@@ -60,7 +63,6 @@ export class Report extends DeployCommand {
       progressFormatter.progress(deploy);
     }
     this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
-    // this.deployResult = await this.report(this.flags.jobid);
   }
 
   protected resolveSuccess(): void {
@@ -77,14 +79,16 @@ export class Report extends DeployCommand {
   }
 
   protected formatResult(): MdDeployResult {
-    // const formatterOptions = {
-    //   verbose: this.getFlag<boolean>('verbose', false),
-    // };
-    const formatter = new MdDeployResultFormatter(this.logger, this.ux, {}, this.deployResult);
+    const formatter = new MdDeployResultFormatter(
+      this.logger,
+      this.ux,
+      { verbose: this.getFlag<boolean>('verbose', false) },
+      this.deployResult
+    );
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
-      formatter.display();
+      formatter.display(true);
     }
 
     return formatter.getJson();

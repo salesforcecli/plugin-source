@@ -116,6 +116,7 @@ export class Deploy extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
+    this.isSourceStash = false;
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
