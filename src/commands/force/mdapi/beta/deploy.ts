@@ -4,12 +4,10 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { Stream } from 'stream';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, once, env } from '@salesforce/kit';
-import { Messages, fs } from '@salesforce/core';
-import { create as createArchive } from 'archiver';
-import { AsyncResult, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { Messages } from '@salesforce/core';
+import { AsyncResult, DeployResult, RequestStatus, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { isString } from '@salesforce/ts-types';
 import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
 import {
@@ -23,6 +21,8 @@ import { DeployProgressStatusFormatter } from '../../../../formatters/deployProg
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
+
+type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
@@ -118,36 +118,48 @@ export class Deploy extends DeployCommand {
   protected async deploy(): Promise<void> {
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
+    this.isRest = await this.isRestDeploy();
 
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
       return;
     }
+    const deploymentOptions = this.flags.zipfile
+      ? { zipPath: this.flags.zipfile as string }
+      : { mdapiPath: this.flags.deploydir as string };
+
     // still here?  we need to deploy a zip file then
-    const zipBuffer = await this.getZipBuffer();
+    const deploy = new MetadataApiDeploy({
+      usernameOrConnection: this.org.getUsername(),
+      ...deploymentOptions,
+      apiOptions: {
+        ignoreWarnings: this.getFlag('ignorewarnings', false),
+        rollbackOnError: !this.getFlag('ignoreerrors', false),
+        checkOnly: this.getFlag('checkonly', false),
+        runTests: this.getFlag<string[]>('runtests'),
+        testLevel: this.getFlag<TestLevel>('testlevel'),
+        singlePackage: this.getFlag('singlepackage', false),
+        rest: this.isRest,
+      },
+    });
+    await deploy.start();
+    this.asyncDeployResult = { id: deploy.id };
+    this.updateDeployId(deploy.id);
 
     // we might not know the source api version without unzipping a zip file, so we don't use componentSet
     this.ux.log(getVersionMessage('Deploying', undefined, this.isRest));
-    this.asyncDeployResult = await this.org.getConnection().deploy(zipBuffer, {
-      rest: await this.isRestDeploy(),
-      checkOnly: this.getFlag('checkonly', false),
-      ignoreWarnings: this.getFlag('ignorewarnings', false),
-      rollbackOnError: !this.getFlag('ignoreerrors', false),
-      singlePackage: this.getFlag('singlepackage', false),
-      runTests: this.getFlag<string[]>('runtests'),
-    });
-    this.logger.debug('Deploy result: %o', this.asyncDeployResult);
-    this.updateDeployId(this.asyncDeployResult.id);
+
+    this.logger.debug('Deploy result: %o', deploy);
+    this.updateDeployId(deploy.id);
 
     if (!this.isAsync) {
-      const deploy = this.createDeploy(this.asyncDeployResult.id);
       if (!this.isJsonOutput()) {
         const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
           ? new DeployProgressBarFormatter(this.logger, this.ux)
           : new DeployProgressStatusFormatter(this.logger, this.ux);
         progressFormatter.progress(deploy);
       }
-      this.displayDeployId(this.asyncDeployResult.id);
+      this.displayDeployId(deploy.id);
       this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
       // this.deployResult = await this.report(this.asyncDeployResult.id);
     }
@@ -184,31 +196,6 @@ export class Deploy extends DeployCommand {
     return formatter.getJson();
   }
 
-  /**
-   * If deploydir, this creates a zip file from that directory and turns it into a buffer
-   * If zipfile, this returns the zip file as a buffer
-   *
-   * @returns {Promise<Buffer>}
-   */
-  private async getZipBuffer(): Promise<Buffer> {
-    if (this.flags.deploydir) {
-      // make a zip from the deploy directory
-      if (!fs.existsSync(this.flags.deploydir) || !fs.lstatSync(this.flags.deploydir).isDirectory()) {
-        throw new Error(`Deploy directory ${this.flags.deploydir as string} does not exist or is not a directory`);
-      }
-      const zip = createArchive('zip', { zlib: { level: 9 } });
-      // anywhere not at the root level is fine
-      zip.directory(this.flags.deploydir as string, 'zip');
-      await zip.finalize();
-      return stream2buffer(zip);
-    }
-    // read the zip into a buffer
-    if (!fs.existsSync(this.flags.zipfile)) {
-      throw new Error(`Zip file ${this.flags.zipfile as string} does not exist`);
-    }
-    // does encoding matter for zip files? I don't know
-    return fs.readFile(this.flags.zipfile as string);
-  }
   // TODO: move this into a shared function OR DeployCommand
   private async deployRecentValidation(): Promise<DeployResult> {
     const conn = this.org.getConnection();
@@ -231,15 +218,3 @@ export class Deploy extends DeployCommand {
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 }
-
-const stream2buffer = async (stream: Stream): Promise<Buffer> => {
-  return new Promise<Buffer>((resolve, reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const buf = Array<any>();
-
-    stream.on('data', (chunk) => buf.push(chunk));
-    stream.on('end', () => resolve(Buffer.concat(buf)));
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    stream.on('error', (err) => reject(`error converting stream - ${err}`));
-  });
-};
