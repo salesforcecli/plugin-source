@@ -66,6 +66,8 @@ export class Report extends DeployCommand {
     this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
   }
 
+  // this is different from the source:report uses report error codes (unfortunately)
+  // See https://github.com/salesforcecli/toolbelt/blob/bfe361b0fb901b05c194a27a85849c689f4f6fea/src/lib/mdapi/mdapiDeployReportApi.ts#L413
   protected resolveSuccess(): void {
     const StatusCodeMap = new Map<RequestStatus, number>([
       [RequestStatus.Succeeded, 0],
