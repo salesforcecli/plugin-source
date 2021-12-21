@@ -15,7 +15,7 @@ import {
   DeployCancelCommandResult,
   DeployCancelResultFormatter,
 } from '../../../../formatters/deployCancelResultFormatter';
-import { isValidDeployId } from '../../../../../src/functions';
+import { isValidDeployId } from '../../../../functions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');

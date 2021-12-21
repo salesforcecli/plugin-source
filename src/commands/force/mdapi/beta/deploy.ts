@@ -8,7 +8,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { AsyncResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { isValidDeployId } from 'src/functions';
+import { isValidDeployId } from '../../../../functions';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../../deployCommand';
 import {
   DeployAsyncResultFormatter,

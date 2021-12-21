@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
-import { isValidDeployId } from 'src/functions';
+import { isValidDeployId } from '../../../../functions';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployCancelCommandResult,
