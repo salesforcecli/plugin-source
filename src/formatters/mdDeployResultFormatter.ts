@@ -69,6 +69,9 @@ export class MdDeployResultFormatter extends ResultFormatter {
       const testErrs = `Errors: ${this.getNumResult('numberTestErrors')}`;
       this.ux.log(`${deploys} ${deployErrors}`);
       this.ux.log(`${tests} ${testErrs}`);
+    } else {
+      // always show failures
+      this.displayFailures();
     }
     // TODO: the toolbelt version of this is returning an SfdxError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
