@@ -10,6 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { isValidDeployId } from 'src/functions';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployCancelCommandResult,
@@ -34,13 +35,7 @@ export class Cancel extends DeployCommand {
     jobid: flags.id({
       char: 'i',
       description: messages.getMessage('flags.jobid'),
-      validate: (val) => {
-        if (val.startsWith('0Af')) {
-          return true;
-        } else {
-          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
-        }
-      },
+      validate: isValidDeployId,
     }),
   };
 

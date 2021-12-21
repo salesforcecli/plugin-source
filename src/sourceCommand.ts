@@ -24,7 +24,6 @@ export abstract class SourceCommand extends SfdxCommand {
 
   protected progressBar?: ProgressBar;
   protected lifecycle = Lifecycle.getInstance();
-
   protected componentSet?: ComponentSet;
 
   protected isJsonOutput(): boolean {

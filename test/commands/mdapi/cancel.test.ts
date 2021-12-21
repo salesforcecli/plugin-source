@@ -18,7 +18,7 @@ import { DeployCancelResultFormatter } from '../../../src/formatters/deployCance
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { getDeployResult } from '../source/deployResponses';
 
-describe('force:source:mdapi:cancel', () => {
+describe('force:mdapi:deploy:cancel', () => {
   const sandbox = sinon.createSandbox();
   const username = 'cancel-test@org.com';
   const defaultDir = join('my', 'default', 'package');
@@ -40,7 +40,7 @@ describe('force:source:mdapi:cancel', () => {
     public async runIt() {
       await this.init();
       // oclif would normally populate this, but UT don't have it
-      this.id ??= 'force:mdapi:cancel';
+      this.id ??= 'force:mdapi:deploy:cancel';
       return this.run();
     }
     public setOrg(org: Org) {
