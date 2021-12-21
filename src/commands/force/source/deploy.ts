@@ -183,12 +183,9 @@ export class Deploy extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
     };
 
-    let formatter: DeployAsyncResultFormatter | DeployResultFormatter;
-    if (this.isAsync) {
-      formatter = new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult);
-    } else {
-      formatter = new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
-    }
+    const formatter = this.isAsync
+      ? new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
+      : new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
