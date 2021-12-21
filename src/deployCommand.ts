@@ -35,10 +35,6 @@ export abstract class DeployCommand extends SourceCommand {
     }
   });
 
-  /**
-   * Used to determine correct key.  Set to false for non-source (ie, mdapi) commands
-   */
-  protected isSourceStash = true;
   protected isRest = false;
   protected isAsync = false;
 
@@ -103,7 +99,7 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected getStashKey(): string {
-    return this.isSourceStash ? DeployCommand.SOURCE_STASH_KEY : DeployCommand.MDAPI_STASH_KEY;
+    return this.id.includes('force:mdapi') ? DeployCommand.MDAPI_STASH_KEY : DeployCommand.SOURCE_STASH_KEY;
   }
 
   protected resolveDeployId(id?: string): string {
