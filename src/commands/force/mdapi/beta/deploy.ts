@@ -5,11 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Duration, once, env } from '@salesforce/kit';
+import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, DeployResult, RequestStatus, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { isString } from '@salesforce/ts-types';
-import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
+import { AsyncResult, RequestStatus, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { DeployCommand, getVersionMessage, TestLevel } from '../../../../deployCommand';
 import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
@@ -21,8 +20,6 @@ import { DeployProgressStatusFormatter } from '../../../../formatters/deployProg
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
-
-type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
@@ -98,14 +95,7 @@ export class Deploy extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.soapDeploy'),
     }),
   };
-  private isAsync = false;
-  private isRest = false;
   private asyncDeployResult: AsyncResult;
-
-  private updateDeployId = once((id: string) => {
-    this.displayDeployId(id);
-    this.setStash(id);
-  });
 
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
     // start deploy with zip if not already an ID
@@ -195,27 +185,5 @@ export class Deploy extends DeployCommand {
     }
 
     return formatter.getJson();
-  }
-
-  // TODO: move this into a shared function OR DeployCommand
-  private async deployRecentValidation(): Promise<DeployResult> {
-    const conn = this.org.getConnection();
-    const id = this.getFlag<string>('validateddeployrequestid');
-
-    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
-
-    // This is the deploy ID of the deployRecentValidation response, not
-    // the already validated deploy ID (i.e., validateddeployrequestid).
-    let validatedDeployId: string;
-    if (isString(response)) {
-      // SOAP API
-      validatedDeployId = response;
-    } else {
-      // REST API
-      validatedDeployId = (response as { id: string }).id;
-    }
-    this.updateDeployId(validatedDeployId);
-
-    return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 }

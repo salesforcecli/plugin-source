@@ -13,7 +13,7 @@ import {
   MetadataApiDeployStatus,
 } from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
-import { AnyJson, getBoolean } from '@salesforce/ts-types';
+import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 
@@ -21,6 +21,8 @@ interface StashFile {
   isGlobal: boolean;
   filename: string;
 }
+
+export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export abstract class DeployCommand extends SourceCommand {
   protected static readonly SOURCE_STASH_KEY = 'SOURCE_DEPLOY';
@@ -33,7 +35,15 @@ export abstract class DeployCommand extends SourceCommand {
   });
   // used to determine the correct stash.json key
   protected isSourceStash = true;
+  protected isRest = false;
+  protected isAsync = false;
+
   protected deployResult: DeployResult;
+  protected updateDeployId = once((id: string) => {
+    this.displayDeployId(id);
+    this.setStash(id);
+  });
+
   /**
    * Request a report of an in-progress or completed deployment.
    *
@@ -149,6 +159,27 @@ export abstract class DeployCommand extends SourceCommand {
     const pollingOptions = { ...defaultOptions, ...options };
     const pollingClient = await PollingClient.create(pollingOptions);
     return pollingClient.subscribe() as unknown as Promise<DeployResult>;
+  }
+
+  protected async deployRecentValidation(): Promise<DeployResult> {
+    const conn = this.org.getConnection();
+    const id = this.getFlag<string>('validateddeployrequestid');
+
+    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
+
+    // This is the deploy ID of the deployRecentValidation response, not
+    // the already validated deploy ID (i.e., validateddeployrequestid).
+    let validatedDeployId: string;
+    if (isString(response)) {
+      // SOAP API
+      validatedDeployId = response;
+    } else {
+      // REST API
+      validatedDeployId = (response as { id: string }).id;
+    }
+    this.updateDeployId(validatedDeployId);
+
+    return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 
   private getStash(): ConfigFile<StashFile> {

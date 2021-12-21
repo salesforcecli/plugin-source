@@ -19,7 +19,7 @@ import {
   RequestStatus,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { Duration, env, once } from '@salesforce/kit';
+import { Duration, env } from '@salesforce/kit';
 import { DeployCommand } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -68,21 +68,19 @@ export class Delete extends DeployCommand {
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       longDescription: messages.getMessage('flagsLong.metadata'),
-      exclusive: ['manifest', 'sourcepath'],
+      exactlyOne: ['manifest', 'sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
       longDescription: messages.getMessage('flagsLong.sourcepath'),
-      exclusive: ['manifest', 'metadata'],
+      exactlyOne: ['manifest', 'sourcepath'],
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
   };
-  protected xorFlags = ['metadata', 'sourcepath'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  private isRest = false;
   private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
   private aborted = false;
   private components: MetadataComponent[];
@@ -91,11 +89,6 @@ export class Delete extends DeployCommand {
   // map of component in project, to where it is stashed
   private stashPath = new Map<string, string>();
   private tempDir = path.join(os.tmpdir(), 'source_delete');
-
-  private updateDeployId = once((id: string) => {
-    this.displayDeployId(id);
-    this.setStash(id);
-  });
 
   public async run(): Promise<DeployCommandResult> {
     await this.delete();
@@ -110,7 +103,6 @@ export class Delete extends DeployCommand {
   protected async delete(): Promise<void> {
     this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
     // verify that the user defined one of: metadata, sourcepath
-    this.validateFlags();
     const sourcepaths = this.getFlag<string[]>('sourcepath');
 
     this.componentSet = await ComponentSetBuilder.build({
