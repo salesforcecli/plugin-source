@@ -41,6 +41,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
   }
 
   /**
+   * @param isReportCommand set to true if the command is deploy:report.  The output is slightly different
    * Displays deploy results in human readable format.  Output can vary based on:
    *
    * 1. Verbose option

@@ -122,7 +122,12 @@
             "description": "retrieve and deploy metadata using Metadata API",
             "subtopics": {
               "beta": {
-                "description": "new versions of mdapi commands"
+                "description": "new versions of mdapi commands",
+                "subtopics": {
+                  "deploy": {
+                    "description": "new versions of deploy report command"
+                  }
+                }
               }
             }
           }
