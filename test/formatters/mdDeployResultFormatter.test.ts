@@ -30,14 +30,6 @@ describe('mdDeployResultFormatter', () => {
   let styledHeaderStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;
 
-  // const resolveExpectedPaths = (fileResponses: FileResponse[]): void => {
-  //   fileResponses.forEach((file) => {
-  //     if (file.filePath) {
-  //       file.filePath = path.relative(process.cwd(), file.filePath);
-  //     }
-  //   });
-  // };
-
   beforeEach(() => {
     logStub = sandbox.stub();
     styledHeaderStub = sandbox.stub();
@@ -138,9 +130,6 @@ describe('mdDeployResultFormatter', () => {
       process.exitCode = 0;
       const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestSuccess);
       formatter.display();
-      // expect(styledHeaderStub.callCount).to.equal(3);
-      // expect(logStub.callCount).to.equal(7);
-      // expect(tableStub.callCount).to.equal(3);
       expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
       expect(styledHeaderStub.args[1][0]).to.include('Component Failures [1]');
       expect(styledHeaderStub.args[2][0]).to.include('Test Success [1]');
