@@ -7,7 +7,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -175,26 +175,6 @@ export class Deploy extends DeployCommand {
     if (this.deployResult) {
       // Only fire the postdeploy event when we have results. I.e., not async.
       await this.lifecycle.emit('postdeploy', this.deployResult);
-    }
-  }
-
-  /**
-   * Checks the response status to determine whether the deploy was successful.
-   * Async deploys are successful unless an error is thrown, which resolves as
-   * unsuccessful in oclif.
-   */
-  protected resolveSuccess(): void {
-    const StatusCodeMap = new Map<RequestStatus, number>([
-      [RequestStatus.Succeeded, 0],
-      [RequestStatus.Canceled, 1],
-      [RequestStatus.Failed, 1],
-      [RequestStatus.SucceededPartial, 68],
-      [RequestStatus.InProgress, 69],
-      [RequestStatus.Pending, 69],
-      [RequestStatus.Canceling, 69],
-    ]);
-    if (!this.isAsync) {
-      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
     }
   }
 

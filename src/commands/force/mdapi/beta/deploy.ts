@@ -7,7 +7,7 @@
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, RequestStatus, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../../deployCommand';
 import {
   DeployAsyncResultFormatter,
@@ -21,6 +21,7 @@ import { DeployProgressStatusFormatter } from '../../../../formatters/deployProg
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
+const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   // TODO: change help into examples?
@@ -36,7 +37,7 @@ export class Deploy extends DeployCommand {
       char: 'd',
       description: messages.getMessage('flags.deployDir'),
       longDescription: messages.getMessage('flagsLong.deployDir'),
-      exactlyOne: ['zipfile', 'validateddeployrequestid'],
+      exactlyOne: xorFlags,
     }),
     wait: flags.minutes({
       char: 'w',
@@ -72,7 +73,7 @@ export class Deploy extends DeployCommand {
       char: 'q',
       description: messages.getMessage('flags.validatedDeployRequestId'),
       longDescription: messages.getMessage('flagsLong.validatedDeployRequestId'),
-      exactlyOne: ['zipfile', 'deploydir'],
+      exactlyOne: xorFlags,
       exclusive: ['testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings', 'checkonly'],
     }),
     verbose: flags.builtin({
@@ -83,7 +84,7 @@ export class Deploy extends DeployCommand {
       char: 'f',
       description: messages.getMessage('flags.zipFile'),
       longDescription: messages.getMessage('flagsLong.zipFile'),
-      exactlyOne: ['validateddeployrequestid', 'deploydir'],
+      exactlyOne: xorFlags,
     }),
     singlepackage: flags.boolean({
       char: 's',
@@ -153,21 +154,6 @@ export class Deploy extends DeployCommand {
       this.displayDeployId(deploy.id);
       this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
       // this.deployResult = await this.report(this.asyncDeployResult.id);
-    }
-  }
-
-  protected resolveSuccess(): void {
-    const StatusCodeMap = new Map<RequestStatus, number>([
-      [RequestStatus.Succeeded, 0],
-      [RequestStatus.Canceled, 1],
-      [RequestStatus.Failed, 1],
-      [RequestStatus.SucceededPartial, 68],
-      [RequestStatus.InProgress, 69],
-      [RequestStatus.Pending, 69],
-      [RequestStatus.Canceling, 69],
-    ]);
-    if (!this.isAsync) {
-      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
     }
   }
 

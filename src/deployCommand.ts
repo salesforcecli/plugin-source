@@ -11,6 +11,7 @@ import {
   DeployResult,
   MetadataApiDeploy,
   MetadataApiDeployStatus,
+  RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
@@ -33,7 +34,10 @@ export abstract class DeployCommand extends SourceCommand {
       this.ux.log(`Deploy ID: ${id}`);
     }
   });
-  // used to determine the correct stash.json key
+
+  /**
+   * Used to determine correct key.  Set to false for non-source (ie, mdapi) commands
+   */
   protected isSourceStash = true;
   protected isRest = false;
   protected isAsync = false;
@@ -59,6 +63,26 @@ export abstract class DeployCommand extends SourceCommand {
     const deployStatus = res as unknown as MetadataApiDeployStatus;
     const componentSet = this.componentSet || new ComponentSet();
     return new DeployResult(deployStatus, componentSet);
+  }
+
+  /**
+   * Checks the response status to determine whether the deploy was successful.
+   * Async deploys are successful unless an error is thrown, which resolves as
+   * unsuccessful in oclif.
+   */
+  protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.SucceededPartial, 68],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
+    if (!this.isAsync) {
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
+    }
   }
 
   protected setStash(deployId: string): void {

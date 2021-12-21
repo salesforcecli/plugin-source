@@ -20,7 +20,7 @@ import {
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
-import { DeployCommand } from '../../../deployCommand';
+import { DeployCommand, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeleteResultFormatter } from '../../../formatters/deleteResultFormatter';
@@ -32,9 +32,7 @@ const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'delete');
-
-type TestLevel = 'NoTestRun' | 'RunLocalTests' | 'RunAllTestsInOrg';
-
+const xorFlags = ['manifest', 'sourcepath'];
 export class Delete extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -68,13 +66,13 @@ export class Delete extends DeployCommand {
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       longDescription: messages.getMessage('flagsLong.metadata'),
-      exactlyOne: ['manifest', 'sourcepath'],
+      exactlyOne: xorFlags,
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
       longDescription: messages.getMessage('flagsLong.sourcepath'),
-      exactlyOne: ['manifest', 'sourcepath'],
+      exactlyOne: xorFlags,
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
