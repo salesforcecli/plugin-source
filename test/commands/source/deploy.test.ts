@@ -72,6 +72,8 @@ describe('force:source:deploy', () => {
   class TestDeploy extends Deploy {
     public async runIt() {
       await this.init();
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:source:deploy';
       return this.run();
     }
     public setOrg(org: Org) {

@@ -48,7 +48,6 @@ export class Report extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    this.isSourceStash = false;
     if (this.flags.verbose) {
       this.ux.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
     }

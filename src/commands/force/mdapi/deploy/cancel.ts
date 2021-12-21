@@ -43,8 +43,6 @@ export class Cancel extends DeployCommand {
       },
     }),
   };
-  // The most important difference between this and source:deploy:cancel
-  public isSourceStash = false;
 
   public async run(): Promise<DeployCancelCommandResult> {
     await this.cancel();

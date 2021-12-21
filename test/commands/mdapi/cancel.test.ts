@@ -39,6 +39,8 @@ describe('force:source:mdapi:cancel', () => {
   class TestCancel extends Cancel {
     public async runIt() {
       await this.init();
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:mdapi:cancel';
       return this.run();
     }
     public setOrg(org: Org) {

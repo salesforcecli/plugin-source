@@ -32,7 +32,7 @@ const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'delete');
-const xorFlags = ['manifest', 'sourcepath'];
+const xorFlags = ['metadata', 'sourcepath'];
 export class Delete extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
