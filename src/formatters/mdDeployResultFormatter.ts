@@ -125,16 +125,12 @@ export class MdDeployResultFormatter extends ResultFormatter {
     }
   }
 
-  // TODO: move to deployCommand
-  protected isRunTestsEnabled(): boolean {
-    return this.result.response.runTestsEnabled ?? false;
-  }
   protected getNumResult(field: string): number {
     return getNumber(this.result, `response.${field}`, 0);
   }
 
   protected displayTestResults(): void {
-    if (this.isRunTestsEnabled()) {
+    if (this.result.response.runTestsEnabled) {
       this.ux.log('');
       if (this.isVerbose()) {
         this.verboseTestFailures();

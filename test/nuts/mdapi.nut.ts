@@ -184,10 +184,9 @@ describe('mdapi NUTs', () => {
   describe('mdapi:deploy:cancel', () => {
     it('will cancel an mdapi deploy via the stash.json', () => {
       execCmd('force:source:convert --outputdir mdapi');
-      // TODO: once mdapi:deploy is migrated switch to execCmd
-      const deploy = JSON.parse(exec('sfdx force:mdapi:deploy -d mdapi -w 0 --json', { silent: true })) as {
-        result: { id: string };
-      };
+      const deploy = execCmd<{ id: string }>('force:mdapi:deploy -d mdapi -w 0 --json', {
+        ensureExitCode: 0,
+      }).jsonOutput;
       const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
       expect(result.jsonOutput.status).to.equal(0);
       const json = result.jsonOutput.result;
@@ -199,10 +198,10 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
       execCmd('force:source:convert --outputdir mdapi');
-      // TODO: once mdapi:deploy is migrated switch to execCmd
-      const deploy = JSON.parse(exec('sfdx force:mdapi:deploy -d mdapi -w 0 --json', { silent: true })) as {
-        result: { id: string };
-      };
+      const deploy = execCmd<{ id: string }>('force:mdapi:deploy -d mdapi -w 0 --json', {
+        ensureExitCode: 0,
+      }).jsonOutput;
+
       const result = execCmd<DeployCancelCommandResult>(`force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`);
       expect(result.jsonOutput.status).to.equal(0);
       const json = result.jsonOutput.result;

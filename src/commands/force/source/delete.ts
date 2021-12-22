@@ -100,7 +100,6 @@ export class Delete extends DeployCommand {
 
   protected async delete(): Promise<void> {
     this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
-    // verify that the user defined one of: metadata, sourcepath
     const sourcepaths = this.getFlag<string[]>('sourcepath');
 
     this.componentSet = await ComponentSetBuilder.build({

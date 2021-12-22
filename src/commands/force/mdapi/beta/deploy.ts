@@ -101,8 +101,6 @@ export class Deploy extends DeployCommand {
   private asyncDeployResult: AsyncResult;
 
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
-    // start deploy with zip if not already an ID
-    // report on that ID
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();
@@ -154,7 +152,6 @@ export class Deploy extends DeployCommand {
       }
       this.displayDeployId(deploy.id);
       this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
-      // this.deployResult = await this.report(this.asyncDeployResult.id);
     }
   }
 
