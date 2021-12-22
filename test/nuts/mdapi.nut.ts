@@ -11,7 +11,6 @@ import { expect } from 'chai';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce';
-import { exec } from 'shelljs';
 import { create as createArchive } from 'archiver';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
