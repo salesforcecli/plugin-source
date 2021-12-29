@@ -120,6 +120,11 @@ describe('force:source:deploy', () => {
     });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: deployStub,
+      getSourceComponents: () => {
+        return {
+          toArray: () => [],
+        };
+      },
       getPackageXml: () => packageXml,
       toArray: () => {
         return [exampleSourceComponent];

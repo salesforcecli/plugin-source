@@ -73,6 +73,31 @@ export abstract class SourceCommand extends SfdxCommand {
   }
 
   /**
+   * Based on the source components in the component set, it will return a polling frequency in milliseconds
+   *
+   * @protected
+   */
+  protected calculatePollingFrequency(): number {
+    // this could be called from DeployCommand~Poll which doesn't require this.componentSet to be set
+    const size = this.componentSet?.getSourceComponents().toArray().length || 0;
+    // take a piece-wise approach to encapsulate discrete deployment sizes in polling frequencies that "feel" good when deployed
+    if (size === 0) {
+      // no component set size is possible for retrieve
+      return 1000;
+    } else if (size <= 10) {
+      return 100;
+    } else if (size <= 50) {
+      return 250;
+    } else if (size <= 100) {
+      return 500;
+    } else if (size <= 1000) {
+      return 1000;
+    } else {
+      return size;
+    }
+  }
+
+  /**
    * Inspects the command response to determine success.
    *
    * NOTE: This is not about unexpected command errors such as timeouts,

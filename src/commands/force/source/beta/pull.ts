@@ -5,21 +5,22 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { FlagsConfig, flags } from '@salesforce/command';
+import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import {
-  FileResponse,
-  SourceComponent,
   ComponentSet,
-  RetrieveResult,
-  RequestStatus,
   ComponentStatus,
+  FileResponse,
+  RequestStatus,
+  RetrieveResult,
+  SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { SourceTracking, throwIfInvalid, replaceRenamedCommands, ChangeResult } from '@salesforce/source-tracking';
+import { ChangeResult, replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 import { processConflicts } from '../../../../formatters/conflicts';
 import { SourceCommand } from '../../../../sourceCommand';
 import { PullResponse, PullResultFormatter } from '../../../../formatters/pullFormatter';
+
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
@@ -149,7 +150,10 @@ export default class Pull extends SourceCommand {
 
     // assume: remote deletes that get deleted locally don't fire hooks?
     await this.lifecycle.emit('preretrieve', componentSet.toArray());
-    this.retrieveResult = await mdapiRetrieve.pollStatus(1000, this.getFlag<Duration>('wait').seconds);
+    this.retrieveResult = await mdapiRetrieve.pollStatus(
+      this.calculatePollingFrequency(),
+      this.getFlag<Duration>('wait').seconds
+    );
 
     // Assume: remote deletes that get deleted locally don't fire hooks.
     await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());

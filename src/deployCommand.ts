@@ -136,7 +136,7 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected async poll(deployId: string, options?: Partial<PollingClient.Options>): Promise<DeployResult> {
     const defaultOptions: PollingClient.Options = {
-      frequency: options?.frequency ?? Duration.seconds(1),
+      frequency: options?.frequency ?? Duration.milliseconds(this.calculatePollingFrequency()),
       timeout: options?.timeout ?? (this.flags.wait as Duration),
       poll: async (): Promise<StatusResult> => {
         const deployResult = await this.report(deployId);
