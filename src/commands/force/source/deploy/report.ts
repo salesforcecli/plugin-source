@@ -81,7 +81,7 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    await deploy.pollStatus(500, waitDuration.seconds);
+    await deploy.pollStatus(undefined, waitDuration.seconds);
     this.deployResult = await this.report(deployId);
   }
 
