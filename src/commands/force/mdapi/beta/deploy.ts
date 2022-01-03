@@ -162,7 +162,6 @@ export class Deploy extends DeployCommand {
       }
       this.displayDeployId(deploy.id);
       this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
-      // this.deployResult = await this.report(this.asyncDeployResult.id);
     }
   }
 
