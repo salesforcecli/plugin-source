@@ -183,7 +183,7 @@ export class Delete extends DeployCommand {
       progressFormatter.progress(deploy);
     }
 
-    this.deployResult = await deploy.pollStatus(undefined, this.getFlag<Duration>('wait').seconds);
+    this.deployResult = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
     await this.lifecycle.emit('postdeploy', this.deployResult);
   }
 

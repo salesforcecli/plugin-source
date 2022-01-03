@@ -126,7 +126,7 @@ export default class Push extends DeployCommand {
           : new DeployProgressStatusFormatter(this.logger, this.ux);
         progressFormatter.progress(deploy);
       }
-      const result = await deploy.pollStatus(undefined, this.getFlag<Duration>('wait').seconds);
+      const result = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
 
       if (result) {
         // Only fire the postdeploy event when we have results. I.e., not async.
