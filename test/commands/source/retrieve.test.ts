@@ -8,8 +8,8 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { ComponentLike, ComponentSet, MetadataType, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
+import { RetrieveOptions, ComponentLike, ComponentSet, MetadataType } from '@salesforce/source-deploy-retrieve';
+import { Messages, Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
@@ -99,11 +99,6 @@ describe('force:source:retrieve', () => {
     });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
-      getSourceComponents: () => {
-        return {
-          toArray: () => [],
-        };
-      },
       getPackageXml: () => packageXml,
       toArray: () => {
         return [exampleSourceComponent];
@@ -295,11 +290,6 @@ describe('force:source:retrieve', () => {
       toArray: () => {
         return [exampleSourceComponent];
       },
-      getSourceComponents: () => {
-        return {
-          toArray: () => [],
-        };
-      },
       add: (component: ComponentLike) => {
         expect(component)
           .to.be.a('object')
@@ -330,11 +320,6 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      getSourceComponents: () => {
-        return {
-          toArray: () => [],
-        };
-      },
       toArray: () => {
         return [exampleSourceComponent];
       },
@@ -367,11 +352,6 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      getSourceComponents: () => {
-        return {
-          toArray: () => [],
-        };
-      },
       toArray: () => {
         return [exampleSourceComponent];
       },
@@ -405,11 +385,6 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      getSourceComponents: () => {
-        return {
-          toArray: () => [],
-        };
-      },
       toArray: () => {
         return [exampleSourceComponent];
       },

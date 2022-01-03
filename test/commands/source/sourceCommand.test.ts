@@ -7,10 +7,9 @@
 
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { fromStub, stubInterface } from '@salesforce/ts-sinon';
+import { stubInterface, fromStub } from '@salesforce/ts-sinon';
 import { Dictionary } from '@salesforce/ts-types';
 import { Logger } from '@salesforce/core';
-import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../src/sourceCommand';
 
 describe('SourceCommand', () => {
@@ -37,13 +36,6 @@ describe('SourceCommand', () => {
     public callIsJsonOutput() {
       return this.isJsonOutput();
     }
-    public callCalculatePollingFrequency() {
-      return this.calculatePollingFrequency();
-    }
-
-    public setCompSet(compSet: ComponentSet) {
-      this.componentSet = compSet;
-    }
     public resolveSuccess() {}
     public formatResult() {}
   }
@@ -58,68 +50,6 @@ describe('SourceCommand', () => {
     it('should return false when json flag is unset', () => {
       const command = new SourceCommandTest([''], null);
       expect(command.callIsJsonOutput()).to.equal(false);
-    });
-  });
-
-  describe('calculatePollingFrequency', () => {
-    it('returns 100 for componentSet size of 1', () => {
-      const command = new SourceCommandTest([''], null);
-      const compSet = new ComponentSet();
-
-      sandbox.stub(compSet, 'getSourceComponents').returns({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        toArray: () => {
-          return { length: 1 };
-        },
-      });
-      command.setCompSet(compSet);
-      expect(command.callCalculatePollingFrequency()).to.equal(100);
-    });
-
-    it('returns 1000 for componentSet size of 0', () => {
-      const command = new SourceCommandTest([''], null);
-      const compSet = new ComponentSet();
-
-      sandbox.stub(compSet, 'getSourceComponents').returns({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        toArray: () => {
-          return { length: 0 };
-        },
-      });
-      command.setCompSet(compSet);
-      expect(command.callCalculatePollingFrequency()).to.equal(1000);
-    });
-
-    it('returns 2500 for componentSet size of 2500', () => {
-      const command = new SourceCommandTest([''], null);
-      const compSet = new ComponentSet();
-
-      sandbox.stub(compSet, 'getSourceComponents').returns({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        toArray: () => {
-          return { length: 2500 };
-        },
-      });
-      command.setCompSet(compSet);
-      expect(command.callCalculatePollingFrequency()).to.equal(2500);
-    });
-
-    it('returns 250 for componentSet size of 50', () => {
-      const command = new SourceCommandTest([''], null);
-      const compSet = new ComponentSet();
-
-      sandbox.stub(compSet, 'getSourceComponents').returns({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        toArray: () => {
-          return { length: 50 };
-        },
-      });
-      command.setCompSet(compSet);
-      expect(command.callCalculatePollingFrequency()).to.equal(250);
     });
   });
 
