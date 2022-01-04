@@ -21,12 +21,20 @@ import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultForma
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string; };
+export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string };
 
 export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
   retrieveTargetDir: string;
-  zipFileName: string;
+  zipFileName?: string;
   unzip?: boolean;
+}
+
+export interface RetrieveCommandAsyncResult {
+  done: boolean;
+  id: string;
+  state: RequestStatus | 'Queued';
+  status: RequestStatus | 'Queued';
+  timedOut: boolean;
 }
 
 export class RetrieveResultFormatter extends ResultFormatter {
@@ -38,6 +46,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
     super(logger, ux, options);
     // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
     delete result.response.zipFile;
+    this.options.zipFileName ??= 'unpackaged.zip';
     const zipFilePath = join(options.retrieveTargetDir, options.zipFileName);
     this.result = Object.assign({}, result.response, { zipFilePath });
 
@@ -69,7 +78,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
     if (this.isSuccess()) {
       this.ux.log(`Wrote retrieve zip to ${this.result.zipFilePath}`);
       if (this.options.unzip) {
-        this.ux.log(`Extracted ${this.options.zipFileName} to: ${this.options.retrieveTargetDir}`)
+        this.ux.log(`Extracted ${this.options.zipFileName} to: ${this.options.retrieveTargetDir}`);
       }
       if (this.options.verbose) {
         const retrievedFiles = toArray(this.result.fileProperties);

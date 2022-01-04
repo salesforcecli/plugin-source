@@ -14,10 +14,12 @@ import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../../sourceCommand';
+import { Stash } from '../../../../stash';
 import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 import { FsError } from '../../../../types';
 import {
   RetrieveCommandResult,
+  RetrieveCommandAsyncResult,
   RetrieveResultFormatter,
 } from '../../../../formatters/mdapi/retrieveResultFormatter';
 
@@ -31,14 +33,6 @@ interface EnsureFlagOptions {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
-
-export interface RetrieveCommandAsyncResult {
-  done: boolean;
-  id: string;
-  state: 'Queued';
-  status: 'Queued';
-  timedOut: boolean;
-}
 
 export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -91,6 +85,7 @@ export class Retrieve extends SourceCommand {
       default: Duration.minutes(1440), // 24 hours is a reasonable default versus -1 (no timeout)
     }),
     apiversion: flags.builtin({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore force char override for backward compat
       char: 'a',
       description: messages.getMessage('flags.apiversion'),
@@ -102,6 +97,7 @@ export class Retrieve extends SourceCommand {
     }),
   };
 
+  protected retrieveResult: RetrieveResult;
   private sourceDir: string;
   private retrieveTargetDir: string;
   private zipFileName: string;
@@ -109,7 +105,6 @@ export class Retrieve extends SourceCommand {
   private wait: Duration;
   private isAsync: boolean;
   private mdapiRetrieve: MetadataApiRetrieve;
-  protected retrieveResult: RetrieveResult;
 
   public async run(): Promise<RetrieveCommandResult | RetrieveCommandAsyncResult> {
     await this.retrieve();
@@ -121,18 +116,20 @@ export class Retrieve extends SourceCommand {
     this.sourceDir = this.resolveRootDir(this.getFlag<string>('sourcedir'));
     this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
     const manifest = this.resolveManifest(this.getFlag<string>('unpackaged'));
-    const singlepackage = this.getFlag<string>('singlepackage');
+    const singlePackage = this.getFlag<boolean>('singlepackage');
     const packagenames = this.getFlag<string[]>('packagenames');
     this.zipFileName = this.getFlag<string>('zipfilename') || 'unpackaged.zip';
     this.unzip = this.getFlag<boolean>('unzip');
     this.wait = this.getFlag<Duration>('wait');
     this.isAsync = this.wait.quantity === 0;
 
-    if (singlepackage && packagenames?.length > 1) {
-      throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'InvalidPackageNames', [packagenames.toString()]);
+    if (singlePackage && packagenames?.length > 1) {
+      throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'InvalidPackageNames', [
+        packagenames.toString(),
+      ]);
     }
 
-    this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [ this.org.getUsername() ]));
+    this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
     this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.componentSetBuild'));
 
     this.componentSet = await ComponentSetBuilder.build({
@@ -147,21 +144,24 @@ export class Retrieve extends SourceCommand {
 
     await this.lifecycle.emit('preretrieve', { packageXmlPath: manifest });
 
-    this.ux.setSpinnerStatus(
-      spinnerMessages.getMessage('retrieve.sendingRequest', [ this.componentSet.apiVersion ])
-    );
+    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.sendingRequest', [this.componentSet.apiVersion]));
 
     this.mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       output: this.retrieveTargetDir,
       packageOptions: this.getFlag<string[]>('packagenames'),
       format: 'metadata',
-      singlepackage,
+      singlePackage,
       zipFileName: this.zipFileName,
       unzip: this.unzip,
     });
 
-    // need to set stash.  See mdapiRetrieveApi.ts _setStashVars
+    Stash.set('MDAPI_RETRIEVE', {
+      jobid: this.mdapiRetrieve.id,
+      retrievetargetdir: this.retrieveTargetDir,
+      zipfilename: this.zipFileName,
+      unzip: this.unzip,
+    });
 
     this.ux.log(`Retrieve ID: ${this.mdapiRetrieve.id}`);
 
@@ -191,12 +191,13 @@ export class Retrieve extends SourceCommand {
   protected formatResult(): RetrieveCommandResult | RetrieveCommandAsyncResult {
     // async result
     if (this.isAsync) {
-      let flags = `--jobid ${this.mdapiRetrieve.id} --retrievetargetdir ${this.flags.retrievetargetdir}`;
-      if (this.flags.targetusername) {
-        flags += ` --targetusername ${this.flags.targetusername}`;
+      let cmdFlags = `--jobid ${this.mdapiRetrieve.id} --retrievetargetdir ${this.retrieveTargetDir}`;
+      const targetusernameFlag = this.getFlag<string>('targetusername');
+      if (targetusernameFlag) {
+        cmdFlags += ` --targetusername ${targetusernameFlag}`;
       }
       this.ux.log('');
-      this.ux.log(messages.getMessage('checkStatus', [flags]));
+      this.ux.log(messages.getMessage('checkStatus', [cmdFlags]));
       return {
         done: false,
         id: this.mdapiRetrieve.id,
@@ -270,12 +271,14 @@ export class Retrieve extends SourceCommand {
   }
 
   private resolveRootDir(rootDir?: string): string {
-    return rootDir ? this.ensureFlagPath({
-      flagName: 'sourcedir',
-      path: rootDir,
-      type: 'dir',
-      throwOnENOENT: true,
-    }) :  this.resolveProjectPath();
+    return rootDir
+      ? this.ensureFlagPath({
+          flagName: 'sourcedir',
+          path: rootDir,
+          type: 'dir',
+          throwOnENOENT: true,
+        })
+      : this.resolveProjectPath();
   }
 
   private resolveOutputDir(outputDir?: string): string {

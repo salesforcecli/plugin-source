@@ -14,7 +14,8 @@
     "unzip": "extract all files from the retrieved zip file",
     "wait": "wait time for command to finish in minutes (default: -1 (no limit))",
     "apiversion": "target API version for the retrieve",
-    "verbose": "verbose output of retrieve result"
+    "verbose": "verbose output of retrieve result",
+    "jobid": "job ID of the retrieve you want to check; defaults to your most recent CLI retrieval if not specified"
   },
   "flagsLong": {
     "retrievetargetdir": "The root of the directory structure where the retrieved .zip or metadata files are put.",
@@ -26,9 +27,11 @@
     "unzip": "Extract all files from the retrieved zip file.",
     "wait": "The number of minutes to wait for the command to complete.",
     "apiversion": "Use to override the default, which is the latest version supported by your CLI plug-in, with the version in your package.xml file.",
-    "verbose": "Indicates that you want verbose output from the retrieve operation."
+    "verbose": "Indicates that you want verbose output from the retrieve operation.",
+    "jobid": "The job ID (asyncId) of the retrieve you want to check. If not specified, the default value is the ID of the most recent metadata retrieval you ran using Salesforce CLI. You must specify a --retrievetargetdir. Use with --wait to resume waiting."
   },
   "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s\n%s",
   "InvalidPackageNames": "You specified [%s]. Try again and specify only one package when using --singlepackage.",
+  "MissingRetrieveId": "The jobid command parameter was not provided, neither directly nor from a previous retrieval.",
   "checkStatus": "To check the status of this retrieve, run \"sfdx force:mdapi:beta:retrieve:report %s\""
 }
