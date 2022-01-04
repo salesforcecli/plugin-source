@@ -113,11 +113,13 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    this.sourceDir = this.resolveRootDir(this.getFlag<string>('sourcedir'));
+    const packagenames = this.getFlag<string[]>('packagenames');
+    if (!packagenames) {
+      this.sourceDir = this.resolveRootDir(this.getFlag<string>('sourcedir'));
+    }
     this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
     const manifest = this.resolveManifest(this.getFlag<string>('unpackaged'));
     const singlePackage = this.getFlag<boolean>('singlepackage');
-    const packagenames = this.getFlag<string[]>('packagenames');
     this.zipFileName = this.getFlag<string>('zipfilename') || 'unpackaged.zip';
     this.unzip = this.getFlag<boolean>('unzip');
     this.wait = this.getFlag<Duration>('wait');
