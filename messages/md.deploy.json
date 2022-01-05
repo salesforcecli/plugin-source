@@ -1,7 +1,7 @@
 {
   "description": "deploy metadata to an org using Metadata API",
   "examples": [
-    "return a job id you can use to check deploy",
+    "Return a job ID you can use to check the deploy status:",
     "  sfdx force:mdapi:beta:deploy -d some/path",
     "Deploy and poll for 1000 minutes:",
     "  sfdx force:mdapi:beta:deploy -d some/path -w 1000",
