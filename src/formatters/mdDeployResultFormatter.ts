@@ -73,6 +73,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
     } else {
       // always show failures
       this.displayFailures();
+      this.displayTestResults();
     }
     // TODO: the toolbelt version of this is returning an SfdxError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
