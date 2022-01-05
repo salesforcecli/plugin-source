@@ -284,7 +284,7 @@ describe('mdapi NUTs', () => {
       //   });
       // });
 
-      describe('Deploy directory using non and request report using jobid parameter from wrong org', () => {
+      describe('Deploy directory using default org and request report using jobid parameter from a different org', () => {
         let deployCommandResponse: MdDeployResult;
         it('should deploy a directory', () => {
           deployCommandResponse = execCmd<MdDeployResult>(
