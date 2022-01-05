@@ -44,6 +44,14 @@ export abstract class DeployCommand extends SourceCommand {
     this.setStash(id);
   });
 
+  // the basic sfdx flag is already making sure its of the correct length
+  public static isValidDeployId = (id: string): boolean => {
+    if (id.startsWith('0Af')) {
+      return true;
+    } else {
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
+    }
+  };
   /**
    * Request a report of an in-progress or completed deployment.
    *

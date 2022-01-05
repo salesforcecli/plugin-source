@@ -9,7 +9,6 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 
-import { isValidDeployId } from '../../../../../functions';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../../../formatters/mdDeployResultFormatter';
 import { DeployCommand } from '../../../../../deployCommand';
 import { ProgressFormatter } from '../../../../../formatters/progressFormatter';
@@ -35,7 +34,7 @@ export class Report extends DeployCommand {
       char: 'i',
       description: messages.getMessage('flags.jobId'),
       longDescription: messages.getMessage('flagsLong.jobId'),
-      validate: isValidDeployId,
+      validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),

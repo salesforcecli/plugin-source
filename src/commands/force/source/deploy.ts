@@ -9,7 +9,6 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
-import { isValidDeployId } from '../../../functions';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -75,7 +74,7 @@ export class Deploy extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
       exactlyOne: xorFlags,
       exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings'],
-      validate: isValidDeployId,
+      validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),

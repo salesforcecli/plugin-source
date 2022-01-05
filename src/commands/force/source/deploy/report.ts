@@ -9,7 +9,6 @@ import * as os from 'os';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
-import { isValidDeployId } from '../../../../functions';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
@@ -39,7 +38,7 @@ export class Report extends DeployCommand {
       char: 'i',
       description: messages.getMessage('flags.jobid'),
       longDescription: messages.getMessage('flagsLong.jobid'),
-      validate: isValidDeployId,
+      validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),

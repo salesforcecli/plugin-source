@@ -15,7 +15,6 @@ import {
   DeployCancelCommandResult,
   DeployCancelResultFormatter,
 } from '../../../../formatters/deployCancelResultFormatter';
-import { isValidDeployId } from '../../../../functions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');
@@ -35,7 +34,7 @@ export class Cancel extends DeployCommand {
     jobid: flags.id({
       char: 'i',
       description: messages.getMessage('flags.jobid'),
-      validate: isValidDeployId,
+      validate: DeployCommand.isValidDeployId,
     }),
   };
 
