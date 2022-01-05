@@ -1,6 +1,6 @@
 {
   "description": "check the status of a metadata deployment",
-  "mdDeployReportCommandCliHelp": "Specify the job ID for the deploy you want to check. You can also specify a wait time (minutes) to check for updates to the deploy status.",
+  "mdDeployReportCommandCliHelp": "Specify the job ID for the deploy you want to check. The job ID is returned by the force:mdapi:deploy command when run without the --wait parameter. You can also specify a wait time (minutes) to check for updates to the deploy status.",
   "flags": {
     "verbose": "verbose output of deploy results",
     "jobId": "job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; if not specified, defaults to your most recent CLI deployment",
