@@ -42,12 +42,12 @@ export class Report extends DeployCommand {
   };
 
   public async run(): Promise<MdDeployResult> {
-    await this.deploy();
+    await this.doReport();
     this.resolveSuccess();
     return this.formatResult();
   }
 
-  protected async deploy(): Promise<void> {
+  protected async doReport(): Promise<void> {
     this.isSourceStash = false;
     if (this.flags.verbose) {
       this.ux.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));

@@ -1,8 +1,17 @@
 {
   "description": "deploy metadata to an org using Metadata API",
-  "mdDeployCommandCliLong": "Deploys file representations of components into an org by creating or updating the components they represent. You can deploy and retrieve up to 10,000 files or 400 MB (39 MB compressed) at one time. The default target username is the admin user for the default scratch org.",
-  "mdDeployCommandCliHelp": "IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained certain terms to avoid any effect on customer implementations.\n\nSpecify the location of the files to deploy as a .zip file or by the root of the directory tree containing the files. To check the status of a deployment, specify its job ID. To run quick deploy of a recently validated package, use --validateddeployrequestid with the validated ID.\n\nTo wait for the command to finish running no matter how long the deployment takes, set --wait to -1: \"sfdx force mdapi:deploy -w -1 ...\".\n\nIf you don’t specify --wait, the command returns immediately and the metadata deploys asynchronously. Run force:mdapi:deploy:report to check the status of the deploy.",
-  "examples": [],
+  "examples": [
+    "return a job id you can use to check deploy",
+    "  sfdx force:mdapi:beta:deploy -d some/path",
+    "deploy and poll for 1000 minutes",
+    "  sfdx force:mdapi:beta:deploy -d some/path -w 1000",
+    "deploy a zip file",
+    "  sfdx force:mdapi:beta:deploy -f stuff.zip",
+    "validate a deployment so the ID can be used for a quick deploy",
+    "  sfdx force:mdapi:beta:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg",
+    "quick deploy using a previously validated deployment",
+    "  sfdx force:mdapi:beta:deploy -q MyValidatedId"
+  ],
   "flags": {
     "checkOnly": "validate deploy but don’t save to the org",
     "deployDir": "root of directory tree of files to deploy",

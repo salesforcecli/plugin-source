@@ -4,6 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { EOL } from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, once, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
@@ -26,8 +27,7 @@ type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTe
 
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
-  // TODO: change help into examples?
-  // public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessage('examples').split(EOL);
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     checkonly: flags.boolean({
@@ -149,9 +149,7 @@ export class Deploy extends DeployCommand {
 
     // we might not know the source api version without unzipping a zip file, so we don't use componentSet
     this.ux.log(getVersionMessage('Deploying', undefined, this.isRest));
-
     this.logger.debug('Deploy result: %o', deploy);
-    this.updateDeployId(deploy.id);
 
     if (!this.isAsync) {
       if (!this.isJsonOutput()) {
