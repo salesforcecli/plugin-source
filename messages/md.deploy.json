@@ -7,7 +7,7 @@
     "  sfdx force:mdapi:beta:deploy -d some/path -w 1000",
     "Deploy a ZIP file:",
     "  sfdx force:mdapi:beta:deploy -f stuff.zip",
-    "validate a deployment so the ID can be used for a quick deploy",
+    "Validate a deployment so the ID can be used for a quick deploy:",
     "  sfdx force:mdapi:beta:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg",
     "quick deploy using a previously validated deployment",
     "  sfdx force:mdapi:beta:deploy -q MyValidatedId"
