@@ -3,7 +3,7 @@
   "examples": [
     "return a job id you can use to check deploy",
     "  sfdx force:mdapi:beta:deploy -d some/path",
-    "deploy and poll for 1000 minutes",
+    "Deploy and poll for 1000 minutes:",
     "  sfdx force:mdapi:beta:deploy -d some/path -w 1000",
     "Deploy a ZIP file:",
     "  sfdx force:mdapi:beta:deploy -f stuff.zip",
