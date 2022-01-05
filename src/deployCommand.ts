@@ -12,6 +12,7 @@ import {
   MetadataApiDeploy,
   MetadataApiDeployStatus,
   RequestStatus,
+  AsyncResult,
 } from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
@@ -37,6 +38,7 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected isRest = false;
   protected isAsync = false;
+  protected asyncDeployResult: AsyncResult;
 
   protected deployResult: DeployResult;
   protected updateDeployId = once((id: string) => {
@@ -190,22 +192,14 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected async deployRecentValidation(): Promise<DeployResult> {
-    const conn = this.org.getConnection();
     const id = this.getFlag<string>('validateddeployrequestid');
-
-    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
-
+    const response = await this.org.getConnection().deployRecentValidation({ id, rest: this.isRest });
     // This is the deploy ID of the deployRecentValidation response, not
     // the already validated deploy ID (i.e., validateddeployrequestid).
-    let validatedDeployId: string;
-    if (isString(response)) {
-      // SOAP API
-      validatedDeployId = response;
-    } else {
-      // REST API
-      validatedDeployId = (response as { id: string }).id;
-    }
+    // REST returns an object with an ID, SOAP returns the id as a string.
+    const validatedDeployId = isString(response) ? response : (response as { id: string }).id;
     this.updateDeployId(validatedDeployId);
+    this.asyncDeployResult = { id: validatedDeployId };
 
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }

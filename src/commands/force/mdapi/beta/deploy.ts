@@ -8,7 +8,7 @@ import { EOL } from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { AsyncResult, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../../deployCommand';
 import {
   DeployAsyncResultFormatter,
@@ -97,7 +97,6 @@ export class Deploy extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.soapDeploy'),
     }),
   };
-  private asyncDeployResult: AsyncResult;
 
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
     await this.deploy();

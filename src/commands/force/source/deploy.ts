@@ -7,7 +7,6 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { AsyncResult } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
@@ -107,8 +106,6 @@ export class Deploy extends DeployCommand {
     }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-
-  private asyncDeployResult: AsyncResult;
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
     await this.deploy();
