@@ -4,6 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { EOL } from 'os';
 import { Messages } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
@@ -20,6 +21,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployre
 
 export class Report extends DeployCommand {
   public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessage('examples').split(EOL);
   public static readonly requiresUsername = true;
 
   public static readonly flagsConfig: FlagsConfig = {
