@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/salesforcecli/plugin-source/compare/v1.6.2...v1.7.0) (2022-01-06)
+
+### Features
+
+- mdapi deploy/report commands ([8068ff0](https://github.com/salesforcecli/plugin-source/commit/8068ff07213541a5823d5908bc831f92e89aa122))
+
+### Bug Fixes
+
+- add variable polling times based on comp. set ([#360](https://github.com/salesforcecli/plugin-source/issues/360)) ([4a839ff](https://github.com/salesforcecli/plugin-source/commit/4a839ff7f9f429a723c54baf6c9cb65139eadf43))
+
 ### [1.6.2](https://github.com/salesforcecli/plugin-source/compare/v1.6.1...v1.6.2) (2021-12-03)
 
 ### Bug Fixes
