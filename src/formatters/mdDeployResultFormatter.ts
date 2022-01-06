@@ -57,7 +57,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
     if (this.isVerbose()) {
       this.displaySuccesses();
       this.displayFailures();
-      this.displayTestResults();
+      this.displayTestResults(isReportCommand);
     } else if (isReportCommand) {
       this.ux.log(`Status: ${this.result.response.status ?? 'unknown'}`);
       const deploys = `Deployed: ${this.getNumResult('numberComponentsDeployed')}/${this.getNumResult(
@@ -73,7 +73,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
     } else {
       // always show failures
       this.displayFailures();
-      this.displayTestResults();
+      this.displayTestResults(isReportCommand);
     }
     // TODO: the toolbelt version of this is returning an SfdxError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
@@ -111,7 +111,9 @@ export class MdDeployResultFormatter extends ResultFormatter {
   protected displayFailures(): void {
     if (this.hasStatus(RequestStatus.Failed) || this.hasStatus(RequestStatus.SucceededPartial)) {
       const failures = toArray(this.getResponse().details.componentFailures).sort(mdResponseSorter);
-
+      if (failures.length === 0) {
+        return;
+      }
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       this.ux.table(failures, {
@@ -130,10 +132,10 @@ export class MdDeployResultFormatter extends ResultFormatter {
     return getNumber(this.result, `response.${field}`, 0);
   }
 
-  protected displayTestResults(): void {
+  protected displayTestResults(isReportCommand = false): void {
     if (this.result.response.runTestsEnabled) {
       this.ux.log('');
-      if (this.isVerbose()) {
+      if (this.isVerbose() || !isReportCommand) {
         this.verboseTestFailures();
         this.verboseTestSuccess();
         this.verboseTestTime();
