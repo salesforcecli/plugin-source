@@ -34,13 +34,7 @@ export class Cancel extends DeployCommand {
     jobid: flags.id({
       char: 'i',
       description: messages.getMessage('flags.jobid'),
-      validate: (val) => {
-        if (val.startsWith('0Af')) {
-          return true;
-        } else {
-          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
-        }
-      },
+      validate: DeployCommand.isValidDeployId,
     }),
   };
 

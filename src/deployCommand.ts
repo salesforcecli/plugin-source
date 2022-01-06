@@ -11,9 +11,11 @@ import {
   DeployResult,
   MetadataApiDeploy,
   MetadataApiDeployStatus,
+  RequestStatus,
+  AsyncResult,
 } from '@salesforce/source-deploy-retrieve';
 import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
-import { AnyJson, getBoolean } from '@salesforce/ts-types';
+import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 
@@ -21,6 +23,8 @@ interface StashFile {
   isGlobal: boolean;
   filename: string;
 }
+
+export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export abstract class DeployCommand extends SourceCommand {
   protected static readonly SOURCE_STASH_KEY = 'SOURCE_DEPLOY';
@@ -31,9 +35,25 @@ export abstract class DeployCommand extends SourceCommand {
       this.ux.log(`Deploy ID: ${id}`);
     }
   });
-  // used to determine the correct stash.json key
-  protected isSourceStash = true;
+
+  protected isRest = false;
+  protected isAsync = false;
+  protected asyncDeployResult: AsyncResult;
+
   protected deployResult: DeployResult;
+  protected updateDeployId = once((id: string) => {
+    this.displayDeployId(id);
+    this.setStash(id);
+  });
+
+  // the basic sfdx flag is already making sure its of the correct length
+  public static isValidDeployId = (id: string): boolean => {
+    if (id.startsWith('0Af')) {
+      return true;
+    } else {
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
+    }
+  };
   /**
    * Request a report of an in-progress or completed deployment.
    *
@@ -49,6 +69,26 @@ export abstract class DeployCommand extends SourceCommand {
     const deployStatus = res as unknown as MetadataApiDeployStatus;
     const componentSet = this.componentSet || new ComponentSet();
     return new DeployResult(deployStatus, componentSet);
+  }
+
+  /**
+   * Checks the response status to determine whether the deploy was successful.
+   * Async deploys are successful unless an error is thrown, which resolves as
+   * unsuccessful in oclif.
+   */
+  protected resolveSuccess(): void {
+    const StatusCodeMap = new Map<RequestStatus, number>([
+      [RequestStatus.Succeeded, 0],
+      [RequestStatus.Canceled, 1],
+      [RequestStatus.Failed, 1],
+      [RequestStatus.SucceededPartial, 68],
+      [RequestStatus.InProgress, 69],
+      [RequestStatus.Pending, 69],
+      [RequestStatus.Canceling, 69],
+    ]);
+    if (!this.isAsync) {
+      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
+    }
   }
 
   protected setStash(deployId: string): void {
@@ -69,7 +109,7 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected getStashKey(): string {
-    return this.isSourceStash ? DeployCommand.SOURCE_STASH_KEY : DeployCommand.MDAPI_STASH_KEY;
+    return this.id.includes('force:mdapi') ? DeployCommand.MDAPI_STASH_KEY : DeployCommand.SOURCE_STASH_KEY;
   }
 
   protected resolveDeployId(id?: string): string {
@@ -149,6 +189,19 @@ export abstract class DeployCommand extends SourceCommand {
     const pollingOptions = { ...defaultOptions, ...options };
     const pollingClient = await PollingClient.create(pollingOptions);
     return pollingClient.subscribe() as unknown as Promise<DeployResult>;
+  }
+
+  protected async deployRecentValidation(): Promise<DeployResult> {
+    const id = this.getFlag<string>('validateddeployrequestid');
+    const response = await this.org.getConnection().deployRecentValidation({ id, rest: this.isRest });
+    // This is the deploy ID of the deployRecentValidation response, not
+    // the already validated deploy ID (i.e., validateddeployrequestid).
+    // REST returns an object with an ID, SOAP returns the id as a string.
+    const validatedDeployId = isString(response) ? response : (response as { id: string }).id;
+    this.updateDeployId(validatedDeployId);
+    this.asyncDeployResult = { id: validatedDeployId };
+
+    return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 
   private getStash(): ConfigFile<StashFile> {
