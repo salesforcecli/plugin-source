@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { FlagsConfig, flags } from '@salesforce/command';
+import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { RequestStatus, ComponentStatus, DeployResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentStatus, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 
-import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
+import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
 import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
 import { PushResponse, PushResultFormatter } from '../../../../formatters/pushResultFormatter';
@@ -126,7 +126,7 @@ export default class Push extends DeployCommand {
           : new DeployProgressStatusFormatter(this.logger, this.ux);
         progressFormatter.progress(deploy);
       }
-      const result = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
+      const result = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
 
       if (result) {
         // Only fire the postdeploy event when we have results. I.e., not async.
