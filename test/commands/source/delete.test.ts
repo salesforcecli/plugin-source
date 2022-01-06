@@ -40,6 +40,8 @@ describe('force:source:delete', () => {
   class TestDelete extends Delete {
     public async runIt() {
       await this.init();
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:source:delete';
       return this.run();
     }
     public setOrg(org: Org) {

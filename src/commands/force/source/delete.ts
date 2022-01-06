@@ -19,8 +19,8 @@ import {
   RequestStatus,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { Duration, env, once } from '@salesforce/kit';
-import { DeployCommand } from '../../../deployCommand';
+import { Duration, env } from '@salesforce/kit';
+import { DeployCommand, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeleteResultFormatter } from '../../../formatters/deleteResultFormatter';
@@ -32,9 +32,7 @@ const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'delete');
-
-type TestLevel = 'NoTestRun' | 'RunLocalTests' | 'RunAllTestsInOrg';
-
+const xorFlags = ['metadata', 'sourcepath'];
 export class Delete extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -68,21 +66,19 @@ export class Delete extends DeployCommand {
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       longDescription: messages.getMessage('flagsLong.metadata'),
-      exclusive: ['manifest', 'sourcepath'],
+      exactlyOne: xorFlags,
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
       longDescription: messages.getMessage('flagsLong.sourcepath'),
-      exclusive: ['manifest', 'metadata'],
+      exactlyOne: xorFlags,
     }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
   };
-  protected xorFlags = ['metadata', 'sourcepath'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  private isRest = false;
   private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
   private aborted = false;
   private components: MetadataComponent[];
@@ -91,11 +87,6 @@ export class Delete extends DeployCommand {
   // map of component in project, to where it is stashed
   private stashPath = new Map<string, string>();
   private tempDir = path.join(os.tmpdir(), 'source_delete');
-
-  private updateDeployId = once((id: string) => {
-    this.displayDeployId(id);
-    this.setStash(id);
-  });
 
   public async run(): Promise<DeployCommandResult> {
     await this.delete();
@@ -109,8 +100,6 @@ export class Delete extends DeployCommand {
 
   protected async delete(): Promise<void> {
     this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
-    // verify that the user defined one of: metadata, sourcepath
-    this.validateFlags();
     const sourcepaths = this.getFlag<string[]>('sourcepath');
 
     this.componentSet = await ComponentSetBuilder.build({
@@ -183,7 +172,7 @@ export class Delete extends DeployCommand {
       progressFormatter.progress(deploy);
     }
 
-    this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
+    this.deployResult = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
     await this.lifecycle.emit('postdeploy', this.deployResult);
   }
 

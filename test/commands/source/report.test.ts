@@ -43,6 +43,8 @@ describe('force:source:report', () => {
   class TestReport extends Report {
     public async runIt() {
       await this.init();
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:source:report';
       return this.run();
     }
     public setOrg(org: Org) {

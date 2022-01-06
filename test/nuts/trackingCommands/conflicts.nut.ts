@@ -27,10 +27,7 @@ describe('conflict detection and resolution', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [
-        'git checkout 652b954921f51c79371c224760dd5bdf6a277db5',
-        `sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`,
-      ],
+      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
     });
   });
 
@@ -54,7 +51,7 @@ describe('conflict detection and resolution', () => {
   it('edits a remote file', async () => {
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[1] as { result: { username: string } }).result?.username,
+        username: (session.setup[0] as { result: { username: string } }).result?.username,
       }),
     });
     const app = await conn.singleRecordQuery<{ Id: string; Metadata: any }>(
