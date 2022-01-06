@@ -35,8 +35,8 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 
 export class Retrieve extends SourceCommand {
-  public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly description = messages.getMessage('retrieveCmd.description');
+  public static readonly examples = messages.getMessage('retrieveCmd.examples').split(os.EOL);
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     retrievetargetdir: flags.directory({

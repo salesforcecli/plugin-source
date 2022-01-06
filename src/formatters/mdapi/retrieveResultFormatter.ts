@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { join } from 'path';
+import { join, parse } from 'path';
 import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
@@ -78,7 +78,8 @@ export class RetrieveResultFormatter extends ResultFormatter {
     if (this.isSuccess()) {
       this.ux.log(`Wrote retrieve zip to ${this.result.zipFilePath}`);
       if (this.options.unzip) {
-        this.ux.log(`Extracted ${this.options.zipFileName} to: ${this.options.retrieveTargetDir}`);
+        const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName).name);
+        this.ux.log(`Extracted ${this.options.zipFileName} to: ${extractPath}`);
       }
       if (this.options.verbose) {
         const retrievedFiles = toArray(this.result.fileProperties);
@@ -109,7 +110,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
   }
 
   private displaySuccesses(retrievedFiles: FileProperties[]): void {
-    this.sortFileResponses(retrievedFiles);
+    this.sortFileProperties(retrievedFiles);
 
     this.ux.log('');
     this.ux.styledHeader(blue(`Components Retrieved [${retrievedFiles.length}]`));

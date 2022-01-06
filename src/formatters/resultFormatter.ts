@@ -50,13 +50,26 @@ export abstract class ResultFormatter {
   }
 
   // Sort by type > filePath > fullName
-  protected sortFileResponses(fileResponses: FileResponse[] | FileProperties[]): void {
+  protected sortFileResponses(fileResponses: FileResponse[]): void {
     fileResponses.sort((i, j) => {
       if (i.type === j.type) {
         if (i.filePath === j.filePath) {
           return i.fullName > j.fullName ? 1 : -1;
         }
         return i.filePath > j.filePath ? 1 : -1;
+      }
+      return i.type > j.type ? 1 : -1;
+    });
+  }
+
+  // Sort by type > fileName > fullName
+  protected sortFileProperties(fileProperties: FileProperties[]): void {
+    fileProperties.sort((i, j) => {
+      if (i.type === j.type) {
+        if (i.fileName === j.fileName) {
+          return i.fullName > j.fullName ? 1 : -1;
+        }
+        return i.fileName > j.fileName ? 1 : -1;
       }
       return i.type > j.type ? 1 : -1;
     });

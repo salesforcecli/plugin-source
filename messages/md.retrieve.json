@@ -1,9 +1,20 @@
 {
-  "description": "retrieve metadata from an org using Metadata API\nUses Metadata API to retrieve a .zip of XML files that represent metadata from the targeted org. The default target username is the admin user for the default scratch org. You can retrieve and deploy up to 10,000 files or 400 MB (39 MB compressed) at one time.",
-  "examples": [
-    "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir",
-    "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir -k package.xml"
-  ],
+  "retrieveCmd": {
+    "description": "retrieve metadata from an org using Metadata API\nUses Metadata API to retrieve a .zip of XML files that represent metadata from the targeted org. The default target username is the admin user for the default scratch org. You can retrieve and deploy up to 10,000 files or 400 MB (39 MB compressed) at one time.",
+    "examples": [
+      "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir",
+      "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir -k package.xml",
+      "$ sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip"
+    ]
+  },
+  "reportCmd": {
+    "description": "check the status of a metadata retrieval\nSpecify the job ID and a target directory for the retrieve you want to check. You can also specify a wait time (minutes) to check for updates to the retrieve status. If the retrieve was successful, the resulting zip file will be saved to the location passed in with the retrieve target parameter.",
+    "examples": [
+      "$ sfdx force:mdapi:beta:retrieve:report",
+      "$ sfdx force:mdapi:beta:retrieve:report -r path/to/retrieve/dir -w 15",
+      "$ sfdx force:mdapi:beta:retrieve:report -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip"
+    ]
+  },
   "flags": {
     "retrievetargetdir": "directory root for the retrieved files",
     "unpackaged": "file path of manifest of components to retrieve",
