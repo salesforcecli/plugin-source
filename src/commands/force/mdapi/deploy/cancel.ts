@@ -34,17 +34,9 @@ export class Cancel extends DeployCommand {
     jobid: flags.id({
       char: 'i',
       description: messages.getMessage('flags.jobid'),
-      validate: (val) => {
-        if (val.startsWith('0Af')) {
-          return true;
-        } else {
-          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
-        }
-      },
+      validate: DeployCommand.isValidDeployId,
     }),
   };
-  // The most important difference between this and source:deploy:cancel
-  public isSourceStash = false;
 
   public async run(): Promise<DeployCancelCommandResult> {
     await this.cancel();

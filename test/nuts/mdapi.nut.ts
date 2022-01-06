@@ -11,9 +11,10 @@ import { expect } from 'chai';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce';
-import { exec } from 'shelljs';
+import { create as createArchive } from 'archiver';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
+import { MdDeployResult } from '../../src/formatters/mdDeployResultFormatter';
 
 let session: TestSession;
 
@@ -38,6 +39,11 @@ describe('mdapi NUTs', () => {
       setupCommands: [
         // default org
         'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+        // required if running apex tests (WITH_SECURITY_ENFORCED)
+        'sfdx force:source:deploy -p force-app',
+        'sfdx force:user:permset:assign -n dreamhouse',
+        // non default org
+        'sfdx force:org:create -d 1 -f config/project-scratch-def.json -a nonDefaultOrg',
       ],
     });
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
@@ -177,10 +183,9 @@ describe('mdapi NUTs', () => {
   describe('mdapi:deploy:cancel', () => {
     it('will cancel an mdapi deploy via the stash.json', () => {
       execCmd('force:source:convert --outputdir mdapi');
-      // TODO: once mdapi:deploy is migrated switch to execCmd
-      const deploy = JSON.parse(exec('sfdx force:mdapi:deploy -d mdapi -w 0 --json', { silent: true })) as {
-        result: { id: string };
-      };
+      const deploy = execCmd<{ id: string }>('force:mdapi:deploy -d mdapi -w 0 --json', {
+        ensureExitCode: 0,
+      }).jsonOutput;
       const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
       expect(result.jsonOutput.status).to.equal(0);
       const json = result.jsonOutput.result;
@@ -192,10 +197,10 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
       execCmd('force:source:convert --outputdir mdapi');
-      // TODO: once mdapi:deploy is migrated switch to execCmd
-      const deploy = JSON.parse(exec('sfdx force:mdapi:deploy -d mdapi -w 0 --json', { silent: true })) as {
-        result: { id: string };
-      };
+      const deploy = execCmd<{ id: string }>('force:mdapi:deploy -d mdapi -w 0 --json', {
+        ensureExitCode: 0,
+      }).jsonOutput;
+
       const result = execCmd<DeployCancelCommandResult>(`force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`);
       expect(result.jsonOutput.status).to.equal(0);
       const json = result.jsonOutput.result;
@@ -209,62 +214,107 @@ describe('mdapi NUTs', () => {
   // *** More NUTs will be added/uncommented here as commands are moved from toolbelt to
   //     this plugin.  Keeping these toolbelt tests here for reference.
 
-  // describe('Test stash', () => {
-  //   describe('Deploy using soap with non default username', () => {
-  //     it('should deploy zip file to the scratch org and request deploy report', () => {
-  //       execCmd('force:mdapi:deploy --zipfile unpackaged.zip --json --soapdeploy -u nonDefaultOrg', {
-  //         ensureExitCode: 0,
-  //       });
-  //       const reportCommandResponse = getString(
-  //         execCmd('force:mdapi:deploy:report --wait 2 -u nonDefaultOrg', {
-  //           ensureExitCode: 0,
-  //         }),
-  //         'shellOutput.stdout'
-  //       );
+  describe('tests that need deployables', () => {
+    before(async () => {
+      const mdapiOut = 'mdapiOut';
+      // make a mdapi directory from the project
+      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0 });
+      // make a zip from that
+      const zip = createArchive('zip', { zlib: { level: 9 } });
+      const output = fs.createWriteStream(path.join(session.project.dir, `${mdapiOut}.zip`));
+      zip.pipe(output);
+      // anywhere not at the root level is fine
+      zip.directory(path.join(session.project.dir, mdapiOut), 'mdapiOut');
+      await zip.finalize();
+    });
 
-  //       expect(reportCommandResponse).to.include('Status:  Succeeded', reportCommandResponse);
-  //       expect(reportCommandResponse).to.include('Components deployed:  2', reportCommandResponse);
-  //     });
-  //   });
+    describe('Test stash', () => {
+      describe('Deploy zip and report using soap with non default username', () => {
+        it('should deploy zip file', () => {
+          execCmd<MdDeployResult>(
+            'force:mdapi:beta:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg',
+            {
+              ensureExitCode: 0,
+            }
+          );
+        });
 
-  //   describe('Retrieve using non default username', () => {
-  //     it('should perform retrieve from the scratch org and request retrieve report', () => {
-  //       const retrieveCommandResponse = getString(
-  //         execCmd(
-  //           'force:mdapi:retrieve --retrievetargetdir retrieveDir --unpackaged package.xml --wait 0 -u nonDefaultOrg',
-  //           { ensureExitCode: 0 }
-  //         ),
-  //         'shellOutput.stdout'
-  //       );
-  //       expect(retrieveCommandResponse).to.include(
-  //         'The retrieve request did not complete within the specified wait time'
-  //       );
+        it('request non-verbose deploy report without a deployId', () => {
+          const reportCommandResponse = execCmd('force:mdapi:beta:deploy:report --wait 200 -u nonDefaultOrg', {
+            ensureExitCode: 0,
+          }).shellOutput.stdout;
 
-  //       const retrieveReportCommand = getString(
-  //         execCmd('force:mdapi:retrieve:report --wait 2 -u nonDefaultOrg', {
-  //           ensureExitCode: 0,
-  //         }),
-  //         'shellOutput.stdout'
-  //       );
-  //       expect(retrieveReportCommand).to.include('Wrote retrieve zip to');
-  //     });
-  //   });
+          // this output is a change from mdapi:deploy:report which returned NOTHING after the progress bar
+          expect(reportCommandResponse).to.include('Status: Succeeded', reportCommandResponse);
+          expect(reportCommandResponse).to.include('Deployed: ', reportCommandResponse);
+        });
 
-  //   describe('Deploy using non default username and request report using jobid parameter', () => {
-  //     it('should fail report', () => {
-  //       const deployCommandResponse = execCmd<{ id: string }>(
-  //         'force:mdapi:deploy --zipfile unpackaged.zip --json --soapdeploy',
-  //         { ensureExitCode: 0 }
-  //       ).jsonOutput.result;
-  //       const reportCommandResponse = getString(
-  //         execCmd(
-  //           `force:mdapi:deploy:report --wait 2 --jobid ${deployCommandResponse.id} --targetusername nonDefaultOrg`,
-  //           { ensureExitCode: 1 }
-  //         ),
-  //         'shellOutput.stderr'
-  //       );
-  //       expect(reportCommandResponse).to.include('INVALID_CROSS_REFERENCE_KEY: invalid cross reference id');
-  //     });
-  //   });
-  // });
+        it('request verbose deploy report without a deployId', () => {
+          const reportCommandResponse = execCmd(
+            'force:mdapi:beta:deploy:report --wait 200 -u nonDefaultOrg --verbose',
+            {
+              ensureExitCode: 0,
+            }
+          ).shellOutput.stdout;
+          // has the basic table output
+          expect(reportCommandResponse).to.include('Deployed Source');
+        });
+      });
+
+      // describe('Retrieve using non default username', () => {
+      //   it('should perform retrieve from the scratch org and request retrieve report', () => {
+      //     const retrieveCommandResponse = getString(
+      //       execCmd(
+      //         'force:mdapi:beta:retrieve --retrievetargetdir retrieveDir --unpackaged package.xml --wait 0 -u nonDefaultOrg',
+      //         { ensureExitCode: 0 }
+      //       ),
+      //       'shellOutput.stdout'
+      //     );
+      //     expect(retrieveCommandResponse).to.include(
+      //       'The retrieve request did not complete within the specified wait time'
+      //     );
+
+      //     const retrieveReportCommand = getString(
+      //       execCmd('force:mdapi:beta:retrieve:report --wait 2 -u nonDefaultOrg', {
+      //         ensureExitCode: 0,
+      //       }),
+      //       'shellOutput.stdout'
+      //     );
+      //     expect(retrieveReportCommand).to.include('Wrote retrieve zip to');
+      //   });
+      // });
+
+      describe('Deploy directory using default org and request report using jobid parameter from a different org', () => {
+        let deployCommandResponse: MdDeployResult;
+        it('should deploy a directory', () => {
+          deployCommandResponse = execCmd<MdDeployResult>(
+            'force:mdapi:beta:deploy --deploydir mdapiOut --json --soapdeploy',
+            { ensureExitCode: 0 }
+          ).jsonOutput.result;
+        });
+        it('should fail report', () => {
+          const errorReport = execCmd(
+            `force:mdapi:beta:deploy:report --wait 200 --jobid ${deployCommandResponse.id} --targetusername nonDefaultOrg`,
+            { ensureExitCode: 1 }
+          ).shellOutput.stderr;
+          expect(errorReport).to.include('INVALID_CROSS_REFERENCE_KEY: invalid cross reference id');
+        });
+      });
+
+      describe('validate a deployment and deploy that', () => {
+        let deployCommandResponse: MdDeployResult;
+        it('should check-only deploy a directory with tests', () => {
+          deployCommandResponse = execCmd<MdDeployResult>(
+            'force:mdapi:beta:deploy --deploydir mdapiOut --json --soapdeploy --checkonly --testlevel RunAllTestsInOrg --wait 100',
+            { ensureExitCode: 0 }
+          ).jsonOutput.result;
+        });
+        it('should deploy validated Id', () => {
+          execCmd(`force:mdapi:beta:deploy --wait 200 --validateddeployrequestid ${deployCommandResponse.id}`, {
+            ensureExitCode: 0,
+          });
+        });
+      });
+    });
+  });
 });

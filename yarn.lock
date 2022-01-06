@@ -680,10 +680,23 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^1.2.0", "@salesforce/cli-plugins-testkit@^1.4.10":
+"@salesforce/cli-plugins-testkit@^1.2.0":
   version "1.4.10"
   resolved "https://registry.npmjs.org/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.4.10.tgz#f4a6c2a721e878c0008605b71cc70b613e3c1fa9"
   integrity sha512-zilWlu+dRnFGdsT3WuXLUwec7JOIWjfQomHeyE91eaQRGZOrKlFA0P5yXur9BTYTF8U560N0vDeU6rSzktOfag==
+  dependencies:
+    "@salesforce/core" "^2.24.0"
+    "@salesforce/kit" "^1.5.13"
+    "@salesforce/ts-types" "^1.5.17"
+    archiver "^5.2.0"
+    debug "^4.3.1"
+    shelljs "^0.8.4"
+    strip-ansi "6.0.1"
+
+"@salesforce/cli-plugins-testkit@^1.4.33":
+  version "1.4.33"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-1.4.33.tgz#40f6273681dc83533e31db4b96fc20c9b1dfe888"
+  integrity sha512-Dl2PdOWn7NUxhqJTGWIzxnYy/nB31ZEjVdxngSwSlXYXiVqmhuBDXcDJxUrR9mijraEM34NHU1q9fkwIHPdbWg==
   dependencies:
     "@salesforce/core" "^2.24.0"
     "@salesforce/kit" "^1.5.13"
@@ -960,10 +973,10 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^5.8.4":
-  version "5.8.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.8.4.tgz#199ea1172095725cb82eb17d1c6ede6645cb0b3c"
-  integrity sha512-c74auuVpXD3H9aF9KcOwW1C1CinTMbvmCEDOJ90+cgOTQG62lst+Wn4+7iJCDKiH59XoGb9/H/NTKja8g7j3Pg==
+"@salesforce/source-deploy-retrieve@^5.9.1":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.9.1.tgz#aa6d609bb2c2b66ec58fc86b7553bd31c785c17b"
+  integrity sha512-9E6Z2VBfsKsW3ugWLVb91uy4Lk7lKoueNhuvo35XKcF/msnL2EGFHbK39N2rhvU2Q6p5FxA2EEQkuVEHHeQNGQ==
   dependencies:
     "@salesforce/core" "2.31.0"
     "@salesforce/kit" "^1.5.0"
@@ -976,10 +989,10 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-testkit@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.npmjs.org/@salesforce/source-testkit/-/source-testkit-0.0.15.tgz#0587a4cb050cd4f52c292c5aae164f2d09d3f5ee"
-  integrity sha512-WyT0OU7j2N68iBj0gcXQJrR3E/S4BZh7+CSggrHlSG5s/RR+OjwXZQ0pg/1Rrv2pv6zQOpi5FvjLVegSdhhMGg==
+"@salesforce/source-testkit@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-0.0.16.tgz#e5d800e65cfdccd5586ae6c10dbef0a768770102"
+  integrity sha512-JhFPOIWNRCiQXDSRpx6/cqK0a24RHoFBXP99upHMF10nyTGFgGQOent+OLP5UCDNrVJ6TnTudbTCDZMj8FNffQ==
   dependencies:
     "@salesforce/cli-plugins-testkit" "^1.2.0"
     "@salesforce/core" "^2.20.11"
@@ -1107,6 +1120,13 @@
   version "1.0.2"
   resolved "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
+
+"@types/archiver@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@types/archiver/-/archiver-5.1.1.tgz#d6d7610de4386b293abd5c1cb1875e0a4f4e1c30"
+  integrity sha512-heuaCk0YH5m274NOLSi66H1zX6GtZoMsdE6TYFcpFFjBjg0FoU4i4/M/a/kNlgNg26Xk3g364mNOYe1JaiEPOQ==
+  dependencies:
+    "@types/glob" "*"
 
 "@types/chai@*", "@types/chai@^4.2.11":
   version "4.2.22"
@@ -1434,7 +1454,7 @@ archiver-utils@^2.1.0:
 
 archiver@^5.2.0, archiver@^5.3.0:
   version "5.3.0"
-  resolved "https://registry.npmjs.org/archiver/-/archiver-5.3.0.tgz#dd3e097624481741df626267564f7dd8640a45ba"
+  resolved "https://registry.yarnpkg.com/archiver/-/archiver-5.3.0.tgz#dd3e097624481741df626267564f7dd8640a45ba"
   integrity sha512-iUw+oDwK0fgNpvveEsdQ0Ase6IIKztBJU2U0E9MzszMfmVVUyv1QJhS2ITW9ZCqx8dktAxVAjWWkKehuZE8OPg==
   dependencies:
     archiver-utils "^2.1.0"

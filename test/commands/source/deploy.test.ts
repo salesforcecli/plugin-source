@@ -26,7 +26,6 @@ import { getDeployResult } from './deployResponses';
 import { exampleSourceComponent } from './testConsts';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
@@ -73,6 +72,8 @@ describe('force:source:deploy', () => {
   class TestDeploy extends Deploy {
     public async runIt() {
       await this.init();
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:source:deploy';
       return this.run();
     }
     public setOrg(org: Org) {
@@ -180,15 +181,6 @@ describe('force:source:deploy', () => {
   const ensureProgressBar = (callCount: number) => {
     expect(initProgressBarStub.callCount).to.equal(callCount);
   };
-
-  it('should error if sourcepath or manifest arguments are not provided', async () => {
-    const requiredFlags = 'manifest, metadata, sourcepath, validateddeployrequestid';
-    try {
-      await runDeployCmd([]);
-    } catch (e) {
-      expect((e as Error).message).to.equal(messages.getMessage('MissingRequiredParam', [requiredFlags]));
-    }
-  });
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];

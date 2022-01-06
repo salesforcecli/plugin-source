@@ -4,9 +4,25 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { SfdxError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { expect } from 'chai';
-import { getVersionMessage } from '../../../src/deployCommand';
+import { assert, expect } from 'chai';
+import { getVersionMessage, DeployCommand } from '../../../src/deployCommand';
+
+describe('test static method for valid deploy IDs', () => {
+  it('valid deployId returns true', () => {
+    expect(DeployCommand.isValidDeployId('0Af000000012345')).to.be.true;
+  });
+
+  it('valid deployId throws', () => {
+    try {
+      DeployCommand.isValidDeployId('00D000000012345');
+      assert.fail('should have thrown');
+    } catch (e) {
+      expect((e as SfdxError).name).to.equal('invalidDeployId');
+    }
+  });
+});
 
 describe('various version formatting options', () => {
   it('returns basic response when nothing set', () => {

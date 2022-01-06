@@ -58,7 +58,7 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
   protected initProgressBar(): void {
     this.logger.debug('initializing progress bar');
     this.progressBar = cli.progress({
-      format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
+      format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',
       linewrap: true,
