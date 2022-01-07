@@ -18,7 +18,7 @@ describe('metadata types that go in folders', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        gitClone: 'https://github.com/mshanemc/nestedFolders',
+        sourceDir: path.join(process.cwd(), 'test', 'nuts', 'foldersProject'),
       },
       setupCommands: [
         'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
@@ -66,6 +66,24 @@ describe('metadata types that go in folders', () => {
         state,
         filePath: path.join('email', 'unfiled$public', 'Top_level_email.email-meta.xml'),
       },
+      {
+        fullName: 'ltngEmailTemplateFolder',
+        type: 'EmailFolder',
+        state,
+        filePath: path.join('default', 'email', 'ltngEmailTemplateFolder.emailFolder-meta.xml'),
+      },
+      {
+        fullName: 'ltngEmailTemplateFolder/ltngEmail',
+        type: 'EmailTemplate',
+        state,
+        filePath: path.join('email', 'ltngEmailTemplateFolder', 'ltngEmail.email'),
+      },
+      {
+        fullName: 'ltngEmailTemplateFolder/ltngEmail',
+        type: 'EmailTemplate',
+        state,
+        filePath: path.join('email', 'ltngEmailTemplateFolder', 'ltngEmail.email-meta.xml'),
+      },
     ];
 
     const getRelativeFileResponses = (resp: FileResponse[]) => {
@@ -86,14 +104,21 @@ describe('metadata types that go in folders', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json').jsonOutput;
       expect(deployResults.status, JSON.stringify(deployResults)).to.equal(0);
       const deployedSource = getRelativeFileResponses(deployResults.result.deployedSource);
-      expect(deployedSource).to.have.deep.members(getExpectedSource('Created'));
+      // lightning email template folders don't show up in the create result!
+      getExpectedSource('Created')
+        .filter((response) => response.fullName !== 'ltngEmailTemplateFolder')
+        .forEach((s) => {
+          expect(deployedSource, JSON.stringify(deployedSource)).to.deep.include(s);
+        });
     });
 
     it('can retrieve email templates via the manifest', () => {
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json').jsonOutput;
       expect(retrieveResults.status, JSON.stringify(retrieveResults)).to.equal(0);
       const retrievedSource = getRelativeFileResponses(retrieveResults.result.inboundFiles);
-      expect(retrievedSource).to.have.deep.members(getExpectedSource('Changed'));
+      getExpectedSource('Changed').forEach((s) => {
+        expect(retrievedSource, JSON.stringify(retrievedSource)).to.deep.include(s);
+      });
     });
   });
 
