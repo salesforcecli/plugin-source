@@ -19,6 +19,7 @@ import { DeployReportResultFormatter } from '../../../src/formatters/deployRepor
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
+import { Stash } from '../../../src/stash';
 import { getDeployResult } from './deployResponses';
 
 describe('force:source:report', () => {
@@ -44,7 +45,7 @@ describe('force:source:report', () => {
     public async runIt() {
       await this.init();
       // oclif would normally populate this, but UT don't have it
-      this.id ??= 'force:source:report';
+      this.id ??= 'force:source:deploy:report';
       return this.run();
     }
     public setOrg(org: Org) {
@@ -99,7 +100,7 @@ describe('force:source:report', () => {
   });
 
   it('should use stashed deploy ID', async () => {
-    const getStashSpy = spyMethod(sandbox, Report.prototype, 'getStash');
+    const getStashSpy = spyMethod(sandbox, Stash, 'get');
     const result = await runReportCmd(['--json']);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(true);
@@ -130,7 +131,7 @@ describe('force:source:report', () => {
   });
 
   it('should use the jobid flag', async () => {
-    const getStashSpy = spyMethod(sandbox, Report.prototype, 'getStash');
+    const getStashSpy = spyMethod(sandbox, Stash, 'get');
     const result = await runReportCmd(['--json', '--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(false);

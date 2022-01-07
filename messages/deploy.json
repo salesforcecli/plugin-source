@@ -75,7 +75,6 @@
   },
   "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output.",
   "MissingDeployId": "No deploy ID was provided or found in deploy history",
-  "InvalidStashFile": "Invalid deployment stash file encountered. File has been renamed to: %s.  Please specify a deploy ID using the command parameter.",
   "deployCanceled": "The deployment has been canceled by %s",
   "deployFailed": "Deploy failed.",
   "asyncDeployQueued": "Deploy has been queued.",

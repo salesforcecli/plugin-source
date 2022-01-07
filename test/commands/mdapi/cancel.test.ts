@@ -17,6 +17,7 @@ import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { getDeployResult } from '../source/deployResponses';
+import { Stash } from '../../../src/stash';
 
 describe('force:mdapi:deploy:cancel', () => {
   const sandbox = sinon.createSandbox();
@@ -92,7 +93,7 @@ describe('force:mdapi:deploy:cancel', () => {
   });
 
   it('should use stashed deploy ID', async () => {
-    const getStashSpy = spyMethod(sandbox, Cancel.prototype, 'getStash');
+    const getStashSpy = spyMethod(sandbox, Stash, 'get');
     const result = await runCancelCmd(['--json']);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(true);
@@ -107,7 +108,7 @@ describe('force:mdapi:deploy:cancel', () => {
   });
 
   it('should use the jobid flag', async () => {
-    const getStashSpy = spyMethod(sandbox, Cancel.prototype, 'getStash');
+    const getStashSpy = spyMethod(sandbox, Stash, 'get');
     const result = await runCancelCmd(['--json', '--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(false);
