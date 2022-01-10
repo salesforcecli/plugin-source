@@ -7,11 +7,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { exec } from 'shelljs';
 import { expect } from 'chai';
 import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce';
 import { create as createArchive } from 'archiver';
+import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
 import { MdDeployResult } from '../../src/formatters/mdDeployResultFormatter';
@@ -211,8 +213,173 @@ describe('mdapi NUTs', () => {
     });
   });
 
-  // *** More NUTs will be added/uncommented here as commands are moved from toolbelt to
-  //     this plugin.  Keeping these toolbelt tests here for reference.
+  describe('MDAPI Retrieve Tests', () => {
+    const manifestPath = 'dreamhouseContent.xml';
+    const apexManifestPath = 'dreamhouseApex.xml';
+    const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
+
+    before(() => {
+      // Install the ElectronBranding package in the default org for retrieve commands to use
+      const pkgInstallCmd = `sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
+      let rv = exec(pkgInstallCmd, { silent: true });
+      expect(rv.code, 'Failed to install ElectronBranding package for tests').to.equal(0);
+
+      // Create manifests for retrieve commands to use
+      rv = exec(`sfdx force:source:manifest:create -p force-app -n ${manifestPath}`, { silent: true });
+      expect(rv.code, `Failed to create ${manifestPath} manifest for tests`).to.equal(0);
+      rv = exec(`sfdx force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { silent: true });
+      expect(rv.code, `Failed to create ${apexManifestPath} manifest for tests`).to.equal(0);
+    });
+
+    describe('mdapi:retrieve (sync)', () => {
+      it('retrieves content from manifest', () => {
+        const retrieveTargetDir = 'mdRetrieveFromManifest';
+        const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
+        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath} --json`;
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
+
+        // Verify unpackaged.zip exists in retrieveTargetDir
+        const retrievedZip = fs.existsSync(retrieveTargetDirPath);
+        expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
+        const result = rv.jsonOutput.result;
+        expect(result.status).to.equal('Succeeded');
+        expect(result.success).to.be.true;
+        expect(result.fileProperties).to.be.an('array').with.length.greaterThan(50);
+        const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
+        expect(result.zipFilePath).to.equal(zipFileLocation);
+      });
+
+      it('retrieves single package', () => {
+        const retrieveTargetDir = 'mdRetrieveSinglePackage';
+        const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
+        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -p ${ELECTRON.name} --json`;
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
+
+        // Verify unpackaged.zip exists in retrieveTargetDir
+        const retrievedZip = fs.existsSync(retrieveTargetDirPath);
+        expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
+        const result = rv.jsonOutput.result;
+        expect(result.status).to.equal('Succeeded');
+        expect(result.success).to.be.true;
+        expect(result.fileProperties).to.be.an('array').with.length.greaterThan(5);
+        const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
+        expect(result.zipFilePath).to.equal(zipFileLocation);
+      });
+
+      it('retrieves content with named zip and unzips', () => {
+        const name = 'apexClasses';
+        const zipName = `${name}.zip`;
+        const retrieveTargetDir = 'mdRetrieveNamedZipAndUnzip';
+        const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
+        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -k ${apexManifestPath} -z -n ${zipName} --json`;
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
+
+        // Verify apexClasses.zip exists in retrieveTargetDir
+        const retrievedZip = fs.existsSync(path.join(retrieveTargetDirPath, zipName));
+        expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
+        const extractPath = path.join(retrieveTargetDirPath, name);
+        const unzipDir = fs.existsSync(extractPath);
+        expect(unzipDir, 'retrieved zip was not extracted to expected path').to.be.true;
+        expect(fs.readdirSync(extractPath)).to.deep.equal(['unpackaged']);
+        const result = rv.jsonOutput.result;
+        expect(result.status).to.equal('Succeeded');
+        expect(result.success).to.be.true;
+        expect(result.fileProperties).to.be.an('array').with.length.greaterThan(5);
+        const zipFileLocation = path.join(retrieveTargetDirPath, zipName);
+        expect(result.zipFilePath).to.equal(zipFileLocation);
+      });
+    });
+
+    describe('mdapi:retrieve (async) and mdapi:retrieve:report', () => {
+      it('retrieves report (async)', () => {
+        const retrieveTargetDir = 'mdRetrieveReportAsync';
+        const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
+        const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} --json -w 0`;
+        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
+        const result1 = rv1.jsonOutput.result;
+        expect(result1).to.have.property('done', false);
+        expect(result1).to.have.property('id');
+        expect(result1).to.have.property('state', 'Queued');
+        expect(result1).to.have.property('status', 'Queued');
+        expect(result1).to.have.property('timedOut', true);
+
+        // Async report, from stash
+        let reportCmd = 'force:mdapi:beta:retrieve:report -w 0 --json';
+        const rv2 = execCmd<RetrieveCommandAsyncResult>(reportCmd, { ensureExitCode: 0 });
+        const result2 = rv2.jsonOutput.result;
+        expect(result2).to.have.property('done', false);
+        expect(result2).to.have.property('id', result1.id);
+        // To prevent flapping we expect 1 of 2 likely states.  All depends
+        // on how responsive the message queue is.
+        expect(result2.state).to.be.oneOf(['Queued', 'InProgress']);
+        expect(result2.status).to.be.oneOf(['Queued', 'InProgress']);
+        expect(result2).to.have.property('timedOut', true);
+
+        // Now sync report, from stash
+        reportCmd = 'force:mdapi:beta:retrieve:report -w 10 --json';
+        const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
+        const result3 = rv3.jsonOutput.result;
+        expect(result3.status).to.equal('Succeeded');
+        expect(result3.success).to.be.true;
+        expect(result3.fileProperties).to.be.an('array').with.length.greaterThan(50);
+        const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
+        expect(result3.zipFilePath).to.equal(zipFileLocation);
+      });
+
+      it('retrieves report (sync) with overrides of stash', () => {
+        const retrieveCmd = `force:mdapi:beta:retrieve -r mdRetrieveReportTmp -k ${manifestPath} --json -w 0`;
+        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
+        const result1 = rv1.jsonOutput.result;
+
+        const name = 'dreamhouse';
+        const zipName = `${name}.zip`;
+        const retrieveTargetDir = 'mdRetrieveReportOverrides';
+        const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
+        const extractPath = path.join(retrieveTargetDirPath, name);
+
+        const reportCmd = `force:mdapi:beta:retrieve:report -i ${result1.id} -z -n ${zipName} -r ${retrieveTargetDir} --json`;
+        const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
+        const result2 = rv2.jsonOutput.result;
+        expect(result2.status).to.equal('Succeeded');
+        expect(result2.success).to.be.true;
+        expect(result2.id).to.equal(result1.id);
+        expect(result2.fileProperties).to.be.an('array').with.length.greaterThan(5);
+        const zipFileLocation = path.join(retrieveTargetDirPath, zipName);
+        expect(result2.zipFilePath).to.equal(zipFileLocation);
+        const retrievedZip = fs.existsSync(path.join(retrieveTargetDirPath, zipName));
+        expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
+        const unzipDir = fs.existsSync(extractPath);
+        expect(unzipDir, 'retrieved zip was not extracted to expected path').to.be.true;
+        expect(fs.readdirSync(extractPath)).to.deep.equal(['unpackaged']);
+      });
+
+      it('retrieves report (sync) with all stashed params', () => {
+        const name = 'dreamhouse';
+        const zipName = `${name}.zip`;
+        const retrieveTargetDir = 'mdRetrieveReportStash';
+        const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
+        const extractPath = path.join(retrieveTargetDirPath, name);
+        const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -n ${zipName} --json -w 0`;
+        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
+        const result1 = rv1.jsonOutput.result;
+
+        const reportCmd = 'force:mdapi:beta:retrieve:report --json';
+        const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
+        const result2 = rv2.jsonOutput.result;
+        expect(result2.status).to.equal('Succeeded');
+        expect(result2.success).to.be.true;
+        expect(result2.id).to.equal(result1.id);
+        expect(result2.fileProperties).to.be.an('array').with.length.greaterThan(5);
+        const zipFileLocation = path.join(retrieveTargetDirPath, zipName);
+        expect(result2.zipFilePath).to.equal(zipFileLocation);
+        const retrievedZip = fs.existsSync(path.join(retrieveTargetDirPath, zipName));
+        expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
+        const unzipDir = fs.existsSync(extractPath);
+        expect(unzipDir, 'retrieved zip was not extracted to expected path').to.be.true;
+        expect(fs.readdirSync(extractPath)).to.deep.equal(['unpackaged']);
+      });
+    });
+  });
 
   describe('tests that need deployables', () => {
     before(async () => {
@@ -260,29 +427,6 @@ describe('mdapi NUTs', () => {
           expect(reportCommandResponse).to.include('Deployed Source');
         });
       });
-
-      // describe('Retrieve using non default username', () => {
-      //   it('should perform retrieve from the scratch org and request retrieve report', () => {
-      //     const retrieveCommandResponse = getString(
-      //       execCmd(
-      //         'force:mdapi:beta:retrieve --retrievetargetdir retrieveDir --unpackaged package.xml --wait 0 -u nonDefaultOrg',
-      //         { ensureExitCode: 0 }
-      //       ),
-      //       'shellOutput.stdout'
-      //     );
-      //     expect(retrieveCommandResponse).to.include(
-      //       'The retrieve request did not complete within the specified wait time'
-      //     );
-
-      //     const retrieveReportCommand = getString(
-      //       execCmd('force:mdapi:beta:retrieve:report --wait 2 -u nonDefaultOrg', {
-      //         ensureExitCode: 0,
-      //       }),
-      //       'shellOutput.stdout'
-      //     );
-      //     expect(retrieveReportCommand).to.include('Wrote retrieve zip to');
-      //   });
-      // });
 
       describe('Deploy directory using default org and request report using jobid parameter from a different org', () => {
         let deployCommandResponse: MdDeployResult;

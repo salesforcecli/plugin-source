@@ -22,9 +22,6 @@ import { DeployData, Stash } from './stash';
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export abstract class DeployCommand extends SourceCommand {
-  protected static readonly SOURCE_STASH_KEY = 'SOURCE_DEPLOY';
-  protected static readonly MDAPI_STASH_KEY = 'MDAPI_DEPLOY';
-
   protected displayDeployId = once((id: string) => {
     if (!this.isJsonOutput()) {
       this.ux.log(`Deploy ID: ${id}`);
