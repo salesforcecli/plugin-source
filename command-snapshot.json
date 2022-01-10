@@ -59,7 +59,7 @@
   {
     "command": "force:source:beta:status",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "local", "loglevel", "remote", "targetusername"]
+    "flags": ["apiversion", "concise", "json", "local", "loglevel", "remote", "targetusername"]
   },
   {
     "command": "force:source:beta:tracking:clear",

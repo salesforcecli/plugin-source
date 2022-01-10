@@ -36,6 +36,9 @@ export default class Status extends SfdxCommand {
       longDescription: messages.getMessage('flags.remoteLong'),
       exclusive: ['local'],
     }),
+    concise: flags.builtin({
+      description: messages.getMessage('flags.concise'),
+    }),
   };
   protected static requiresUsername = true;
   protected static requiresProject = true;
@@ -71,7 +74,12 @@ export default class Status extends SfdxCommand {
   }
 
   protected formatResult(): StatusResult[] {
-    const formatter = new StatusFormatter(this.logger, this.ux, {}, this.results);
+    const formatter = new StatusFormatter(
+      this.logger,
+      this.ux,
+      { concise: this.flags.concise as boolean },
+      this.results
+    );
 
     if (!this.flags.json) {
       formatter.display();
