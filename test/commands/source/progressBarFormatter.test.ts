@@ -54,6 +54,16 @@ describe('Progress Bar Events', () => {
       numberTestsTotal: 0,
     });
     expect(initSpy.calledOnce).to.be.true;
+    expect(bar.value).to.equal(3);
+    expect(bar.total).to.equal(5);
+    events.emit('finish', {
+      response: {
+        numberComponentsTotal: 5,
+        numberComponentsDeployed: 5,
+        numberTestsCompleted: 0,
+        numberTestsTotal: 0,
+      },
+    });
   });
 
   it('should update progress bar with data onUpdate, update once tests are calculated, update onFinish', () => {
