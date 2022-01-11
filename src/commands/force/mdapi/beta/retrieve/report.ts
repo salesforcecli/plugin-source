@@ -87,13 +87,25 @@ export class Report extends SourceCommand {
   }
 
   protected async report(): Promise<void> {
-    // Get stashed retrieve data
-    const mdRetrieveStash = Stash.get<MdRetrieveData>('MDAPI_RETRIEVE');
+    const retrieveId = this.getFlag<string>('jobid');
 
-    const retrieveId = this.resolveRetrieveId(mdRetrieveStash);
-    this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash);
-    this.zipFileName = this.getFlag<string>('zipfilename') || mdRetrieveStash.zipfilename || 'unpackaged.zip';
-    this.unzip = this.getFlag<boolean>('unzip') || mdRetrieveStash.unzip;
+    if (!retrieveId) {
+      // Get stashed retrieve data
+      const mdRetrieveStash = Stash.get<MdRetrieveData>('MDAPI_RETRIEVE');
+
+      // throw if no Retrieve ID in stash either
+      if (!mdRetrieveStash?.jobid) {
+        throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'MissingRetrieveId');
+      }
+      this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);
+      this.zipFileName = mdRetrieveStash?.zipfilename || 'unpackaged.zip';
+      this.unzip = mdRetrieveStash?.unzip;
+    } else {
+      this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
+      this.zipFileName = this.getFlag<string>('zipfilename') || 'unpackaged.zip';
+      this.unzip = this.getFlag<boolean>('unzip');
+    }
+
     this.wait = this.getFlag<Duration>('wait');
     this.isAsync = this.wait.quantity === 0;
 
@@ -158,15 +170,6 @@ export class Report extends SourceCommand {
     return formatter.getJson();
   }
 
-  private resolveRetrieveId(stash?: MdRetrieveData): string {
-    const retrieveId = this.getFlag<string>('jobid', stash?.jobid);
-    // throw if no Retrieve ID
-    if (!retrieveId) {
-      throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'MissingRetrieveId');
-    }
-    return retrieveId;
-  }
-
   private ensureFlagPath(options: EnsureFlagOptions): string {
     const { flagName, path, type, throwOnENOENT } = options;
 
@@ -207,12 +210,10 @@ export class Report extends SourceCommand {
     return resolvedPath;
   }
 
-  private resolveOutputDir(stash?: MdRetrieveData): string {
-    const retrievetargetdir = this.getFlag<string>('retrievetargetdir', stash?.retrievetargetdir);
-
+  private resolveOutputDir(dirPath: string): string {
     return this.ensureFlagPath({
       flagName: 'retrievetargetdir',
-      path: retrievetargetdir,
+      path: dirPath,
       type: 'dir',
     });
   }

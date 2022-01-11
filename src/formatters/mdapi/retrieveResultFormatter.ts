@@ -51,8 +51,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
     this.result = Object.assign({}, result.response, { zipFilePath });
 
     // grab warnings
-    const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
-    this.warnings = toArray(warnMessages);
+    this.warnings = toArray(result?.response?.messages ?? []);
   }
 
   /**
