@@ -9,12 +9,13 @@ import * as path from 'path';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { FileResponse, Failures, Successes } from '@salesforce/source-deploy-retrieve';
-import { getBoolean, getNumber } from '@salesforce/ts-types';
+import { getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
   quiet?: boolean;
   waitTime?: number;
+  concise?: boolean;
 }
 
 export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
@@ -42,11 +43,15 @@ export abstract class ResultFormatter {
   }
 
   public isVerbose(): boolean {
-    return getBoolean(this.options, 'verbose', false);
+    return this.options.verbose ?? false;
   }
 
   public isQuiet(): boolean {
-    return getBoolean(this.options, 'quiet', false);
+    return this.options.quiet ?? false;
+  }
+
+  public isConcise(): boolean {
+    return this.options.concise ?? false;
   }
 
   // Sort by type > filePath > fullName
