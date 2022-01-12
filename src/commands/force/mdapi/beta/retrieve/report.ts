@@ -87,7 +87,7 @@ export class Report extends SourceCommand {
   }
 
   protected async report(): Promise<void> {
-    const retrieveId = this.getFlag<string>('jobid');
+    let retrieveId = this.getFlag<string>('jobid');
 
     if (!retrieveId) {
       // Get stashed retrieve data
@@ -97,6 +97,7 @@ export class Report extends SourceCommand {
       if (!mdRetrieveStash?.jobid) {
         throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'MissingRetrieveId');
       }
+      retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);
       this.zipFileName = mdRetrieveStash?.zipfilename || 'unpackaged.zip';
       this.unzip = mdRetrieveStash?.unzip;
