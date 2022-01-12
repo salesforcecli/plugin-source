@@ -216,7 +216,7 @@ export class Report extends SourceCommand {
     if (!extname(zipFileName)) {
       zipFileName += '.zip';
     }
-    return zipFileName || 'unpackaged.zip'
+    return zipFileName || 'unpackaged.zip';
   }
 
   private resolveOutputDir(dirPath: string): string {

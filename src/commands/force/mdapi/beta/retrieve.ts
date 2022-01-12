@@ -22,7 +22,6 @@ import {
   RetrieveCommandAsyncResult,
   RetrieveResultFormatter,
 } from '../../../../formatters/mdapi/retrieveResultFormatter';
-import { pathIsInFolder } from '@salesforce/source-tracking/lib/shared/functions';
 
 interface EnsureFlagOptions {
   flagName: string;
@@ -230,7 +229,7 @@ export class Retrieve extends SourceCommand {
     if (!extname(zipFileName)) {
       zipFileName += '.zip';
     }
-    return zipFileName || 'unpackaged.zip'
+    return zipFileName || 'unpackaged.zip';
   }
 
   private resolveProjectPath(): string {
