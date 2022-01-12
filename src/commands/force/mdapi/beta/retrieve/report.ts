@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
-import { resolve } from 'path';
+import { resolve, extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
@@ -99,11 +99,11 @@ export class Report extends SourceCommand {
       }
       retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);
-      this.zipFileName = mdRetrieveStash?.zipfilename || 'unpackaged.zip';
+      this.zipFileName = this.resolveZipFileName(mdRetrieveStash?.zipfilename);
       this.unzip = mdRetrieveStash?.unzip;
     } else {
       this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
-      this.zipFileName = this.getFlag<string>('zipfilename') || 'unpackaged.zip';
+      this.zipFileName = this.resolveZipFileName(this.getFlag<string>('zipfilename'));
       this.unzip = this.getFlag<boolean>('unzip');
     }
 
@@ -209,6 +209,14 @@ export class Report extends SourceCommand {
       }
     }
     return resolvedPath;
+  }
+
+  private resolveZipFileName(zipFileName?: string): string {
+    // If no file extension was provided append, '.zip'
+    if (!extname(zipFileName)) {
+      zipFileName += '.zip';
+    }
+    return zipFileName || 'unpackaged.zip'
   }
 
   private resolveOutputDir(dirPath: string): string {

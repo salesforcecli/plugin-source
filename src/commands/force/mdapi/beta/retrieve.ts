@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
-import { resolve } from 'path';
+import { resolve, extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
@@ -22,6 +22,7 @@ import {
   RetrieveCommandAsyncResult,
   RetrieveResultFormatter,
 } from '../../../../formatters/mdapi/retrieveResultFormatter';
+import { pathIsInFolder } from '@salesforce/source-tracking/lib/shared/functions';
 
 interface EnsureFlagOptions {
   flagName: string;
@@ -120,7 +121,7 @@ export class Retrieve extends SourceCommand {
     this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
     const manifest = this.resolveManifest(this.getFlag<string>('unpackaged'));
     const singlePackage = this.getFlag<boolean>('singlepackage');
-    this.zipFileName = this.getFlag<string>('zipfilename') || 'unpackaged.zip';
+    this.zipFileName = this.resolveZipFileName(this.getFlag<string>('zipfilename'));
     this.unzip = this.getFlag<boolean>('unzip');
     this.wait = this.getFlag<Duration>('wait');
     this.isAsync = this.wait.quantity === 0;
@@ -222,6 +223,14 @@ export class Retrieve extends SourceCommand {
       }
       return formatter.getJson();
     }
+  }
+
+  private resolveZipFileName(zipFileName?: string): string {
+    // If no file extension was provided append, '.zip'
+    if (!extname(zipFileName)) {
+      zipFileName += '.zip';
+    }
+    return zipFileName || 'unpackaged.zip'
   }
 
   private resolveProjectPath(): string {
