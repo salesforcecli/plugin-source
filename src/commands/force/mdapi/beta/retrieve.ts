@@ -226,7 +226,7 @@ export class Retrieve extends SourceCommand {
 
   private resolveZipFileName(zipFileName?: string): string {
     // If no file extension was provided append, '.zip'
-    if (!extname(zipFileName)) {
+    if (zipFileName && !extname(zipFileName)) {
       zipFileName += '.zip';
     }
     return zipFileName || 'unpackaged.zip';
