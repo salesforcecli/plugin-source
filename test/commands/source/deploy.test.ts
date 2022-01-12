@@ -434,14 +434,6 @@ describe('force:source:deploy', () => {
       ensureHookArgs();
       ensureProgressBar(0);
     });
-
-    it('should start the progress bar only once with data onUpdate');
-    it('should display the deploy ID only once onUpdate');
-    it('should update progress bar with data onUpdate');
-    it('should setTotal on the progress bar with data onUpdate');
-    it('should update and stop progress bar with data onFinish');
-    it('should stop progress bar onCancel');
-    it('should stop progress bar onError');
   });
 
   it('should return JSON format and not display for a synchronous deploy', async () => {

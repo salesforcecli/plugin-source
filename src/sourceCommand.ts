@@ -12,6 +12,8 @@ import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
 
 export type ProgressBar = {
+  value: number;
+  total: number;
   start: (num: number) => void;
   update: (num: number) => void;
   updateTotal: (num: number) => void;
