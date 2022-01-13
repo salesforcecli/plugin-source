@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/salesforcecli/plugin-source/compare/v1.6.2...v1.8.0) (2022-01-13)
+
+### Features
+
+- concise flag on status to omit ignored files ([#382](https://github.com/salesforcecli/plugin-source/issues/382)) ([2dcbac8](https://github.com/salesforcecli/plugin-source/commit/2dcbac81e57d056e82835c785bc5a5dc98a255a4))
+- mdapi deploy/report commands ([8068ff0](https://github.com/salesforcecli/plugin-source/commit/8068ff07213541a5823d5908bc831f92e89aa122))
+
+### Bug Fixes
+
+- add variable polling times based on comp. set ([#360](https://github.com/salesforcecli/plugin-source/issues/360)) ([4a839ff](https://github.com/salesforcecli/plugin-source/commit/4a839ff7f9f429a723c54baf6c9cb65139eadf43))
+- update --testlevel RunLocalTests --help to say that unlocked packages are also excluded ([#384](https://github.com/salesforcecli/plugin-source/issues/384)) ([5f0ad44](https://github.com/salesforcecli/plugin-source/commit/5f0ad449a6880d761a233c3191e3759a6c0b72cc))
+
 ### [1.6.2](https://github.com/salesforcecli/plugin-source/compare/v1.6.1...v1.6.2) (2021-12-03)
 
 ### Bug Fixes
