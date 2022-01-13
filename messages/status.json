@@ -13,7 +13,8 @@
     "local": "list the changes that have been made locally",
     "localLong": "Lists the changes that have been made locally.",
     "remote": "list the changes that have been made in the scratch org",
-    "remoteLong": "Lists the changes that have been made in the scratch org."
+    "remoteLong": "Lists the changes that have been made in the scratch org.",
+    "concise": "show only the changes that will be pushed or pulled; omits files that are forceignored"
   },
   "humanSuccess": "Source Status",
   "noResults": "No local or remote changes found."
