@@ -69,7 +69,7 @@ export class Retrieve extends SourceCommand {
       longDescription: messages.getMessage('flagsLong.singlepackage'),
     }),
     zipfilename: flags.string({
-      char: 'n',
+      char: 'f',
       description: messages.getMessage('flags.zipfilename'),
       longDescription: messages.getMessage('flagsLong.zipfilename'),
     }),

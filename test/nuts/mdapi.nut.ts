@@ -271,7 +271,7 @@ describe('mdapi NUTs', () => {
         const zipName = `${name}.zip`;
         const retrieveTargetDir = 'mdRetrieveNamedZipAndUnzip';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
-        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -k ${apexManifestPath} -z -n ${zipName} --json`;
+        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -k ${apexManifestPath} -z -f ${zipName} --json`;
         const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify apexClasses.zip exists in retrieveTargetDir
@@ -337,7 +337,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const extractPath = path.join(retrieveTargetDirPath, name);
 
-        const reportCmd = `force:mdapi:beta:retrieve:report -i ${result1.id} -z -n ${zipName} -r ${retrieveTargetDir} --json`;
+        const reportCmd = `force:mdapi:beta:retrieve:report -i ${result1.id} -z -f ${zipName} -r ${retrieveTargetDir} --json`;
         const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
         const result2 = rv2.jsonOutput.result;
         expect(result2.status).to.equal('Succeeded');
@@ -359,7 +359,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveReportStash';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const extractPath = path.join(retrieveTargetDirPath, name);
-        const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -n ${zipName} --json -w 0`;
+        const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -f ${zipName} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         const result1 = rv1.jsonOutput.result;
 
