@@ -16,6 +16,7 @@ import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { Stash } from '../../../src/stash';
 import { getDeployResult } from './deployResponses';
 
 describe('force:source:deploy:cancel', () => {
@@ -40,7 +41,7 @@ describe('force:source:deploy:cancel', () => {
     public async runIt() {
       await this.init();
       // oclif would normally populate this, but UT don't have it
-      this.id ??= 'force:source:cancel';
+      this.id ??= 'force:source:deploy:cancel';
       return this.run();
     }
     public setOrg(org: Org) {
@@ -92,7 +93,7 @@ describe('force:source:deploy:cancel', () => {
   });
 
   it('should use stashed deploy ID', async () => {
-    const getStashSpy = spyMethod(sandbox, Cancel.prototype, 'getStash');
+    const getStashSpy = spyMethod(sandbox, Stash, 'get');
     const result = await runCancelCmd(['--json']);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(true);
@@ -107,7 +108,7 @@ describe('force:source:deploy:cancel', () => {
   });
 
   it('should use the jobid flag', async () => {
-    const getStashSpy = spyMethod(sandbox, Cancel.prototype, 'getStash');
+    const getStashSpy = spyMethod(sandbox, Stash, 'get');
     const result = await runCancelCmd(['--json', '--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(false);

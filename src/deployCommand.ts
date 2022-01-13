@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs';
 import {
   ComponentSet,
   DeployResult,
@@ -14,22 +13,15 @@ import {
   RequestStatus,
   AsyncResult,
 } from '@salesforce/source-deploy-retrieve';
-import { ConfigAggregator, ConfigFile, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
+import { ConfigAggregator, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
-
-interface StashFile {
-  isGlobal: boolean;
-  filename: string;
-}
+import { DeployData, Stash } from './stash';
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 export abstract class DeployCommand extends SourceCommand {
-  protected static readonly SOURCE_STASH_KEY = 'SOURCE_DEPLOY';
-  protected static readonly MDAPI_STASH_KEY = 'MDAPI_DEPLOY';
-
   protected displayDeployId = once((id: string) => {
     if (!this.isJsonOutput()) {
       this.ux.log(`Deploy ID: ${id}`);
@@ -43,7 +35,8 @@ export abstract class DeployCommand extends SourceCommand {
   protected deployResult: DeployResult;
   protected updateDeployId = once((id: string) => {
     this.displayDeployId(id);
-    this.setStash(id);
+    const stashKey = Stash.getKey(this.id);
+    Stash.set(stashKey, { jobid: id });
   });
 
   // the basic sfdx flag is already making sure its of the correct length
@@ -91,14 +84,6 @@ export abstract class DeployCommand extends SourceCommand {
     }
   }
 
-  protected setStash(deployId: string): void {
-    const file = this.getStash();
-    this.logger.debug(`Stashing deploy ID: ${deployId} in ${file.getPath()}`);
-    file.writeSync({
-      [this.getStashKey()]: { jobid: deployId },
-    });
-  }
-
   /**
    * This method is here to provide a workaround to stubbing a constructor in the tests.
    *
@@ -108,44 +93,15 @@ export abstract class DeployCommand extends SourceCommand {
     return new MetadataApiDeploy({ usernameOrConnection: this.org.getUsername(), id });
   }
 
-  protected getStashKey(): string {
-    return this.id.includes('force:mdapi') ? DeployCommand.MDAPI_STASH_KEY : DeployCommand.SOURCE_STASH_KEY;
-  }
-
   protected resolveDeployId(id?: string): string {
-    let stash: ConfigFile<StashFile>;
     if (id) {
       return id;
     } else {
-      try {
-        stash = this.getStash();
-        stash.readSync(true);
-        const deployId = (
-          stash.get(this.getStashKey()) as {
-            jobid: string;
-          }
-        ).jobid;
-        this.logger.debug(`Using deploy ID: ${deployId} from ${stash.getPath()}`);
-        return deployId;
-      } catch (err: unknown) {
-        const error = err as Error & { code: string };
-        if (error.name === 'JsonParseError') {
-          const stashFilePath = stash?.getPath();
-          const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
-          fs.renameSync(stashFilePath, corruptFilePath);
-          const invalidStashErr = SfdxError.create('@salesforce/plugin-source', 'deploy', 'InvalidStashFile', [
-            corruptFilePath,
-          ]);
-          invalidStashErr.message = `${invalidStashErr.message}\n${error.message}`;
-          invalidStashErr.stack = `${invalidStashErr.stack}\nDue to:\n${error.stack}`;
-          throw invalidStashErr;
-        }
-        if (error.code === 'ENOENT' || !stash?.get(this.getStashKey())) {
-          // if the file doesn't exist, or the key doesn't exist in the stash
-          throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
-        }
-        throw SfdxError.wrap(error);
+      const stash = Stash.get<DeployData>(Stash.getKey(this.id));
+      if (!stash) {
+        throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
       }
+      return stash.jobid;
     }
   }
 
@@ -202,10 +158,6 @@ export abstract class DeployCommand extends SourceCommand {
     this.asyncDeployResult = { id: validatedDeployId };
 
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
-  }
-
-  private getStash(): ConfigFile<StashFile> {
-    return new ConfigFile({ isGlobal: true, filename: 'stash.json' });
   }
 }
 

@@ -8,7 +8,7 @@
 import * as path from 'path';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
-import { FileResponse, Failures, Successes } from '@salesforce/source-deploy-retrieve';
+import { FileResponse, FileProperties, Failures, Successes } from '@salesforce/source-deploy-retrieve';
 import { getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
@@ -62,6 +62,19 @@ export abstract class ResultFormatter {
           return i.fullName > j.fullName ? 1 : -1;
         }
         return i.filePath > j.filePath ? 1 : -1;
+      }
+      return i.type > j.type ? 1 : -1;
+    });
+  }
+
+  // Sort by type > fileName > fullName
+  protected sortFileProperties(fileProperties: FileProperties[]): void {
+    fileProperties.sort((i, j) => {
+      if (i.type === j.type) {
+        if (i.fileName === j.fileName) {
+          return i.fullName > j.fullName ? 1 : -1;
+        }
+        return i.fileName > j.fileName ? 1 : -1;
       }
       return i.type > j.type ? 1 : -1;
     });

@@ -37,6 +37,41 @@
     "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
   },
   {
+    "command": "force:mdapi:beta:retrieve",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "json",
+      "loglevel",
+      "packagenames",
+      "retrievetargetdir",
+      "singlepackage",
+      "sourcedir",
+      "targetusername",
+      "unpackaged",
+      "unzip",
+      "verbose",
+      "wait",
+      "zipfilename"
+    ]
+  },
+  {
+    "command": "force:mdapi:beta:retrieve:report",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "jobid",
+      "json",
+      "loglevel",
+      "retrievetargetdir",
+      "targetusername",
+      "unzip",
+      "verbose",
+      "wait",
+      "zipfilename"
+    ]
+  },
+  {
     "command": "force:mdapi:describemetadata",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "filterknown", "json", "loglevel", "resultfile", "targetusername"]

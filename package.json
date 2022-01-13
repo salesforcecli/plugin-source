@@ -126,6 +126,9 @@
                 "subtopics": {
                   "deploy": {
                     "description": "new versions of deploy report command"
+                  },
+                  "retrieve": {
+                    "description": "new versions of retrieve report command"
                   }
                 }
               }

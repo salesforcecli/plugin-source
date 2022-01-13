@@ -21,6 +21,7 @@ import { ComponentSetBuilder } from '../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 
 export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -76,7 +77,7 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    this.ux.startSpinner(messages.getMessage('spinnerMessages.componentSetBuild'));
+    this.ux.startSpinner(spinnerMessages.getMessage('retrieve.componentSetBuild'));
     this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
       sourceapiversion: await this.getSourceApiVersion(),
@@ -102,7 +103,7 @@ export class Retrieve extends SourceCommand {
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
     this.ux.setSpinnerStatus(
-      messages.getMessage('spinnerMessages.sendingRequest', [
+      spinnerMessages.getMessage('retrieve.sendingRequest', [
         this.componentSet.sourceApiVersion || this.componentSet.apiVersion,
       ])
     );
@@ -113,7 +114,7 @@ export class Retrieve extends SourceCommand {
       packageOptions: this.getFlag<string[]>('packagenames'),
     });
 
-    this.ux.setSpinnerStatus(messages.getMessage('spinnerMessages.polling'));
+    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.polling'));
     this.retrieveResult = await mdapiRetrieve.pollStatus({ timeout: this.getFlag<Duration>('wait') });
 
     await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());
