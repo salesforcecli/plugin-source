@@ -21,7 +21,7 @@ import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/component
 
 describe('force:mdapi:beta:retrieve', () => {
   const sandbox = sinon.createSandbox();
-  const username = 'describemetadata-test@org.com';
+  const username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
