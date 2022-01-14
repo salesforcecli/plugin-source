@@ -143,7 +143,7 @@ export default class Pull extends SourceCommand {
     const mdapiRetrieve = await componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
-      output: this.project.getDefaultPackage().path,
+      output: this.project.getDefaultPackage().fullPath,
     });
 
     this.ux.setSpinnerStatus('Retrieving metadata from the org');
