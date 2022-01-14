@@ -57,6 +57,23 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     let originalState: Dictionary<string>;
 
+    const filesAreInOriginalState = async () => {
+      return Promise.all([
+        testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>'),
+        testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>'),
+        testkit.expect.filesToContainString(
+          forceAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        ),
+        testkit.expect.filesToNotContainString(
+          myAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        ),
+      ]);
+    };
+
     before(async () => {
       originalState = await testkit.readGlobs([forceAppLabels, myAppLabels]);
     });
@@ -73,18 +90,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
         await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(
-          forceAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await filesAreInOriginalState();
       });
 
       it('should put new labels into CustomLabels file in default package', async () => {
@@ -106,18 +112,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.deleteGlobs([forceAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(
-          forceAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await filesAreInOriginalState();
       });
 
       it('should put all labels into default CustomLabels file when no labels exist locally', async () => {
@@ -141,18 +136,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
 
         await testkit.expect.filesToNotBeChanged([myAppLabels]);
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(
-          forceAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await filesAreInOriginalState();
       });
 
       it('should put individual label into default CustomLabels file when no labels exist locally', async () => {
@@ -169,7 +153,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         );
       });
 
-      it('should put individual label into file and still have the OTHER label', async () => {
+      it('should put 1 new label into file and still have the OTHER label', async () => {
         // remove label2 and then retrieve it.  Make sure label
         const forceAppLabelFile = path.normalize(path.join(testkit.projectDir, forceAppLabels));
         await fs.promises.writeFile(
@@ -180,33 +164,17 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         );
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_2' });
 
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(
-          forceAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
-        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await filesAreInOriginalState();
       });
     });
 
     describe('--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1', () => {
-      it('should put labels into appropriate CustomLabels file', async () => {
+      it('should put 2 single labels into 2 CustomLabels files', async () => {
         await testkit.modifyLocalGlobs([forceAppLabels, myAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1,CustomLabel:my_app_Label_1' });
 
         await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
+        await filesAreInOriginalState();
       });
     });
 
@@ -217,13 +185,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
         await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToNotBeChanged([myAppLabels]);
-
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
+        await filesAreInOriginalState();
       });
     });
 
@@ -234,13 +196,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
         await testkit.expect.filesToBeChanged([myAppLabels]);
         await testkit.expect.filesToNotBeChanged([forceAppLabels]);
-
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
+        await filesAreInOriginalState();
       });
     });
 
@@ -250,12 +206,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.retrieve({ args: '--sourcepath force-app,my-app' });
 
         await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
+        await filesAreInOriginalState();
       });
     });
 
@@ -267,12 +218,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         await testkit.retrieve({ args: `--manifest ${packageXml}` });
 
         await testkit.expect.filesToBeChanged([forceAppLabels, myAppLabels]);
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(
-          myAppLabels,
-          '<fullName>force_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
+        await filesAreInOriginalState();
       });
     });
 
@@ -281,8 +227,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         const xml = '<types><members>force_app_Label_1</members><name>CustomLabel</name></types>';
         const packageXml = await testkit.createPackageXml(xml);
         await testkit.retrieve({ args: `--manifest ${packageXml}` });
-        await testkit.expect.filesToContainString(forceAppLabels, '<fullName>force_app_Label_1</fullName>');
-        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await filesAreInOriginalState();
       });
     });
   });
