@@ -172,7 +172,6 @@
     "test:nuts:folders": "mocha \"test/nuts/folderTypes.nut.ts\" --slow 4500 --timeout 600000",
     "test:nuts:manifest:create": "mocha \"test/nuts/create.nut.ts\" --slow 4500 --timeout 600000 --retries 0",
     "test:nuts:mdapi": "mocha \"test/nuts/mdapi.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
-    "test:nuts:labels": "mocha \"test/nuts/customLabels.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:retrieve": "cross-env PLUGIN_SOURCE_SEED_FILTER=retrieve ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:specialTypes": "mocha \"test/nuts/territory2.nut.ts\" \"test/nuts/folderTypes.nut.ts\" --slow 4500 --timeout 600000 --retries 0 --parallel",
     "test:nuts:territory2": "mocha \"test/nuts/territory2.nut.ts\" --slow 4500 --timeout 600000 --retries 0",

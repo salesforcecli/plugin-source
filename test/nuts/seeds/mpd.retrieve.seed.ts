@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as path from 'path';
+import * as fs from 'fs';
 import { Dictionary } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
@@ -77,6 +79,12 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
         );
+        await testkit.expect.filesToContainString(
+          forceAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        );
+        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
       });
 
       it('should put new labels into CustomLabels file in default package', async () => {
@@ -93,18 +101,23 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
         );
       });
 
-      it('should put new labels into existing CustomLabels file', async () => {
+      it('should put new labels into default CustomLabels file', async () => {
         // Delete local labels to simulate having new labels created in the org
         await testkit.deleteGlobs([forceAppLabels]);
         await testkit.retrieve({ args: '--metadata CustomLabels' });
 
-        await testkit.expect.filesToBeChanged([myAppLabels]);
-        await testkit.expect.filesToContainString(
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
           myAppLabels,
-          '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
         );
+        await testkit.expect.filesToContainString(
+          forceAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        );
+        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
       });
 
       it('should put all labels into default CustomLabels file when no labels exist locally', async () => {
@@ -119,6 +132,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
         );
+        await testkit.expect.filesToNotExist([myAppLabels]);
       });
     });
 
@@ -126,18 +140,19 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
       it('should put individual label into appropriate CustomLabels file', async () => {
         await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_1' });
 
-        await testkit.expect.filesToBeChanged([forceAppLabels]);
         await testkit.expect.filesToNotBeChanged([myAppLabels]);
-        await testkit.expect.filesToNotContainString(
-          forceAppLabels,
-          '<fullName>my_app_Label_1</fullName>',
-          '<fullName>force_app_Label_2</fullName>'
-        );
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
         await testkit.expect.filesToNotContainString(
           myAppLabels,
           '<fullName>force_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
         );
+        await testkit.expect.filesToContainString(
+          forceAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        );
+        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
       });
 
       it('should put individual label into default CustomLabels file when no labels exist locally', async () => {
@@ -152,6 +167,31 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
           '<fullName>my_app_Label_1</fullName>',
           '<fullName>force_app_Label_2</fullName>'
         );
+      });
+
+      it('should put individual label into file and still have the OTHER label', async () => {
+        // remove label2 and then retrieve it.  Make sure label
+        const forceAppLabelFile = path.normalize(path.join(testkit.projectDir, forceAppLabels));
+        await fs.promises.writeFile(
+          forceAppLabelFile,
+          (
+            await fs.promises.readFile(forceAppLabelFile, 'utf-8')
+          ).replace(/(<labels>\s*<fullName>force_app_Label_2.*<\/labels>)/gs, '')
+        );
+        await testkit.retrieve({ args: '--metadata CustomLabel:force_app_Label_2' });
+
+        await testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>');
+        await testkit.expect.filesToNotContainString(
+          myAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        );
+        await testkit.expect.filesToContainString(
+          forceAppLabels,
+          '<fullName>force_app_Label_1</fullName>',
+          '<fullName>force_app_Label_2</fullName>'
+        );
+        await testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>');
       });
     });
 
