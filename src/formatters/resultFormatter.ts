@@ -8,7 +8,7 @@
 import * as path from 'path';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
-import { FileResponse, FileProperties, Failures, Successes } from '@salesforce/source-deploy-retrieve';
+import { Failures, FileProperties, FileResponse, Successes } from '@salesforce/source-deploy-retrieve';
 import { getNumber } from '@salesforce/ts-types';
 
 export interface ResultFormatterOptions {
@@ -16,6 +16,7 @@ export interface ResultFormatterOptions {
   quiet?: boolean;
   waitTime?: number;
   concise?: boolean;
+  username?: string;
 }
 
 export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {

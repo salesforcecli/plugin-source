@@ -6,16 +6,16 @@
  */
 
 import * as os from 'os';
-import { FlagsConfig, flags, SfdxCommand } from '@salesforce/command';
+import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import {
-  SourceTracking,
-  throwIfInvalid,
-  replaceRenamedCommands,
   ChangeResult,
+  replaceRenamedCommands,
+  SourceTracking,
   StatusOutputRow,
+  throwIfInvalid,
 } from '@salesforce/source-tracking';
-import { StatusResult, StatusFormatter } from '../../../../formatters/statusFormatter';
+import { StatusFormatter, StatusResult } from '../../../../formatters/source/statusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');

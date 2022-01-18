@@ -16,7 +16,7 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');

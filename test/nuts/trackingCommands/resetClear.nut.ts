@@ -11,11 +11,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { Connection, AuthInfo } from '@salesforce/core';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { StatusResult } from '../../../src/formatters/statusFormatter';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { SourceTrackingClearResult } from '../../../src/commands/force/source/beta/tracking/clear';
 
 let session: TestSession;
