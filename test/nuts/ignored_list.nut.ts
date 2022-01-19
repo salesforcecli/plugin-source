@@ -35,6 +35,46 @@ describe('force:source:ignored:list', () => {
     await session?.clean();
   });
 
+  describe('no forceignore', () => {
+    before(async () => {
+      await fs.promises.rm(forceIgnorePath);
+    });
+    after(async () => {
+      await fs.promises.writeFile(forceIgnorePath, originalForceIgnore);
+    });
+    it('default PkgDir', () => {
+      const result = execCmd<SourceIgnoredResults>('force:source:ignored:list --json', { ensureExitCode: 0 }).jsonOutput
+        .result;
+      expect(result.ignoredFiles).to.deep.equal([]);
+    });
+    it('specified sourcePath', () => {
+      const result2 = execCmd<SourceIgnoredResults>('force:source:ignored:list --json -p foo-bar', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+      expect(result2.ignoredFiles).to.deep.equal([]);
+    });
+  });
+
+  describe('no files are ignored (empty forceignore)', () => {
+    before(async () => {
+      await fs.promises.writeFile(forceIgnorePath, '');
+    });
+    after(async () => {
+      await fs.promises.writeFile(forceIgnorePath, originalForceIgnore);
+    });
+    it('default PkgDir', () => {
+      const result = execCmd<SourceIgnoredResults>('force:source:ignored:list --json', { ensureExitCode: 0 }).jsonOutput
+        .result;
+      expect(result.ignoredFiles).to.deep.equal([]);
+    });
+    it('specified sourcePath', () => {
+      const result2 = execCmd<SourceIgnoredResults>('force:source:ignored:list --json -p foo-bar', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+      expect(result2.ignoredFiles).to.deep.equal([]);
+    });
+  });
+
   describe('returns an ignored class using specified path in forceignore', () => {
     before(async () => {
       await fs.promises.appendFile(forceIgnorePath, `${pathToIgnoredFile1}${os.EOL}`);
