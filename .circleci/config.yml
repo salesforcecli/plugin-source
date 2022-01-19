@@ -79,12 +79,6 @@ workflows:
                 - 'yarn test:nuts:specialTypes'
                 - 'yarn test:nuts:deploy:destructive'
                 - 'yarn test:nuts:tracking'
-                # these 5 use e-bikes, which currently has some scratch org api version issues
-                - 'yarn test:nuts:tracking:basics'
-                - 'yarn test:nuts:tracking:conflicts'
-                - 'yarn test:nuts:tracking:lwc'
-                - 'yarn test:nuts:tracking:resetClear'
-                - 'yarn test:nuts:tracking:remote'
       - release-management/release-package:
           sign: true
           github-release: true
