@@ -14,7 +14,7 @@ import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
 } from '../../../../formatters/deployAsyncResultFormatter';
-import { MdDeployResultFormatter, MdDeployResult } from '../../../../formatters/mdDeployResultFormatter';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
@@ -96,6 +96,9 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.soapDeploy'),
       longDescription: messages.getMessage('flagsLong.soapDeploy'),
     }),
+    purgeondelete: flags.boolean({
+      description: messages.getMessage('flags.purgeOnDelete'),
+    }),
   };
 
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
@@ -122,6 +125,7 @@ export class Deploy extends DeployCommand {
       usernameOrConnection: this.org.getUsername(),
       ...deploymentOptions,
       apiOptions: {
+        purgeOnDelete: this.getFlag('purgeondelete', false),
         ignoreWarnings: this.getFlag('ignorewarnings', false),
         rollbackOnError: !this.getFlag('ignoreerrors', false),
         checkOnly: this.getFlag('checkonly', false),
