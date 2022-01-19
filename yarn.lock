@@ -835,6 +835,28 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
+"@salesforce/core@^2.33.1":
+  version "2.33.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.33.1.tgz#23c22953174ad0e809b2f1c7b2881b5ba8a89d9c"
+  integrity sha512-jKVFYEvlV+loBoau5heBOVXmzsPO+RbYh6SPybJK6xF7khQmzu7+WAQbikY2eY8VaXcded2kka8L/FKuD/LKBg==
+  dependencies:
+    "@salesforce/bunyan" "^2.0.0"
+    "@salesforce/kit" "^1.5.0"
+    "@salesforce/schemas" "^1.0.1"
+    "@salesforce/ts-types" "^1.5.13"
+    "@types/graceful-fs" "^4.1.5"
+    "@types/jsforce" "^1.9.35"
+    "@types/mkdirp" "^1.0.1"
+    debug "^3.1.0"
+    faye "^1.4.0"
+    graceful-fs "^4.2.4"
+    jsen "0.6.6"
+    jsforce "^1.11.0"
+    jsonwebtoken "8.5.0"
+    mkdirp "1.0.4"
+    semver "^7.3.5"
+    ts-retry-promise "^0.6.0"
+
 "@salesforce/dev-config@^2.1.2":
   version "2.1.2"
   resolved "https://registry.npmjs.org/@salesforce/dev-config/-/dev-config-2.1.2.tgz#b4e206f860e87065d068bf8ba3994a032389ad81"
@@ -957,10 +979,10 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^5.8.0":
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.8.0.tgz#f9358874d282d6cdd27506819964c037ad1dfee7"
-  integrity sha512-Z2Wh0guPL0ZEjD2HqNCPT8Gih6FMN85v9xGB+oss5yrrsx8QwD9UBNFivLojeCNduuNRF0BMOwp9mMt7QlpdJA==
+"@salesforce/source-deploy-retrieve@^5.8.2":
+  version "5.9.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.9.2.tgz#7e6fd87572a3a5fb41e2a2d0b3bb75f231835d6b"
+  integrity sha512-Q1FamL7pQ5wj1ZlwqaqcJBHe+jZ1JNNMeyFct/uygohOypy0nJpS+AhKKpIerD9OPPW9KYa2fmqBf0QpmBEIbQ==
   dependencies:
     "@salesforce/core" "2.31.0"
     "@salesforce/kit" "^1.5.0"
@@ -969,7 +991,7 @@
     fast-xml-parser "^3.17.4"
     graceful-fs "^4.2.8"
     ignore "^5.1.8"
-    mime "2.4.6"
+    mime "2.6.0"
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
@@ -1006,14 +1028,14 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.5.1.tgz#1be69d4cd5ec51e6a09a863d0a1b15ac8f4af7be"
-  integrity sha512-unbwKIwCg/ZwHC5cNjm65oxhkpQBT3Pc5XEwTtRNpgyGhHMuNS74zcZSmABjXrGbQDsYf4TbwC+NMKwvErY3Qg==
+"@salesforce/source-tracking@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-0.5.2.tgz#c0f36b31887bd2505cdfef7db2da00f2757288e6"
+  integrity sha512-vWA8hJxCv7ov/6Rh0865/cOlnZ7GgQtu3+tUKGMhZBmtubCuYIKSIwSifh6tunbnmVeqUa4FntgVvGUT2nYIqw==
   dependencies:
-    "@salesforce/core" "^2.31.0"
+    "@salesforce/core" "^2.33.1"
     "@salesforce/kit" "^1.5.17"
-    "@salesforce/source-deploy-retrieve" "^5.8.0"
+    "@salesforce/source-deploy-retrieve" "^5.8.2"
     isomorphic-git "^1.9.2"
     ts-retry-promise "^0.6.0"
 
@@ -5526,6 +5548,11 @@ mime@2.4.6:
   version "2.4.6"
   resolved "https://registry.npmjs.org/mime/-/mime-2.4.6.tgz#e5b407c90db442f2beb5b162373d07b69affa4d1"
   integrity sha512-RZKhC3EmpBchfTGBVb8fb+RL2cWyw/32lshnsETttkBAyAUXSGHxbEJWWRXc751DrIxG1q04b8QwMbAwkRPpUA==
+
+mime@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.6.0.tgz#a2a682a95cd4d0cb1d6257e28f83da7e35800367"
+  integrity sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
