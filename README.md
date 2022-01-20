@@ -799,7 +799,7 @@ USAGE
 
 OPTIONS
   -d, --outputdir=outputdir                                                         [default:
-                                                                                    metadataPackage_1642099433413]
+                                                                                    metadataPackage_1642636434891]
                                                                                     output directory to store the
                                                                                     Metadata API–formatted files in
 
@@ -1335,13 +1335,13 @@ EXAMPLES
       $ sfdx force:source:retrieve -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
   To retrieve source files in a comma-separated list that contains spaces:
       $ sfdx force:source:retrieve -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml,
-  path/to/apex/classes
+  path/to/apex/classes"
   To retrieve all Apex classes:
       $ sfdx force:source:retrieve -m ApexClass
   To retrieve a specific Apex class:
       $ sfdx force:source:retrieve -m ApexClass:MyApexClass
   To retrieve all custom objects and Apex classes:
-      $ sfdx force:source:retrieve -m "CustomObject,ApexClass
+      $ sfdx force:source:retrieve -m "CustomObject,ApexClass"
   To retrieve all Apex classes and two specific profiles (one of which has a space in its name):
       $ sfdx force:source:retrieve -m "ApexClass, Profile:My Profile, Profile: AnotherProfile"
   To retrieve all metadata components listed in a manifest:
