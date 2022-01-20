@@ -38,7 +38,7 @@ export interface RetrieveCommandAsyncResult {
 }
 
 export class RetrieveResultFormatter extends ResultFormatter {
-  public options: RetrieveResultFormatterOptions;
+  public declare options: RetrieveResultFormatterOptions;
   protected result: RetrieveCommandResult;
   protected warnings: RetrieveMessage[];
 

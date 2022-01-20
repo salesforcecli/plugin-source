@@ -52,11 +52,8 @@ export class Cancel extends DeployCommand {
 
       this.deployResult = await this.poll(deployId);
     } catch (e) {
-      if (e instanceof Error) {
-        throw SfdxError.create('@salesforce/plugin-source', 'cancel', 'CancelFailed', [e.message]);
-      } else {
-        throw SfdxError.wrap(e);
-      }
+      const err = e as Error;
+      throw SfdxError.create('@salesforce/plugin-source', 'cancel', 'CancelFailed', [err.message]);
     }
   }
 
