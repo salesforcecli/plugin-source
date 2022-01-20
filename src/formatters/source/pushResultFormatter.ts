@@ -9,16 +9,16 @@ import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
 import {
+  ComponentStatus,
+  DeployMessage,
   DeployResult,
   FileResponse,
-  DeployMessage,
-  ComponentStatus,
   MetadataResolver,
-  VirtualTreeContainer,
   SourceComponent,
+  VirtualTreeContainer,
 } from '@salesforce/source-deploy-retrieve';
 import { isString } from '@salesforce/ts-types';
-import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');

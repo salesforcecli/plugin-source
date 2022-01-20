@@ -13,13 +13,13 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
 
-import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
-import { Connection, AuthInfo } from '@salesforce/core';
+import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { PushResponse } from '../../../src/formatters/pushResultFormatter';
-import { StatusResult } from '../../../src/formatters/statusFormatter';
-import { PullResponse } from '../../../src/formatters/pullFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter';
 
 let session: TestSession;
 let conn: Connection;

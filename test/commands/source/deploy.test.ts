@@ -18,7 +18,7 @@ import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatt
 import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
-} from '../../../src/formatters/deployAsyncResultFormatter';
+} from '../../../src/formatters/source/deployAsyncResultFormatter';
 import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';

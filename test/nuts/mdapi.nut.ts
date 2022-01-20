@@ -9,14 +9,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'shelljs';
 import { expect } from 'chai';
-import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
-import { MdDeployResult } from '../../src/formatters/mdDeployResultFormatter';
+import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
 let session: TestSession;
 

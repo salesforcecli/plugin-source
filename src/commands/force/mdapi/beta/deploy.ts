@@ -10,14 +10,12 @@ import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../../deployCommand';
-import {
-  DeployAsyncResultFormatter,
-  DeployCommandAsyncResult,
-} from '../../../../formatters/deployAsyncResultFormatter';
-import { MdDeployResultFormatter, MdDeployResult } from '../../../../formatters/mdDeployResultFormatter';
+import { DeployCommandAsyncResult } from '../../../../formatters/source/deployAsyncResultFormatter';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
+import { MdDeployAsyncResultFormatter } from '../../../../formatters/mdapi/mdDeployAsyncResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
@@ -154,9 +152,10 @@ export class Deploy extends DeployCommand {
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
+      username: this.org.getUsername(),
     };
     const formatter = this.isAsync
-      ? new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
+      ? new MdDeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
       : new MdDeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.

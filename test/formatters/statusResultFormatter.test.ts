@@ -9,7 +9,7 @@ import { UX } from '@salesforce/command';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { StatusResult, StatusFormatter } from '../../src/formatters/statusFormatter';
+import { StatusFormatter, StatusResult } from '../../src/formatters/source/statusFormatter';
 
 const fakeResult: StatusResult[] = [
   {

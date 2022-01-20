@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.2](https://github.com/salesforcecli/plugin-source/compare/v1.8.1...v1.8.2) (2022-01-20)
+
+### Bug Fixes
+
+- include correct username for deploy:report in async deploy ([#392](https://github.com/salesforcecli/plugin-source/issues/392)) ([f58ff25](https://github.com/salesforcecli/plugin-source/commit/f58ff251c60b18391374de7a16f732540515d524))
+
 ### [1.8.1](https://github.com/salesforcecli/plugin-source/compare/v1.8.0...v1.8.1) (2022-01-19)
 
 ### Bug Fixes
