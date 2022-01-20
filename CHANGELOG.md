@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.1](https://github.com/salesforcecli/plugin-source/compare/v1.8.0...v1.8.1) (2022-01-19)
+
+### Bug Fixes
+
+- missing quotes in --help for source:retrieve ([#393](https://github.com/salesforcecli/plugin-source/issues/393)) ([2c1e5c6](https://github.com/salesforcecli/plugin-source/commit/2c1e5c6157aed2c1d855af8f2c0a1ebf4478dc23))
+
 ## [1.8.0](https://github.com/salesforcecli/plugin-source/compare/v1.6.2...v1.8.0) (2022-01-13)
 
 ### Features

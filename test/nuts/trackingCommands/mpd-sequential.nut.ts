@@ -6,11 +6,11 @@
  */
 
 import * as path from 'path';
-import { fs, AuthInfo, Connection } from '@salesforce/core';
+import { AuthInfo, Connection, fs } from '@salesforce/core';
 import { expect } from 'chai';
-import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { PushResponse } from '../../../src/formatters/pushResultFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 
 let session: TestSession;
 let conn: Connection;

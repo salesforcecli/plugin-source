@@ -8,15 +8,15 @@
 import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getString, getNumber } from '@salesforce/ts-types';
+import { get, getNumber, getString } from '@salesforce/ts-types';
 import {
-  RetrieveResult,
   ComponentStatus,
   FileResponse,
   RequestStatus,
   RetrieveMessage,
+  RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');

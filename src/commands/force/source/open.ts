@@ -11,9 +11,9 @@ import * as fs from 'fs';
 import * as open from 'open';
 import { getString } from '@salesforce/ts-types';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, sfdc, SfdxError, AuthInfo, SfdcUrl } from '@salesforce/core';
-import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
-import { OpenResultFormatter, OpenCommandResult } from '../../../formatters/openResultFormatter';
+import { AuthInfo, Messages, sfdc, SfdcUrl, SfdxError } from '@salesforce/core';
+import { MetadataResolver, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import { OpenCommandResult, OpenResultFormatter } from '../../../formatters/source/openResultFormatter';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);

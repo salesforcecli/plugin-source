@@ -11,7 +11,7 @@ import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';
-import { MdDeployResultFormatter } from '../../src/formatters/mdDeployResultFormatter';
+import { MdDeployResultFormatter } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
 describe('mdDeployResultFormatter', () => {
   const sandbox = sinon.createSandbox();

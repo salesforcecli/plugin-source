@@ -10,7 +10,7 @@ import { UX } from '@salesforce/command';
 import * as sinon from 'sinon';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';
-import { PushResultFormatter } from '../../src/formatters/pushResultFormatter';
+import { PushResultFormatter } from '../../src/formatters/source/pushResultFormatter';
 
 describe('PushResultFormatter', () => {
   const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
