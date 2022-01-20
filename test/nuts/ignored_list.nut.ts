@@ -77,8 +77,15 @@ describe('force:source:ignored:list', () => {
 
   describe('returns an ignored class using specified path in forceignore', () => {
     before(async () => {
-      await fs.promises.appendFile(forceIgnorePath, `${pathToIgnoredFile1}${os.EOL}`);
-      await fs.promises.appendFile(forceIgnorePath, `${pathToIgnoredFile2}${os.EOL}`);
+      // forceignore uses a library that wants ignore rules in posix format.
+      await fs.promises.appendFile(
+        forceIgnorePath,
+        `${path.normalize(pathToIgnoredFile1).split(path.sep).join(path.posix.sep)}${os.EOL}`
+      );
+      await fs.promises.appendFile(
+        forceIgnorePath,
+        `${path.normalize(pathToIgnoredFile2).split(path.sep).join(path.posix.sep)}${os.EOL}`
+      );
     });
     after(async () => {
       await fs.promises.writeFile(forceIgnorePath, originalForceIgnore);
