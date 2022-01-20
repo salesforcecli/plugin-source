@@ -33,11 +33,6 @@
     "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"]
   },
   {
-    "command": "force:mdapi:deploy:cancel",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
-  },
-  {
     "command": "force:mdapi:beta:retrieve",
     "plugin": "@salesforce/plugin-source",
     "flags": [
@@ -71,6 +66,11 @@
       "wait",
       "zipfilename"
     ]
+  },
+  {
+    "command": "force:mdapi:deploy:cancel",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
   },
   {
     "command": "force:mdapi:describemetadata",
@@ -163,6 +163,11 @@
     "command": "force:source:deploy:report",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"]
+  },
+  {
+    "command": "force:source:ignored:list",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["json", "loglevel", "sourcepath"]
   },
   {
     "command": "force:source:manifest:create",

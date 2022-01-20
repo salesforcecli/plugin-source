@@ -7,7 +7,7 @@
 
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { ResultFormatter } from './resultFormatter';
+import { ResultFormatter } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');

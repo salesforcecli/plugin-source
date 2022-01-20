@@ -14,13 +14,13 @@ import * as fs from 'fs';
 import { expect } from 'chai';
 import * as shell from 'shelljs';
 
-import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
-import { Connection, AuthInfo } from '@salesforce/core';
+import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { PushResponse } from '../../../src/formatters/pushResultFormatter';
-import { PullResponse } from '../../../src/formatters/pullFormatter';
-import { StatusResult } from '../../../src/formatters/statusFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 
 let session: TestSession;
 const classdir = 'force-app/main/default/classes';

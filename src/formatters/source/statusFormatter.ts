@@ -6,7 +6,7 @@
  */
 import { UX } from '@salesforce/command';
 import { Logger, Messages } from '@salesforce/core';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');

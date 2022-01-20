@@ -19,7 +19,7 @@ import {
 import { ChangeResult, replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 import { processConflicts } from '../../../../formatters/conflicts';
 import { SourceCommand } from '../../../../sourceCommand';
-import { PullResponse, PullResultFormatter } from '../../../../formatters/pullFormatter';
+import { PullResponse, PullResultFormatter } from '../../../../formatters/source/pullFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
@@ -143,7 +143,7 @@ export default class Pull extends SourceCommand {
     const mdapiRetrieve = await componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
-      output: this.project.getDefaultPackage().path,
+      output: this.project.getDefaultPackage().fullPath,
     });
 
     this.ux.setSpinnerStatus('Retrieving metadata from the org');

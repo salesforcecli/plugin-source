@@ -13,7 +13,7 @@ import { ComponentStatus, DeployResult, RequestStatus } from '@salesforce/source
 import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
 import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
-import { PushResponse, PushResultFormatter } from '../../../../formatters/pushResultFormatter';
+import { PushResponse, PushResultFormatter } from '../../../../formatters/source/pushResultFormatter';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';

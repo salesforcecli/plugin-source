@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 
-import { MdDeployResult, MdDeployResultFormatter } from '../../../../../formatters/mdDeployResultFormatter';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../../../formatters/mdapi/mdDeployResultFormatter';
 import { DeployCommand } from '../../../../../deployCommand';
 import { ProgressFormatter } from '../../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../../formatters/deployProgressBarFormatter';
