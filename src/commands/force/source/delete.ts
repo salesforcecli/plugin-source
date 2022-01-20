@@ -23,7 +23,7 @@ import { Duration, env } from '@salesforce/kit';
 import { DeployCommand, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
-import { DeleteResultFormatter } from '../../../formatters/deleteResultFormatter';
+import { DeleteResultFormatter } from '../../../formatters/source/deleteResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';

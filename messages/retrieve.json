@@ -3,10 +3,10 @@
   "examples": [
     "To retrieve the source files in a directory:\n   $ sfdx force:source:retrieve -p path/to/source",
     "To retrieve a specific Apex class and the objects whose source is in a directory:\n   $ sfdx force:source:retrieve -p \"path/to/apex/classes/MyClass.cls,path/to/source/objects\"",
-    "To retrieve source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes",
+    "To retrieve source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
     "To retrieve all Apex classes:\n   $ sfdx force:source:retrieve -m ApexClass",
     "To retrieve a specific Apex class:\n   $ sfdx force:source:retrieve -m ApexClass:MyApexClass",
-    "To retrieve all custom objects and Apex classes:\n   $ sfdx force:source:retrieve -m \"CustomObject,ApexClass",
+    "To retrieve all custom objects and Apex classes:\n   $ sfdx force:source:retrieve -m \"CustomObject,ApexClass\"",
     "To retrieve all Apex classes and two specific profiles (one of which has a space in its name):\n   $ sfdx force:source:retrieve -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
     "To retrieve all metadata components listed in a manifest:\n   $ sfdx force:source:retrieve -x path/to/package.xml",
     "To retrieve metadata from a package or multiple packages:\n   $ sfdx force:source:retrieve -n MyPackageName\n   $ sfdx force:source:retrieve -n \"Package1, PackageName With Spaces, Package3\"",

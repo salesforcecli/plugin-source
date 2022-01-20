@@ -11,7 +11,10 @@ import { Duration, env } from '@salesforce/kit';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
-import { DeployAsyncResultFormatter, DeployCommandAsyncResult } from '../../../formatters/deployAsyncResultFormatter';
+import {
+  DeployAsyncResultFormatter,
+  DeployCommandAsyncResult,
+} from '../../../formatters/source/deployAsyncResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
@@ -179,6 +182,7 @@ export class Deploy extends DeployCommand {
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
+      username: this.org.getUsername(),
     };
 
     const formatter = this.isAsync

@@ -8,8 +8,8 @@ import { DeployMessage, DeployResult, FileResponse } from '@salesforce/source-de
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import * as chalk from 'chalk';
-import { DeployCommandResult, DeployResultFormatter } from './deployResultFormatter';
-import { ResultFormatterOptions, toArray } from './resultFormatter';
+import { DeployCommandResult, DeployResultFormatter } from '../deployResultFormatter';
+import { ResultFormatterOptions, toArray } from '../resultFormatter';
 
 export class DeleteResultFormatter extends DeployResultFormatter {
   public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result?: DeployResult) {
