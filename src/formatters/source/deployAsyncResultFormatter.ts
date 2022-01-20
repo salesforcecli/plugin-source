@@ -10,7 +10,7 @@ import { UX } from '@salesforce/command';
 import { Logger, Messages } from '@salesforce/core';
 import { cloneJson } from '@salesforce/kit';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -63,7 +63,7 @@ export class DeployAsyncResultFormatter extends ResultFormatter {
    */
   public display(): void {
     this.ux.log(messages.getMessage('asyncDeployQueued'), EOL);
-    this.ux.log(messages.getMessage('asyncDeployCancel', [this.result.id]));
-    this.ux.log(messages.getMessage('asyncDeployReport', [this.result.id]));
+    this.ux.log(messages.getMessage('asyncDeployCancel', [this.result.id, this.options.username]));
+    this.ux.log(messages.getMessage('asyncDeployReport', [this.result.id, this.options.username]));
   }
 }

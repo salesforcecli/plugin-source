@@ -9,12 +9,12 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { SourceComponent, MetadataResolver } from '@salesforce/source-deploy-retrieve';
+import { MetadataResolver, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
-import { AuthInfo, SfdxProject, Org, MyDomainResolver } from '@salesforce/core';
+import { AuthInfo, MyDomainResolver, Org, SfdxProject } from '@salesforce/core';
 import { Open } from '../../../src/commands/force/source/open';
-import { OpenCommandResult } from '../../../src/formatters/openResultFormatter';
+import { OpenCommandResult } from '../../../src/formatters/source/openResultFormatter';
 
 describe('force:source:open', () => {
   const sandbox = sinon.createSandbox();

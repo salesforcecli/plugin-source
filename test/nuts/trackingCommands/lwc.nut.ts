@@ -8,10 +8,10 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
-import { TestSession, execCmd } from '@salesforce/cli-plugins-testkit';
+import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
-import { PushResponse } from '../../../src/formatters/pushResultFormatter';
-import { StatusResult } from '../../../src/formatters/statusFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 
 let session: TestSession;
 let cssPathAbsolute: string;
