@@ -76,7 +76,7 @@ describe('mdDeployResultFormatter', () => {
       process.exitCode = 0;
       const expectedSuccessResults = deployResultSuccess.response;
 
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
+      const formatter = new MdDeployResultFormatter(logger, ux as UX, { concise: true }, deployResultSuccess);
       const json = formatter.getJson();
 
       // a few checks that it's the rest of the json
