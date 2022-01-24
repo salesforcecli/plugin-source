@@ -8,6 +8,7 @@ import * as path from 'path';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { fs as fsCore, Messages, SfdxError } from '@salesforce/core';
 import { ForceIgnore } from '@salesforce/source-deploy-retrieve';
+import { FsError } from '../../../../types';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'ignored_list');
@@ -53,13 +54,13 @@ export class SourceIgnoredCommand extends SfdxCommand {
 
       return { ignoredFiles };
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (err.code === 'ENOENT') {
+      const error = err as FsError;
+      if (error.code === 'ENOENT') {
         throw SfdxError.create('@salesforce/plugin-source', 'ignored_list', 'invalidSourcePath', [
-          this.flags.sourcepath,
+          this.flags.sourcepath as string,
         ]);
       }
-      throw SfdxError.wrap(err);
+      throw SfdxError.wrap(error);
     }
   }
 
