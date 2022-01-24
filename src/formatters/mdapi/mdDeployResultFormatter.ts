@@ -38,12 +38,12 @@ export class MdDeployResultFormatter extends ResultFormatter {
    */
   public getJson(): MdDeployResult {
     // concise omits success messages
-    if (!this.isConcise()) {
-      return this.getResponse();
+    if (this.isConcise()) {
+      const quietResponse = this.getResponse();
+      delete quietResponse.details.componentSuccesses;
+      return quietResponse;
     }
-    const quietResponse = this.getResponse();
-    delete quietResponse.details.componentSuccesses;
-    return quietResponse;
+    return this.getResponse();
   }
 
   /**
