@@ -27,7 +27,6 @@ interface CreateCommandResult {
   path: string;
 }
 
-const xorFlags = ['metadata', 'sourcepath'];
 export class create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -37,12 +36,12 @@ export class create extends SourceCommand {
     metadata: flags.array({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
-      exactlyOne: xorFlags,
+      exclusive: ['sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
-      exactlyOne: xorFlags,
+      exclusive: ['metadata'],
     }),
     manifestname: flags.string({
       char: 'n',
@@ -59,6 +58,7 @@ export class create extends SourceCommand {
       description: messages.getMessage('flags.outputdir'),
     }),
   };
+  protected xorFlags = ['metadata', 'sourcepath'];
   private manifestName: string;
   private outputDir: string;
   private outputPath: string;
@@ -70,6 +70,7 @@ export class create extends SourceCommand {
   }
 
   protected async createManifest(): Promise<void> {
+    this.validateFlags();
     // convert the manifesttype into one of the "official" manifest names
     // if no manifesttype flag passed, use the manifestname flag
     // if no manifestname flag, default to 'package.xml'

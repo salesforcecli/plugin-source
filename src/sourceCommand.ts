@@ -6,7 +6,7 @@
  */
 
 import { SfdxCommand } from '@salesforce/command';
-import { Lifecycle } from '@salesforce/core';
+import { Lifecycle, SfdxError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
@@ -24,12 +24,20 @@ export type ProgressBar = {
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
 
+  protected xorFlags: string[] = [];
   protected progressBar?: ProgressBar;
   protected lifecycle = Lifecycle.getInstance();
   protected componentSet?: ComponentSet;
 
   protected isJsonOutput(): boolean {
     return getBoolean(this.flags, 'json', false);
+  }
+
+  protected validateFlags(): void {
+    // verify that the user defined one of the flag names specified in xorFlags property
+    if (!Object.keys(this.flags).some((flag) => this.xorFlags.includes(flag))) {
+      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingRequiredParam', [this.xorFlags.join(', ')]);
+    }
   }
 
   protected getFlag<T>(flagName: string, defaultVal?: unknown): T {

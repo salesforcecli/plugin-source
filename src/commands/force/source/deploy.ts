@@ -22,9 +22,6 @@ import { DeployProgressStatusFormatter } from '../../../formatters/deployProgres
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
-// One of these flags must be specified for a valid deploy.
-const xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
-
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -74,8 +71,16 @@ export class Deploy extends DeployCommand {
       char: 'q',
       description: messages.getMessage('flags.validateDeployRequestId'),
       longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
-      exactlyOne: xorFlags,
-      exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings'],
+      exclusive: [
+        'manifest',
+        'metadata',
+        'sourcepath',
+        'checkonly',
+        'testlevel',
+        'runtests',
+        'ignoreerrors',
+        'ignorewarnings',
+      ],
       validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
@@ -85,19 +90,19 @@ export class Deploy extends DeployCommand {
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       longDescription: messages.getMessage('flagsLong.metadata'),
-      exactlyOne: xorFlags,
+      exclusive: ['manifest', 'sourcepath'],
     }),
     sourcepath: flags.array({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
       longDescription: messages.getMessage('flagsLong.sourcePath'),
-      exactlyOne: xorFlags,
+      exclusive: ['manifest', 'metadata'],
     }),
     manifest: flags.filepath({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
       longDescription: messages.getMessage('flagsLong.manifest'),
-      exactlyOne: xorFlags,
+      exclusive: ['metadata', 'sourcepath'],
     }),
     predestructivechanges: flags.filepath({
       description: messages.getMessage('flags.predestructivechanges'),
@@ -108,6 +113,7 @@ export class Deploy extends DeployCommand {
       dependsOn: ['manifest'],
     }),
   };
+  protected xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
@@ -121,6 +127,7 @@ export class Deploy extends DeployCommand {
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
+    this.validateFlags();
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();

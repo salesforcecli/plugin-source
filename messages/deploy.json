@@ -73,6 +73,7 @@
       "    - If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is covered by at least 75% individually."
     ]
   },
+  "MissingRequiredParam": "Missing one of the following parameters: %s",
   "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output.",
   "MissingDeployId": "No deploy ID was provided or found in deploy history.",
   "deployCanceled": "The deployment has been canceled by %s.",
