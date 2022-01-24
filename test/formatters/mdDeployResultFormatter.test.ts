@@ -98,8 +98,8 @@ describe('mdDeployResultFormatter', () => {
     });
 
     it('should output as expected for a verbose success (has table)', async () => {
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultSuccess);
       process.exitCode = 0;
+      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(1);
       expect(logStub.callCount).to.equal(1);

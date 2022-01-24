@@ -38,10 +38,16 @@ export class MdDeployResultFormatter extends ResultFormatter {
    */
   public getJson(): MdDeployResult {
     // concise omits success messages
+    // spread properties prevents modification of the object from impacting tests
     if (this.isConcise()) {
-      const quietResponse = this.getResponse();
-      delete quietResponse.details.componentSuccesses;
-      return quietResponse;
+      const response = this.getResponse();
+      return {
+        ...response,
+        details: {
+          componentFailures: response.details.componentFailures,
+          runTestResult: response.details.runTestResult,
+        },
+      };
     }
     return this.getResponse();
   }
