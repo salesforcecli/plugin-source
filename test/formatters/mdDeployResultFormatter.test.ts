@@ -71,6 +71,20 @@ describe('mdDeployResultFormatter', () => {
       const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultPartialSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
     });
+
+    it('should omit successes when used with concise', () => {
+      process.exitCode = 0;
+      const expectedSuccessResults = deployResultSuccess.response;
+
+      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
+      const json = formatter.getJson();
+
+      // a few checks that it's the rest of the json
+      expect(json.status).to.equal(expectedSuccessResults.status);
+      expect(json.numberComponentsDeployed).to.equal(expectedSuccessResults.numberComponentsDeployed);
+      // except the status
+      expect(json.details.componentSuccesses).to.be.undefined;
+    });
   });
 
   describe('display', () => {
