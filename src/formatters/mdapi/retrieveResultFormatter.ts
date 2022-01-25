@@ -38,11 +38,10 @@ export interface RetrieveCommandAsyncResult {
 }
 
 export class RetrieveResultFormatter extends ResultFormatter {
-  public options: RetrieveResultFormatterOptions;
   protected result: RetrieveCommandResult;
   protected warnings: RetrieveMessage[];
 
-  public constructor(logger: Logger, ux: UX, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
+  public constructor(logger: Logger, ux: UX, public options: RetrieveResultFormatterOptions, result: RetrieveResult) {
     super(logger, ux, options);
     // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
     delete result.response.zipFile;
