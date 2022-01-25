@@ -16,7 +16,7 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 export class MdDeployAsyncResultFormatter extends DeployAsyncResultFormatter {
-  protected result: AsyncResult;
+  protected declare result: AsyncResult;
 
   public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: AsyncResult) {
     super(logger, ux, options, result);
