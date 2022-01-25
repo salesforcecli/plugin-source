@@ -15,7 +15,7 @@ import { SourceIgnoredResults } from '../../src/commands/force/source/ignored/li
 describe('force:source:ignored:list', () => {
   let session: TestSession;
   let forceIgnorePath: string;
-  let originalForceIgnore;
+  let originalForceIgnore: string;
 
   const pathToIgnoredFile1 = path.join('foo-bar', 'app', 'classes', 'FooBar.cls');
   const pathToIgnoredFile2 = path.join('foo-bar', 'app', 'classes', 'FooBar.cls-meta.xml');

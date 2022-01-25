@@ -97,6 +97,9 @@ export class Deploy extends DeployCommand {
     purgeondelete: flags.boolean({
       description: messages.getMessage('flags.purgeOnDelete'),
     }),
+    concise: flags.builtin({
+      description: messages.getMessage('flags.concise'),
+    }),
   };
 
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
@@ -155,6 +158,7 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     const formatterOptions = {
+      concise: this.getFlag<boolean>('concise', false),
       verbose: this.getFlag<boolean>('verbose', false),
       username: this.org.getUsername(),
     };

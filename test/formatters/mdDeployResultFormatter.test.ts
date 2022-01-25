@@ -71,6 +71,20 @@ describe('mdDeployResultFormatter', () => {
       const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultPartialSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
     });
+
+    it('should omit successes when used with concise', () => {
+      process.exitCode = 0;
+      const expectedSuccessResults = deployResultSuccess.response;
+
+      const formatter = new MdDeployResultFormatter(logger, ux as UX, { concise: true }, deployResultSuccess);
+      const json = formatter.getJson();
+
+      // a few checks that it's the rest of the json
+      expect(json.status).to.equal(expectedSuccessResults.status);
+      expect(json.numberComponentsDeployed).to.equal(expectedSuccessResults.numberComponentsDeployed);
+      // except the status
+      expect(json.details.componentSuccesses).to.be.undefined;
+    });
   });
 
   describe('display', () => {
@@ -84,8 +98,8 @@ describe('mdDeployResultFormatter', () => {
     });
 
     it('should output as expected for a verbose success (has table)', async () => {
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultSuccess);
       process.exitCode = 0;
+      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(1);
       expect(logStub.callCount).to.equal(1);
