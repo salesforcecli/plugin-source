@@ -37,6 +37,18 @@ export class MdDeployResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): MdDeployResult {
+    // concise omits success messages
+    // spread properties prevents modification of the object from impacting tests
+    if (this.isConcise()) {
+      const response = this.getResponse();
+      return {
+        ...response,
+        details: {
+          componentFailures: response.details.componentFailures,
+          runTestResult: response.details.runTestResult,
+        },
+      };
+    }
     return this.getResponse();
   }
 
