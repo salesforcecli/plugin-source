@@ -28,7 +28,7 @@ import { DeleteResultFormatter } from '../../../formatters/source/deleteResultFo
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-
+import { updateTracking, trackingSetup, filterConflictsByComponentSet } from '../../../trackingFunctions';
 const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
@@ -80,6 +80,11 @@ export class Delete extends DeployCommand {
       description: messages.getMessage('flags.tracksource'),
       exclusive: ['checkonly'],
     }),
+    forceoverwrite: flags.boolean({
+      char: 'f',
+      description: messages.getMessage('flags.forceoverwrite'),
+      dependsOn: ['tracksource'],
+    }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
@@ -104,18 +109,21 @@ export class Delete extends DeployCommand {
     // so we'll delete the files locally now
     await this.deleteFilesLocally();
     // makes sure files are deleted before updating tracking files
-    await this.updateTrackingIfRequired();
+    await updateTracking({
+      ux: this.ux,
+      result: this.deployResult,
+      tracking: this.tracking,
+    });
     return result;
   }
 
   protected async preChecks(): Promise<void> {
     if (this.flags.tracksource) {
-      // checks the source tracking file version and throws if they're toolbelt's old version
-      this.ensureTrackingVersion();
-      // STL will throw with nice message if the org doesn't support source tracking
-      this.tracking = await SourceTracking.create({
+      this.tracking = await trackingSetup({
+        ux: this.ux,
         org: this.org,
         project: this.project,
+        ignoreConflicts: true,
       });
     }
   }
@@ -133,7 +141,9 @@ export class Delete extends DeployCommand {
         directoryPaths: this.getPackageDirs(),
       },
     });
-
+    if (!this.getFlag<boolean>('forceoverwrite')) {
+      await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+    }
     this.components = this.componentSet.toArray();
 
     if (!this.components.length) {
@@ -278,28 +288,6 @@ export class Delete extends DeployCommand {
       });
       await Promise.all(promises);
     }
-  }
-
-  private async updateTrackingIfRequired(): Promise<void> {
-    // might not exist if we exited early
-    if (!this.flags.tracksource || !this.deployResult) {
-      return;
-    }
-    this.ux.startSpinner('Updating source tracking');
-    const successes = this.deployResult
-      .getFileResponses()
-      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
-
-    await Promise.all([
-      // commit the local file successes that the retrieve modified
-      this.tracking.updateLocalTracking({
-        deletedFiles: successes.map((fileResponse) => fileResponse.filePath).filter(Boolean),
-      }),
-      this.tracking.updateRemoteTracking(
-        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
-      ),
-    ]);
-    this.ux.stopSpinner('Tracking files updated');
   }
 
   private async moveFileToStash(file: string): Promise<void> {

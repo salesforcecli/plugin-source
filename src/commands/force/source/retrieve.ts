@@ -10,7 +10,7 @@ import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { ComponentSet, ComponentStatus, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
@@ -19,6 +19,7 @@ import {
   RetrieveResultFormatter,
 } from '../../../formatters/retrieveResultFormatter';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
+import { trackingSetup, updateTracking, filterConflictsByComponentSet } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -68,6 +69,11 @@ export class Retrieve extends SourceCommand {
       char: 't',
       description: messages.getMessage('flags.tracksource'),
     }),
+    forceoverwrite: flags.boolean({
+      char: 'f',
+      description: messages.getMessage('flags.forceoverwrite'),
+      dependsOn: ['tracksource'],
+    }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
@@ -86,11 +92,11 @@ export class Retrieve extends SourceCommand {
 
   protected async preChecks(): Promise<void> {
     if (this.flags.tracksource) {
-      // checks the source tracking file version and throws if they're toolbelt's old version
-      this.ensureTrackingVersion();
-      this.tracking = await SourceTracking.create({
+      this.tracking = await trackingSetup({
+        ux: this.ux,
         org: this.org,
         project: this.project,
+        ignoreConflicts: true,
       });
     }
   }
@@ -117,6 +123,9 @@ export class Retrieve extends SourceCommand {
         this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
         this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
       }
+    }
+    if (!this.getFlag<boolean>('forceoverwrite')) {
+      await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
     }
 
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
@@ -154,26 +163,10 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async updateTrackingIfRequired(): Promise<void> {
-    // might not exist if we exited from retrieve early
-    if (!this.flags.tracksource || !this.retrieveResult) {
+    if (!this.flags.tracksource) {
       return;
     }
-    this.ux.startSpinner('Updating source tracking');
-    const successes = this.retrieveResult
-      .getFileResponses()
-      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
-
-    await Promise.all([
-      // commit the local file successes that the retrieve modified
-      this.tracking.updateLocalTracking({
-        files: successes.map((fileResponse) => fileResponse.filePath).filter(Boolean),
-      }),
-      this.tracking.updateRemoteTracking(
-        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
-        true // skip polling because it's a retrieve
-      ),
-    ]);
-    this.ux.stopSpinner('Tracking files updated');
+    return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
   }
 
   protected async formatResult(): Promise<RetrieveCommandResult> {

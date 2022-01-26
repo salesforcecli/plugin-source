@@ -30,7 +30,8 @@
     "soapDeploy": "deploy metadata with SOAP API instead of REST API",
     "predestructivechanges": "file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy",
     "postdestructivechanges": "file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy",
-    "tracksource": "If the deploy succeeds, update the source tracking information, similar to push"
+    "tracksource": "If the deploy succeeds, update the source tracking information, similar to push",
+    "forceoverwrite": "ignore conflict warnings and overwrite changes to the org"
   },
   "flagsLong": {
     "sourcePath": [

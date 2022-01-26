@@ -10,6 +10,7 @@
     "testLevel": "deployment testing level",
     "runTests": "tests to run if --testlevel RunSpecifiedTests",
     "tracksource": "If the delete succeeds, update the source tracking information, similar to push",
+    "forceoverwrite": "ignore conflict warnings and overwrite changes to the org",
     "verbose": "verbose output of delete result"
   },
   "flagsLong": {

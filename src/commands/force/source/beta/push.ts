@@ -8,7 +8,7 @@
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { ComponentStatus, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 
 import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
@@ -17,7 +17,7 @@ import { PushResponse, PushResultFormatter } from '../../../../formatters/source
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { processConflicts } from '../../../../formatters/conflicts';
+import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
@@ -59,7 +59,11 @@ export default class Push extends DeployCommand {
     await this.prechecks();
     await this.deploy();
     this.resolveSuccess();
-    await this.updateTrackingFiles();
+    await updateTracking({
+      ux: this.ux,
+      result: this.deployResult,
+      tracking: this.tracking,
+    });
     return this.formatResult();
   }
 
@@ -70,14 +74,13 @@ export default class Push extends DeployCommand {
       toValidate: 'plugin-source',
       command: replaceRenamedCommands('force:source:push'),
     });
-    this.tracking = await SourceTracking.create({
+    this.tracking = await trackingSetup({
+      ux: this.ux,
       org: this.org,
       project: this.project,
-      apiVersion: this.flags.apiversion as string,
+      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
     });
-    if (!this.flags.forceoverwrite) {
-      processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
-    }
+
     // we need these later to show deletes in results
     this.deletes = await this.tracking.getChanges<string>({ origin: 'local', state: 'delete', format: 'string' });
   }
@@ -142,26 +145,6 @@ export default class Push extends DeployCommand {
         }
       }
     }
-  }
-
-  protected async updateTrackingFiles(): Promise<void> {
-    if (process.exitCode !== 0 || !this.deployResults.length) {
-      return;
-    }
-    const successes = this.deployResults
-      .flatMap((result) => result.getFileResponses())
-      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
-    const successNonDeletes = successes.filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted);
-    // deleted bundleMembers might not be in here, but we can get them from tracking files and compare their parent bundle
-    const successDeletes = successes.filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted);
-
-    await Promise.all([
-      this.tracking.updateLocalTracking({
-        files: successNonDeletes.map((fileResponse) => fileResponse.filePath),
-        deletedFiles: successDeletes.map((fileResponse) => fileResponse.filePath),
-      }),
-      this.tracking.updateRemoteTracking(successes),
-    ]);
   }
 
   protected resolveSuccess(): void {

@@ -3,5 +3,6 @@
   "clearDescription": "clear all local source tracking information\n\nWARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.\n\nClears all local source tracking information. When you next run force:source:status, the CLI displays all local and remote files as changed, and any files with the same name are listed as conflicts.",
   "nopromptDescription": "do not prompt for source tracking override confirmation",
   "revisionDescription": "reset to a specific SourceMember revision counter number",
-  "promptMessage": "WARNING: This operation will modify all your local source tracking files. The operation can have unintended consequences on all the force:source commands. Are you sure you want to proceed (y/n)?"
+  "promptMessage": "WARNING: This operation will modify all your local source tracking files. The operation can have unintended consequences on all the force:source commands. Are you sure you want to proceed (y/n)?",
+  "conflictMsg": "We couldn't complete the push operation due to conflicts. Verify that you want to keep the existing versions, then run the command again with the --forceoverwrite (-f) option."
 }

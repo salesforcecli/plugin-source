@@ -6,7 +6,6 @@
  */
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
@@ -20,6 +19,7 @@ import {
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { updateTracking, trackingSetup, filterConflictsByComponentSet } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -77,7 +77,7 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.validateDeployRequestId'),
       longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
       exactlyOne: xorFlags,
-      exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings'],
+      exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings', 'tracksource'],
       validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
@@ -112,7 +112,12 @@ export class Deploy extends DeployCommand {
     tracksource: flags.boolean({
       char: 't',
       description: messages.getMessage('flags.tracksource'),
-      exclusive: ['checkonly'],
+      exclusive: ['checkonly', 'validateddeployrequestid'],
+    }),
+    forceoverwrite: flags.boolean({
+      char: 'f',
+      description: messages.getMessage('flags.forceoverwrite'),
+      dependsOn: ['tracksource'],
     }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
@@ -122,19 +127,23 @@ export class Deploy extends DeployCommand {
     await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
-    await this.updateTrackingIfRequired();
+    await updateTracking({
+      ux: this.ux,
+      result: this.deployResult,
+      tracking: this.tracking,
+    });
 
     return this.formatResult();
   }
 
   protected async preChecks(): Promise<void> {
     if (this.flags.tracksource) {
-      // checks the source tracking file version and throws if they're toolbelt's old version
-      this.ensureTrackingVersion();
-      // STL will throw with nice message if the org doesn't support source tracking
-      this.tracking = await SourceTracking.create({
+      this.tracking = await trackingSetup({
+        ux: this.ux,
         org: this.org,
         project: this.project,
+        // we'll check ACTUAL conflicts once we get a componentSet built
+        ignoreConflicts: true,
       });
     }
   }
@@ -166,6 +175,9 @@ export class Deploy extends DeployCommand {
           directoryPaths: this.getPackageDirs(),
         },
       });
+      if (!this.getFlag<boolean>('forceoverwrite')) {
+        await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+      }
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', this.componentSet.toArray());
       this.ux.log(getVersionMessage('Deploying', this.componentSet, this.isRest));
@@ -218,32 +230,5 @@ export class Deploy extends DeployCommand {
     }
 
     return formatter.getJson();
-  }
-
-  private async updateTrackingIfRequired(): Promise<void> {
-    // might not exist if we exited early
-    if (!this.flags.tracksource || !this.deployResult) {
-      return;
-    }
-    this.ux.startSpinner('Updating source tracking');
-    const successes = this.deployResult
-      .getFileResponses()
-      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
-
-    await Promise.all([
-      // commit the local file successes that the retrieve modified
-      this.tracking.updateLocalTracking({
-        files: successes
-          .filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted)
-          .map((fileResponse) => fileResponse.filePath),
-        deletedFiles: successes
-          .filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted)
-          .map((fileResponse) => fileResponse.filePath),
-      }),
-      this.tracking.updateRemoteTracking(
-        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
-      ),
-    ]);
-    this.ux.stopSpinner('Tracking files updated');
   }
 }
