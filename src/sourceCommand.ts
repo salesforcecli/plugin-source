@@ -70,16 +70,6 @@ export abstract class SourceCommand extends SfdxCommand {
     return getString(projectConfig, 'sourceApiVersion');
   }
 
-  protected ensureTrackingVersion(): void {
-    if (getTrackingFileVersion(this.org, this.project.getPath()) === 'toolbelt') {
-      throw new SfdxError(
-        'The project uses the old version of the source tracking file, which is not compatible with the --tracksource flag',
-        'SourceTrackingFileVersionMismatch',
-        ['Clear the old version of the tracking files by running sfdx force:source:tracking:clear']
-      );
-    }
-  }
-
   /**
    * Inspects the command response to determine success.
    *
