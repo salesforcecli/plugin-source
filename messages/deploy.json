@@ -29,7 +29,8 @@
     "validateDeployRequestId": "deploy request ID of the validated deployment to run a Quick Deploy",
     "soapDeploy": "deploy metadata with SOAP API instead of REST API",
     "predestructivechanges": "file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy",
-    "postdestructivechanges": "file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy"
+    "postdestructivechanges": "file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy",
+    "tracksource": "If the deploy succeeds, update the source tracking information, similar to push"
   },
   "flagsLong": {
     "sourcePath": [

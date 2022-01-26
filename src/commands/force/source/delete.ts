@@ -20,6 +20,7 @@ import {
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { DeployCommand, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -74,10 +75,16 @@ export class Delete extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.sourcepath'),
       exactlyOne: xorFlags,
     }),
+    tracksource: flags.boolean({
+      char: 't',
+      description: messages.getMessage('flags.tracksource'),
+      exclusive: ['checkonly'],
+    }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
   };
+  protected tracking: SourceTracking;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
   private aborted = false;
@@ -89,13 +96,28 @@ export class Delete extends DeployCommand {
   private tempDir = path.join(os.tmpdir(), 'source_delete');
 
   public async run(): Promise<DeployCommandResult> {
+    await this.preChecks();
     await this.delete();
     await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
     await this.deleteFilesLocally();
+    // makes sure files are deleted before updating tracking files
+    await this.updateTrackingIfRequired();
     return result;
+  }
+
+  protected async preChecks(): Promise<void> {
+    if (this.flags.tracksource) {
+      // checks the source tracking file version and throws if they're toolbelt's old version
+      this.ensureTrackingVersion();
+      // STL will throw with nice message if the org doesn't support source tracking
+      this.tracking = await SourceTracking.create({
+        org: this.org,
+        project: this.project,
+      });
+    }
   }
 
   protected async delete(): Promise<void> {
@@ -256,6 +278,28 @@ export class Delete extends DeployCommand {
       });
       await Promise.all(promises);
     }
+  }
+
+  private async updateTrackingIfRequired(): Promise<void> {
+    // might not exist if we exited early
+    if (!this.flags.tracksource || !this.deployResult) {
+      return;
+    }
+    this.ux.startSpinner('Updating source tracking');
+    const successes = this.deployResult
+      .getFileResponses()
+      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
+
+    await Promise.all([
+      // commit the local file successes that the retrieve modified
+      this.tracking.updateLocalTracking({
+        deletedFiles: successes.map((fileResponse) => fileResponse.filePath).filter(Boolean),
+      }),
+      this.tracking.updateRemoteTracking(
+        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
+      ),
+    ]);
+    this.ux.stopSpinner('Tracking files updated');
   }
 
   private async moveFileToStash(file: string): Promise<void> {

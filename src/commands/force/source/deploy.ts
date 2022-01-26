@@ -6,8 +6,10 @@
  */
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
+import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -107,13 +109,34 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.postdestructivechanges'),
       dependsOn: ['manifest'],
     }),
+    tracksource: flags.boolean({
+      char: 't',
+      description: messages.getMessage('flags.tracksource'),
+      exclusive: ['checkonly'],
+    }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
+  protected tracking: SourceTracking;
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
+    await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
+    await this.updateTrackingIfRequired();
+
     return this.formatResult();
+  }
+
+  protected async preChecks(): Promise<void> {
+    if (this.flags.tracksource) {
+      // checks the source tracking file version and throws if they're toolbelt's old version
+      this.ensureTrackingVersion();
+      // STL will throw with nice message if the org doesn't support source tracking
+      this.tracking = await SourceTracking.create({
+        org: this.org,
+        project: this.project,
+      });
+    }
   }
 
   // There are 3 types of deploys:
@@ -195,5 +218,32 @@ export class Deploy extends DeployCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private async updateTrackingIfRequired(): Promise<void> {
+    // might not exist if we exited early
+    if (!this.flags.tracksource || !this.deployResult) {
+      return;
+    }
+    this.ux.startSpinner('Updating source tracking');
+    const successes = this.deployResult
+      .getFileResponses()
+      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
+
+    await Promise.all([
+      // commit the local file successes that the retrieve modified
+      this.tracking.updateLocalTracking({
+        files: successes
+          .filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted)
+          .map((fileResponse) => fileResponse.filePath),
+        deletedFiles: successes
+          .filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted)
+          .map((fileResponse) => fileResponse.filePath),
+      }),
+      this.tracking.updateRemoteTracking(
+        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
+      ),
+    ]);
+    this.ux.stopSpinner('Tracking files updated');
   }
 }

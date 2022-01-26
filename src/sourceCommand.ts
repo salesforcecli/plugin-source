@@ -6,7 +6,8 @@
  */
 
 import { SfdxCommand } from '@salesforce/command';
-import { Lifecycle } from '@salesforce/core';
+import { Lifecycle, SfdxError } from '@salesforce/core';
+import { getTrackingFileVersion } from '@salesforce/source-tracking';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
@@ -20,6 +21,10 @@ export type ProgressBar = {
   setTotal: (num: number) => void;
   stop: () => void;
 };
+
+// TODO: use messages for tracking version compatibility errors
+// Messages.importMessagesDirectory(__dirname);
+// const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
@@ -63,6 +68,16 @@ export abstract class SourceCommand extends SfdxCommand {
   protected async getSourceApiVersion(): Promise<Optional<string>> {
     const projectConfig = await this.project.resolveProjectConfig();
     return getString(projectConfig, 'sourceApiVersion');
+  }
+
+  protected ensureTrackingVersion(): void {
+    if (getTrackingFileVersion(this.org, this.project.getPath()) === 'toolbelt') {
+      throw new SfdxError(
+        'The project uses the old version of the source tracking file, which is not compatible with the --tracksource flag',
+        'SourceTrackingFileVersionMismatch',
+        ['Clear the old version of the tracking files by running sfdx force:source:tracking:clear']
+      );
+    }
   }
 
   /**

@@ -6,6 +6,7 @@
     "To retrieve source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:retrieve -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
     "To retrieve all Apex classes:\n   $ sfdx force:source:retrieve -m ApexClass",
     "To retrieve a specific Apex class:\n   $ sfdx force:source:retrieve -m ApexClass:MyApexClass",
+    "To retrieve a specific Apex class and update source tracking files :\n   $ sfdx force:source:retrieve -m ApexClass:MyApexClass -t",
     "To retrieve all custom objects and Apex classes:\n   $ sfdx force:source:retrieve -m \"CustomObject,ApexClass\"",
     "To retrieve all Apex classes and two specific profiles (one of which has a space in its name):\n   $ sfdx force:source:retrieve -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
     "To retrieve all metadata components listed in a manifest:\n   $ sfdx force:source:retrieve -x path/to/package.xml",
@@ -18,6 +19,7 @@
     "manifest": "file path for manifest (package.xml) of components to retrieve",
     "metadata": "comma-separated list of metadata component names",
     "packagename": "a comma-separated list of packages to retrieve",
+    "tracksource": "If the retrieve succeeds, update the source tracking information, similar to pull",
     "verbose": "verbose output of retrieve result"
   },
   "flagsLong": {

@@ -9,6 +9,7 @@
     "checkonly": "validate delete command but do not delete from the org or delete files locally",
     "testLevel": "deployment testing level",
     "runTests": "tests to run if --testlevel RunSpecifiedTests",
+    "tracksource": "If the delete succeeds, update the source tracking information, similar to push",
     "verbose": "verbose output of delete result"
   },
   "flagsLong": {

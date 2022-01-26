@@ -10,7 +10,8 @@ import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, ComponentStatus, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   PackageRetrieval,
@@ -63,17 +64,35 @@ export class Retrieve extends SourceCommand {
       char: 'n',
       description: messages.getMessage('flags.packagename'),
     }),
+    tracksource: flags.boolean({
+      char: 't',
+      description: messages.getMessage('flags.tracksource'),
+    }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected retrieveResult: RetrieveResult;
+  protected tracking: SourceTracking;
 
   public async run(): Promise<RetrieveCommandResult> {
+    await this.preChecks();
     await this.retrieve();
     this.resolveSuccess();
+    await this.updateTrackingIfRequired();
     return this.formatResult();
+  }
+
+  protected async preChecks(): Promise<void> {
+    if (this.flags.tracksource) {
+      // checks the source tracking file version and throws if they're toolbelt's old version
+      this.ensureTrackingVersion();
+      this.tracking = await SourceTracking.create({
+        org: this.org,
+        project: this.project,
+      });
+    }
   }
 
   protected async retrieve(): Promise<void> {
@@ -132,6 +151,29 @@ export class Retrieve extends SourceCommand {
     ]);
 
     this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
+  }
+
+  protected async updateTrackingIfRequired(): Promise<void> {
+    // might not exist if we exited from retrieve early
+    if (!this.flags.tracksource || !this.retrieveResult) {
+      return;
+    }
+    this.ux.startSpinner('Updating source tracking');
+    const successes = this.retrieveResult
+      .getFileResponses()
+      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
+
+    await Promise.all([
+      // commit the local file successes that the retrieve modified
+      this.tracking.updateLocalTracking({
+        files: successes.map((fileResponse) => fileResponse.filePath).filter(Boolean),
+      }),
+      this.tracking.updateRemoteTracking(
+        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
+        true // skip polling because it's a retrieve
+      ),
+    ]);
+    this.ux.stopSpinner('Tracking files updated');
   }
 
   protected async formatResult(): Promise<RetrieveCommandResult> {
