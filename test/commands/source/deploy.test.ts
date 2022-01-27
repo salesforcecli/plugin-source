@@ -156,9 +156,11 @@ describe('force:source:deploy', () => {
         ignoreWarnings: false,
         rollbackOnError: true,
         checkOnly: false,
+        purgeOnDelete: false,
         runTests: [],
         testLevel: 'NoTestRun',
         rest: false,
+        ...overrides?.apiOptions,
       },
     };
     if (overrides?.apiOptions) {
@@ -259,6 +261,87 @@ describe('force:source:deploy', () => {
       },
     });
     ensureDeployArgs();
+    ensureHookArgs();
+    ensureProgressBar(0);
+  });
+
+  it('should pass purgeOnDelete flag', async () => {
+    const manifest = 'package.xml';
+    const destructiveChanges = 'destructiveChangesPost.xml';
+    const runTests = ['MyClassTest'];
+    const testLevel = 'RunSpecifiedTests';
+    const result = await runDeployCmd([
+      `--manifest=${manifest}`,
+      `--postdestructivechanges=${destructiveChanges}`,
+      '--ignorewarnings',
+      '--ignoreerrors',
+      '--checkonly',
+      `--runtests=${runTests[0]}`,
+      `--testlevel=${testLevel}`,
+      '--purgeondelete',
+      '--json',
+    ]);
+
+    expect(result).to.deep.equal(expectedResults);
+    ensureDeployArgs({
+      apiOptions: {
+        checkOnly: true,
+        ignoreWarnings: true,
+        purgeOnDelete: true,
+        rest: false,
+        rollbackOnError: false,
+        runTests: ['MyClassTest'],
+        testLevel: 'RunSpecifiedTests',
+      },
+    });
+    ensureCreateComponentSetArgs({
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+        destructiveChangesPost: destructiveChanges,
+        destructiveChangesPre: undefined,
+      },
+    });
+    ensureHookArgs();
+    ensureProgressBar(0);
+  });
+
+  it('should pass default purgeondelete flag to false', async () => {
+    const manifest = 'package.xml';
+    const destructiveChanges = 'destructiveChangesPost.xml';
+    const runTests = ['MyClassTest'];
+    const testLevel = 'RunSpecifiedTests';
+    const result = await runDeployCmd([
+      `--manifest=${manifest}`,
+      `--postdestructivechanges=${destructiveChanges}`,
+      '--ignorewarnings',
+      '--ignoreerrors',
+      '--checkonly',
+      `--runtests=${runTests[0]}`,
+      `--testlevel=${testLevel}`,
+      '--json',
+    ]);
+
+    expect(result).to.deep.equal(expectedResults);
+    ensureDeployArgs({
+      apiOptions: {
+        checkOnly: true,
+        ignoreWarnings: true,
+        purgeOnDelete: false,
+        rest: false,
+        rollbackOnError: false,
+        runTests: ['MyClassTest'],
+        testLevel: 'RunSpecifiedTests',
+      },
+    });
+    ensureCreateComponentSetArgs({
+      manifest: {
+        manifestPath: manifest,
+        directoryPaths: [defaultDir],
+        destructiveChangesPost: destructiveChanges,
+        destructiveChangesPre: undefined,
+      },
+    });
     ensureHookArgs();
     ensureProgressBar(0);
   });

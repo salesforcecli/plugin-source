@@ -26,6 +26,7 @@
     "validatedDeployRequestId": "request ID of the validated deployment to run a Quick Deploy",
     "singlePackage": "Indicates that the zip file points to a directory structure for a single package",
     "soapDeploy": "deploy metadata with SOAP API instead of REST API",
+    "purgeOnDelete": "specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin",
     "concise": "omit success messages for smaller JSON output"
   },
   "flagsLong": {
