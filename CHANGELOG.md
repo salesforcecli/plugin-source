@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.6](https://github.com/salesforcecli/plugin-source/compare/v1.8.5...v1.8.6) (2022-01-27)
+
+### Bug Fixes
+
+- add purgeondelete flag to deploy ([#394](https://github.com/salesforcecli/plugin-source/issues/394)) ([6b99f44](https://github.com/salesforcecli/plugin-source/commit/6b99f44c0fdbe9f3d398a7e98dff29d00fc02c46))
+
 ### [1.8.5](https://github.com/salesforcecli/plugin-source/compare/v1.8.4...v1.8.5) (2022-01-25)
 
 ### [1.8.4](https://github.com/salesforcecli/plugin-source/compare/v1.8.3...v1.8.4) (2022-01-20)
