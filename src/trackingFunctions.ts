@@ -63,7 +63,6 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
  *
  * @param options
  */
-
 export const updateTracking = async ({ tracking, result, ux }: TrackingUpdateRequest): Promise<void> => {
   // might not exist if we exited from the operation early
   if (!result) {

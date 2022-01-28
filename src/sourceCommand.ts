@@ -6,8 +6,7 @@
  */
 
 import { SfdxCommand } from '@salesforce/command';
-import { Lifecycle, SfdxError } from '@salesforce/core';
-import { getTrackingFileVersion } from '@salesforce/source-tracking';
+import { Lifecycle } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
