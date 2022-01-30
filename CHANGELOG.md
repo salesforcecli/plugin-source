@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.7](https://github.com/salesforcecli/plugin-source/compare/v1.8.6...v1.8.7) (2022-01-30)
+
+### Bug Fixes
+
+- make retrieve param consistent and fix tests ([#410](https://github.com/salesforcecli/plugin-source/issues/410)) ([79108d8](https://github.com/salesforcecli/plugin-source/commit/79108d87ceb65c49c5e17955c42733c6f0d8a2e6))
+
 ### [1.8.6](https://github.com/salesforcecli/plugin-source/compare/v1.8.5...v1.8.6) (2022-01-27)
 
 ### Bug Fixes
