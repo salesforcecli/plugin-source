@@ -22,7 +22,7 @@
     "@salesforce/dev-config": "^3.0.0",
     "@salesforce/dev-scripts": "^2.0.0",
     "@salesforce/plugin-command-reference": "^1.3.18",
-    "@salesforce/plugin-config": "^2.3.0",
+    "@salesforce/plugin-config": "^1.2.39",
     "@salesforce/plugin-user": "^1.7.0",
     "@salesforce/prettier-config": "^0.0.2",
     "@salesforce/source-testkit": "^0.0.16",
