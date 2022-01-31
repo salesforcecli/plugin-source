@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.8](https://github.com/salesforcecli/plugin-source/compare/v1.8.7...v1.8.8) (2022-01-31)
+
+### Bug Fixes
+
+- Add CFT/COT NUTs ([#415](https://github.com/salesforcecli/plugin-source/issues/415)) ([720e6ef](https://github.com/salesforcecli/plugin-source/commit/720e6efdddc396913c08b8e517edc66a2c804213))
+
 ### [1.8.7](https://github.com/salesforcecli/plugin-source/compare/v1.8.6...v1.8.7) (2022-01-30)
 
 ### Bug Fixes
