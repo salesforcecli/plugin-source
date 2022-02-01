@@ -7,7 +7,13 @@
 import { UX } from '@salesforce/command';
 import { SourceTracking, SourceTrackingOptions, ChangeResult } from '@salesforce/source-tracking';
 import { Messages, SfdxError } from '@salesforce/core';
-import { RetrieveResult, DeployResult, ComponentStatus, ComponentSet } from '@salesforce/source-deploy-retrieve';
+import {
+  RetrieveResult,
+  DeployResult,
+  ComponentStatus,
+  ComponentSet,
+  FileResponse,
+} from '@salesforce/source-deploy-retrieve';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
@@ -21,6 +27,11 @@ interface TrackingUpdateRequest {
   tracking: SourceTracking;
   result: DeployResult | RetrieveResult;
   ux: UX;
+  /**
+   * We don't want to get the fileResponses if there have been deletes (SDR will throw)
+   * You can also pass this in if your command already ran getFileResponses and you want to avoid the perf hit from doing it twice
+   */
+  fileResponses?: FileResponse[];
 }
 
 /**
@@ -50,9 +61,9 @@ export const filterConflictsByComponentSet = async ({
  * @returns SourceTracking
  */
 export const trackingSetup = async (options: TrackingSetupRequest): Promise<SourceTracking> => {
-  const { ux, ignoreConflicts: overwriteConflicts, ...createOptions } = options;
+  const { ux, ignoreConflicts, ...createOptions } = options;
   const tracking = await SourceTracking.create(createOptions);
-  if (!overwriteConflicts) {
+  if (!ignoreConflicts) {
     processConflicts(await tracking.getConflicts(), ux, messages.getMessage('conflictMsg'));
   }
   return tracking;
@@ -63,14 +74,16 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
  *
  * @param options
  */
-export const updateTracking = async ({ tracking, result, ux }: TrackingUpdateRequest): Promise<void> => {
+export const updateTracking = async ({ tracking, result, ux, fileResponses }: TrackingUpdateRequest): Promise<void> => {
   // might not exist if we exited from the operation early
   if (!result) {
     return;
   }
   ux.startSpinner('Updating source tracking');
 
-  const successes = result.getFileResponses().filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
+  const successes = (fileResponses ?? result.getFileResponses()).filter(
+    (fileResponse) => fileResponse.state !== ComponentStatus.Failed
+  );
   if (!successes.length) {
     ux.stopSpinner();
     return;

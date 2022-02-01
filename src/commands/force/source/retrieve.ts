@@ -124,7 +124,7 @@ export class Retrieve extends SourceCommand {
         this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
       }
     }
-    if (!this.getFlag<boolean>('forceoverwrite')) {
+    if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
       await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
     }
 

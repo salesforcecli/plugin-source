@@ -103,17 +103,21 @@ export class Delete extends DeployCommand {
   public async run(): Promise<DeployCommandResult> {
     await this.preChecks();
     await this.delete();
+    const fileResponses = this.mixedDeployDelete.delete ?? this.deployResult.getFileResponses();
     await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
     await this.deleteFilesLocally();
     // makes sure files are deleted before updating tracking files
-    await updateTracking({
-      ux: this.ux,
-      result: this.deployResult,
-      tracking: this.tracking,
-    });
+    if (this.getFlag<boolean>('tracksource')) {
+      await updateTracking({
+        ux: this.ux,
+        result: this.deployResult,
+        tracking: this.tracking,
+        fileResponses,
+      });
+    }
     return result;
   }
 
@@ -141,7 +145,7 @@ export class Delete extends DeployCommand {
         directoryPaths: this.getPackageDirs(),
       },
     });
-    if (!this.getFlag<boolean>('forceoverwrite')) {
+    if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
       await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
     }
     this.components = this.componentSet.toArray();

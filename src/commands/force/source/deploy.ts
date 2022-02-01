@@ -127,12 +127,13 @@ export class Deploy extends DeployCommand {
     await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
-    await updateTracking({
-      ux: this.ux,
-      result: this.deployResult,
-      tracking: this.tracking,
-    });
-
+    if (this.getFlag<boolean>('tracksource')) {
+      await updateTracking({
+        ux: this.ux,
+        result: this.deployResult,
+        tracking: this.tracking,
+      });
+    }
     return this.formatResult();
   }
 
@@ -175,7 +176,7 @@ export class Deploy extends DeployCommand {
           directoryPaths: this.getPackageDirs(),
         },
       });
-      if (!this.getFlag<boolean>('forceoverwrite')) {
+      if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
         await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
       }
       // fire predeploy event for sync and async deploys
