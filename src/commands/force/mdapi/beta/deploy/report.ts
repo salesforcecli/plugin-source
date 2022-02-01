@@ -42,6 +42,9 @@ export class Report extends DeployCommand {
       description: messages.getMessage('flags.verbose'),
       longDescription: messages.getMessage('flagsLong.verbose'),
     }),
+    concise: flags.builtin({
+      description: messages.getMessage('flags.concise'),
+    }),
   };
 
   public async run(): Promise<MdDeployResult> {
@@ -86,7 +89,10 @@ export class Report extends DeployCommand {
     const formatter = new MdDeployResultFormatter(
       this.logger,
       this.ux,
-      { verbose: this.getFlag<boolean>('verbose', false) },
+      {
+        concise: this.getFlag<boolean>('concise', false),
+        verbose: this.getFlag<boolean>('verbose', false),
+      },
       this.deployResult
     );
 
