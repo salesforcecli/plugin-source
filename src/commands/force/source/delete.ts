@@ -274,7 +274,7 @@ export class Delete extends DeployCommand {
         // mixed delete/deploy operations have already been deleted and stashed
         if (!this.mixedDeployDelete.delete.length) {
           if (component.content) {
-            const stats = fs.lstatSync(component.content);
+            const stats = fs.statSync(component.content);
             if (stats.isDirectory()) {
               promises.push(fsPromises.rm(component.content, { recursive: true }));
             } else {
