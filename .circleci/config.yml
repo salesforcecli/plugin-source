@@ -75,6 +75,7 @@ workflows:
                 - 'yarn test:nuts:delete'
                 - 'yarn test:nuts:deploy'
                 - 'yarn test:nuts:deploy:async'
+                - 'yarn test:nuts:deploy:rest'
                 - 'yarn test:nuts:manifest:create'
                 - 'yarn test:nuts:retrieve'
                 - 'yarn test:nuts:specialTypes'
