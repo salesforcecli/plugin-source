@@ -1186,7 +1186,7 @@ OPTIONS
 
 DESCRIPTION
   Opens the specified Lightning Page in Lightning App Builder. Lightning Page files have the suffix .flexipage-meta.xml,
-   and are stored in the flexipages directory. If you specify a different type of file, this command opens your org’s
+   and are stored in the flexipages directory. If you specify a visualforce page (with a .page suffix) this command let you preview your visualforce page. If you specify a different type of file, this command opens your org’s
   home page.
 
   The file opens in your default browser.

@@ -61,7 +61,13 @@ export class Open extends SourceCommand {
 
   private async doOpen(): Promise<void> {
     const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile as string));
-    const openPath = typeName === 'FlexiPage' ? await this.setUpOpenPath() : await this.buildFrontdoorUrl();
+    let openPath;
+    if (typeName === 'FlexiPage' || typeName === 'ApexPage') {
+      // if it is a lightning page
+      openPath = await this.setUpOpenPath(typeName);
+    } else {
+      openPath = await this.buildFrontdoorUrl();
+    }
 
     this.openResult = await this.open(openPath);
   }
@@ -98,18 +104,24 @@ export class Open extends SourceCommand {
     return this.flags.urlonly ? result : this.openBrowser(url, result);
   }
 
-  private async setUpOpenPath(): Promise<string> {
+  private async setUpOpenPath(pageType: string): Promise<string> {
     try {
-      const flexipage = await this.org
-        .getConnection()
-        .singleRecordQuery<{ Id: string }>(
-          `SELECT id FROM flexipage WHERE DeveloperName='${path.basename(
-            this.flags.sourcefile as string,
-            '.flexipage-meta.xml'
-          )}'`,
-          { tooling: true }
-        );
-      return `/visualEditor/appBuilder.app?pageId=${flexipage.Id}`;
+      if (pageType === 'FlexiPage') {
+        const flexipage = await this.org
+          .getConnection()
+          .singleRecordQuery<{ Id: string }>(
+            `SELECT id FROM flexipage WHERE DeveloperName='${path.basename(
+              this.flags.sourcefile as string,
+              '.flexipage-meta.xml'
+            )}'`,
+            { tooling: true }
+          );
+        return `/visualEditor/appBuilder.app?pageId=${flexipage.Id}`;
+      } else if (pageType === 'ApexPage') {
+        return `/apex/${path.basename(this.flags.sourcefile as string, '.page')}`;
+      } else {
+        return '_ui/flexipage/ui/FlexiPageFilterListPage';
+      }
     } catch (error) {
       return '_ui/flexipage/ui/FlexiPageFilterListPage';
     }
