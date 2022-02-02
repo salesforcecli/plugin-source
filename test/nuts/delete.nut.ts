@@ -13,7 +13,7 @@ import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { exec } from 'shelljs';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { isNameObsolete } from './deployDestructive.nut';
+import { isNameObsolete } from './shared/isNameObsolete';
 
 describe('source:delete NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
