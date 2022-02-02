@@ -76,13 +76,12 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         const deploy = (await testkit.deploy({
           args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
         })) as Result<{ id: string; result: { id: string } }>;
-        await testkit.deployCancel({ args: `-i ${deploy.result.id}` });
-
         testkit.expect.toHaveProperty(deploy.result, 'id');
 
         const cancel = execCmd<DeployCancelCommandResult>(
           `force:source:deploy:cancel -i ${deploy.result.id} --json`
         ).jsonOutput;
+
         if (cancel.status === 0) {
           // successful cancel
           expect(cancel.result.status).to.equal('Canceled');

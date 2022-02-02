@@ -94,6 +94,9 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.soapDeploy'),
       longDescription: messages.getMessage('flagsLong.soapDeploy'),
     }),
+    purgeondelete: flags.boolean({
+      description: messages.getMessage('flags.purgeOnDelete'),
+    }),
     concise: flags.builtin({
       description: messages.getMessage('flags.concise'),
     }),
@@ -123,6 +126,7 @@ export class Deploy extends DeployCommand {
       usernameOrConnection: this.org.getUsername(),
       ...deploymentOptions,
       apiOptions: {
+        purgeOnDelete: this.getFlag('purgeondelete', false),
         ignoreWarnings: this.getFlag('ignorewarnings', false),
         rollbackOnError: !this.getFlag('ignoreerrors', false),
         checkOnly: this.getFlag('checkonly', false),

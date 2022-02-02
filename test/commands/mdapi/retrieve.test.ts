@@ -244,7 +244,7 @@ describe('force:mdapi:beta:retrieve', () => {
     const result = await runRetrieveCmd([
       '--retrievetargetdir',
       retrievetargetdir,
-      '-f',
+      '-n',
       zipfilename,
       '--unzip',
       '--json',

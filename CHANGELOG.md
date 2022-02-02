@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.9](https://github.com/salesforcecli/plugin-source/compare/v1.8.8...v1.8.9) (2022-02-01)
+
+### Bug Fixes
+
+- bump lots of dependencies ([#416](https://github.com/salesforcecli/plugin-source/issues/416)) ([d242a59](https://github.com/salesforcecli/plugin-source/commit/d242a595011b8da74f2b1da3afac56f6801214bb))
+
+### [1.8.8](https://github.com/salesforcecli/plugin-source/compare/v1.8.7...v1.8.8) (2022-01-31)
+
+### Bug Fixes
+
+- Add CFT/COT NUTs ([#415](https://github.com/salesforcecli/plugin-source/issues/415)) ([720e6ef](https://github.com/salesforcecli/plugin-source/commit/720e6efdddc396913c08b8e517edc66a2c804213))
+
+### [1.8.7](https://github.com/salesforcecli/plugin-source/compare/v1.8.6...v1.8.7) (2022-01-30)
+
+### Bug Fixes
+
+- make retrieve param consistent and fix tests ([#410](https://github.com/salesforcecli/plugin-source/issues/410)) ([79108d8](https://github.com/salesforcecli/plugin-source/commit/79108d87ceb65c49c5e17955c42733c6f0d8a2e6))
+
+### [1.8.6](https://github.com/salesforcecli/plugin-source/compare/v1.8.5...v1.8.6) (2022-01-27)
+
+### Bug Fixes
+
+- add purgeondelete flag to deploy ([#394](https://github.com/salesforcecli/plugin-source/issues/394)) ([6b99f44](https://github.com/salesforcecli/plugin-source/commit/6b99f44c0fdbe9f3d398a7e98dff29d00fc02c46))
+
 ### [1.8.5](https://github.com/salesforcecli/plugin-source/compare/v1.8.4...v1.8.5) (2022-01-25)
 
 ### [1.8.4](https://github.com/salesforcecli/plugin-source/compare/v1.8.3...v1.8.4) (2022-01-20)

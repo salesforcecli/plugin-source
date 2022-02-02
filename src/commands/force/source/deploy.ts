@@ -72,6 +72,10 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.ignoreWarnings'),
       longDescription: messages.getMessage('flagsLong.ignoreWarnings'),
     }),
+    purgeondelete: flags.boolean({
+      description: messages.getMessage('flags.purgeOnDelete'),
+      dependsOn: ['manifest'],
+    }),
     validateddeployrequestid: flags.id({
       char: 'q',
       description: messages.getMessage('flags.validateDeployRequestId'),
@@ -186,6 +190,7 @@ export class Deploy extends DeployCommand {
       const deploy = await this.componentSet.deploy({
         usernameOrConnection: this.org.getUsername(),
         apiOptions: {
+          purgeOnDelete: this.getFlag<boolean>('purgeondelete', false),
           ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
           rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
           checkOnly: this.getFlag<boolean>('checkonly', false),

@@ -38,12 +38,14 @@ context('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
   });
 
   describe('--manifest flag', () => {
+    let i = 0;
     for (const testCase of REPO.retrieve.manifest) {
       const toRetrieve = path.normalize(testCase.toRetrieve);
+      const convertDir = `convert_${i++}`;
       it(`should retrieve ${toRetrieve}`, async () => {
         // generate package.xml to use with the --manifest param
-        await testkit.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir out` });
-        const packageXml = path.join('out', 'package.xml');
+        await testkit.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir ${convertDir}` });
+        const packageXml = path.join(convertDir, 'package.xml');
 
         await testkit.modifyLocalGlobs(testCase.toVerify);
         await testkit.retrieve({ args: `--manifest ${packageXml}` });
