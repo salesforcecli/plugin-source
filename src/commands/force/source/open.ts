@@ -74,6 +74,7 @@ export class Open extends SourceCommand {
       const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
       return components[0].type.name;
     }
+    throw new SfdxError(`File not found: ${fsPath}`, 'FileNotFound');
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
@@ -114,7 +115,10 @@ export class Open extends SourceCommand {
           );
         return `/visualEditor/appBuilder.app?pageId=${flexipage.Id}`;
       } else if (pageType === 'ApexPage') {
-        return `/apex/${path.basename(this.flags.sourcefile as string, '.page')}`;
+        return `/apex/${path
+          .basename(this.flags.sourcefile as string)
+          .replace('.page-meta.xml', '')
+          .replace('.page', '')}`;
       } else {
         return '_ui/flexipage/ui/FlexiPageFilterListPage';
       }
