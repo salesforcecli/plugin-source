@@ -30,7 +30,7 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     await session?.clean();
   });
 
-  describe('basic status and pull', () => {
+  describe('basic status and deploy', () => {
     it('detects the initial metadata status', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
         ensureExitCode: 0,
@@ -53,7 +53,7 @@ describe('-t flag for deploy, retrieve, and delete', () => {
         JSON.stringify(result)
       ).to.equal(true);
     });
-    it('sees no local changes (all were committed from push), but profile updated in remote', () => {
+    it('sees no local changes (all were committed from deploy), but profile updated in remote', () => {
       const localResult = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
@@ -64,17 +64,18 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       }).jsonOutput.result;
       expect(remoteResult.some((item) => item.type === 'Profile')).to.equal(true);
     });
-
+  });
+  describe('retrieve and status', () => {
     it('can retrieve the remote profile', () => {
-      const pullResult = execCmd<RetrieveCommandResult>(
+      const retrieveResult = execCmd<RetrieveCommandResult>(
         replaceRenamedCommands('force:source:retrieve -m Profile:Admin -t --json'),
         {
           ensureExitCode: 0,
         }
       ).jsonOutput?.result;
       expect(
-        pullResult.inboundFiles.some((item) => item.type === 'Profile'),
-        JSON.stringify(pullResult)
+        retrieveResult.inboundFiles.some((item) => item.type === 'Profile'),
+        JSON.stringify(retrieveResult)
       ).to.equal(true);
     });
 
@@ -87,7 +88,8 @@ describe('-t flag for deploy, retrieve, and delete', () => {
         JSON.stringify(result)
       ).to.have.length(0);
     });
-
+  });
+  describe('delete', () => {
     it('can delete remote and local metadata with tracking', async () => {
       const result = execCmd<DeployCommandResult>('force:source:delete -m ApexClass:FooBarTest -t --noprompt --json', {
         ensureExitCode: 0,
