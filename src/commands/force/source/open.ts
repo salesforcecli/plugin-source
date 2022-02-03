@@ -61,13 +61,9 @@ export class Open extends SourceCommand {
 
   private async doOpen(): Promise<void> {
     const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile as string));
-    let openPath;
-    if (typeName === 'FlexiPage' || typeName === 'ApexPage') {
-      // if it is a lightning page
-      openPath = await this.setUpOpenPath(typeName);
-    } else {
-      openPath = await this.buildFrontdoorUrl();
-    }
+    const openPath = ['FlexiPage', 'ApexPage'].includes(typeName)
+      ? await this.setUpOpenPath(typeName)
+      : await this.buildFrontdoorUrl();
 
     this.openResult = await this.open(openPath);
   }
