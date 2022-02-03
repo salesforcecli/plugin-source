@@ -24,7 +24,7 @@ sfdx plugins:install source@x.y.z
 
 ## Issues
 
-Please report any issues at https://github.com/forcedotcom/cli/issues
+Please report any issues at <https://github.com/forcedotcom/cli/issues>
 
 ## Contributing
 
@@ -43,7 +43,7 @@ Please report any issues at https://github.com/forcedotcom/cli/issues
 ### CLA
 
 External contributors will be required to sign a Contributor's License
-Agreement. You can do so by going to https://cla.salesforce.com/sign-cla.
+Agreement. You can do so by going to <https://cla.salesforce.com/sign-cla>.
 
 ### Build
 
@@ -947,9 +947,9 @@ DESCRIPTION
 
 EXAMPLES
   To deploy the source files in a directory:
-  	 $ sfdx force:source:deploy -p path/to/source
+    $ sfdx force:source:deploy -p path/to/source
   To deploy a specific Apex class and the objects whose source is in a directory:
-  	$ sfdx force:source:deploy -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+   $ sfdx force:source:deploy -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
   To deploy source files in a comma-separated list that contains spaces:
      $ sfdx force:source:deploy -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
   To deploy all Apex classes:

@@ -10,7 +10,20 @@ import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { isNameObsolete } from './shared/isNameObsolete';
+import { AuthInfo, Connection } from '@salesforce/core';
+
+export const isNameObsolete = async (username: string, memberType: string, memberName: string): Promise<boolean> => {
+  const connection = await Connection.create({
+    authInfo: await AuthInfo.create({ username }),
+  });
+
+  const res = await connection.singleRecordQuery<{ IsNameObsolete: boolean }>(
+    `SELECT IsNameObsolete FROM SourceMember WHERE MemberType='${memberType}' AND MemberName='${memberName}'`,
+    { tooling: true }
+  );
+
+  return res.IsNameObsolete;
+};
 
 describe('source:deploy --destructive NUTs', () => {
   const executable = path.join(process.cwd(), 'bin', 'run');
