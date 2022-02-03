@@ -1,5 +1,5 @@
 {
-  "description": "edit a Lightning Page with Lightning App Builder\nOpens the specified Lightning Page in Lightning App Builder. Lightning Page files have the suffix .flexipage-meta.xml, and are stored in the flexipages directory. If you specify a different type of file, this command opens your org’s home page.\n\nThe file opens in your default browser.\nIf no browser-based editor is available for the selected file, this command opens your org's home page.\nTo generate a URL for the browser-based editor but not open the editor, use --urlonly.",
+  "description": "edit a Lightning Page with Lightning App Builder\nOpens the specified Lightning Page in Lightning App Builder. Lightning Page files have the suffix .flexipage-meta.xml, and are stored in the flexipages directory. \nIf you specify a Visualforce page, which has a .page suffix, the page opens in your browser so you can preview it. If you specify a different type of file, this command opens your org’s home page.\n\nThe file opens in your default browser.\nIf no browser-based editor is available for the selected file, this command opens your org's home page.\nTo generate a URL for the browser-based editor but not open the editor, use --urlonly.",
   "examples": [
     "$ sfdx force:source:open -f path/to/source",
     "$ sfdx force:source:open -r -f path/to/source",

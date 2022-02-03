@@ -61,7 +61,9 @@ export class Open extends SourceCommand {
 
   private async doOpen(): Promise<void> {
     const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile as string));
-    const openPath = typeName === 'FlexiPage' ? await this.setUpOpenPath() : await this.buildFrontdoorUrl();
+    const openPath = ['FlexiPage', 'ApexPage'].includes(typeName)
+      ? await this.setUpOpenPath(typeName)
+      : await this.buildFrontdoorUrl();
 
     this.openResult = await this.open(openPath);
   }
@@ -72,6 +74,7 @@ export class Open extends SourceCommand {
       const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
       return components[0].type.name;
     }
+    throw new SfdxError(`File not found: ${fsPath}`, 'FileNotFound');
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
@@ -98,18 +101,27 @@ export class Open extends SourceCommand {
     return this.flags.urlonly ? result : this.openBrowser(url, result);
   }
 
-  private async setUpOpenPath(): Promise<string> {
+  private async setUpOpenPath(pageType: string): Promise<string> {
     try {
-      const flexipage = await this.org
-        .getConnection()
-        .singleRecordQuery<{ Id: string }>(
-          `SELECT id FROM flexipage WHERE DeveloperName='${path.basename(
-            this.flags.sourcefile as string,
-            '.flexipage-meta.xml'
-          )}'`,
-          { tooling: true }
-        );
-      return `/visualEditor/appBuilder.app?pageId=${flexipage.Id}`;
+      if (pageType === 'FlexiPage') {
+        const flexipage = await this.org
+          .getConnection()
+          .singleRecordQuery<{ Id: string }>(
+            `SELECT id FROM flexipage WHERE DeveloperName='${path.basename(
+              this.flags.sourcefile as string,
+              '.flexipage-meta.xml'
+            )}'`,
+            { tooling: true }
+          );
+        return `/visualEditor/appBuilder.app?pageId=${flexipage.Id}`;
+      } else if (pageType === 'ApexPage') {
+        return `/apex/${path
+          .basename(this.flags.sourcefile as string)
+          .replace('.page-meta.xml', '')
+          .replace('.page', '')}`;
+      } else {
+        return '_ui/flexipage/ui/FlexiPageFilterListPage';
+      }
     } catch (error) {
       return '_ui/flexipage/ui/FlexiPageFilterListPage';
     }

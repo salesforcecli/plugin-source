@@ -45,6 +45,19 @@ describe('force:source:open', () => {
       },
     },
   ] as SourceComponent[];
+  const apexPageComponents = [
+    {
+      name: 'MyPage',
+      type: {
+        id: 'page',
+        name: 'ApexPage',
+        suffix: 'page',
+        directoryName: 'pages',
+        inFolder: false,
+        strictDirectoryName: false,
+      },
+    },
+  ] as SourceComponent[];
   const testIp = '1.1.1.1';
   const orgId = '00DJ0000003htplMAA';
   const defaultDir = join('my', 'default', 'package');
@@ -108,6 +121,9 @@ describe('force:source:open', () => {
           if (fsPath.includes('layout')) {
             return layoutComponents;
           }
+          if (fsPath.includes('page')) {
+            return apexPageComponents;
+          }
         }
       );
       stubMethod(sandbox, MyDomainResolver.prototype, 'resolve').resolves(testIp);
@@ -138,6 +154,16 @@ describe('force:source:open', () => {
       orgId,
       username,
       url: `${frontDoorUrl}&retURL=${encodeURIComponent(decodeURIComponent(frontDoorUrl))}`,
+    });
+  });
+
+  it('given a visualforce page url return /apex/pagename', async () => {
+    const sourcefile = 'force-app/main/default/pages/MyPage.page';
+    const result = await runOpenCmd(['--sourcefile', sourcefile, '--json', '--urlonly']);
+    expect(result).to.deep.equal({
+      orgId,
+      username,
+      url: `${frontDoorUrl}&retURL=%2Fapex%2FMyPage`,
     });
   });
 });
