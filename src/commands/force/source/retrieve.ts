@@ -31,6 +31,11 @@ export class Retrieve extends SourceCommand {
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
+    retrievetargetdir: flags.directory({
+      char: 'r',
+      description: messages.getMessage('flags.retrievetargetdir'),
+      longDescription: messages.getMessage('flagsLong.retrievetargetdir'),
+    }),
     apiversion: flags.builtin({
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore force char override for backward compat
@@ -111,11 +116,11 @@ export class Retrieve extends SourceCommand {
       sourcepath: this.getFlag<string[]>('sourcepath'),
       manifest: this.flags.manifest && {
         manifestPath: this.getFlag<string>('manifest'),
-        directoryPaths: this.getPackageDirs(),
+        directoryPaths: this.flags.retrievetargetdir ? null : this.getPackageDirs(),
       },
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
-        directoryPaths: this.getPackageDirs(),
+        directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
     });
 
@@ -151,7 +156,7 @@ export class Retrieve extends SourceCommand {
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
-      output: this.project.getDefaultPackage().fullPath,
+      output: this.getFlag<string>('retrievetargetdir') || this.project.getDefaultPackage().fullPath,
       packageOptions: this.getFlag<string[]>('packagenames'),
     });
 

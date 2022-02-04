@@ -216,6 +216,7 @@
       "manifest",
       "metadata",
       "packagenames",
+      "retrievetargetdir",
       "sourcepath",
       "targetusername",
       "tracksource",
