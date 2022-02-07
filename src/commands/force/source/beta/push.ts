@@ -59,11 +59,7 @@ export default class Push extends DeployCommand {
     await this.prechecks();
     await this.deploy();
     this.resolveSuccess();
-    await updateTracking({
-      ux: this.ux,
-      result: this.deployResult,
-      tracking: this.tracking,
-    });
+    await this.updateTracking();
     return this.formatResult();
   }
 
@@ -144,6 +140,22 @@ export default class Push extends DeployCommand {
           break;
         }
       }
+    }
+  }
+
+  protected async updateTracking(): Promise<void> {
+    // there can be multiple deploy results for sequential deploys
+    if (process.exitCode !== 0 || !this.deployResults.length) {
+      return;
+    }
+    // These are running sequentially given our low expectation of sequential deploys.
+    // We could potentially make this faster by parallelizing.
+    for (const result of this.deployResults) {
+      await updateTracking({
+        ux: this.ux,
+        result,
+        tracking: this.tracking,
+      });
     }
   }
 
