@@ -102,7 +102,11 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.have.length(0);
+      // this delete WILL change the admin profile, so remove that from the status result
+      expect(
+        result.filter((r) => r.type === 'ApexClass'),
+        JSON.stringify(result)
+      ).to.have.length(0);
     });
   });
 });
