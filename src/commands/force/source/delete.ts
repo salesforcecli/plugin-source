@@ -103,6 +103,8 @@ export class Delete extends DeployCommand {
   public async run(): Promise<DeployCommandResult> {
     await this.preChecks();
     await this.delete();
+    // result.getFileResponses() will crawl the tree, but that would throw after the delete occurs.
+    // Extract them here for updateTracking to use later
     const fileResponses = this.mixedDeployDelete.delete ?? this.deployResult.getFileResponses();
     await this.resolveSuccess();
     const result = this.formatResult();
