@@ -105,7 +105,9 @@ export class Delete extends DeployCommand {
     await this.delete();
     // result.getFileResponses() will crawl the tree, but that would throw after the delete occurs.
     // Extract them here for updateTracking to use later
-    const fileResponses = this.mixedDeployDelete.delete ?? this.deployResult.getFileResponses();
+    const fileResponses = this.mixedDeployDelete.delete.length
+      ? this.mixedDeployDelete.delete
+      : this.deployResult.getFileResponses();
     await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
