@@ -16,16 +16,17 @@ import {
   RetrieveResult,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { ChangeResult, replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
-import { processConflicts } from '../../../../formatters/conflicts';
-import { SourceCommand } from '../../../../sourceCommand';
-import { PullResponse, PullResultFormatter } from '../../../../formatters/source/pullFormatter';
+import { ChangeResult, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import { processConflicts } from '../../../formatters/conflicts';
+import { SourceCommand } from '../../../sourceCommand';
+import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export default class Pull extends SourceCommand {
   public static description = messages.getMessage('description');
+  public static aliases = ['force:source:beta:pull'];
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
     forceoverwrite: flags.boolean({
@@ -65,7 +66,7 @@ export default class Pull extends SourceCommand {
       org: this.org,
       projectPath: this.project.getPath(),
       toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:pull'),
+      command: 'force:source:pull',
     });
 
     this.ux.startSpinner('Loading source tracking information');

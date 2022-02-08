@@ -10,20 +10,21 @@ import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { ComponentStatus, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 
-import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import { SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
-import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
-import { PushResponse, PushResultFormatter } from '../../../../formatters/source/pushResultFormatter';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { processConflicts } from '../../../../formatters/conflicts';
+import { DeployCommand, getVersionMessage } from '../../../deployCommand';
+import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter';
+import { ProgressFormatter } from '../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { processConflicts } from '../../../formatters/conflicts';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export default class Push extends DeployCommand {
   public static description = messages.getMessage('description');
+  public static aliases = ['force:source:beta:push'];
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
     forceoverwrite: flags.boolean({
@@ -68,7 +69,7 @@ export default class Push extends DeployCommand {
       org: this.org,
       projectPath: this.project.getPath(),
       toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:push'),
+      command: 'force:source:push',
     });
     this.tracking = await SourceTracking.create({
       org: this.org,
