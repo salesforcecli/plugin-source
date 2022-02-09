@@ -111,7 +111,7 @@ export class Delete extends DeployCommand {
     // so we'll delete the files locally now
     await this.deleteFilesLocally();
     // makes sure files are deleted before updating tracking files
-    await this.updateTrackingIfRequired();
+    await this.maybeUpdateTracking();
     return result;
   }
 
@@ -272,7 +272,7 @@ export class Delete extends DeployCommand {
     return this.deleteResultFormatter.getJson();
   }
 
-  private async updateTrackingIfRequired(): Promise<void> {
+  private async maybeUpdateTracking(): Promise<void> {
     if (this.getFlag<boolean>('tracksource', false)) {
       return updateTracking({
         ux: this.ux,

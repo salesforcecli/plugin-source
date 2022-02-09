@@ -131,7 +131,7 @@ export class Deploy extends DeployCommand {
     await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
-    await this.updateTrackingIfRequired();
+    await this.maybeUpdateTracking();
     return this.formatResult();
   }
 
@@ -215,16 +215,6 @@ export class Deploy extends DeployCommand {
     }
   }
 
-  protected async updateTrackingIfRequired(): Promise<void> {
-    if (this.getFlag<boolean>('tracksource', false)) {
-      return updateTracking({
-        ux: this.ux,
-        result: this.deployResult,
-        tracking: this.tracking,
-      });
-    }
-  }
-
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
@@ -241,5 +231,11 @@ export class Deploy extends DeployCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private async maybeUpdateTracking(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({ ux: this.ux, result: this.deployResult, tracking: this.tracking });
+    }
   }
 }

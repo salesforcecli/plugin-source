@@ -86,7 +86,7 @@ export class Retrieve extends SourceCommand {
     await this.preChecks();
     await this.retrieve();
     this.resolveSuccess();
-    await this.updateTrackingIfRequired();
+    await this.maybeUpdateTracking();
     return this.formatResult();
   }
 
@@ -163,12 +163,6 @@ export class Retrieve extends SourceCommand {
     this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
   }
 
-  protected async updateTrackingIfRequired(): Promise<void> {
-    if (this.getFlag<boolean>('tracksource', false)) {
-      return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
-    }
-  }
-
   protected async formatResult(): Promise<RetrieveCommandResult> {
     const packages: PackageRetrieval[] = [];
     const projectPath = await SfdxProject.resolveProjectPath();
@@ -190,6 +184,12 @@ export class Retrieve extends SourceCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private async maybeUpdateTracking(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
+    }
   }
 
   private wantsToRetrieveCustomFields(): boolean {
