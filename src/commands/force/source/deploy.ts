@@ -131,13 +131,7 @@ export class Deploy extends DeployCommand {
     await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
-    if (this.getFlag<boolean>('tracksource')) {
-      await updateTracking({
-        ux: this.ux,
-        result: this.deployResult,
-        tracking: this.tracking,
-      });
-    }
+    await this.updateTrackingIfRequired();
     return this.formatResult();
   }
 
@@ -218,6 +212,16 @@ export class Deploy extends DeployCommand {
     if (this.deployResult) {
       // Only fire the postdeploy event when we have results. I.e., not async.
       await this.lifecycle.emit('postdeploy', this.deployResult);
+    }
+  }
+
+  protected async updateTrackingIfRequired(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({
+        ux: this.ux,
+        result: this.deployResult,
+        tracking: this.tracking,
+      });
     }
   }
 

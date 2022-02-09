@@ -89,6 +89,7 @@ export class Delete extends DeployCommand {
       description: messages.getMessage('flags.verbose'),
     }),
   };
+  protected fileResponses: FileResponse[];
   protected tracking: SourceTracking;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
@@ -103,30 +104,19 @@ export class Delete extends DeployCommand {
   public async run(): Promise<DeployCommandResult> {
     await this.preChecks();
     await this.delete();
-    // result.getFileResponses() will crawl the tree, but that would throw after the delete occurs.
-    // Extract them here for updateTracking to use later
-    const fileResponses = this.mixedDeployDelete.delete.length
-      ? this.mixedDeployDelete.delete
-      : this.deployResult.getFileResponses();
+
     await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
     await this.deleteFilesLocally();
     // makes sure files are deleted before updating tracking files
-    if (this.getFlag<boolean>('tracksource')) {
-      await updateTracking({
-        ux: this.ux,
-        result: this.deployResult,
-        tracking: this.tracking,
-        fileResponses,
-      });
-    }
+    await this.updateTrackingIfRequired();
     return result;
   }
 
   protected async preChecks(): Promise<void> {
-    if (this.flags.tracksource) {
+    if (this.getFlag<boolean>('tracksource')) {
       this.tracking = await trackingSetup({
         commandName: 'force:source:delete',
         ignoreConflicts: true,
@@ -215,6 +205,12 @@ export class Delete extends DeployCommand {
 
     this.deployResult = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
     await this.lifecycle.emit('postdeploy', this.deployResult);
+
+    // result.getFileResponses() will crawl the tree, but that would throw after the delete occurs.
+    // Extract them here for updateTracking to use later
+    this.fileResponses = this.mixedDeployDelete.delete.length
+      ? this.mixedDeployDelete.delete
+      : this.deployResult.getFileResponses();
   }
 
   /**
@@ -274,6 +270,17 @@ export class Delete extends DeployCommand {
     }
 
     return this.deleteResultFormatter.getJson();
+  }
+
+  private async updateTrackingIfRequired(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({
+        ux: this.ux,
+        result: this.deployResult,
+        tracking: this.tracking,
+        fileResponses: this.fileResponses,
+      });
+    }
   }
 
   private async deleteFilesLocally(): Promise<void> {
