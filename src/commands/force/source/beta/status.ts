@@ -17,7 +17,6 @@ const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 's
 
 export default class Status extends SfdxCommand {
   public static description = messages.getMessage('description');
-  public static aliases = ['force:source:beta:status'];
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   protected static flagsConfig: FlagsConfig = {
     local: flags.boolean({
