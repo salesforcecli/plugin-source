@@ -72,7 +72,7 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
   const { ux, org, ignoreConflicts, commandName, ...createOptions } = options;
   const projectPath = options.project.getPath();
   // 2 commands use throwIfInvalid
-  if (commandName.endsWith('push') || commandName.endsWith('pull')) {
+  if (commandName.endsWith('push') || commandName.endsWith('pull') || commandName.endsWith('status')) {
     throwIfInvalid({
       org,
       projectPath,
