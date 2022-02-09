@@ -308,23 +308,31 @@ describe('mdapi NUTs', () => {
         let reportCmd = 'force:mdapi:beta:retrieve:report -w 0 --json';
         const rv2 = execCmd<RetrieveCommandAsyncResult>(reportCmd, { ensureExitCode: 0 });
         const result2 = rv2.jsonOutput.result;
-        expect(result2).to.have.property('done', false);
-        expect(result2).to.have.property('id', result1.id);
-        // To prevent flapping we expect 1 of 3 likely states.  All depends
-        // on how responsive the message queue is.
-        expect(result2.state).to.be.oneOf(['Queued', 'Pending', 'InProgress']);
-        expect(result2.status).to.be.oneOf(['Queued', 'Pending', 'InProgress']);
-        expect(result2).to.have.property('timedOut', true);
 
-        // Now sync report, from stash
-        reportCmd = 'force:mdapi:beta:retrieve:report -w 10 --json';
-        const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
-        const result3 = rv3.jsonOutput.result;
-        expect(result3.status).to.equal('Succeeded');
-        expect(result3.success).to.be.true;
-        expect(result3.fileProperties).to.be.an('array').with.length.greaterThan(50);
+        let syncResult: RetrieveCommandResult;
+
+        // It's possible that the async retrieve request is already done, so account for that
+        // and treat it like a sync result.
+        if (result2.done) {
+          syncResult = result2 as unknown as RetrieveCommandResult;
+        } else {
+          expect(result2).to.have.property('id', result1.id);
+          // To prevent flapping we expect 1 of 3 likely states.  All depends
+          // on how responsive the message queue is.
+          expect(result2.state).to.be.oneOf(['Queued', 'Pending', 'InProgress']);
+          expect(result2.status).to.be.oneOf(['Queued', 'Pending', 'InProgress']);
+          expect(result2).to.have.property('timedOut', true);
+
+          // Now sync report, from stash
+          reportCmd = 'force:mdapi:beta:retrieve:report -w 10 --json';
+          const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
+          syncResult = rv3.jsonOutput.result;
+        }
+        expect(syncResult.status).to.equal('Succeeded');
+        expect(syncResult.success).to.be.true;
+        expect(syncResult.fileProperties).to.be.an('array').with.length.greaterThan(50);
         const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
-        expect(result3.zipFilePath).to.equal(zipFileLocation);
+        expect(syncResult.zipFilePath).to.equal(zipFileLocation);
       });
 
       it('retrieves report (sync) with overrides of stash', () => {
