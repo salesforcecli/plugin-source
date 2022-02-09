@@ -46,7 +46,7 @@ export default class Status extends SfdxCommand {
       org: this.org,
       projectPath: this.project.getPath(),
       toValidate: 'plugin-source',
-      command: 'force:source:status',
+      command: replaceRenamedCommands('force:source:status'),
     });
 
     const wantsLocal = (this.flags.local as boolean) || (!this.flags.remote && !this.flags.local);
