@@ -5,7 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { UX } from '@salesforce/command';
-import { SourceTracking, SourceTrackingOptions, ChangeResult } from '@salesforce/source-tracking';
+import {
+  SourceTracking,
+  SourceTrackingOptions,
+  ChangeResult,
+  throwIfInvalid,
+  replaceRenamedCommands,
+  getTrackingFileVersion,
+} from '@salesforce/source-tracking';
 import { Messages, SfdxError } from '@salesforce/core';
 import {
   RetrieveResult,
@@ -21,6 +28,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 interface TrackingSetupRequest extends SourceTrackingOptions {
   ignoreConflicts: boolean;
   ux: UX;
+  commandName: string;
 }
 
 interface TrackingUpdateRequest {
@@ -61,8 +69,27 @@ export const filterConflictsByComponentSet = async ({
  * @returns SourceTracking
  */
 export const trackingSetup = async (options: TrackingSetupRequest): Promise<SourceTracking> => {
-  const { ux, ignoreConflicts, ...createOptions } = options;
-  const tracking = await SourceTracking.create(createOptions);
+  const { ux, org, ignoreConflicts, commandName, ...createOptions } = options;
+  const projectPath = options.project.getPath();
+  // 2 commands use throwIfInvalid
+  if (commandName.endsWith('push') || commandName.endsWith('pull')) {
+    throwIfInvalid({
+      org,
+      projectPath,
+      toValidate: 'plugin-source',
+      command: replaceRenamedCommands(commandName),
+    });
+  } else {
+    // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
+    if (getTrackingFileVersion(org, projectPath) === 'toolbelt') {
+      throw new SfdxError(
+        'You cannot use the "tracksource" flag with the old version of the tracking files',
+        'sourceTrackingFileVersionMismatch',
+        ['Clear the old version of the tracking files']
+      );
+    }
+  }
+  const tracking = await SourceTracking.create({ org, ...createOptions });
   if (!ignoreConflicts) {
     processConflicts(await tracking.getConflicts(), ux, messages.getMessage('conflictMsg'));
   }

@@ -97,6 +97,7 @@ export class Retrieve extends SourceCommand {
         org: this.org,
         project: this.project,
         ignoreConflicts: true,
+        commandName: 'force:source:retrieve',
       });
     }
   }
@@ -163,10 +164,9 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async updateTrackingIfRequired(): Promise<void> {
-    if (!this.flags.tracksource) {
-      return;
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
     }
-    return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
   }
 
   protected async formatResult(): Promise<RetrieveCommandResult> {

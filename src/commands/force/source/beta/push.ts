@@ -10,7 +10,7 @@ import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
 
-import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import { replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
 import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
 import { PushResponse, PushResultFormatter } from '../../../../formatters/source/pushResultFormatter';
@@ -64,17 +64,12 @@ export default class Push extends DeployCommand {
   }
 
   protected async prechecks(): Promise<void> {
-    throwIfInvalid({
-      org: this.org,
-      projectPath: this.project.getPath(),
-      toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:push'),
-    });
     this.tracking = await trackingSetup({
-      ux: this.ux,
+      commandName: replaceRenamedCommands('force:source:push'),
+      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
       org: this.org,
       project: this.project,
-      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
+      ux: this.ux,
     });
 
     // we need these later to show deletes in results

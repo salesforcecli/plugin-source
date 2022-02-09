@@ -15,7 +15,7 @@ import {
   RetrieveResult,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { ChangeResult, replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import { ChangeResult, replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../../sourceCommand';
 import { PullResponse, PullResultFormatter } from '../../../../formatters/source/pullFormatter';
 import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
@@ -63,19 +63,12 @@ export default class Pull extends SourceCommand {
   }
 
   protected async preChecks(): Promise<void> {
-    // checks the source tracking file version and throws if they're toolbelt's old version
-    throwIfInvalid({
-      org: this.org,
-      projectPath: this.project.getPath(),
-      toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:pull'),
-    });
-
     this.tracking = await trackingSetup({
-      ux: this.ux,
+      commandName: replaceRenamedCommands('force:source:pull'),
+      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
       org: this.org,
       project: this.project,
-      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
+      ux: this.ux,
     });
   }
 

@@ -6,6 +6,7 @@
     "To deploy source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:deploy -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
     "To deploy all Apex classes:\n   $ sfdx force:source:deploy -m ApexClass",
     "To deploy a specific Apex class:\n   $ sfdx force:source:deploy -m ApexClass:MyApexClass",
+    "To deploy a specific Apex class and update source tracking files :\n   $ sfdx force:source:deploy -m ApexClass:MyApexClass --tracksource",
     "To deploy all custom objects and Apex classes:\n   $ sfdx force:source:deploy -m \"CustomObject,ApexClass\"",
     "To deploy all Apex classes and two specific profiles (one of which has a space in its name):\n   $ sfdx force:source:deploy -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
     "To deploy all components listed in a manifest:\n   $ sfdx force:source:deploy -x path/to/package.xml",

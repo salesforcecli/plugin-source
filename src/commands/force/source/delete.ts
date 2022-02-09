@@ -128,10 +128,11 @@ export class Delete extends DeployCommand {
   protected async preChecks(): Promise<void> {
     if (this.flags.tracksource) {
       this.tracking = await trackingSetup({
-        ux: this.ux,
+        commandName: 'force:source:delete',
+        ignoreConflicts: true,
         org: this.org,
         project: this.project,
-        ignoreConflicts: true,
+        ux: this.ux,
       });
     }
   }
