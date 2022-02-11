@@ -143,15 +143,13 @@ export default class Push extends DeployCommand {
     if (process.exitCode !== 0 || !this.deployResults.length) {
       return;
     }
-    // These are running sequentially given our low expectation of sequential deploys.
-    // We could potentially make this faster by parallelizing.
-    for (const result of this.deployResults) {
-      await updateTracking({
-        ux: this.ux,
-        result,
-        tracking: this.tracking,
-      });
-    }
+    await updateTracking({
+      ux: this.ux,
+      result: this.deployResults[0], // it doesn't matter which one--it's just used to determine if it's deploy or retrieve
+      tracking: this.tracking,
+      // since we're going to poll source members, we want them all in one transaction
+      fileResponses: this.deployResults.flatMap((result) => result.getFileResponses()),
+    });
   }
 
   protected resolveSuccess(): void {
