@@ -22,16 +22,22 @@ const manifestTypes: Record<string, string> = {
   package: 'package.xml',
 };
 
+const packageTypes: Record<string, string[]> = {
+  managed: ['installed', 'deprecated'],
+  all: ['installed', 'deprecated', 'installedEditable', 'deprecatedEditable'],
+};
+
 interface CreateCommandResult {
   name: string;
   path: string;
 }
 
-const xorFlags = ['metadata', 'sourcepath'];
+const xorFlags = ['metadata', 'sourcepath', 'targetusername'];
 export class create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
+  public static readonly supportsUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     apiversion: flags.builtin({}),
     metadata: flags.array({
@@ -53,6 +59,12 @@ export class create extends SourceCommand {
       description: messages.getMessage('flags.manifesttype'),
       options: Object.keys(manifestTypes),
       char: 't',
+    }),
+    excludepackages: flags.enum({
+      description: messages.getMessage('flags.excludepackages'),
+      options: Object.keys(packageTypes),
+      char: 'x',
+      dependsOn: ['targetusername'],
     }),
     outputdir: flags.string({
       char: 'o',
@@ -83,6 +95,10 @@ export class create extends SourceCommand {
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
         directoryPaths: this.getPackageDirs(),
+      },
+      org: {
+        connection: this.org.getConnection(),
+        exclude: packageTypes[this.getFlag<string>('excludepackages')],
       },
     });
 
