@@ -85,7 +85,10 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
       throw new SfdxError(
         'You cannot use the "tracksource" flag with the old version of the tracking files',
         'sourceTrackingFileVersionMismatch',
-        ['Clear the old version of the tracking files']
+        [
+          'Clear the old version of the tracking files with "sfdx force:source:tracking:clear"',
+          'Create a new org to use the new tracking files',
+        ]
       );
     }
   }
