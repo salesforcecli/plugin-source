@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { SourceTracking } from '@salesforce/source-tracking';
+import { SourceTracking, ChangeResult } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   PackageRetrieval,
@@ -125,8 +125,20 @@ export class Retrieve extends SourceCommand {
         this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
       }
     }
-    if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
-      await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+    if (this.getFlag<boolean>('tracksource')) {
+      // will throw if conflicts exist
+      if (!this.getFlag<boolean>('forceoverwrite')) {
+        await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+      }
+
+      const remoteDeletes = await this.tracking.getChanges<string>({
+        origin: 'remote',
+        state: 'delete',
+        format: 'string',
+      });
+      if (remoteDeletes.length) {
+        this.ux.warn(messages.getMessage('retrieveWontDelete'));
+      }
     }
 
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());

@@ -19,7 +19,7 @@
     "manifest": "file path for manifest (package.xml) of components to retrieve",
     "metadata": "comma-separated list of metadata component names",
     "packagename": "a comma-separated list of packages to retrieve",
-    "tracksource": "If the retrieve succeeds, update the source tracking information, similar to pull",
+    "tracksource": "If the retrieve succeeds, update the source tracking information, similar to pull.  This will NOT delete files that were deleted in the org",
     "verbose": "verbose output of retrieve result",
     "forceoverwrite": "ignore conflict warnings and overwrite changes to the project"
   },
@@ -50,5 +50,6 @@
   "columnNumberColumn": "COLUMN NUMBER",
   "lineNumberColumn": "LINE NUMBER",
   "errorColumn": "PROBLEM",
-  "wantsToRetrieveCustomFields": "Because you're retrieving one or more CustomFields, we're also retrieving the CustomObject to which it's associated."
+  "wantsToRetrieveCustomFields": "Because you're retrieving one or more CustomFields, we're also retrieving the CustomObject to which it's associated.",
+  "retrieveWontDelete": "You currently have files deleted in your org.  The retrieve command will NOT delete them from your local project"
 }

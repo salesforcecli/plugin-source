@@ -175,8 +175,19 @@ export class Deploy extends DeployCommand {
           directoryPaths: this.getPackageDirs(),
         },
       });
-      if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
-        await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+      if (this.getFlag<boolean>('tracksource')) {
+        // will throw if conflicts exist
+        if (!this.getFlag<boolean>('forceoverwrite')) {
+          await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+        }
+        const localDeletes = await this.tracking.getChanges<string>({
+          origin: 'local',
+          state: 'delete',
+          format: 'string',
+        });
+        if (localDeletes.length) {
+          this.ux.warn(messages.getMessage('deployWontDelete'));
+        }
       }
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', this.componentSet.toArray());
