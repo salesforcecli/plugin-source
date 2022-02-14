@@ -10,7 +10,6 @@ import {
   SourceTrackingOptions,
   ChangeResult,
   throwIfInvalid,
-  replaceRenamedCommands,
   getTrackingFileVersion,
 } from '@salesforce/source-tracking';
 import { Messages, SfdxError } from '@salesforce/core';
@@ -77,7 +76,7 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
       org,
       projectPath,
       toValidate: 'plugin-source',
-      command: replaceRenamedCommands(commandName),
+      command: commandName,
     });
   } else {
     // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
