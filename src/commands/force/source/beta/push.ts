@@ -185,13 +185,22 @@ export default class Push extends DeployCommand {
     }
 
     // 1 and 0 === 68 "partial success"
-    else if (
+    if (
       this.deployResults.some((result) => isSuccessLike(result)) &&
       this.deployResults.some((result) => StatusCodeMap.get(result.response.status) === 1)
     ) {
       return this.setExitCode(68);
     }
-    this.logger.warn('Unexpected exit code', this.deployResults);
+
+    // all fails
+    if (this.deployResults.every((result) => StatusCodeMap.get(result.response.status) === 1)) {
+      return this.setExitCode(1);
+    }
+
+    this.logger.warn(
+      'Unexpected exit code',
+      this.deployResults.map((result) => result.response)
+    );
     this.setExitCode(1);
   }
 
