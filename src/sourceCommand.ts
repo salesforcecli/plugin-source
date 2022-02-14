@@ -21,6 +21,10 @@ export type ProgressBar = {
   stop: () => void;
 };
 
+// TODO: use messages for tracking version compatibility errors
+// Messages.importMessagesDirectory(__dirname);
+// const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
 

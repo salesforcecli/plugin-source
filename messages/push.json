@@ -13,6 +13,5 @@
     "quiet": "minimize json and sdtout output on success"
   },
   "sourcepushFailed": "Push failed.",
-  "sequentialFail": "Check the order of your dependencies and ensure all metadata is included.",
-  "conflictMsg": "We couldn't complete the push operation due to conflicts. Verify that you want to keep the local versions, then run \"sfdx force:source:push -f\" with the --forceoverwrite (-f) option."
+  "sequentialFail": "Check the order of your dependencies and ensure all metadata is included."
 }

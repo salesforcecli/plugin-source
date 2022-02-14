@@ -48,7 +48,7 @@ describe('remote changes', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
-      expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(232);
+      expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(231);
       expect(
         pushResult.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(pushResult)
