@@ -93,6 +93,8 @@ export const exampleDeployResponse = {
 };
 
 export const exampleDeleteResponse = {
+  // required but ignored by the delete UT
+  getFileResponses: (): void => {},
   response: {
     canceledBy: '0051h000006BHOq',
     canceledByName: 'User User',

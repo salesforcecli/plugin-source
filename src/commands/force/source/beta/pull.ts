@@ -10,16 +10,15 @@ import { Duration } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import {
   ComponentSet,
-  ComponentStatus,
   FileResponse,
   RequestStatus,
   RetrieveResult,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { ChangeResult, replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
-import { processConflicts } from '../../../../formatters/conflicts';
+import { ChangeResult, replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../../sourceCommand';
 import { PullResponse, PullResultFormatter } from '../../../../formatters/source/pullFormatter';
+import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
@@ -53,33 +52,24 @@ export default class Pull extends SourceCommand {
     await this.retrieve();
     // do not parallelize delete and retrieve...we only get to delete IF retrieve was successful
     await this.doDeletes(); // deletes includes its tracking file operations
-    await this.updateTrackingFilesWithRetrieve();
+    await updateTracking({
+      result: this.retrieveResult,
+      ux: this.ux,
+      tracking: this.tracking,
+    });
     this.ux.stopSpinner();
 
     return this.formatResult();
   }
 
   protected async preChecks(): Promise<void> {
-    // checks the source tracking file version and throws if they're toolbelt's old version
-    throwIfInvalid({
-      org: this.org,
-      projectPath: this.project.getPath(),
-      toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:pull'),
-    });
-
-    this.ux.startSpinner('Loading source tracking information');
-    this.tracking = await SourceTracking.create({
+    this.tracking = await trackingSetup({
+      commandName: replaceRenamedCommands('force:source:pull'),
+      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
       org: this.org,
       project: this.project,
+      ux: this.ux,
     });
-
-    await this.tracking.ensureRemoteTracking(true);
-
-    if (!this.flags.forceoverwrite) {
-      this.ux.setSpinnerStatus('Checking for conflicts');
-      processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('sourceConflictDetected'));
-    }
   }
 
   protected async doDeletes(): Promise<void> {
@@ -90,29 +80,6 @@ export default class Pull extends SourceCommand {
       format: 'SourceComponent',
     });
     this.deleteFileResponses = await this.tracking.deleteFilesAndUpdateTracking(changesToDelete);
-  }
-
-  protected async updateTrackingFilesWithRetrieve(): Promise<void> {
-    this.ux.setSpinnerStatus('Updating source tracking files');
-
-    // might not exist if we exited from retrieve early
-    if (!this.retrieveResult) {
-      return;
-    }
-    const successes = this.retrieveResult
-      .getFileResponses()
-      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
-
-    await Promise.all([
-      // commit the local file successes that the retrieve modified
-      this.tracking.updateLocalTracking({
-        files: successes.map((fileResponse) => fileResponse.filePath).filter(Boolean),
-      }),
-      this.tracking.updateRemoteTracking(
-        successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
-        true // skip polling because it's a pull
-      ),
-    ]);
   }
 
   protected async retrieve(): Promise<void> {

@@ -41,10 +41,10 @@ describe('conflict detection and resolution', () => {
     const pushResult = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
-    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(232);
+    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(231);
     expect(
       pushResult.every((r) => r.state !== ComponentStatus.Failed),
-      JSON.stringify(pushResult)
+      JSON.stringify(pushResult.filter((r) => r.state === ComponentStatus.Failed))
     ).to.equal(true);
   });
 

@@ -282,6 +282,7 @@ describe('mdapi NUTs', () => {
         const unzipDir = fs.existsSync(extractPath);
         expect(unzipDir, 'retrieved zip was not extracted to expected path').to.be.true;
         expect(fs.readdirSync(extractPath)).to.deep.equal(['unpackaged']);
+        expect(rv.jsonOutput, JSON.stringify(rv)).to.exist;
         const result = rv.jsonOutput.result;
         expect(result.status).to.equal('Succeeded');
         expect(result.success).to.be.true;
@@ -297,6 +298,8 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
+        expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
+
         const result1 = rv1.jsonOutput.result;
         expect(result1).to.have.property('done', false);
         expect(result1).to.have.property('id');
@@ -338,6 +341,8 @@ describe('mdapi NUTs', () => {
       it('retrieves report (sync) with overrides of stash', () => {
         const retrieveCmd = `force:mdapi:beta:retrieve -r mdRetrieveReportTmp -k ${manifestPath} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
+        expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
+
         const result1 = rv1.jsonOutput.result;
 
         const name = 'dreamhouse';
@@ -348,6 +353,8 @@ describe('mdapi NUTs', () => {
 
         const reportCmd = `force:mdapi:beta:retrieve:report -i ${result1.id} -z -n ${zipName} -r ${retrieveTargetDir} --json`;
         const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
+        expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
+
         const result2 = rv2.jsonOutput.result;
         expect(result2.status).to.equal('Succeeded');
         expect(result2.success).to.be.true;
@@ -370,10 +377,14 @@ describe('mdapi NUTs', () => {
         const extractPath = path.join(retrieveTargetDirPath, name);
         const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -n ${zipName} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
+        expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
+
         const result1 = rv1.jsonOutput.result;
 
         const reportCmd = 'force:mdapi:beta:retrieve:report --json';
         const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
+        expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
+
         const result2 = rv2.jsonOutput.result;
         expect(result2.status).to.equal('Succeeded');
         expect(result2.success).to.be.true;
