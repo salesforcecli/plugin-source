@@ -31,7 +31,7 @@
     "soapDeploy": "deploy metadata with SOAP API instead of REST API",
     "predestructivechanges": "file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy",
     "postdestructivechanges": "file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy",
-    "tracksource": "If the deploy succeeds, update the source tracking information, similar to push.  This will NOT delete files that were deleted locally unless you use --predestructivechanges or --postdestructivechanges",
+    "tracksource": "if the deploy succeeds, update source tracking information; doesn't delete locally deleted files from org unless you also specify --predestructivechanges or --postdestructivechanges",
     "forceoverwrite": "ignore conflict warnings and overwrite changes to the org",
     "purgeOnDelete": "specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin"
   },

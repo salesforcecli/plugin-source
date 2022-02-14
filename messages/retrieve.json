@@ -19,7 +19,7 @@
     "manifest": "file path for manifest (package.xml) of components to retrieve",
     "metadata": "comma-separated list of metadata component names",
     "packagename": "a comma-separated list of packages to retrieve",
-    "tracksource": "If the retrieve succeeds, update the source tracking information, similar to pull.  This will NOT delete files that were deleted in the org",
+    "tracksource": "if the retrieve succeeds, update source tracking information; doesn't delete local files that were deleted in the org",
     "verbose": "verbose output of retrieve result",
     "forceoverwrite": "ignore conflict warnings and overwrite changes to the project"
   },
