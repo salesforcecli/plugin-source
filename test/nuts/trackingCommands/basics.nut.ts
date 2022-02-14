@@ -51,10 +51,10 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
-      expect(result, JSON.stringify(result)).to.have.lengthOf(232);
+      expect(result, JSON.stringify(result)).to.have.lengthOf(231);
       expect(
         result.every((r) => r.state !== ComponentStatus.Failed),
-        JSON.stringify(result)
+        JSON.stringify(result.filter((r) => r.state === ComponentStatus.Failed))
       ).to.equal(true);
     });
     it('sees no local changes (all were committed from push), but profile updated in remote', () => {
