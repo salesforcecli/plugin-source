@@ -11,7 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { SourceTracking, ChangeResult } from '@salesforce/source-tracking';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   PackageRetrieval,
