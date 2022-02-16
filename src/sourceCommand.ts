@@ -5,21 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { dirname, resolve } from 'path';
+import * as fs from 'fs';
 import { SfdxCommand } from '@salesforce/command';
-import { Lifecycle } from '@salesforce/core';
+import { Messages, Lifecycle, SfdxError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
 import cli from 'cli-ux';
+import { EnsureFsFlagOptions, FsError, ProgressBar } from './types';
 
-export type ProgressBar = {
-  value: number;
-  total: number;
-  start: (num: number) => void;
-  update: (num: number) => void;
-  updateTotal: (num: number) => void;
-  setTotal: (num: number) => void;
-  stop: () => void;
-};
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
 
 export abstract class SourceCommand extends SfdxCommand {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
@@ -63,6 +59,63 @@ export abstract class SourceCommand extends SfdxCommand {
   protected async getSourceApiVersion(): Promise<Optional<string>> {
     const projectConfig = await this.project.resolveProjectConfig();
     return getString(projectConfig, 'sourceApiVersion');
+  }
+
+  /**
+   * Ensures command flags that are file system paths are set properly before
+   * continuing command execution.  Can also create directories that don't yet
+   * exist in the path.
+   *
+   * @param options defines the path to resolve and the expectations
+   * @returns the resolved flag path
+   */
+  protected ensureFlagPath(options: EnsureFsFlagOptions): string {
+    const { flagName, path, type, throwOnENOENT } = options;
+
+    const trimmedPath = path?.trim();
+    let resolvedPath: string;
+    if (trimmedPath?.length) {
+      resolvedPath = resolve(trimmedPath);
+    }
+
+    try {
+      const stats = fs.statSync(resolvedPath);
+      if (type !== 'any') {
+        const isDir = stats.isDirectory();
+        if (type === 'dir' && !isDir) {
+          const msg = messages.getMessage('expectedDirectory');
+          throw SfdxError.create('@salesforce/plugin-source', 'flags.validation', 'InvalidFlagPath', [
+            flagName,
+            path,
+            msg,
+          ]);
+        } else if (type === 'file' && isDir) {
+          const msg = messages.getMessage('expectedFile');
+          throw SfdxError.create('@salesforce/plugin-source', 'flags.validation', 'InvalidFlagPath', [
+            flagName,
+            path,
+            msg,
+          ]);
+        }
+      }
+    } catch (error: unknown) {
+      const err = error as FsError;
+      if (err.code !== 'ENOENT') {
+        throw err;
+      } else {
+        if (throwOnENOENT) {
+          const enoent = messages.getMessage('notFound');
+          throw SfdxError.create('@salesforce/plugin-source', 'flags.validation', 'InvalidFlagPath', [
+            flagName,
+            path,
+            enoent,
+          ]);
+        }
+        const dir = type === 'dir' ? resolvedPath : dirname(resolvedPath);
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    }
+    return resolvedPath;
   }
 
   /**

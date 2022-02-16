@@ -5,21 +5,18 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { join, parse } from 'path';
-import { blue, yellow } from 'chalk';
+import { blue } from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getNumber } from '@salesforce/ts-types';
+import { Logger } from '@salesforce/core';
+import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
   MetadataApiRetrieveStatus,
   RequestStatus,
-  RetrieveMessage,
   FileProperties,
 } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
-
-Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+import { RetrieveFormatter } from '../retrieveFormatter';
+import { ResultFormatterOptions, toArray } from '../resultFormatter';
 
 export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string };
 
@@ -37,20 +34,13 @@ export interface RetrieveCommandAsyncResult {
   timedOut: boolean;
 }
 
-export class RetrieveResultFormatter extends ResultFormatter {
-  protected result: RetrieveCommandResult;
-  protected warnings: RetrieveMessage[];
+export class RetrieveResultFormatter extends RetrieveFormatter {
+  protected zipFilePath: string;
 
   public constructor(logger: Logger, ux: UX, public options: RetrieveResultFormatterOptions, result: RetrieveResult) {
-    super(logger, ux, options);
-    // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
-    delete result.response.zipFile;
+    super(logger, ux, options, result);
     this.options.zipFileName ??= 'unpackaged.zip';
-    const zipFilePath = join(options.retrieveTargetDir, options.zipFileName);
-    this.result = Object.assign({}, result.response, { zipFilePath });
-
-    // grab warnings
-    this.warnings = toArray(result?.response?.messages ?? []);
+    this.zipFilePath = join(options.retrieveTargetDir, options.zipFileName);
   }
 
   /**
@@ -59,7 +49,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
    * @returns RetrieveCommandResult
    */
   public getJson(): RetrieveCommandResult {
-    return this.result;
+    return Object.assign({}, this.result, { zipFilePath: this.zipFilePath }) as RetrieveCommandResult;
   }
 
   /**
@@ -69,12 +59,12 @@ export class RetrieveResultFormatter extends ResultFormatter {
     if (this.hasStatus(RequestStatus.InProgress)) {
       // The command timed out
       const commandWaitTime = getNumber(this.options, 'waitTime', 1440);
-      this.ux.log(messages.getMessage('retrieveTimeout', [commandWaitTime]));
+      this.ux.log(this.messages.getMessage('retrieveTimeout', [commandWaitTime]));
       return;
     }
 
     if (this.isSuccess()) {
-      this.ux.log(`Wrote retrieve zip to ${this.result.zipFilePath}`);
+      this.ux.log(`Wrote retrieve zip to ${this.zipFilePath}`);
       if (this.options.unzip) {
         const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName).name);
         this.ux.log(`Extracted ${this.options.zipFileName} to: ${extractPath}`);
@@ -93,20 +83,6 @@ export class RetrieveResultFormatter extends ResultFormatter {
     }
   }
 
-  protected hasStatus(status: RequestStatus): boolean {
-    return this.result?.status === status;
-  }
-
-  private displayWarnings(): void {
-    this.ux.styledHeader(yellow(messages.getMessage('retrievedSourceWarningsHeader')));
-    const columns = [
-      { key: 'fileName', label: 'FILE NAME' },
-      { key: 'problem', label: 'PROBLEM' },
-    ];
-    this.ux.table(this.warnings, { columns });
-    this.ux.log();
-  }
-
   private displaySuccesses(retrievedFiles: FileProperties[]): void {
     this.sortFileProperties(retrievedFiles);
 
@@ -119,18 +95,5 @@ export class RetrieveResultFormatter extends ResultFormatter {
       { key: 'id', label: 'ID' },
     ];
     this.ux.table(retrievedFiles, { columns });
-  }
-
-  private displayErrors(): void {
-    // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
-    const errorMessage = get(this.result, 'errorMessage') as string;
-    if (errorMessage) {
-      throw new SfdxError(errorMessage);
-    }
-    const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
-    const responseMsgs = get(this.result, 'messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
-    const errMsgs = toArray(responseMsgs);
-    const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
-    this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
   }
 }

@@ -6,20 +6,15 @@
  */
 
 import * as os from 'os';
-import * as path from 'path';
 import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages } from '@salesforce/core';
 import { DescribeMetadataResult } from 'jsforce';
 import { RegistryAccess } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.describe');
-
-interface FsError extends Error {
-  code: string;
-}
 
 export class DescribeMetadata extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -57,8 +52,11 @@ export class DescribeMetadata extends SourceCommand {
 
   protected async describe(): Promise<void> {
     const apiversion = this.getFlag<string>('apiversion');
+    const resultfile = this.getFlag<string>('resultfile');
 
-    this.validateResultFile();
+    if (resultfile) {
+      this.targetFilePath = this.ensureFlagPath({ flagName: 'resultfile', path: resultfile, type: 'file' });
+    }
 
     const connection = this.org.getConnection();
     this.describeResult = await connection.metadata.describe(apiversion);
@@ -94,26 +92,5 @@ export class DescribeMetadata extends SourceCommand {
       this.ux.styledJSON(this.describeResult);
     }
     return this.describeResult;
-  }
-
-  private validateResultFile(): void {
-    if (this.flags.resultfile) {
-      this.targetFilePath = path.resolve(this.getFlag('resultfile'));
-      // Ensure path exists
-      fs.mkdirSync(path.dirname(this.targetFilePath), { recursive: true });
-      try {
-        const stat = fs.statSync(this.targetFilePath);
-        if (!stat.isFile()) {
-          throw SfdxError.create('@salesforce/plugin-source', 'md.describe', 'invalidResultFile', [
-            this.targetFilePath,
-          ]);
-        }
-      } catch (err: unknown) {
-        const e = err as FsError;
-        if (e.code !== 'ENOENT') {
-          throw err;
-        }
-      }
-    }
   }
 }
