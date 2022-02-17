@@ -7,7 +7,7 @@
 
 import * as path from 'path';
 import { ComponentSet, RegistryAccess } from '@salesforce/source-deploy-retrieve';
-import { fs, Logger, SfdxError, Connection } from '@salesforce/core';
+import { fs, Logger, SfdxError, Aliases } from '@salesforce/core';
 
 export type ManifestOption = {
   manifestPath: string;
@@ -20,7 +20,7 @@ export type MetadataOption = {
   directoryPaths: string[];
 };
 export type OrgOption = {
-  connection: Connection;
+  username: string;
   exclude: string[];
 };
 export type ComponentSetOptions = {
@@ -114,20 +114,14 @@ export class ComponentSetBuilder {
 
       // Resolve metadata entries with an org connection
       if (org) {
-        logger.debug(`Building ComponentSet from targetUsername: ${org.connection.getUsername()}`);
+        logger.debug(`Building ComponentSet from targetUsername: ${org.username}`);
         componentSet = await ComponentSet.fromConnection({
-          usernameOrConnection: org.connection,
+          usernameOrConnection: (await Aliases.fetch(org.username)) || org.username,
           // exclude components based on the results of componentFilter function
           // components with namespacePrefix where org.exclude includes manageableState (to exclude managed packages)
           // components with namespacePrefix where manageableState equals undefined (to exclude components e.g. InstalledPackage)
           // components where org.exclude includes manageableState (to exclude packages without namespacePrefix e.g. unlocked packages)
-          componentFilter: (component): boolean =>
-            !(
-              org.exclude &&
-              ((component.namespacePrefix &&
-                (org.exclude.includes(component.manageableState) || component.manageableState === undefined)) ||
-                org.exclude.includes(component.manageableState))
-            ),
+          componentFilter: (component): boolean => !(org.exclude && org.exclude.includes(component?.manageableState)),
         });
       }
     } catch (e) {

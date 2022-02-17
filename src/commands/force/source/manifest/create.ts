@@ -23,8 +23,8 @@ const manifestTypes: Record<string, string> = {
 };
 
 const packageTypes: Record<string, string[]> = {
-  managed: ['installed', 'deprecated'],
-  all: ['installed', 'deprecated', 'installedEditable', 'deprecatedEditable'],
+  managed: ['beta', 'deleted', 'deprecated', 'installed', 'released'],
+  unlocked: ['deprecatedEditable', 'installedEditable'],
 };
 
 interface CreateCommandResult {
@@ -32,12 +32,11 @@ interface CreateCommandResult {
   path: string;
 }
 
-const xorFlags = ['metadata', 'sourcepath', 'targetusername'];
+const xorFlags = ['metadata', 'sourcepath', 'fromorg'];
 export class create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;
-  public static readonly supportsUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
     apiversion: flags.builtin({}),
     metadata: flags.array({
@@ -60,11 +59,15 @@ export class create extends SourceCommand {
       options: Object.keys(manifestTypes),
       char: 't',
     }),
-    excludepackages: flags.enum({
-      description: messages.getMessage('flags.excludepackages'),
+    includepackages: flags.array({
+      description: messages.getMessage('flags.includepackages'),
       options: Object.keys(packageTypes),
-      char: 'x',
-      dependsOn: ['targetusername'],
+      char: 'c',
+      dependsOn: ['fromorg'],
+    }),
+    fromorg: flags.string({
+      description: messages.getMessage('flags.fromorg'),
+      exactlyOne: xorFlags,
     }),
     outputdir: flags.string({
       char: 'o',
@@ -74,6 +77,7 @@ export class create extends SourceCommand {
   private manifestName: string;
   private outputDir: string;
   private outputPath: string;
+  private includepackages: string[];
 
   public async run(): Promise<CreateCommandResult> {
     await this.createManifest();
@@ -88,6 +92,16 @@ export class create extends SourceCommand {
     this.manifestName =
       manifestTypes[this.getFlag<string>('manifesttype')] || this.getFlag<string>('manifestname') || 'package.xml';
     this.outputDir = this.getFlag<string>('outputdir');
+    this.includepackages = this.getFlag<string[]>('includepackages');
+
+    let exclude: string[] = [];
+    if (this.includepackages) {
+      Object.keys(packageTypes).forEach(
+        (type) => (exclude = !this.includepackages.includes(type) ? exclude.concat(packageTypes[type]) : exclude)
+      );
+    } else {
+      exclude = Object.values(packageTypes).flat();
+    }
 
     const componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag('apiversion'),
@@ -97,8 +111,8 @@ export class create extends SourceCommand {
         directoryPaths: this.getPackageDirs(),
       },
       org: {
-        connection: this.org.getConnection(),
-        exclude: packageTypes[this.getFlag<string>('excludepackages')],
+        username: this.getFlag<string>('fromorg'),
+        exclude,
       },
     });
 

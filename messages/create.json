@@ -6,7 +6,8 @@
     "$ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest"
   ],
   "flags": {
-    "excludepackages": "exclude 'managed' or 'all' package types from manifest",
+    "includepackages": "include metadata from 'managed' or 'all' package types",
+    "fromorg": "build a manifest from all source in the target org",
     "manifesttype": "type of manifest to create; the type determines the name of the created file",
     "manifestname": "name of a custom manifest file to create",
     "outputdir": "directory to save the created manifest",
