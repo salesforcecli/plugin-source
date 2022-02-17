@@ -9,14 +9,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Lifecycle, Org } from '@salesforce/core';
+import { Org } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
-import { MetadataApiRetrieve, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
+import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { Report } from '../../../src/commands/force/mdapi/beta/retrieve/report';
 import { Stash } from '../../../src/stash';
-import { getRetrieveResult } from '../source/retrieveResponses';
+import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses';
 
 describe('force:mdapi:beta:retrieve:report', () => {
   const sandbox = sinon.createSandbox();
@@ -24,8 +24,14 @@ describe('force:mdapi:beta:retrieve:report', () => {
   const retrievetargetdir = path.resolve('retrieve-target-dir');
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
   const retrieveResult = getRetrieveResult('success');
-  const defaultZipFilePath = path.join(retrievetargetdir, 'unpackaged.zip');
+  const defaultZipFileName = 'unpackaged.zip';
+  const defaultZipFilePath = path.join(retrievetargetdir, defaultZipFileName);
   const expectedDefaultResult = Object.assign({}, retrieveResult.response, { zipFilePath: defaultZipFilePath });
+  const defaultStash = {
+    jobid: retrieveResult.response.id,
+    zipfilename: defaultZipFileName,
+    retrievetargetdir,
+  };
 
   // Stubs
   let checkStatusStub: sinon.SinonStub;
@@ -86,11 +92,11 @@ describe('force:mdapi:beta:retrieve:report', () => {
   beforeEach(() => {
     sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
-    fsStatStub.withArgs(retrievetargetdir).returns({ isDirectory: () => true });
+    fsStatStub.returns({ isDirectory: () => true });
     stashSetStub = stubMethod(sandbox, Stash, 'set');
     stashGetStub = stubMethod(sandbox, Stash, 'get');
-    checkStatusStub = sandbox.stub(MetadataApiRetrieve.prototype, 'checkStatus').resolves(retrieveResult.response);
-    postStub = sandbox.stub(MetadataApiRetrieve.prototype, 'post').resolves(retrieveResult);
+    checkStatusStub = sandbox.stub(MetadataApiRetrieve.prototype, 'checkStatus');
+    postStub = sandbox.stub(MetadataApiRetrieve.prototype, 'post');
     pollStatusStub = sandbox.stub(MetadataApiRetrieve.prototype, 'pollStatus').resolves(retrieveResult);
   });
 
@@ -98,32 +104,16 @@ describe('force:mdapi:beta:retrieve:report', () => {
     sandbox.restore();
   });
 
-  // Ensure MetadataApiRetrieve() args
-  const ensureRetrieveArgs = (overrides?: Partial<RetrieveOptions>) => {
-    const defaultRetrieveArgs = {
-      id: retrieveResult.response.id,
-      usernameOrConnection: username,
-      output: path.resolve(retrievetargetdir),
-      format: 'metadata',
-      zipFileName: 'unpackaged.zip',
-      unzip: undefined,
-    };
-    const expectedRetrieveArgs = { ...defaultRetrieveArgs, ...overrides };
-
-    expect(retrieveStub.calledOnce).to.equal(true);
-    expect(retrieveStub.firstCall.args[0]).to.deep.equal(expectedRetrieveArgs);
-  };
-
   const ensureStashGet = () => {
     expect(stashSetStub.called).to.be.false;
     expect(stashGetStub.called).to.be.true;
-    expect(stashSetStub.firstCall.args[0]).to.equal('MDAPI_RETRIEVE');
+    expect(stashGetStub.firstCall.args[0]).to.equal('MDAPI_RETRIEVE');
   };
 
   it('should pass along retrievetargetdir', async () => {
+    stashGetStub.returns(defaultStash);
     const result = await runReportCmd(['--retrievetargetdir', retrievetargetdir, '--json']);
     expect(result).to.deep.equal(expectedDefaultResult);
-    ensureRetrieveArgs();
     ensureStashGet();
     expect(fsStatStub.called).to.be.true;
     // should use the default polling timeout of 1440 minutes (86400 seconds)
@@ -134,30 +124,45 @@ describe('force:mdapi:beta:retrieve:report', () => {
   it('should pass along jobid', async () => {
     const jobid = retrieveResult.response.id;
     const result = await runReportCmd(['--retrievetargetdir', retrievetargetdir, '--jobid', jobid, '--json']);
+    expect(result).to.deep.equal(expectedDefaultResult);
+    expect(stashSetStub.called).to.be.false;
+    expect(stashGetStub.called).to.be.false;
+  });
+
+  it('should throw if no jobid provided by flag or stash', async () => {
+    try {
+      await runReportCmd(['--retrievetargetdir', retrievetargetdir, '--json']);
+      expect(false, 'Expected MissingRetrieveId error to be thrown').to.be.true;
+    } catch (e: unknown) {
+      expect((e as Error).name).to.equal('MissingRetrieveId');
+    }
   });
 
   it('should pass along zipfilename and unzip', async () => {
+    const jobid = retrieveResult.response.id;
     const zipfilename = 'foo.zip';
     const zipFilePath = path.join(retrievetargetdir, zipfilename);
     const expectedResult = Object.assign({}, retrieveResult.response, { zipFilePath });
     const result = await runReportCmd([
+      '--jobid',
+      jobid,
       '--retrievetargetdir',
       retrievetargetdir,
-      '-f',
+      '-n',
       zipfilename,
       '--unzip',
       '--json',
     ]);
     expect(result).to.deep.equal(expectedResult);
-    ensureRetrieveArgs({ zipFileName: zipfilename, unzip: true });
-    ensureStashGet();
+    expect(stashSetStub.called).to.be.false;
+    expect(stashGetStub.called).to.be.false;
     expect(fsStatStub.called).to.be.true;
   });
 
   it('should use wait param', async () => {
-    const result = await runReportCmd(['--retrievetargetdir', retrievetargetdir, '-w', '5', '--json']);
+    stashGetStub.returns(defaultStash);
+    const result = await runReportCmd(['-w', '5', '--json']);
     expect(result).to.deep.equal(expectedDefaultResult);
-    ensureRetrieveArgs();
     ensureStashGet();
     expect(fsStatStub.called).to.be.true;
     expect(pollStatusStub.firstCall.args[0]).to.equal(1000);
@@ -165,21 +170,21 @@ describe('force:mdapi:beta:retrieve:report', () => {
   });
 
   it('should display expected output', async () => {
-    const result = await runReportCmd(['-r', retrievetargetdir]);
+    stashGetStub.returns(defaultStash);
+    const result = await runReportCmd([]);
     expect(result).to.deep.equal(expectedDefaultResult);
     expect(uxLogStub.called).to.be.true;
-    expect(uxLogStub.firstCall.args[0]).to.equal(`Retrieve ID: ${expectedDefaultResult.id}`);
-    expect(uxLogStub.secondCall.args[0]).to.contain('Wrote retrieve zip to');
+    expect(uxLogStub.firstCall.args[0]).to.equal(`Wrote retrieve zip to ${defaultZipFilePath}`);
     expect(uxStyledHeaderStub.called).to.be.false;
     expect(uxTableStub.called).to.be.false;
   });
 
   it('should return verbose output', async () => {
-    const result = await runReportCmd(['-r', retrievetargetdir, '--verbose']);
+    stashGetStub.returns(defaultStash);
+    const result = await runReportCmd(['--verbose']);
     expect(result).to.deep.equal(expectedDefaultResult);
     expect(uxLogStub.called).to.be.true;
-    expect(uxLogStub.firstCall.args[0]).to.equal(`Retrieve ID: ${expectedDefaultResult.id}`);
-    expect(uxLogStub.secondCall.args[0]).to.contain('Wrote retrieve zip to');
+    expect(uxLogStub.firstCall.args[0]).to.equal(`Wrote retrieve zip to ${defaultZipFilePath}`);
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(uxTableStub.called).to.be.true;
     expect(uxStyledHeaderStub.firstCall.args[0]).to.contain('Components Retrieved');
@@ -187,19 +192,36 @@ describe('force:mdapi:beta:retrieve:report', () => {
   });
 
   it('should return an async result with --wait 0', async () => {
-    const result = await runReportCmd(['--retrievetargetdir', retrievetargetdir, '-w', '0', '--json']);
+    const inProgressResponse = getRetrieveResponse('inProgress');
+    checkStatusStub.resolves(inProgressResponse);
+    stashGetStub.returns(defaultStash);
+    const result = await runReportCmd(['-w', '0', '--json']);
     expect(result).to.deep.equal({
       done: false,
       id: expectedDefaultResult.id,
-      state: 'Queued',
-      status: 'Queued',
+      state: 'InProgress',
+      status: 'InProgress',
       timedOut: true,
     });
-    ensureRetrieveArgs();
     ensureStashGet();
+    expect(checkStatusStub.called).to.be.true;
+    expect(postStub.called).to.be.false;
     expect(fsStatStub.called).to.be.true;
     expect(pollStatusStub.called, 'should not poll for status with --wait 0').to.be.false;
     expect(stopSpinnerStub.called).to.be.true;
-    expect(stopSpinnerStub.firstCall.args[0]).to.equal('queued');
+  });
+
+  it('should return a normal result with --wait 0', async () => {
+    stashGetStub.returns(defaultStash);
+    postStub.resolves(retrieveResult);
+    checkStatusStub.resolves(retrieveResult.response);
+    const result = await runReportCmd(['-w', '0', '--json']);
+    expect(result).to.deep.equal(expectedDefaultResult);
+    ensureStashGet();
+    expect(checkStatusStub.called).to.be.true;
+    expect(postStub.called).to.be.true;
+    expect(fsStatStub.called).to.be.true;
+    expect(pollStatusStub.called, 'should not poll for status with --wait 0').to.be.false;
+    expect(stopSpinnerStub.called).to.be.true;
   });
 });
