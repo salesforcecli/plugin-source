@@ -99,7 +99,7 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
 };
 
 /**
- * Shared function for taking a Deploy/Retrieve result and handle the source trackin g updates
+ * Shared function for taking a Deploy/Retrieve result and handle the source tracking updates
  *
  * @param options
  */
