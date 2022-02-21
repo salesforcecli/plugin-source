@@ -9,7 +9,6 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
-
 import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
 import { DeployCommand, getVersionMessage } from '../../../deployCommand';
