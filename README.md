@@ -1,18 +1,10 @@
-# plugin-source (beta)
+# plugin-source
 
 [![NPM](https://img.shields.io/npm/v/@salesforce/plugin-source.svg?label=@salesforce/plugin-source)](https://www.npmjs.com/package/@salesforce/plugin-source) [![CircleCI](https://circleci.com/gh/salesforcecli/plugin-source/tree/main.svg?style=shield)](https://circleci.com/gh/salesforcecli/plugin-source/tree/main) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-source.svg)](https://npmjs.org/package/@salesforce/plugin-source) [![License](https://img.shields.io/badge/License-BSD%203--Clause-brightgreen.svg)](https://raw.githubusercontent.com/salesforcecli/plugin-source/main/LICENSE.txt)
 
-Source commands for Salesforce CLI
+Commands for interacting with metadata in Salesforce orgs.
 
-#### Current List of Commands
-
-1. force:source:convert
-2. force:source:deploy
-3. force:source:deploy:cancel
-4. force:source:deploy:report
-5. force:source:retrieve
-
-This plugin will soon be bundled with the [Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli). For more information on the CLI, read the [getting started guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm).
+This plugin is bundled with the [Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli). For more information on the CLI, read the [getting started guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm).
 
 We always recommend using the latest version of these commands bundled with the CLI, however, you can install a specific plugin version or tag if needed.
 
