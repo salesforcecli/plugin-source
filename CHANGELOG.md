@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.12](https://github.com/salesforcecli/plugin-source/compare/v1.8.11...v1.8.12) (2022-02-14)
+
+### [1.8.11](https://github.com/salesforcecli/plugin-source/compare/v1.8.10...v1.8.11) (2022-02-03)
+
+### Bug Fixes
+
+- temporarily disable async deploy NUTs ([#420](https://github.com/salesforcecli/plugin-source/issues/420)) ([e4e2d76](https://github.com/salesforcecli/plugin-source/commit/e4e2d7615272cb45fda5a4ee2694aaaae92fbf65))
+
 ### [1.8.10](https://github.com/salesforcecli/plugin-source/compare/v1.8.9...v1.8.10) (2022-02-02)
 
 ### [1.8.9](https://github.com/salesforcecli/plugin-source/compare/v1.8.8...v1.8.9) (2022-02-01)

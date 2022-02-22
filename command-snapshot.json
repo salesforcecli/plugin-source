@@ -2,7 +2,8 @@
   {
     "command": "force:mdapi:beta:convert",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["json", "loglevel", "manifest", "metadata", "metadatapath", "outputdir", "rootdir"]
+    "flags": ["json", "loglevel", "manifest", "metadata", "metadatapath", "outputdir", "rootdir"],
+    "alias": []
   },
   {
     "command": "force:mdapi:beta:deploy",
@@ -26,12 +27,14 @@
       "verbose",
       "wait",
       "zipfile"
-    ]
+    ],
+    "alias": []
   },
   {
     "command": "force:mdapi:beta:deploy:report",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "concise", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"]
+    "flags": ["apiversion", "concise", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"],
+    "alias": []
   },
   {
     "command": "force:mdapi:beta:retrieve",
@@ -50,7 +53,8 @@
       "verbose",
       "wait",
       "zipfilename"
-    ]
+    ],
+    "alias": []
   },
   {
     "command": "force:mdapi:beta:retrieve:report",
@@ -66,52 +70,62 @@
       "verbose",
       "wait",
       "zipfilename"
-    ]
+    ],
+    "alias": []
   },
   {
     "command": "force:mdapi:deploy:cancel",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"],
+    "alias": []
   },
   {
     "command": "force:mdapi:describemetadata",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "filterknown", "json", "loglevel", "resultfile", "targetusername"]
+    "flags": ["apiversion", "filterknown", "json", "loglevel", "resultfile", "targetusername"],
+    "alias": []
   },
   {
     "command": "force:mdapi:listmetadata",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "folder", "json", "loglevel", "metadatatype", "resultfile", "targetusername"]
+    "flags": ["apiversion", "folder", "json", "loglevel", "metadatatype", "resultfile", "targetusername"],
+    "alias": []
   },
   {
     "command": "force:source:beta:pull",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"]
+    "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"],
+    "alias": []
   },
   {
     "command": "force:source:beta:push",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "targetusername", "wait"]
+    "flags": ["apiversion", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "targetusername", "wait"],
+    "alias": []
   },
   {
     "command": "force:source:beta:status",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "concise", "json", "local", "loglevel", "remote", "targetusername"]
+    "flags": ["apiversion", "concise", "json", "local", "loglevel", "remote", "targetusername"],
+    "alias": []
   },
   {
     "command": "force:source:beta:tracking:clear",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "noprompt", "targetusername"]
+    "flags": ["apiversion", "json", "loglevel", "noprompt", "targetusername"],
+    "alias": []
   },
   {
     "command": "force:source:beta:tracking:reset",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "noprompt", "revision", "targetusername"]
+    "flags": ["apiversion", "json", "loglevel", "noprompt", "revision", "targetusername"],
+    "alias": []
   },
   {
     "command": "force:source:convert",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["json", "loglevel", "manifest", "metadata", "outputdir", "packagename", "rootdir", "sourcepath"]
+    "flags": ["json", "loglevel", "manifest", "metadata", "outputdir", "packagename", "rootdir", "sourcepath"],
+    "alias": []
   },
   {
     "command": "force:source:delete",
@@ -119,6 +133,7 @@
     "flags": [
       "apiversion",
       "checkonly",
+      "forceoverwrite",
       "json",
       "loglevel",
       "metadata",
@@ -126,9 +141,11 @@
       "sourcepath",
       "targetusername",
       "testlevel",
+      "tracksource",
       "verbose",
       "wait"
-    ]
+    ],
+    "alias": []
   },
   {
     "command": "force:source:deploy",
@@ -136,6 +153,7 @@
     "flags": [
       "apiversion",
       "checkonly",
+      "forceoverwrite",
       "ignoreerrors",
       "ignorewarnings",
       "json",
@@ -150,41 +168,49 @@
       "sourcepath",
       "targetusername",
       "testlevel",
+      "tracksource",
       "validateddeployrequestid",
       "verbose",
       "wait"
-    ]
+    ],
+    "alias": []
   },
   {
     "command": "force:source:deploy:cancel",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"]
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"],
+    "alias": []
   },
   {
     "command": "force:source:deploy:report",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"]
+    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"],
+    "alias": []
   },
   {
     "command": "force:source:ignored:list",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["json", "loglevel", "sourcepath"]
+    "flags": ["json", "loglevel", "sourcepath"],
+    "alias": []
   },
   {
     "command": "force:source:manifest:create",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "manifestname", "manifesttype", "metadata", "outputdir", "sourcepath"]
+    "flags": ["apiversion", "json", "loglevel", "manifestname", "manifesttype", "metadata", "outputdir", "sourcepath"],
+    "alias": []
   },
   {
     "command": "force:source:open",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "sourcefile", "targetusername", "urlonly"]
+    "flags": ["apiversion", "json", "loglevel", "sourcefile", "targetusername", "urlonly"],
+    "alias": []
   },
   {
     "command": "force:source:retrieve",
     "plugin": "@salesforce/plugin-source",
     "flags": [
       "apiversion",
+      "forceoverwrite",
       "json",
       "loglevel",
       "manifest",
@@ -192,8 +218,10 @@
       "packagenames",
       "sourcepath",
       "targetusername",
+      "tracksource",
       "verbose",
       "wait"
-    ]
+    ],
+    "alias": []
   }
 ]

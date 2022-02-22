@@ -11,6 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   PackageRetrieval,
@@ -18,6 +19,7 @@ import {
   RetrieveResultFormatter,
 } from '../../../formatters/retrieveResultFormatter';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
+import { trackingSetup, updateTracking, filterConflictsByComponentSet } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -63,17 +65,41 @@ export class Retrieve extends SourceCommand {
       char: 'n',
       description: messages.getMessage('flags.packagename'),
     }),
+    tracksource: flags.boolean({
+      char: 't',
+      description: messages.getMessage('flags.tracksource'),
+    }),
+    forceoverwrite: flags.boolean({
+      char: 'f',
+      description: messages.getMessage('flags.forceoverwrite'),
+      dependsOn: ['tracksource'],
+    }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected retrieveResult: RetrieveResult;
+  protected tracking: SourceTracking;
 
   public async run(): Promise<RetrieveCommandResult> {
+    await this.preChecks();
     await this.retrieve();
     this.resolveSuccess();
+    await this.maybeUpdateTracking();
     return this.formatResult();
+  }
+
+  protected async preChecks(): Promise<void> {
+    if (this.flags.tracksource) {
+      this.tracking = await trackingSetup({
+        ux: this.ux,
+        org: this.org,
+        project: this.project,
+        ignoreConflicts: true,
+        commandName: 'force:source:retrieve',
+      });
+    }
   }
 
   protected async retrieve(): Promise<void> {
@@ -97,6 +123,21 @@ export class Retrieve extends SourceCommand {
       if (this.wantsToRetrieveCustomFields()) {
         this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
         this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
+      }
+    }
+    if (this.getFlag<boolean>('tracksource')) {
+      // will throw if conflicts exist
+      if (!this.getFlag<boolean>('forceoverwrite')) {
+        await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+      }
+
+      const remoteDeletes = await this.tracking.getChanges<string>({
+        origin: 'remote',
+        state: 'delete',
+        format: 'string',
+      });
+      if (remoteDeletes.length) {
+        this.ux.warn(messages.getMessage('retrieveWontDelete'));
       }
     }
 
@@ -155,6 +196,12 @@ export class Retrieve extends SourceCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private async maybeUpdateTracking(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
+    }
   }
 
   private wantsToRetrieveCustomFields(): boolean {
