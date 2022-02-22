@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { ChangeResult, StatusOutputRow, throwIfInvalid } from '@salesforce/source-tracking';
+import { ChangeResult, StatusOutputRow } from '@salesforce/source-tracking';
 import { StatusFormatter, StatusResult } from '../../../formatters/source/statusFormatter';
 import { trackingSetup } from '../../../trackingFunctions';
 
@@ -42,13 +42,6 @@ export default class Status extends SfdxCommand {
   protected localAdds: ChangeResult[] = [];
 
   public async run(): Promise<StatusResult[]> {
-    throwIfInvalid({
-      org: this.org,
-      projectPath: this.project.getPath(),
-      toValidate: 'plugin-source',
-      command: 'force:source:status',
-    });
-
     const wantsLocal = (this.flags.local as boolean) || (!this.flags.remote && !this.flags.local);
     const wantsRemote = (this.flags.remote as boolean) || (!this.flags.remote && !this.flags.local);
 
