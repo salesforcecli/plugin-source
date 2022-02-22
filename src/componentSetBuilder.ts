@@ -118,9 +118,8 @@ export class ComponentSetBuilder {
         componentSet = await ComponentSet.fromConnection({
           usernameOrConnection: (await Aliases.fetch(org.username)) || org.username,
           // exclude components based on the results of componentFilter function
-          // components with namespacePrefix where org.exclude includes manageableState (to exclude managed packages)
-          // components with namespacePrefix where manageableState equals undefined (to exclude components e.g. InstalledPackage)
-          // components where org.exclude includes manageableState (to exclude packages without namespacePrefix e.g. unlocked packages)
+          // components where org.exclude includes manageableState
+          // components with namespacePrefix where manageableState equals undefined (e.g. InstalledPackage) are currently not excluded
           componentFilter: (component): boolean => !(org.exclude && org.exclude.includes(component?.manageableState)),
         });
       }
