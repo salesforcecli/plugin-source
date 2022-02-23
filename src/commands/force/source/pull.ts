@@ -15,16 +15,17 @@ import {
   RetrieveResult,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { ChangeResult, replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
-import { SourceCommand } from '../../../../sourceCommand';
-import { PullResponse, PullResultFormatter } from '../../../../formatters/source/pullFormatter';
-import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
+import { ChangeResult, SourceTracking } from '@salesforce/source-tracking';
+import { SourceCommand } from '../../../sourceCommand';
+import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter';
+import { updateTracking, trackingSetup } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export default class Pull extends SourceCommand {
   public static description = messages.getMessage('description');
+  public static aliases = ['force:source:beta:pull'];
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
     forceoverwrite: flags.boolean({
@@ -63,8 +64,9 @@ export default class Pull extends SourceCommand {
   }
 
   protected async preChecks(): Promise<void> {
+    this.ux.startSpinner('Loading source tracking information');
     this.tracking = await trackingSetup({
-      commandName: replaceRenamedCommands('force:source:pull'),
+      commandName: 'force:source:pull',
       ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
       org: this.org,
       project: this.project,

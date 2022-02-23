@@ -9,21 +9,21 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
-
-import { replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
-import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
-import { PushResponse, PushResultFormatter } from '../../../../formatters/source/pushResultFormatter';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
+import { DeployCommand, getVersionMessage } from '../../../deployCommand';
+import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter';
+import { ProgressFormatter } from '../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { updateTracking, trackingSetup } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export default class Push extends DeployCommand {
   public static description = messages.getMessage('description');
+  public static aliases = ['force:source:beta:push'];
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
     forceoverwrite: flags.boolean({
@@ -65,7 +65,7 @@ export default class Push extends DeployCommand {
 
   protected async prechecks(): Promise<void> {
     this.tracking = await trackingSetup({
-      commandName: replaceRenamedCommands('force:source:push'),
+      commandName: 'force:source:push',
       ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
       org: this.org,
       project: this.project,

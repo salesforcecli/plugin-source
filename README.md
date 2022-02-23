@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@salesforce/plugin-source/1.8.11 linux-x64 node-v12.22.10
+@salesforce/plugin-source/1.8.12 linux-x64 node-v12.22.10
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -96,11 +96,6 @@ USAGE
 - [`sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapideploycancel--w-minutes--i-id--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:mdapi:describemetadata [-f <filepath>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapidescribemetadata--f-filepath--u-string--a-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:mdapi:listmetadata -m <string> [-f <filepath>] [--folder <string>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapilistmetadata--m-string--f-filepath---folder-string--u-string--a-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetapull--f--w-minutes--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetapush--f--w-minutes--g--u-string---apiversion-string---quiet---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetastatus--l---r--u-string---apiversion-string---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetatrackingclear--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetatrackingreset--r-integer--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:convert [-r <directory>] [-d <directory>] [-n <string>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceconvert--r-directory--d-directory--n-string--p-array---x-string---m-array---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:delete [-w <minutes>] [-l NoTestRun|RunLocalTests|RunAllTestsInOrg] [-r] [-m <array>] [-p <array>] [-f [-t | -c]] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedelete--w-minutes--l-notestrunrunlocaltestsrunalltestsinorg--r--m-array--p-array--f--t---c--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [--purgeondelete -x <filepath>] [-q <id> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -t] [-m <array>] [-p <array>] [--predestructivechanges <filepath> ] [--postdestructivechanges <filepath> ] [-f ] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeploy---soapdeploy--w-minutes---purgeondelete--x-filepath--q-id---c---l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg---r-array---o---g---t--m-array--p-array---predestructivechanges-filepath----postdestructivechanges-filepath---f---u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -109,7 +104,12 @@ USAGE
 - [`sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceignoredlist--p-filepath---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcemanifestcreate--m-array--p-array--n-string---t-prepostdestroypackage--o-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceopen--f-filepath--r--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepull--f--w-minutes--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepush--f--w-minutes--g--u-string---apiversion-string---quiet---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceretrieve--p-array---x-filepath---m-array--w-minutes--n-array--f--t--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcestatus--l---r--u-string---apiversion-string---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcetrackingclear--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcetrackingreset--r-integer--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
 ## `sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -156,7 +156,7 @@ EXAMPLES
   $ sfdx force:mdapi:beta:convert -r path/to/metadata -d path/to/outputdir
 ```
 
-_See code: [src/commands/force/mdapi/beta/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/beta/convert.ts)_
+_See code: [src/commands/force/mdapi/beta/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/beta/convert.ts)_
 
 ## `sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -240,7 +240,7 @@ EXAMPLES
     sfdx force:mdapi:beta:deploy -q MyValidatedId
 ```
 
-_See code: [src/commands/force/mdapi/beta/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/beta/deploy.ts)_
+_See code: [src/commands/force/mdapi/beta/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/beta/deploy.ts)_
 
 ## `sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -285,7 +285,7 @@ EXAMPLES
    sfdx force:mdapi:beta:deploy:report -i 1234 -w 10
 ```
 
-_See code: [src/commands/force/mdapi/beta/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/beta/deploy/report.ts)_
+_See code: [src/commands/force/mdapi/beta/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/beta/deploy/report.ts)_
 
 ## `sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -352,7 +352,7 @@ EXAMPLES
     sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir --wait 0
 ```
 
-_See code: [src/commands/force/mdapi/beta/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/beta/retrieve.ts)_
+_See code: [src/commands/force/mdapi/beta/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/beta/retrieve.ts)_
 
 ## `sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -410,7 +410,7 @@ EXAMPLES
     sfdx force:mdapi:beta:retrieve:report -i retrieveId -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
 ```
 
-_See code: [src/commands/force/mdapi/beta/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/beta/retrieve/report.ts)_
+_See code: [src/commands/force/mdapi/beta/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/beta/retrieve/report.ts)_
 
 ## `sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -455,7 +455,7 @@ EXAMPLES
     $ sfdx force:mdapi:deploy:report
 ```
 
-_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/deploy/cancel.ts)_
+_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/deploy/cancel.ts)_
 
 ## `sfdx force:mdapi:describemetadata [-f <filepath>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -494,7 +494,7 @@ EXAMPLES
   $ sfdx force:mdapi:describemetadata -u me@example.com -f /path/to/outputfilename.txt
 ```
 
-_See code: [src/commands/force/mdapi/describemetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/describemetadata.ts)_
+_See code: [src/commands/force/mdapi/describemetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/describemetadata.ts)_
 
 ## `sfdx force:mdapi:listmetadata -m <string> [-f <filepath>] [--folder <string>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -547,193 +547,7 @@ EXAMPLES
   $ sfdx force:mdapi:listmetadata -m CustomObject -u me@example.com -f /path/to/outputfilename.txt
 ```
 
-_See code: [src/commands/force/mdapi/listmetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/mdapi/listmetadata.ts)_
-
-## `sfdx force:source:beta:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-pull source from the scratch org to the project
-
-```
-USAGE
-  $ sfdx force:source:beta:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-OPTIONS
-  -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to the project
-
-  -u, --targetusername=targetusername
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=wait
-      [default: 33 minutes] The number of minutes to wait for the command to complete and display results to the terminal
-      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
-      you. The default is 33 minutes.
-
-  --apiversion=apiversion
-      override the api version used for api requests made by this command
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-```
-
-_See code: [src/commands/force/source/beta/pull.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/beta/pull.ts)_
-
-## `sfdx force:source:beta:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-push source to a scratch org from the project
-
-```
-USAGE
-  $ sfdx force:source:beta:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json]
-  [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-OPTIONS
-  -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to scratch org
-
-  -g, --ignorewarnings
-      deploy changes even if warnings are generated
-
-  -u, --targetusername=targetusername
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=wait
-      [default: 33 minutes] Number of minutes to wait for the command to complete and display results to the terminal
-      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
-      you. The default is 33 minutes.
-
-  --apiversion=apiversion
-      override the api version used for api requests made by this command
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-
-  --quiet
-      minimize json and sdtout output on success
-```
-
-_See code: [src/commands/force/source/beta/push.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/beta/push.ts)_
-
-## `sfdx force:source:beta:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-list local changes and/or changes in a scratch org
-
-```
-USAGE
-  $ sfdx force:source:beta:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-OPTIONS
-  -l, --local                                                                       list the changes that have been made
-                                                                                    locally
-
-  -r, --remote                                                                      list the changes that have been made
-                                                                                    in the scratch org
-
-  -u, --targetusername=targetusername                                               username or alias for the target
-                                                                                    org; overrides default target org
-
-  --apiversion=apiversion                                                           override the api version used for
-                                                                                    api requests made by this command
-
-  --concise                                                                         show only the changes that will be
-                                                                                    pushed or pulled; omits files that
-                                                                                    are forceignored
-
-  --json                                                                            format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-EXAMPLES
-  sfdx force:source:status -l
-  sfdx force:source:status -r
-  sfdx force:source:status -a
-  sfdx force:source:status -a -u me@example.com --json
-```
-
-_See code: [src/commands/force/source/beta/status.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/beta/status.ts)_
-
-## `sfdx force:source:beta:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-clear all local source tracking information
-
-```
-USAGE
-  $ sfdx force:source:beta:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-OPTIONS
-  -p, --noprompt                                                                    do not prompt for source tracking
-                                                                                    override confirmation
-
-  -u, --targetusername=targetusername                                               username or alias for the target
-                                                                                    org; overrides default target org
-
-  --apiversion=apiversion                                                           override the api version used for
-                                                                                    api requests made by this command
-
-  --json                                                                            format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
-
-  Clears all local source tracking information. When you next run force:source:beta:status, the CLI displays all local
-  and remote files as changed, and any files with the same name are listed as conflicts.
-```
-
-_See code: [src/commands/force/source/beta/tracking/clear.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/beta/tracking/clear.ts)_
-
-## `sfdx force:source:beta:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-reset local and remote source tracking
-
-```
-USAGE
-  $ sfdx force:source:beta:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-OPTIONS
-  -p, --noprompt                                                                    do not prompt for source tracking
-                                                                                    override confirmation
-
-  -r, --revision=revision                                                           reset to a specific SourceMember
-                                                                                    revision counter number
-
-  -u, --targetusername=targetusername                                               username or alias for the target
-                                                                                    org; overrides default target org
-
-  --apiversion=apiversion                                                           override the api version used for
-                                                                                    api requests made by this command
-
-  --json                                                                            format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
-
-  Resets local and remote source tracking so that the CLI no longer registers differences between your local files and
-  those in the org. When you next run force:source:beta:status, the CLI returns no results, even though conflicts might
-  actually exist. The CLI then resumes tracking new source changes as usual.
-
-  Use the --revision parameter to reset source tracking to a specific revision number of an org source member. To get
-  the revision number, query the SourceMember Tooling API object with the force:data:soql:query command. For example:
-   $ sfdx force:data:soql:query -q "SELECT MemberName, MemberType, RevisionCounter FROM SourceMember" -t
-```
-
-_See code: [src/commands/force/source/beta/tracking/reset.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/beta/tracking/reset.ts)_
+_See code: [src/commands/force/mdapi/listmetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/mdapi/listmetadata.ts)_
 
 ## `sfdx force:source:convert [-r <directory>] [-d <directory>] [-n <string>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -746,7 +560,7 @@ USAGE
 
 OPTIONS
   -d, --outputdir=outputdir                                                         [default:
-                                                                                    metadataPackage_1644869734693]
+                                                                                    metadataPackage_1645648334109]
                                                                                     output directory to store the
                                                                                     Metadata API–formatted files in
 
@@ -784,7 +598,7 @@ EXAMPLES
   $ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'
 ```
 
-_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/convert.ts)_
+_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/convert.ts)_
 
 ## `sfdx force:source:delete [-w <minutes>] [-l NoTestRun|RunLocalTests|RunAllTestsInOrg] [-r] [-m <array>] [-p <array>] [-f [-t | -c]] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -848,7 +662,7 @@ EXAMPLES
   $ sfdx force:source:delete -p path/to/source
 ```
 
-_See code: [src/commands/force/source/delete.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/delete.ts)_
+_See code: [src/commands/force/source/delete.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/delete.ts)_
 
 ## `sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [--purgeondelete -x <filepath>] [-q <id> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -t] [-m <array>] [-p <array>] [--predestructivechanges <filepath> ] [--postdestructivechanges <filepath> ] [-f ] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -978,7 +792,7 @@ EXAMPLES
       $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/deploy.ts)_
 
 ## `sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1027,7 +841,7 @@ EXAMPLES
     $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/deploy/cancel.ts)_
 
 ## `sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1074,7 +888,7 @@ EXAMPLES
    $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/deploy/report.ts)_
 
 ## `sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1096,7 +910,7 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [src/commands/force/source/ignored/list.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/ignored/list.ts)_
+_See code: [src/commands/force/source/ignored/list.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/ignored/list.ts)_
 
 ## `sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1160,7 +974,7 @@ EXAMPLES
   $ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest
 ```
 
-_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/manifest/create.ts)_
+_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/manifest/create.ts)_
 
 ## `sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1204,7 +1018,85 @@ EXAMPLES
   $ sfdx force:source:open -f path/to/source -u my-user@my-org.com
 ```
 
-_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/open.ts)_
+_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/open.ts)_
+
+## `sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+pull source from the scratch org to the project
+
+```
+USAGE
+  $ sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -f, --forceoverwrite
+      ignore conflict warnings and overwrite changes to the project
+
+  -u, --targetusername=targetusername
+      username or alias for the target org; overrides default target org
+
+  -w, --wait=wait
+      [default: 33 minutes] The number of minutes to wait for the command to complete and display results to the terminal
+      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
+      you. The default is 33 minutes.
+
+  --apiversion=apiversion
+      override the api version used for api requests made by this command
+
+  --json
+      format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
+      [default: warn] logging level for this command invocation
+
+ALIASES
+  $ sfdx force:source:beta:pull
+```
+
+_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/pull.ts)_
+
+## `sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+push source to a scratch org from the project
+
+```
+USAGE
+  $ sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel
+   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -f, --forceoverwrite
+      ignore conflict warnings and overwrite changes to scratch org
+
+  -g, --ignorewarnings
+      deploy changes even if warnings are generated
+
+  -u, --targetusername=targetusername
+      username or alias for the target org; overrides default target org
+
+  -w, --wait=wait
+      [default: 33 minutes] Number of minutes to wait for the command to complete and display results to the terminal
+      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
+      you. The default is 33 minutes.
+
+  --apiversion=apiversion
+      override the api version used for api requests made by this command
+
+  --json
+      format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
+      [default: warn] logging level for this command invocation
+
+  --quiet
+      minimize json and sdtout output on success
+
+ALIASES
+  $ sfdx force:source:beta:push
+```
+
+_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/push.ts)_
 
 ## `sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1294,6 +1186,129 @@ EXAMPLES
      $ sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.11/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/retrieve.ts)_
+
+## `sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+list local changes and/or changes in a scratch org
+
+```
+USAGE
+  $ sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -l, --local                                                                       list the changes that have been made
+                                                                                    locally
+
+  -r, --remote                                                                      list the changes that have been made
+                                                                                    in the scratch org
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --concise                                                                         show only the changes that will be
+                                                                                    pushed or pulled; omits files that
+                                                                                    are forceignored
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+ALIASES
+  $ sfdx force:source:beta:status
+
+EXAMPLES
+  sfdx force:source:status -l
+  sfdx force:source:status -r
+  sfdx force:source:status -a
+  sfdx force:source:status -a -u me@example.com --json
+```
+
+_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/status.ts)_
+
+## `sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+clear all local source tracking information
+
+```
+USAGE
+  $ sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -p, --noprompt                                                                    do not prompt for source tracking
+                                                                                    override confirmation
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+DESCRIPTION
+  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
+
+  Clears all local source tracking information. When you next run force:source:status, the CLI displays all local and
+  remote files as changed, and any files with the same name are listed as conflicts.
+
+ALIASES
+  $ sfdx force:source:beta:tracking:clear
+```
+
+_See code: [src/commands/force/source/tracking/clear.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/tracking/clear.ts)_
+
+## `sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+reset local and remote source tracking
+
+```
+USAGE
+  $ sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -p, --noprompt                                                                    do not prompt for source tracking
+                                                                                    override confirmation
+
+  -r, --revision=revision                                                           reset to a specific SourceMember
+                                                                                    revision counter number
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+DESCRIPTION
+  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
+
+  Resets local and remote source tracking so that the CLI no longer registers differences between your local files and
+  those in the org. When you next run force:source:status, the CLI returns no results, even though conflicts might
+  actually exist. The CLI then resumes tracking new source changes as usual.
+
+  Use the --revision parameter to reset source tracking to a specific revision number of an org source member. To get
+  the revision number, query the SourceMember Tooling API object with the force:data:soql:query command. For example:
+   $ sfdx force:data:soql:query -q "SELECT MemberName, MemberType, RevisionCounter FROM SourceMember" -t
+
+ALIASES
+  $ sfdx force:source:beta:tracking:reset
+```
+
+_See code: [src/commands/force/source/tracking/reset.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.12/src/commands/force/source/tracking/reset.ts)_
 
 <!-- commandsstop -->
