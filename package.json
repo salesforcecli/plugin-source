@@ -9,7 +9,7 @@
     "@salesforce/command": "^4.2.2",
     "@salesforce/core": "^2.35.0",
     "@salesforce/source-deploy-retrieve": "^5.9.5",
-    "@salesforce/source-tracking": "^1.0.2",
+    "@salesforce/source-tracking": "^1.1.1",
     "chalk": "^4.1.2",
     "cli-ux": "^5.6.3",
     "open": "^8.4.0",
@@ -108,13 +108,8 @@
               "manifest": {
                 "description": "create a manifest to use in a deploy/retrieve"
               },
-              "beta": {
-                "description": "new versions of source tracking commands",
-                "subtopics": {
-                  "tracking": {
-                    "description": "new versions of source tracking commands"
-                  }
-                }
+              "tracking": {
+                "description": "new versions of source tracking commands"
               }
             }
           },
