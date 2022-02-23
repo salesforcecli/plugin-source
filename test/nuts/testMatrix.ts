@@ -15,11 +15,6 @@ const env = new Env();
  * The executables we want to test against. These can be toggled with environment variables
  */
 export const EXECUTABLES = [
-  // Commenting this as we no longer have identically named source-plugin and toolbelt commands
-  // {
-  //   path: 'sfdx',
-  //   skip: !env.getBoolean('PLUGIN_SOURCE_TEST_SFDX', false),
-  // },
   {
     path: path.join(process.cwd(), 'bin', 'run'), // path to the plugin's bin/run executable
     skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', true),

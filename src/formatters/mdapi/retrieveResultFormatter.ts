@@ -49,7 +49,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
    * @returns RetrieveCommandResult
    */
   public getJson(): RetrieveCommandResult {
-    return Object.assign({}, this.result, { zipFilePath: this.zipFilePath }) as RetrieveCommandResult;
+    return { ...this.result, zipFilePath: this.zipFilePath };
   }
 
   /**
