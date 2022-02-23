@@ -110,7 +110,7 @@ export class create extends SourceCommand {
         metadataEntries: this.getFlag<string[]>('metadata'),
         directoryPaths: this.getPackageDirs(),
       },
-      org: {
+      org: this.flags.fromorg && {
         username: this.getFlag<string>('fromorg'),
         exclude,
       },
