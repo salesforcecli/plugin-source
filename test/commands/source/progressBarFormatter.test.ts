@@ -12,7 +12,7 @@ import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
-import { ProgressBar } from '../../../src/sourceCommand';
+import { ProgressBar } from '../../../src/types';
 
 describe('Progress Bar Events', () => {
   const sandbox = sinon.createSandbox();

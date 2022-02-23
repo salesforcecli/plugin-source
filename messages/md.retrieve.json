@@ -49,7 +49,6 @@
     "verbose": "Indicates that you want verbose output from the retrieve operation.",
     "jobid": "The job ID (asyncId) of the retrieve you want to check. If not specified, the default value is the ID of the most recent metadata retrieval you ran using Salesforce CLI. You must specify a --retrievetargetdir. Use with --wait to resume waiting."
   },
-  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s\n%s",
   "InvalidPackageNames": "You specified [%s]. Try again and specify only one package when using --singlepackage.",
   "MissingRetrieveId": "The jobid command parameter was not provided, neither directly nor from a previous retrieval.",
   "checkStatus": "To check the status of this retrieve, run \"sfdx force:mdapi:beta:retrieve:report %s\".\nIf the retrieve request has completed, the retrieved metadata zip file will be written to the retrieve target dir."

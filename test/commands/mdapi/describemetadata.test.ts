@@ -86,6 +86,7 @@ describe('force:mdapi:describemetadata', () => {
     fsWriteFileStub = sandbox.stub(fs, 'writeFileSync');
     sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
+    fsStatStub.returns({ isDirectory: () => false });
   });
 
   afterEach(() => {
@@ -110,7 +111,6 @@ describe('force:mdapi:describemetadata', () => {
 
   it('should report to a file (json)', async () => {
     const resultfile = 'describeResults.json';
-    fsStatStub.returns({ isFile: () => true });
     describeMetadataStub.resolves(describeResponse);
     const result = await runListMetadataCmd(['--resultfile', resultfile, '--json']);
     expect(result).to.deep.equal(describeResponse);
@@ -122,7 +122,6 @@ describe('force:mdapi:describemetadata', () => {
 
   it('should report to a file (display)', async () => {
     const resultfile = 'describeResults.json';
-    fsStatStub.returns({ isFile: () => true });
     describeMetadataStub.resolves(describeResponse);
     const result = await runListMetadataCmd(['--resultfile', resultfile]);
     expect(result).to.deep.equal(describeResponse);

@@ -76,6 +76,7 @@ describe('force:mdapi:listmetadata', () => {
     fsWriteFileStub = sandbox.stub(fs, 'writeFileSync');
     sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
+    fsStatStub.returns({ isDirectory: () => false });
   });
 
   afterEach(() => {
@@ -137,7 +138,6 @@ describe('force:mdapi:listmetadata', () => {
 
   it('should report to a file (json)', async () => {
     const resultfile = 'listResults.json';
-    fsStatStub.returns({ isFile: () => true });
     listMetadataStub.resolves(listResponse);
     const result = await runListMetadataCmd(['--metadatatype', 'ApexClass', '--resultfile', resultfile, '--json']);
     expect(result).to.deep.equal([listResponse]);
@@ -149,7 +149,6 @@ describe('force:mdapi:listmetadata', () => {
 
   it('should report to a file (display)', async () => {
     const resultfile = 'listResults.json';
-    fsStatStub.returns({ isFile: () => true });
     listMetadataStub.resolves(listResponse);
     const result = await runListMetadataCmd(['--metadatatype', 'ApexClass', '--resultfile', resultfile]);
     expect(result).to.deep.equal([listResponse]);

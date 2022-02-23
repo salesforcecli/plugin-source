@@ -15,6 +15,5 @@
     "apiversion": "The API version to use. The default is the latest API version",
     "resultfile": "The path to the file where the results of the command are stored. Directing the output to a file makes it easier to extract relevant information for your package.xml manifest file. The default output destination is the console.",
     "filterknown": "Filters all the known metadata from the result such that all that is left are the types not yet fully supported by the CLI."
-  },
-  "invalidResultFile": "Invalid resultfile parameter specified: %s\nMust be a valid file path."
+  }
 }
