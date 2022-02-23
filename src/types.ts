@@ -8,3 +8,20 @@
 export interface FsError extends Error {
   code: string;
 }
+
+export interface EnsureFsFlagOptions {
+  flagName: string;
+  path: string;
+  type: 'dir' | 'file' | 'any';
+  throwOnENOENT?: boolean;
+}
+
+export type ProgressBar = {
+  value: number;
+  total: number;
+  start: (num: number) => void;
+  update: (num: number) => void;
+  updateTotal: (num: number) => void;
+  setTotal: (num: number) => void;
+  stop: () => void;
+};

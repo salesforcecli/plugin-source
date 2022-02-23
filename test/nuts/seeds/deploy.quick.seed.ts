@@ -24,6 +24,11 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
+
+    //
+    // *** REMOVE THIS DEPLOY WHEN --checkonly SERVER BUG IS FIXED *** 2/23/2022
+    //
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
@@ -36,33 +41,21 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     }
   });
 
-  describe('--checkonly flag', () => {
-    it('should check deploy of all packages', async () => {
-      // delete the lwc test stubs which will cause errors with the source tracking/globbing
-      await testkit.deleteGlobs(['force-app/test/**/*']);
-      await testkit.deploy({
-        args: `--sourcepath ${testkit.packageNames.join(',')} --checkonly --ignoreerrors`,
-      });
-      await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
-    });
-  });
+  it('should deploy validated (checkonly) deploy', async () => {
+    // delete the lwc test stubs which will cause errors with the source tracking/globbing
+    await testkit.deleteGlobs(['force-app/test/**/*']);
+    const checkOnly = (await testkit.deploy({
+      args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
+    })) as Result<{ id: string; result: { id: string } }>;
+    testkit.expect.toHaveProperty(checkOnly.result, 'id');
+    await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
 
-  describe('quick deploy', () => {
-    it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
-      // delete the lwc test stubs which will cause errors with the source tracking/globbing
-      await testkit.deleteGlobs(['force-app/test/**/*']);
-      const checkOnly = (await testkit.deploy({
-        args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
-      })) as Result<{ id: string; result: { id: string } }>;
-      testkit.expect.toHaveProperty(checkOnly.result, 'id');
+    const quickDeploy = (await testkit.deploy({
+      args: `--validateddeployrequestid ${checkOnly.result.id}`,
+    })) as Result<{ id: string; result: { id: string } }>;
+    testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
 
-      const quickDeploy = (await testkit.deploy({
-        args: `--validateddeployrequestid ${checkOnly.result.id}`,
-      })) as Result<{ id: string; result: { id: string } }>;
-      testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
-
-      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
-      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
-    });
+    const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+    await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
   });
 });

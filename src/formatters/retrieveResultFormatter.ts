@@ -5,10 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { blue, yellow } from 'chalk';
+import { blue } from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
-import { get, getString, getNumber } from '@salesforce/ts-types';
+import { Logger } from '@salesforce/core';
+import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
   MetadataApiRetrieveStatus,
@@ -17,10 +17,8 @@ import {
   RequestStatus,
   RetrieveMessage,
 } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
-
-Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+import { RetrieveFormatter } from './retrieveFormatter';
+import { ResultFormatterOptions } from './resultFormatter';
 
 export interface PackageRetrieval {
   name: string;
@@ -38,21 +36,14 @@ export interface RetrieveCommandResult {
   response: MetadataApiRetrieveStatus;
 }
 
-export class RetrieveResultFormatter extends ResultFormatter {
+export class RetrieveResultFormatter extends RetrieveFormatter {
   protected packages: PackageRetrieval[] = [];
-  protected result: RetrieveResult;
   protected fileResponses: FileResponse[];
-  protected warnings: RetrieveMessage[];
 
   public constructor(logger: Logger, ux: UX, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
-    super(logger, ux, options);
-    this.result = result;
+    super(logger, ux, options, result);
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
-    const warnMessages = get(result, 'response.messages', []) as RetrieveMessage | RetrieveMessage[];
-    this.warnings = toArray(warnMessages);
     this.packages = options.packages || [];
-    // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
-    delete this.result.response.zipFile;
   }
 
   /**
@@ -65,7 +56,7 @@ export class RetrieveResultFormatter extends ResultFormatter {
       inboundFiles: this.fileResponses,
       packages: this.packages,
       warnings: this.warnings,
-      response: this.result.response,
+      response: this.result,
     };
   }
 
@@ -75,17 +66,17 @@ export class RetrieveResultFormatter extends ResultFormatter {
   public display(): void {
     if (this.hasStatus(RequestStatus.InProgress)) {
       const commandWaitTime = getNumber(this.options, 'waitTime', 33);
-      this.ux.log(messages.getMessage('retrieveTimeout', [commandWaitTime]));
+      this.ux.log(this.messages.getMessage('retrieveTimeout', [commandWaitTime]));
       return;
     }
 
     if (this.isSuccess()) {
-      this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
+      this.ux.styledHeader(blue(this.messages.getMessage('retrievedSourceHeader')));
       const retrievedFiles = this.fileResponses.filter((fr) => fr.state !== ComponentStatus.Failed);
       if (retrievedFiles?.length) {
         this.displaySuccesses(retrievedFiles);
       } else {
-        this.ux.log(messages.getMessage('NoResultsFound'));
+        this.ux.log(this.messages.getMessage('NoResultsFound'));
       }
       if (this.warnings.length) {
         this.displayWarnings();
@@ -105,24 +96,6 @@ export class RetrieveResultFormatter extends ResultFormatter {
     }
   }
 
-  protected hasStatus(status: RequestStatus): boolean {
-    return getString(this.result, 'response.status') === status;
-  }
-
-  protected hasComponents(): boolean {
-    return getNumber(this.result, 'components.size', 0) === 0;
-  }
-
-  private displayWarnings(): void {
-    this.ux.styledHeader(yellow(messages.getMessage('retrievedSourceWarningsHeader')));
-    const columns = [
-      { key: 'fileName', label: 'FILE NAME' },
-      { key: 'problem', label: 'PROBLEM' },
-    ];
-    this.ux.table(this.warnings, { columns });
-    this.ux.log();
-  }
-
   private displaySuccesses(retrievedFiles: FileResponse[]): void {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
@@ -132,18 +105,5 @@ export class RetrieveResultFormatter extends ResultFormatter {
       { key: 'filePath', label: 'PROJECT PATH' },
     ];
     this.ux.table(retrievedFiles, { columns });
-  }
-
-  private displayErrors(): void {
-    // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
-    const errorMessage = get(this.result.response, 'errorMessage') as string;
-    if (errorMessage) {
-      throw new SfdxError(errorMessage);
-    }
-    const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
-    const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
-    const errMsgs = toArray(responseMsgs);
-    const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
-    this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
   }
 }

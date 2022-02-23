@@ -9,7 +9,7 @@ import { Logger } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { once } from '@salesforce/kit';
 import cli from 'cli-ux';
-import { ProgressBar } from '../sourceCommand';
+import { ProgressBar } from '../types';
 import { ProgressFormatter } from './progressFormatter';
 
 export class DeployProgressBarFormatter extends ProgressFormatter {

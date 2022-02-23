@@ -23,6 +23,5 @@
       "If you specify this parameter, don’t specify --manifest or --metadata. If the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of double quotes."
     ],
     "metadata": "A comma-separated list of metadata component names to convert."
-  },
-  "InvalidFlagPath": "The %s command parameter specifies an invalid path: %s\n%s"
+  }
 }
