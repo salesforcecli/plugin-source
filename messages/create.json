@@ -3,7 +3,8 @@
   "examples": [
     "$ sfdx force:source:manifest:create -m ApexClass",
     "$ sfdx force:source:manifest:create -m ApexClass:MyApexClass --manifesttype destroy",
-    "$ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest"
+    "$ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest",
+    "$ sfdx force:source:manifest:create --fromorg test@myorg.com --includepackages unlocked"
   ],
   "flags": {
     "includepackages": "include metadata from 'managed' or 'all' package types",
