@@ -7,8 +7,8 @@
     "$ sfdx force:source:manifest:create --fromorg test@myorg.com --includepackages unlocked"
   ],
   "flags": {
-    "includepackages": "include metadata from 'managed' or 'all' package types",
-    "fromorg": "build a manifest from all source in the target org",
+    "includepackages": "comma-separated list of package types whose metadata is included in the manifest; by default, metadata in packages is ignored",
+    "fromorg": "username or alias of the org that contains the metadata components from which to build a manifest",
     "manifesttype": "type of manifest to create; the type determines the name of the created file",
     "manifestname": "name of a custom manifest file to create",
     "outputdir": "directory to save the created manifest",
