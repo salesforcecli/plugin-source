@@ -20,6 +20,7 @@ import {
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { DeployCommand, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -27,7 +28,7 @@ import { DeleteResultFormatter } from '../../../formatters/source/deleteResultFo
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-
+import { updateTracking, trackingSetup, filterConflictsByComponentSet } from '../../../trackingFunctions';
 const fsPromises = fs.promises;
 
 Messages.importMessagesDirectory(__dirname);
@@ -74,10 +75,22 @@ export class Delete extends DeployCommand {
       longDescription: messages.getMessage('flagsLong.sourcepath'),
       exactlyOne: xorFlags,
     }),
+    tracksource: flags.boolean({
+      char: 't',
+      description: messages.getMessage('flags.tracksource'),
+      exclusive: ['checkonly'],
+    }),
+    forceoverwrite: flags.boolean({
+      char: 'f',
+      description: messages.getMessage('flags.forceoverwrite'),
+      dependsOn: ['tracksource'],
+    }),
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
   };
+  protected fileResponses: FileResponse[];
+  protected tracking: SourceTracking;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   private deleteResultFormatter: DeleteResultFormatter | DeployResultFormatter;
   private aborted = false;
@@ -89,13 +102,29 @@ export class Delete extends DeployCommand {
   private tempDir = path.join(os.tmpdir(), 'source_delete');
 
   public async run(): Promise<DeployCommandResult> {
+    await this.preChecks();
     await this.delete();
+
     await this.resolveSuccess();
     const result = this.formatResult();
     // The DeleteResultFormatter will use SDR and scan the directory, if the files have been deleted, it will throw an error
     // so we'll delete the files locally now
     await this.deleteFilesLocally();
+    // makes sure files are deleted before updating tracking files
+    await this.maybeUpdateTracking();
     return result;
+  }
+
+  protected async preChecks(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource')) {
+      this.tracking = await trackingSetup({
+        commandName: 'force:source:delete',
+        ignoreConflicts: true,
+        org: this.org,
+        project: this.project,
+        ux: this.ux,
+      });
+    }
   }
 
   protected async delete(): Promise<void> {
@@ -111,7 +140,9 @@ export class Delete extends DeployCommand {
         directoryPaths: this.getPackageDirs(),
       },
     });
-
+    if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
+      await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+    }
     this.components = this.componentSet.toArray();
 
     if (!this.components.length) {
@@ -174,6 +205,12 @@ export class Delete extends DeployCommand {
 
     this.deployResult = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
     await this.lifecycle.emit('postdeploy', this.deployResult);
+
+    // result.getFileResponses() will crawl the tree, but that would throw after the delete occurs.
+    // Extract them here for updateTracking to use later
+    this.fileResponses = this.mixedDeployDelete.delete.length
+      ? this.mixedDeployDelete.delete
+      : this.deployResult.getFileResponses();
   }
 
   /**
@@ -235,6 +272,17 @@ export class Delete extends DeployCommand {
     return this.deleteResultFormatter.getJson();
   }
 
+  private async maybeUpdateTracking(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({
+        ux: this.ux,
+        result: this.deployResult,
+        tracking: this.tracking,
+        fileResponses: this.fileResponses,
+      });
+    }
+  }
+
   private async deleteFilesLocally(): Promise<void> {
     if (!this.getFlag('checkonly') && this.deployResult?.response?.status === RequestStatus.Succeeded) {
       const promises = [];
@@ -242,7 +290,7 @@ export class Delete extends DeployCommand {
         // mixed delete/deploy operations have already been deleted and stashed
         if (!this.mixedDeployDelete.delete.length) {
           if (component.content) {
-            const stats = fs.lstatSync(component.content);
+            const stats = fs.statSync(component.content);
             if (stats.isDirectory()) {
               promises.push(fsPromises.rm(component.content, { recursive: true }));
             } else {

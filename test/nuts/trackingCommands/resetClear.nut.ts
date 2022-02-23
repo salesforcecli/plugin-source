@@ -14,9 +14,8 @@ import * as fs from 'fs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { AuthInfo, Connection } from '@salesforce/core';
-import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { SourceTrackingClearResult } from '../../../src/commands/force/source/beta/tracking/clear';
+import { SourceTrackingClearResult } from '../../../src/commands/force/source/tracking/clear';
 
 let session: TestSession;
 let orgId: string;
@@ -62,7 +61,7 @@ describe('reset and clear', () => {
 
   describe('clearing tracking', () => {
     it('runs status to start tracking', () => {
-      const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
+      const result = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
       expect(result).to.have.length.greaterThan(100); // ebikes is big
@@ -75,12 +74,9 @@ describe('reset and clear', () => {
       expect(fs.existsSync(path.join(trackingFileFolder, 'maxRevision.json'))).to.equal(true);
     });
     it('runs clear', () => {
-      const clearResult = execCmd<SourceTrackingClearResult>(
-        replaceRenamedCommands('force:source:tracking:clear --noprompt --json'),
-        {
-          ensureExitCode: 0,
-        }
-      ).jsonOutput.result;
+      const clearResult = execCmd<SourceTrackingClearResult>('force:source:tracking:clear --noprompt --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
       expect(clearResult.clearedFiles.some((file) => file.includes('maxRevision.json'))).to.equal(true);
     });
     it('local tracking is gone', () => {
@@ -110,7 +106,7 @@ describe('reset and clear', () => {
         }
       });
       // gets tracking files from server
-      execCmd(replaceRenamedCommands('force:source:status --json --remote'), { ensureExitCode: 0 });
+      execCmd('force:source:status --json --remote', { ensureExitCode: 0 });
       const revisions = await getRevisionsAsArray();
       const revisionFile = JSON.parse(
         await fs.promises.readFile(path.join(trackingFileFolder, 'maxRevision.json'), 'utf8')
@@ -127,7 +123,7 @@ describe('reset and clear', () => {
       });
     });
     it('can reset to a known revision', async () => {
-      execCmd(replaceRenamedCommands(`force:source:tracking:reset --revision ${lowestRevision} --noprompt`), {
+      execCmd(`force:source:tracking:reset --revision ${lowestRevision} --noprompt`, {
         ensureExitCode: 0,
       });
       const revisions = await getRevisionsAsArray();
@@ -140,7 +136,7 @@ describe('reset and clear', () => {
     });
 
     it('can reset to a non-specified revision (resets everything)', async () => {
-      execCmd(replaceRenamedCommands(`force:source:tracking:reset --revision ${lowestRevision} --noprompt`), {
+      execCmd(`force:source:tracking:reset --revision ${lowestRevision} --noprompt`, {
         ensureExitCode: 0,
       });
       const revisions = await getRevisionsAsArray();

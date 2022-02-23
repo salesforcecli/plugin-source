@@ -8,6 +8,7 @@ import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { ComponentSetBuilder } from '../../../componentSetBuilder';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
@@ -18,6 +19,7 @@ import {
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { updateTracking, trackingSetup, filterConflictsByComponentSet } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -79,7 +81,7 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.validateDeployRequestId'),
       longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
       exactlyOne: xorFlags,
-      exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings'],
+      exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings', 'tracksource'],
       validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
@@ -111,13 +113,39 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.postdestructivechanges'),
       dependsOn: ['manifest'],
     }),
+    tracksource: flags.boolean({
+      char: 't',
+      description: messages.getMessage('flags.tracksource'),
+      exclusive: ['checkonly', 'validateddeployrequestid'],
+    }),
+    forceoverwrite: flags.boolean({
+      char: 'f',
+      description: messages.getMessage('flags.forceoverwrite'),
+      dependsOn: ['tracksource'],
+    }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
+  protected tracking: SourceTracking;
 
   public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
+    await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
+    await this.maybeUpdateTracking();
     return this.formatResult();
+  }
+
+  protected async preChecks(): Promise<void> {
+    if (this.flags.tracksource) {
+      this.tracking = await trackingSetup({
+        commandName: 'force:source:deploy',
+        // we'll check ACTUAL conflicts once we get a componentSet built
+        ignoreConflicts: true,
+        org: this.org,
+        project: this.project,
+        ux: this.ux,
+      });
+    }
   }
 
   // There are 3 types of deploys:
@@ -147,6 +175,20 @@ export class Deploy extends DeployCommand {
           directoryPaths: this.getPackageDirs(),
         },
       });
+      if (this.getFlag<boolean>('tracksource')) {
+        // will throw if conflicts exist
+        if (!this.getFlag<boolean>('forceoverwrite')) {
+          await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+        }
+        const localDeletes = await this.tracking.getChanges<string>({
+          origin: 'local',
+          state: 'delete',
+          format: 'string',
+        });
+        if (localDeletes.length) {
+          this.ux.warn(messages.getMessage('deployWontDelete'));
+        }
+      }
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', this.componentSet.toArray());
       this.ux.log(getVersionMessage('Deploying', this.componentSet, this.isRest));
@@ -200,5 +242,11 @@ export class Deploy extends DeployCommand {
     }
 
     return formatter.getJson();
+  }
+
+  private async maybeUpdateTracking(): Promise<void> {
+    if (this.getFlag<boolean>('tracksource', false)) {
+      return updateTracking({ ux: this.ux, result: this.deployResult, tracking: this.tracking });
+    }
   }
 }

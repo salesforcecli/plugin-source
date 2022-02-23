@@ -9,7 +9,6 @@ import * as path from 'path';
 import { AuthInfo, Connection, fs } from '@salesforce/core';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 
 let session: TestSession;
@@ -48,7 +47,7 @@ describe('multiple pkgDirs deployed sequentially', () => {
 
   describe('mpd sequential', () => {
     it('pushes using MPD', () => {
-      const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
+      const result = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);

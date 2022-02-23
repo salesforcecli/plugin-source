@@ -6,6 +6,7 @@
     "To deploy source files in a comma-separated list that contains spaces:\n   $ sfdx force:source:deploy -p \"path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes\"",
     "To deploy all Apex classes:\n   $ sfdx force:source:deploy -m ApexClass",
     "To deploy a specific Apex class:\n   $ sfdx force:source:deploy -m ApexClass:MyApexClass",
+    "To deploy a specific Apex class and update source tracking files :\n   $ sfdx force:source:deploy -m ApexClass:MyApexClass --tracksource",
     "To deploy all custom objects and Apex classes:\n   $ sfdx force:source:deploy -m \"CustomObject,ApexClass\"",
     "To deploy all Apex classes and two specific profiles (one of which has a space in its name):\n   $ sfdx force:source:deploy -m \"ApexClass, Profile:My Profile, Profile: AnotherProfile\"",
     "To deploy all components listed in a manifest:\n   $ sfdx force:source:deploy -x path/to/package.xml",
@@ -30,6 +31,8 @@
     "soapDeploy": "deploy metadata with SOAP API instead of REST API",
     "predestructivechanges": "file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy",
     "postdestructivechanges": "file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy",
+    "tracksource": "if the deploy succeeds, update source tracking information; doesn't delete locally deleted files from org unless you also specify --predestructivechanges or --postdestructivechanges",
+    "forceoverwrite": "ignore conflict warnings and overwrite changes to the org",
     "purgeOnDelete": "specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin"
   },
   "flagsLong": {
@@ -81,5 +84,6 @@
   "asyncDeployQueued": "Deploy has been queued.",
   "asyncDeployCancel": "Run sfdx force:source:deploy:cancel -i %s -u %s to cancel the deploy.",
   "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s -u %s to get the latest status.",
-  "invalidDeployId": "The provided ID is invalid, deploy IDs must start with '0Af'."
+  "invalidDeployId": "The provided ID is invalid, deploy IDs must start with '0Af'.",
+  "deployWontDelete": "You currently have files deleted locally.  The deploy command will NOT delete them from your org unless you use one of the destructivechanges flags."
 }

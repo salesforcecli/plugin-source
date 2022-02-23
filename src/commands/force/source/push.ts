@@ -8,22 +8,22 @@
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { ComponentStatus, DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
-
-import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
-import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
-import { PushResponse, PushResultFormatter } from '../../../../formatters/source/pushResultFormatter';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { processConflicts } from '../../../../formatters/conflicts';
+import { DeployCommand, getVersionMessage } from '../../../deployCommand';
+import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter';
+import { ProgressFormatter } from '../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { updateTracking, trackingSetup } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export default class Push extends DeployCommand {
   public static description = messages.getMessage('description');
+  public static aliases = ['force:source:beta:push'];
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
     forceoverwrite: flags.boolean({
@@ -59,25 +59,19 @@ export default class Push extends DeployCommand {
     await this.prechecks();
     await this.deploy();
     this.resolveSuccess();
-    await this.updateTrackingFiles();
+    await this.updateTracking();
     return this.formatResult();
   }
 
   protected async prechecks(): Promise<void> {
-    throwIfInvalid({
-      org: this.org,
-      projectPath: this.project.getPath(),
-      toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:push'),
-    });
-    this.tracking = await SourceTracking.create({
+    this.tracking = await trackingSetup({
+      commandName: 'force:source:push',
+      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
       org: this.org,
       project: this.project,
-      apiVersion: this.flags.apiversion as string,
+      ux: this.ux,
     });
-    if (!this.flags.forceoverwrite) {
-      processConflicts(await this.tracking.getConflicts(), this.ux, messages.getMessage('conflictMsg'));
-    }
+
     // we need these later to show deletes in results
     this.deletes = await this.tracking.getChanges<string>({ origin: 'local', state: 'delete', format: 'string' });
   }
@@ -144,24 +138,18 @@ export default class Push extends DeployCommand {
     }
   }
 
-  protected async updateTrackingFiles(): Promise<void> {
+  protected async updateTracking(): Promise<void> {
+    // there can be multiple deploy results for sequential deploys
     if (process.exitCode !== 0 || !this.deployResults.length) {
       return;
     }
-    const successes = this.deployResults
-      .flatMap((result) => result.getFileResponses())
-      .filter((fileResponse) => fileResponse.state !== ComponentStatus.Failed);
-    const successNonDeletes = successes.filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted);
-    // deleted bundleMembers might not be in here, but we can get them from tracking files and compare their parent bundle
-    const successDeletes = successes.filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted);
-
-    await Promise.all([
-      this.tracking.updateLocalTracking({
-        files: successNonDeletes.map((fileResponse) => fileResponse.filePath),
-        deletedFiles: successDeletes.map((fileResponse) => fileResponse.filePath),
-      }),
-      this.tracking.updateRemoteTracking(successes),
-    ]);
+    await updateTracking({
+      ux: this.ux,
+      result: this.deployResults[0], // it doesn't matter which one--it's just used to determine if it's deploy or retrieve
+      tracking: this.tracking,
+      // since we're going to poll source members, we want them all in one transaction
+      fileResponses: this.deployResults.flatMap((result) => result.getFileResponses()),
+    });
   }
 
   protected resolveSuccess(): void {
@@ -197,13 +185,22 @@ export default class Push extends DeployCommand {
     }
 
     // 1 and 0 === 68 "partial success"
-    else if (
+    if (
       this.deployResults.some((result) => isSuccessLike(result)) &&
       this.deployResults.some((result) => StatusCodeMap.get(result.response.status) === 1)
     ) {
       return this.setExitCode(68);
     }
-    this.logger.warn('Unexpected exit code', this.deployResults);
+
+    // all fails
+    if (this.deployResults.every((result) => StatusCodeMap.get(result.response.status) === 1)) {
+      return this.setExitCode(1);
+    }
+
+    this.logger.warn(
+      'Unexpected exit code',
+      this.deployResults.map((result) => result.response)
+    );
     this.setExitCode(1);
   }
 
