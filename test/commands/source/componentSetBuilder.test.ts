@@ -38,11 +38,13 @@ describe('ComponentSetBuilder', () => {
     let fileExistsSyncStub: sinon.SinonStub;
     let fromSourceStub: sinon.SinonStub;
     let fromManifestStub: sinon.SinonStub;
+    let fromConnectionStub: sinon.SinonStub;
 
     beforeEach(() => {
       fileExistsSyncStub = stubMethod(sandbox, fsCore, 'fileExistsSync');
       fromSourceStub = stubMethod(sandbox, ComponentSet, 'fromSource');
       fromManifestStub = stubMethod(sandbox, ComponentSet, 'fromManifest');
+      fromConnectionStub = stubMethod(sandbox, ComponentSet, 'fromConnection');
       componentSet = new ComponentSet();
     });
 
@@ -324,6 +326,29 @@ describe('ComponentSetBuilder', () => {
         destructivePre: undefined,
         destructivePost: undefined,
       });
+      expect(compSet.size).to.equal(1);
+      expect(compSet.has(apexClassComponent)).to.equal(true);
+    });
+
+    it('should create ComponentSet from org connection', async () => {
+      componentSet.add(apexClassComponent);
+      fromConnectionStub.resolves(componentSet);
+      const options = {
+        sourcepath: undefined,
+        metadata: undefined,
+        manifest: undefined,
+        org: {
+          username: 'manifest-test@org.com',
+          exclude: [],
+        },
+      };
+
+      const compSet = await ComponentSetBuilder.build(options);
+      expect(fromConnectionStub.calledOnce).to.equal(true);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(fromConnectionStub.firstCall.firstArg['usernameOrConnection']).equal(options.org.username);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      expect(fromConnectionStub.firstCall.firstArg['componentFilter'].call()).equal(true);
       expect(compSet.size).to.equal(1);
       expect(compSet.has(apexClassComponent)).to.equal(true);
     });

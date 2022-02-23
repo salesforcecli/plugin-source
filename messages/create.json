@@ -3,9 +3,12 @@
   "examples": [
     "$ sfdx force:source:manifest:create -m ApexClass",
     "$ sfdx force:source:manifest:create -m ApexClass:MyApexClass --manifesttype destroy",
-    "$ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest"
+    "$ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest",
+    "$ sfdx force:source:manifest:create --fromorg test@myorg.com --includepackages unlocked"
   ],
   "flags": {
+    "includepackages": "comma-separated list of package types (managed, unlocked) whose metadata is included in the manifest; by default, metadata in packages is ignored",
+    "fromorg": "username or alias of the org that contains the metadata components from which to build a manifest",
     "manifesttype": "type of manifest to create; the type determines the name of the created file",
     "manifestname": "name of a custom manifest file to create",
     "outputdir": "directory to save the created manifest",

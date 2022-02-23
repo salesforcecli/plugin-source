@@ -166,7 +166,18 @@
   {
     "command": "force:source:manifest:create",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "manifestname", "manifesttype", "metadata", "outputdir", "sourcepath"],
+    "flags": [
+      "apiversion",
+      "json",
+      "loglevel",
+      "manifestname",
+      "manifesttype",
+      "metadata",
+      "outputdir",
+      "sourcepath",
+      "includepackages",
+      "fromorg"
+    ],
     "alias": []
   },
   {

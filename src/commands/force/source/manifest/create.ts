@@ -22,12 +22,17 @@ const manifestTypes: Record<string, string> = {
   package: 'package.xml',
 };
 
+const packageTypes: Record<string, string[]> = {
+  managed: ['beta', 'deleted', 'deprecated', 'installed', 'released'],
+  unlocked: ['deprecatedEditable', 'installedEditable'],
+};
+
 interface CreateCommandResult {
   name: string;
   path: string;
 }
 
-const xorFlags = ['metadata', 'sourcepath'];
+const xorFlags = ['metadata', 'sourcepath', 'fromorg'];
 export class create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
@@ -54,6 +59,16 @@ export class create extends SourceCommand {
       options: Object.keys(manifestTypes),
       char: 't',
     }),
+    includepackages: flags.array({
+      description: messages.getMessage('flags.includepackages'),
+      options: Object.keys(packageTypes),
+      char: 'c',
+      dependsOn: ['fromorg'],
+    }),
+    fromorg: flags.string({
+      description: messages.getMessage('flags.fromorg'),
+      exactlyOne: xorFlags,
+    }),
     outputdir: flags.string({
       char: 'o',
       description: messages.getMessage('flags.outputdir'),
@@ -62,6 +77,7 @@ export class create extends SourceCommand {
   private manifestName: string;
   private outputDir: string;
   private outputPath: string;
+  private includepackages: string[];
 
   public async run(): Promise<CreateCommandResult> {
     await this.createManifest();
@@ -76,6 +92,16 @@ export class create extends SourceCommand {
     this.manifestName =
       manifestTypes[this.getFlag<string>('manifesttype')] || this.getFlag<string>('manifestname') || 'package.xml';
     this.outputDir = this.getFlag<string>('outputdir');
+    this.includepackages = this.getFlag<string[]>('includepackages');
+
+    let exclude: string[] = [];
+    if (this.includepackages) {
+      Object.keys(packageTypes).forEach(
+        (type) => (exclude = !this.includepackages.includes(type) ? exclude.concat(packageTypes[type]) : exclude)
+      );
+    } else {
+      exclude = Object.values(packageTypes).flat();
+    }
 
     const componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag('apiversion'),
@@ -83,6 +109,10 @@ export class create extends SourceCommand {
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
         directoryPaths: this.getPackageDirs(),
+      },
+      org: this.flags.fromorg && {
+        username: this.getFlag<string>('fromorg'),
+        exclude,
       },
     });
 
