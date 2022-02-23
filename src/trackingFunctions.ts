@@ -36,7 +36,7 @@ interface TrackingUpdateRequest {
   ux: UX;
   /**
    * We don't want to get the fileResponses if there have been deletes (SDR will throw)
-   * You can also pass this in if your command already ran getFileResponses and you want to avoid the perf hi t from doing it twice
+   * You can also pass this in if your command already ran getFileResponses and you want to avoid the perf hit from doing it twice
    */
   fileResponses?: FileResponse[];
 }
