@@ -8,21 +8,16 @@
 import * as os from 'os';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import {
-  ChangeResult,
-  replaceRenamedCommands,
-  SourceTracking,
-  StatusOutputRow,
-  throwIfInvalid,
-} from '@salesforce/source-tracking';
+import { ChangeResult, replaceRenamedCommands, StatusOutputRow, throwIfInvalid } from '@salesforce/source-tracking';
 import { StatusFormatter, StatusResult } from '../../../../formatters/source/statusFormatter';
+import { trackingSetup } from '../../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 export default class Status extends SfdxCommand {
   public static description = messages.getMessage('description');
-  public static readonly examples = replaceRenamedCommands(messages.getMessage('examples')).split(os.EOL);
+  public static readonly examples = messages.getMessage('examples').split(os.EOL);
   protected static flagsConfig: FlagsConfig = {
     local: flags.boolean({
       char: 'l',
@@ -62,9 +57,12 @@ export default class Status extends SfdxCommand {
         .map((dir) => dir.path)
         .join(',')}`
     );
-    const tracking = await SourceTracking.create({
+    const tracking = await trackingSetup({
+      commandName: replaceRenamedCommands('force:source:status'),
+      ignoreConflicts: true,
       org: this.org,
       project: this.project,
+      ux: this.ux,
       apiVersion: this.flags.apiversion as string,
     });
     const stlStatusResult = await tracking.getStatus({ local: wantsLocal, remote: wantsRemote });
