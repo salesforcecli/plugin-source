@@ -117,7 +117,7 @@ export class Retrieve extends SourceCommand {
       sourcepath: this.getFlag<string[]>('sourcepath'),
       manifest: this.flags.manifest && {
         manifestPath: this.getFlag<string>('manifest'),
-        directoryPaths: this.flags.retrievetargetdir ? null : this.getPackageDirs(),
+        directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
