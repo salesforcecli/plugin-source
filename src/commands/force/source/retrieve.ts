@@ -35,6 +35,7 @@ export class Retrieve extends SourceCommand {
       char: 'r',
       description: messages.getMessage('flags.retrievetargetdir'),
       longDescription: messages.getMessage('flagsLong.retrievetargetdir'),
+      exclusive: ['packagenames', 'sourcepath'],
     }),
     apiversion: flags.builtin({
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
