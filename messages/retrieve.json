@@ -26,7 +26,7 @@
     "forceoverwrite": "ignore conflict warnings and overwrite changes to the project"
   },
   "flagsLong": {
-    "retrievetargetdir": "The root of the directory structure where the source files are put.",
+    "retrievetargetdir": "The root of the directory structure into which the source files are retrieved.",
     "wait": "Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you.",
     "manifest": [
       "The complete path for the manifest (package.xml) file that specifies the components to retrieve.",
