@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@salesforce/plugin-source/1.8.13 linux-x64 node-v12.22.10
+@salesforce/plugin-source/1.8.14 linux-x64 node-v12.22.10
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -102,7 +102,7 @@ USAGE
 - [`sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeploycancel--w-minutes--i-id--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeployreport--w-minutes--i-id--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceignoredlist--p-filepath---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcemanifestcreate--m-array--p-array--n-string---t-prepostdestroypackage--o-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array> --fromorg <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcemanifestcreate--m-array--p-array--n-string---t-prepostdestroypackage--c-array---fromorg-string--o-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceopen--f-filepath--r--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepull--f--w-minutes--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepush--f--w-minutes--g--u-string---apiversion-string---quiet---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -156,7 +156,7 @@ EXAMPLES
   $ sfdx force:mdapi:beta:convert -r path/to/metadata -d path/to/outputdir
 ```
 
-_See code: [src/commands/force/mdapi/beta/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/beta/convert.ts)_
+_See code: [src/commands/force/mdapi/beta/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/beta/convert.ts)_
 
 ## `sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -240,7 +240,7 @@ EXAMPLES
     sfdx force:mdapi:beta:deploy -q MyValidatedId
 ```
 
-_See code: [src/commands/force/mdapi/beta/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/beta/deploy.ts)_
+_See code: [src/commands/force/mdapi/beta/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/beta/deploy.ts)_
 
 ## `sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -285,7 +285,7 @@ EXAMPLES
    sfdx force:mdapi:beta:deploy:report -i 1234 -w 10
 ```
 
-_See code: [src/commands/force/mdapi/beta/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/beta/deploy/report.ts)_
+_See code: [src/commands/force/mdapi/beta/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/beta/deploy/report.ts)_
 
 ## `sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -352,7 +352,7 @@ EXAMPLES
     sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir --wait 0
 ```
 
-_See code: [src/commands/force/mdapi/beta/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/beta/retrieve.ts)_
+_See code: [src/commands/force/mdapi/beta/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/beta/retrieve.ts)_
 
 ## `sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -410,7 +410,7 @@ EXAMPLES
     sfdx force:mdapi:beta:retrieve:report -i retrieveId -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
 ```
 
-_See code: [src/commands/force/mdapi/beta/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/beta/retrieve/report.ts)_
+_See code: [src/commands/force/mdapi/beta/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/beta/retrieve/report.ts)_
 
 ## `sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -455,7 +455,7 @@ EXAMPLES
     $ sfdx force:mdapi:deploy:report
 ```
 
-_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/deploy/cancel.ts)_
+_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/deploy/cancel.ts)_
 
 ## `sfdx force:mdapi:describemetadata [-f <filepath>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -494,7 +494,7 @@ EXAMPLES
   $ sfdx force:mdapi:describemetadata -u me@example.com -f /path/to/outputfilename.txt
 ```
 
-_See code: [src/commands/force/mdapi/describemetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/describemetadata.ts)_
+_See code: [src/commands/force/mdapi/describemetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/describemetadata.ts)_
 
 ## `sfdx force:mdapi:listmetadata -m <string> [-f <filepath>] [--folder <string>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -547,7 +547,7 @@ EXAMPLES
   $ sfdx force:mdapi:listmetadata -m CustomObject -u me@example.com -f /path/to/outputfilename.txt
 ```
 
-_See code: [src/commands/force/mdapi/listmetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/mdapi/listmetadata.ts)_
+_See code: [src/commands/force/mdapi/listmetadata.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/mdapi/listmetadata.ts)_
 
 ## `sfdx force:source:convert [-r <directory>] [-d <directory>] [-n <string>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -560,7 +560,7 @@ USAGE
 
 OPTIONS
   -d, --outputdir=outputdir                                                         [default:
-                                                                                    metadataPackage_1645653484923]
+                                                                                    metadataPackage_1645661066547]
                                                                                     output directory to store the
                                                                                     Metadata API–formatted files in
 
@@ -598,7 +598,7 @@ EXAMPLES
   $ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'
 ```
 
-_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/convert.ts)_
+_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/convert.ts)_
 
 ## `sfdx force:source:delete [-w <minutes>] [-l NoTestRun|RunLocalTests|RunAllTestsInOrg] [-r] [-m <array>] [-p <array>] [-f [-t | -c]] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -662,7 +662,7 @@ EXAMPLES
   $ sfdx force:source:delete -p path/to/source
 ```
 
-_See code: [src/commands/force/source/delete.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/delete.ts)_
+_See code: [src/commands/force/source/delete.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/delete.ts)_
 
 ## `sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [--purgeondelete -x <filepath>] [-q <id> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -t] [-m <array>] [-p <array>] [--predestructivechanges <filepath> ] [--postdestructivechanges <filepath> ] [-f ] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -792,7 +792,7 @@ EXAMPLES
       $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/deploy.ts)_
 
 ## `sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -841,7 +841,7 @@ EXAMPLES
     $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/deploy/cancel.ts)_
 
 ## `sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -888,7 +888,7 @@ EXAMPLES
    $ sfdx force:source:deploy:report
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/deploy/report.ts)_
 
 ## `sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -910,19 +910,25 @@ OPTIONS
                                                                                     this command invocation
 ```
 
-_See code: [src/commands/force/source/ignored/list.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/ignored/list.ts)_
+_See code: [src/commands/force/source/ignored/list.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/ignored/list.ts)_
 
-## `sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array> --fromorg <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 create a project manifest that lists the metadata components you want to deploy or retrieve
 
 ```
 USAGE
-  $ sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-o
-  <string>] [--apiversion <string>] [--json] [--loglevel
+  $ sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array>
+  --fromorg <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
+  -c, --includepackages=includepackages                                             comma-separated list of package
+                                                                                    types (managed, unlocked) whose
+                                                                                    metadata is included in the
+                                                                                    manifest; by default, metadata in
+                                                                                    packages is ignored
+
   -m, --metadata=metadata                                                           comma-separated list of names of
                                                                                     metadata components to include in
                                                                                     the manifest
@@ -943,6 +949,10 @@ OPTIONS
 
   --apiversion=apiversion                                                           override the api version used for
                                                                                     api requests made by this command
+
+  --fromorg=fromorg                                                                 username or alias of the org that
+                                                                                    contains the metadata components
+                                                                                    from which to build a manifest
 
   --json                                                                            format output as json
 
@@ -972,9 +982,10 @@ EXAMPLES
   $ sfdx force:source:manifest:create -m ApexClass
   $ sfdx force:source:manifest:create -m ApexClass:MyApexClass --manifesttype destroy
   $ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest
+  $ sfdx force:source:manifest:create --fromorg test@myorg.com --includepackages unlocked
 ```
 
-_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/manifest/create.ts)_
+_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/manifest/create.ts)_
 
 ## `sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1018,7 +1029,7 @@ EXAMPLES
   $ sfdx force:source:open -f path/to/source -u my-user@my-org.com
 ```
 
-_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/open.ts)_
+_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/open.ts)_
 
 ## `sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1054,7 +1065,7 @@ ALIASES
   $ sfdx force:source:beta:pull
 ```
 
-_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/pull.ts)_
+_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/pull.ts)_
 
 ## `sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1096,7 +1107,7 @@ ALIASES
   $ sfdx force:source:beta:push
 ```
 
-_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/push.ts)_
+_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/push.ts)_
 
 ## `sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1186,7 +1197,7 @@ EXAMPLES
      $ sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/retrieve.ts)_
 
 ## `sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1229,7 +1240,7 @@ EXAMPLES
   sfdx force:source:status -a -u me@example.com --json
 ```
 
-_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/status.ts)_
+_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/status.ts)_
 
 ## `sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1265,7 +1276,7 @@ ALIASES
   $ sfdx force:source:beta:tracking:clear
 ```
 
-_See code: [src/commands/force/source/tracking/clear.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/tracking/clear.ts)_
+_See code: [src/commands/force/source/tracking/clear.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/tracking/clear.ts)_
 
 ## `sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -1309,6 +1320,6 @@ ALIASES
   $ sfdx force:source:beta:tracking:reset
 ```
 
-_See code: [src/commands/force/source/tracking/reset.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.13/src/commands/force/source/tracking/reset.ts)_
+_See code: [src/commands/force/source/tracking/reset.ts](https://github.com/salesforcecli/plugin-source/blob/v1.8.14/src/commands/force/source/tracking/reset.ts)_
 
 <!-- commandsstop -->
