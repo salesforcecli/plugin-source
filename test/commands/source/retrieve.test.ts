@@ -8,14 +8,20 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { RetrieveOptions, ComponentLike, ComponentSet, MetadataType } from '@salesforce/source-deploy-retrieve';
-import { Messages, Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import {
+  ComponentLike,
+  ComponentSet,
+  ComponentSetBuilder,
+  ComponentSetOptions,
+  MetadataType,
+  RetrieveOptions,
+} from '@salesforce/source-deploy-retrieve';
+import { Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
-import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { getRetrieveResult } from './retrieveResponses';
 import { exampleSourceComponent } from './testConsts';
 

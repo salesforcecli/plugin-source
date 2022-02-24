@@ -10,7 +10,7 @@ import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { ComponentSet, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, ComponentSetBuilder, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
@@ -18,8 +18,7 @@ import {
   RetrieveCommandResult,
   RetrieveResultFormatter,
 } from '../../../formatters/retrieveResultFormatter';
-import { ComponentSetBuilder } from '../../../componentSetBuilder';
-import { trackingSetup, updateTracking, filterConflictsByComponentSet } from '../../../trackingFunctions';
+import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');

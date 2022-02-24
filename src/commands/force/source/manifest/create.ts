@@ -9,8 +9,8 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
+import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../../sourceCommand';
-import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'create');

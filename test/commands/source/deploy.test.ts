@@ -8,7 +8,7 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
+import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigAggregator, Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
@@ -19,7 +19,6 @@ import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
 } from '../../../src/formatters/source/deployAsyncResultFormatter';
-import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
 import { getDeployResult } from './deployResponses';
@@ -142,7 +141,7 @@ describe('force:source:deploy', () => {
       apiversion: undefined,
       sourceapiversion: undefined,
     };
-    const expectedArgs = { ...defaultArgs, ...overrides };
+    const expectedArgs: Partial<ComponentSetOptions> = { ...defaultArgs, ...overrides };
 
     expect(buildComponentSetStub.calledOnce).to.equal(true);
     expect(buildComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);

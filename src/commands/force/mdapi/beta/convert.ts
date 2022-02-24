@@ -8,11 +8,10 @@
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { MetadataConverter, ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { ComponentSetBuilder, ConvertResult, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../../sourceCommand';
-import { ConvertResultFormatter, ConvertCommandResult } from '../../../../formatters/mdapi/convertResultFormatter';
-import { ComponentSetBuilder } from '../../../../componentSetBuilder';
+import { ConvertCommandResult, ConvertResultFormatter } from '../../../../formatters/mdapi/convertResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.convert');

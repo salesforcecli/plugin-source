@@ -13,10 +13,9 @@ import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { SfdxProject } from '@salesforce/core';
-import { MetadataConverter } from '@salesforce/source-deploy-retrieve';
+import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Convert } from '../../../src/commands/force/mdapi/beta/convert';
 import { FsError } from '../../../src/types';
-import { ComponentSetBuilder } from '../../../src/componentSetBuilder';
 
 const testConvertResult = {
   converted: [

@@ -9,12 +9,16 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  ComponentSetBuilder,
+  ComponentSetOptions,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
 import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
-import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 import { Delete } from '../../../src/commands/force/source/delete';
 import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
 
