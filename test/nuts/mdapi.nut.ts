@@ -176,7 +176,14 @@ describe('mdapi NUTs', () => {
           const size1 = fs.statSync(srcComp.content).size;
           const size2 = fs.statSync(srcComp2.content).size;
           // Content files can differ slightly due to compression
-          expect(size1 / size2).to.be.within(0.98, 1.02);
+          if (isNaN(size1) || isNaN(size2)) {
+            // eslint-disable-next-line no-console
+            console.error(`${srcComp.content} size = ${size1}`);
+            // eslint-disable-next-line no-console
+            console.error(`${srcComp2.content} size = ${size2}`);
+          } else {
+            expect(size1 / size2).to.be.within(0.98, 1.02);
+          }
         }
       }
     });
