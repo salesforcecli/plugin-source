@@ -173,17 +173,15 @@ describe('mdapi NUTs', () => {
           expect(size1).to.equal(size2);
         }
         if (srcComp.content) {
-          const size1 = fs.statSync(srcComp.content).size;
-          const size2 = fs.statSync(srcComp2.content).size;
-          const compare = size1 / size2;
-          // Content files can differ slightly due to compression
-          if (isNaN(compare)) {
-            // eslint-disable-next-line no-console
-            console.error(`${srcComp.content} size = ${size1}`);
-            // eslint-disable-next-line no-console
-            console.error(`${srcComp2.content} size = ${size2}`);
-          } else {
-            expect(compare).to.be.within(0.98, 1.02);
+          const stat1 = fs.statSync(srcComp.content);
+          const stat2 = fs.statSync(srcComp2.content);
+
+          if (stat1.isFile()) {
+            const size1 = stat1.size;
+            const size2 = stat2.size;
+            // Content files can differ slightly due to compression so compare
+            // with a tolerance.
+            expect(size1 / size2, `file1 size: ${size1} should ~ equal file2 size: ${size2}`).to.be.within(0.98, 1.02);
           }
         }
       }
