@@ -184,12 +184,12 @@ describe('mdapi NUTs', () => {
 
   describe('mdapi:deploy:cancel', () => {
     it('will cancel an mdapi deploy via the stash.json', () => {
-      execCmd('force:source:convert --outputdir mdapi');
-      const deploy = execCmd<{ id: string }>('force:mdapi:beta:deploy -d mdapi -w 0 --json', {
+      const convertDir = 'mdConvert1';
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
+      const deploy = execCmd<{ id: string }>(`force:mdapi:beta:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
-      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
-      expect(result.jsonOutput.status).to.equal(0);
+      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json', { ensureExitCode: 0 });
       const json = result.jsonOutput.result;
       expect(json).to.have.property('canceledBy');
       expect(json).to.have.property('status');
@@ -198,14 +198,17 @@ describe('mdapi NUTs', () => {
     });
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
-      execCmd('force:source:convert --outputdir mdapi');
-      const deploy = execCmd<{ id: string }>('force:mdapi:beta:deploy -d mdapi -w 0 --json', {
+      const convertDir = 'mdConvert2';
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
+      const deploy = execCmd<{ id: string }>(`force:mdapi:beta:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
       expect(deploy.result).to.have.property('id');
 
-      const result = execCmd<DeployCancelCommandResult>(`force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`);
-      expect(result.jsonOutput.status).to.equal(0);
+      const result = execCmd<DeployCancelCommandResult>(
+        `force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`,
+        { ensureExitCode: 0 }
+      );
       const json = result.jsonOutput.result;
       expect(json).to.have.property('canceledBy');
       expect(json).to.have.property('status');
