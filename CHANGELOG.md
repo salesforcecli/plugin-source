@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.16](https://github.com/salesforcecli/plugin-source/compare/v1.8.15...v1.8.16) (2022-02-27)
+
+### Bug Fixes
+
+- run mdapi NUTs in CI ([#431](https://github.com/salesforcecli/plugin-source/issues/431)) ([e33fd1e](https://github.com/salesforcecli/plugin-source/commit/e33fd1e93a92cd95586d29d8fb0ff6cb6e038fbb))
+
 ### [1.8.15](https://github.com/salesforcecli/plugin-source/compare/v1.8.14...v1.8.15) (2022-02-24)
 
 ### [1.8.14](https://github.com/salesforcecli/plugin-source/compare/v1.8.13...v1.8.14) (2022-02-23)
