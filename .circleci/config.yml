@@ -81,6 +81,7 @@ workflows:
                 - 'yarn test:nuts:specialTypes'
                 - 'yarn test:nuts:deploy:destructive'
                 - 'yarn test:nuts:tracking'
+                - 'yarn test:nuts:mdapi'
       - release-management/release-package:
           sign: true
           github-release: true
