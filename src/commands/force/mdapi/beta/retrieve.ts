@@ -10,14 +10,18 @@ import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { MetadataApiRetrieve, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSetBuilder,
+  MetadataApiRetrieve,
+  RequestStatus,
+  RetrieveResult,
+} from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../../sourceCommand';
 import { Stash } from '../../../../stash';
-import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 import {
-  RetrieveCommandResult,
   RetrieveCommandAsyncResult,
+  RetrieveCommandResult,
   RetrieveResultFormatter,
 } from '../../../../formatters/mdapi/retrieveResultFormatter';
 

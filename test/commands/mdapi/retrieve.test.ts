@@ -13,11 +13,10 @@ import { Lifecycle, Org } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
-import { RetrieveOptions } from '@salesforce/source-deploy-retrieve';
+import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
 import { Retrieve } from '../../../src/commands/force/mdapi/beta/retrieve';
 import { Stash, StashData } from '../../../src/stash';
 import { getRetrieveResult } from '../source/retrieveResponses';
-import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 
 describe('force:mdapi:beta:retrieve', () => {
   const sandbox = sinon.createSandbox();

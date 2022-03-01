@@ -6,14 +6,13 @@
  */
 
 import { join, resolve } from 'path';
-import { MetadataConverter } from '@salesforce/source-deploy-retrieve';
+import { ComponentSetBuilder, ComponentSetOptions, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { SfdxProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
-import { ComponentSetBuilder, ComponentSetOptions } from '../../../src/componentSetBuilder';
 
 describe('force:source:convert', () => {
   const sandbox = sinon.createSandbox();
