@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.17](https://github.com/salesforcecli/plugin-source/compare/v1.8.16...v1.8.17) (2022-03-01)
+
+### Bug Fixes
+
+- use CSB from SDR ([#430](https://github.com/salesforcecli/plugin-source/issues/430)) ([80e4bdd](https://github.com/salesforcecli/plugin-source/commit/80e4bdd313b55f4b9d37a7a792885d7503e1fbfc))
+
 ### [1.8.16](https://github.com/salesforcecli/plugin-source/compare/v1.8.15...v1.8.16) (2022-02-27)
 
 ### Bug Fixes
