@@ -122,7 +122,7 @@ describe('remote changes', () => {
       }).jsonOutput.result;
       expect(remoteResult.filter((r) => r.state.includes('Remote Deleted'))).to.deep.equal([]);
 
-      const localStatus = execCmd<StatusResult[]>('force:source:status --json --local', {
+      const localStatus = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
       expect(localStatus).to.deep.equal([]);
@@ -165,7 +165,7 @@ describe('remote changes', () => {
         JSON.stringify(remoteResult)
       ).deep.equal([]);
 
-      const localStatus = execCmd<StatusResult[]>('force:source:status --json --local', {
+      const localStatus = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --local'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
       expect(localStatus).to.deep.equal([]);

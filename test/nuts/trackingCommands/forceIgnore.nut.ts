@@ -91,7 +91,7 @@ describe('forceignore changes', () => {
         silent: true,
       });
       // pushes with no results
-      const ignoredOutput = execCmd<PushResponse>('force:source:push --json', {
+      const ignoredOutput = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
       // nothing should have been pushed
@@ -103,7 +103,7 @@ describe('forceignore changes', () => {
       await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), originalForceIgnore);
 
       // verify file pushed in results
-      const unIgnoredOutput = execCmd<PushResponse>('force:source:push --json', {
+      const unIgnoredOutput = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
 

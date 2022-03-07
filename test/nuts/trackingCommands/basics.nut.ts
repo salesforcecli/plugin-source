@@ -150,7 +150,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
           result: [{ location: string; value: string }];
         }
       ).result.find((config) => config.location === 'Local').value;
-      const failure = execCmd(`force:source:status -u ${hubUsername} --remote --json`, {
+      const failure = execCmd(replaceRenamedCommands(`force:source:status -u ${hubUsername} --remote --json`), {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };
       expect(failure.name).to.equal('NonSourceTrackedOrgError');

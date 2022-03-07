@@ -92,7 +92,7 @@ describe('reset and clear', () => {
   });
 
   describe('reset remote tracking', () => {
-    let lowestRevision: number;
+    let lowestRevision = 0;
     it('creates 2 apex classes to get some tracking going', async () => {
       const createResult = await conn.tooling.create('ApexClass', {
         Name: 'CreatedClass',
@@ -110,7 +110,7 @@ describe('reset and clear', () => {
         }
       });
       // gets tracking files from server
-      execCmd('force:source:status --json --remote', { ensureExitCode: 0 });
+      execCmd(replaceRenamedCommands('force:source:status --json --remote'), { ensureExitCode: 0 });
       const revisions = await getRevisionsAsArray();
       const revisionFile = JSON.parse(
         await fs.promises.readFile(path.join(trackingFileFolder, 'maxRevision.json'), 'utf8')

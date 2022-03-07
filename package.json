@@ -3,6 +3,7 @@
   "description": "Commands to interact with source formatted metadata",
   "version": "1.8.17",
   "author": "Salesforce",
+  "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
     "@oclif/config": "^1.18.2",
