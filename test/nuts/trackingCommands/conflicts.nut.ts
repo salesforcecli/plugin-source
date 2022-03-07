@@ -15,6 +15,7 @@ import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
+import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
@@ -37,7 +38,7 @@ describe('conflict detection and resolution', () => {
 
   it('pushes to initiate the remote', () => {
     // This would go in setupCommands but we want it to use the bin/run version
-    const pushResult = execCmd<PushResponse>('force:source:push --json', {
+    const pushResult = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
     expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(231);
@@ -66,7 +67,7 @@ describe('conflict detection and resolution', () => {
         description: 'modified',
       },
     });
-    const result = execCmd<StatusResult[]>('force:source:status --json --remote', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
       ensureExitCode: 0,
     }).jsonOutput.result;
     expect(
@@ -89,7 +90,7 @@ describe('conflict detection and resolution', () => {
     );
   });
   it('can see the conflict in status', () => {
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.filter((app) => app.type === 'CustomApplication');
     // json is not sorted.  This relies on the implementation of getConflicts()
@@ -118,14 +119,12 @@ describe('conflict detection and resolution', () => {
   });
 
   it('gets conflict error on push', () => {
-    execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 1 });
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), { ensureExitCode: 1 });
   });
   it('gets conflict error on pull', () => {
-    execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 1 });
+    execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 1 });
   });
   it('can push with forceoverwrite', () => {
-    execCmd<PushResponse>('force:source:push --json --forceoverwrite', {
-      ensureExitCode: 0,
-    });
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), { ensureExitCode: 0 });
   });
 });
