@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.18](https://github.com/salesforcecli/plugin-source/compare/v1.8.17...v1.8.18) (2022-03-07)
+
+### Bug Fixes
+
+- revert beta GA ([#446](https://github.com/salesforcecli/plugin-source/issues/446)) ([0efcaa1](https://github.com/salesforcecli/plugin-source/commit/0efcaa11c7c3d3eaed9787486c52295adc5aa4b7))
+
 ### [1.8.17](https://github.com/salesforcecli/plugin-source/compare/v1.8.16...v1.8.17) (2022-03-01)
 
 ### Bug Fixes
