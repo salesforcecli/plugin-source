@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 
@@ -35,7 +36,7 @@ describe('lwc', () => {
   });
 
   it('pushes the repo to get source tracking started', () => {
-    execCmd<PushResponse>('force:source:push --json', {
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     });
   });
@@ -45,14 +46,14 @@ describe('lwc', () => {
       cssPathAbsolute,
       (await fs.promises.readFile(cssPathAbsolute, 'utf-8')).replace('absolute', 'relative')
     );
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result;
     expect(result.find((r) => r.filePath === cssPathRelative)).to.have.property('actualState', 'Changed');
   });
 
   it('pushes lwc css change', () => {
-    const result = execCmd<PushResponse>('force:source:push --json', {
+    const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
     // we get a result for each bundle member, even though only one changed
@@ -60,7 +61,7 @@ describe('lwc', () => {
   });
 
   it('sees no local changes', () => {
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.filter((r) => r.origin === 'Local');
     expect(result).to.have.length(0);
@@ -68,7 +69,7 @@ describe('lwc', () => {
 
   it("deleting an lwc sub-component should show the sub-component as 'Deleted'", async () => {
     await fs.promises.rm(cssPathAbsolute);
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.find((r) => r.filePath === cssPathRelative);
     expect(result).to.deep.equal({
@@ -84,7 +85,7 @@ describe('lwc', () => {
   });
 
   it('pushes lwc subcomponent delete', () => {
-    const result = execCmd<PushResponse>('force:source:push --json', {
+    const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
     const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
@@ -94,7 +95,7 @@ describe('lwc', () => {
   });
 
   it('sees no local changes', () => {
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.filter((r) => r.origin === 'Local');
     expect(result).to.have.length(0);
@@ -113,7 +114,7 @@ describe('lwc', () => {
       dependentLWCPath,
       (await fs.promises.readFile(dependentLWCPath, 'utf-8')).replace(/<c-hero.*hero-details>/s, '')
     );
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.filter((r) => r.origin === 'Local');
     expect(result).to.have.length(4);
@@ -122,7 +123,7 @@ describe('lwc', () => {
   });
 
   it('push deletes the LWC remotely', () => {
-    const result = execCmd<PushResponse>('force:source:push --json', {
+    const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
     // there'll also be changes for the changed Hero component html, but we've already tested changing a bundle member
@@ -135,7 +136,7 @@ describe('lwc', () => {
   });
 
   it('sees no local changes', () => {
-    const result = execCmd<StatusResult[]>('force:source:status --json', {
+    const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json'), {
       ensureExitCode: 0,
     }).jsonOutput.result.filter((r) => r.origin === 'Local');
     expect(result).to.have.length(0);

@@ -995,10 +995,10 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.1.1.tgz#3279566a3dba2389eb51d81f3d5207a17dbd70cc"
-  integrity sha512-yxtO3TikyTGhDoMQ/zBXvgzYnDKcZntOqozycEif4ZxKEjaa9ot04oOUTTtMa+E8X8SD2QOQXqJ1tcfDNX5ZkA==
+"@salesforce/source-tracking@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.1.2.tgz#88fd50e7952d2eae6109df92a89b1de32ad637fb"
+  integrity sha512-EyRv6BdquK+SunuswlQ3ikzfBtZU4l/5YResPA/+LhN7R6onQYr96nq1FTbn63ZRWtBYdqiR3Gw3RulKQ6Ixkw==
   dependencies:
     "@salesforce/core" "^2.33.1"
     "@salesforce/kit" "^1.5.17"
