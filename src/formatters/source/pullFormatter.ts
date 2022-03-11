@@ -54,6 +54,13 @@ export class PullResultFormatter extends ResultFormatter {
    * @returns RetrieveCommandResult
    */
   public getJson(): PullResponse[] {
+    if (!this.isSuccess()) {
+      const error = new SfdxError('Pull failed.', 'PullFailed', [], process.exitCode);
+      error.setData(
+        this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
+      );
+      throw error;
+    }
     return this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
   }
 
