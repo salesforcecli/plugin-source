@@ -46,6 +46,20 @@ export class PushResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): PushResponse {
+    // throws a particular json structure.  commandName property will be appended by sfdxCommand when this throws
+    if (process.exitCode !== 0) {
+      const error = new SfdxError(messages.getMessage('sourcepushFailed'), 'DeployFailed', [], process.exitCode);
+      const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
+      error.setData(errorData);
+      error['result'] = errorData;
+      // partial success
+      if (process.exitCode === 69) {
+        error['partialSuccess'] = this.fileResponses.filter(
+          (fileResponse) => fileResponse.state !== ComponentStatus.Failed
+        );
+      }
+      throw error;
+    }
     // quiet returns only failures
     const toReturn = this.isQuiet()
       ? this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)

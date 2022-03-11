@@ -37,7 +37,18 @@ describe('PushResultFormatter', () => {
   });
 
   describe('json', () => {
+    const expectedFail = {
+      filePath: 'classes/ProductController.cls',
+      fullName: 'ProductController',
+      state: 'Failed',
+      type: 'ApexClass',
+      lineNumber: '27',
+      columnNumber: '18',
+      problemType: 'Error',
+      error: 'This component has some problems',
+    };
     it('returns expected json for success', () => {
+      process.exitCode = 0;
       const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultSuccess);
       expect(formatter.getJson().pushedSource).to.deep.equal([
         {
@@ -48,14 +59,37 @@ describe('PushResultFormatter', () => {
         },
       ]);
     });
+    it('returns expected json for failure', () => {
+      const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultFailure);
+      process.exitCode = 1;
+
+      try {
+        formatter.getJson();
+        throw new Error('should have thrown');
+      } catch (error) {
+        expect(error).to.have.property('message', 'Push failed.');
+        expect(error).to.have.property('name', 'DeployFailed');
+        expect(error).to.have.property('stack').includes('DeployFailed:');
+        expect(error).to.have.property('actions').deep.equal([]);
+        expect(error).to.have.property('data').deep.equal([expectedFail]);
+        expect(error).to.have.property('result').deep.equal([expectedFail]);
+      }
+    });
     describe('json with quiet', () => {
       it('honors quiet flag for json successes', () => {
+        process.exitCode = 0;
         const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultSuccess);
         expect(formatter.getJson().pushedSource).to.deep.equal([]);
       });
-      it('honors quiet flag for json successes', () => {
+      it('honors quiet flag for json failure', () => {
         const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultFailure);
-        expect(formatter.getJson().pushedSource).to.have.length(1);
+        try {
+          formatter.getJson();
+          throw new Error('should have thrown');
+        } catch (error) {
+          expect(error).to.have.property('message', 'Push failed.');
+          expect(error).to.have.property('result').deep.equal([expectedFail]);
+        }
       });
     });
   });
