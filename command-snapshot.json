@@ -1,5 +1,11 @@
 [
   {
+    "command": "force",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["json", "loglevel"],
+    "alias": []
+  },
+  {
     "command": "force:mdapi:beta:convert",
     "plugin": "@salesforce/plugin-source",
     "flags": ["json", "loglevel", "manifest", "metadata", "metadatapath", "outputdir", "rootdir"],
