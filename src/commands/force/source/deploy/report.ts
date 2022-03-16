@@ -9,12 +9,12 @@ import * as os from 'os';
 import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
+import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
 } from '../../../../formatters/deployReportResultFormatter';
-import { ComponentSetBuilder } from '../../../../componentSetBuilder';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';

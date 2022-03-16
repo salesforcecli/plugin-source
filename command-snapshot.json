@@ -1,5 +1,11 @@
 [
   {
+    "command": "force",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["json", "loglevel"],
+    "alias": []
+  },
+  {
     "command": "force:mdapi:beta:convert",
     "plugin": "@salesforce/plugin-source",
     "flags": ["json", "loglevel", "manifest", "metadata", "metadatapath", "outputdir", "rootdir"],
@@ -196,7 +202,18 @@
   {
     "command": "force:source:manifest:create",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "manifestname", "manifesttype", "metadata", "outputdir", "sourcepath"],
+    "flags": [
+      "apiversion",
+      "fromorg",
+      "includepackages",
+      "json",
+      "loglevel",
+      "manifestname",
+      "manifesttype",
+      "metadata",
+      "outputdir",
+      "sourcepath"
+    ],
     "alias": []
   },
   {

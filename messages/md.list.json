@@ -23,6 +23,5 @@
     "metadatatype": "The metadata type to be retrieved, such as CustomObject or Report. The metadata type value is case-sensitive.",
     "folder": "The folder associated with the component. This parameter is required for components that use folders, such as Dashboard, Document, EmailTemplate, or Report. The folder name value is case-sensitive."
   },
-  "invalidResultFile": "Invalid resultfile parameter specified: %s\nMust be a valid file path.",
   "noMatchingMetadata": "No metadata found for type: %s in org: %s"
 }

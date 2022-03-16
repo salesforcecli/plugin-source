@@ -40,12 +40,9 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('deploy the initial metadata to the org with tracking', () => {
-      const result = execCmd<DeployCommandResult>(
-        replaceRenamedCommands('force:source:deploy -p force-app,my-app,foo-bar/app -t --json'),
-        {
-          ensureExitCode: 0,
-        }
-      ).jsonOutput.result;
+      const result = execCmd<DeployCommandResult>('force:source:deploy -p force-app,my-app,foo-bar/app -t --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
       expect(result.deployedSource).to.be.an.instanceof(Array);
       expect(result.deployedSource, JSON.stringify(result)).to.have.length.greaterThan(10);
       expect(
@@ -67,12 +64,9 @@ describe('-t flag for deploy, retrieve, and delete', () => {
   });
   describe('retrieve and status', () => {
     it('can retrieve the remote profile', () => {
-      const retrieveResult = execCmd<RetrieveCommandResult>(
-        replaceRenamedCommands('force:source:retrieve -m Profile:Admin -t --json'),
-        {
-          ensureExitCode: 0,
-        }
-      ).jsonOutput?.result;
+      const retrieveResult = execCmd<RetrieveCommandResult>('force:source:retrieve -m Profile:Admin -t --json', {
+        ensureExitCode: 0,
+      }).jsonOutput?.result;
       expect(
         retrieveResult.inboundFiles.some((item) => item.type === 'Profile'),
         JSON.stringify(retrieveResult)

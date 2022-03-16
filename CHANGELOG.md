@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.19](https://github.com/salesforcecli/plugin-source/compare/v1.8.18...v1.8.19) (2022-03-16)
+
+### Bug Fixes
+
+- move command force to plugin-source ([#451](https://github.com/salesforcecli/plugin-source/issues/451)) ([5da7884](https://github.com/salesforcecli/plugin-source/commit/5da7884953c068bcf37f3434193cae309fef8573))
+
+### [1.8.18](https://github.com/salesforcecli/plugin-source/compare/v1.8.17...v1.8.18) (2022-03-07)
+
+### Bug Fixes
+
+- revert beta GA ([#446](https://github.com/salesforcecli/plugin-source/issues/446)) ([0efcaa1](https://github.com/salesforcecli/plugin-source/commit/0efcaa11c7c3d3eaed9787486c52295adc5aa4b7))
+
+### [1.8.17](https://github.com/salesforcecli/plugin-source/compare/v1.8.16...v1.8.17) (2022-03-01)
+
+### Bug Fixes
+
+- use CSB from SDR ([#430](https://github.com/salesforcecli/plugin-source/issues/430)) ([80e4bdd](https://github.com/salesforcecli/plugin-source/commit/80e4bdd313b55f4b9d37a7a792885d7503e1fbfc))
+
+### [1.8.16](https://github.com/salesforcecli/plugin-source/compare/v1.8.15...v1.8.16) (2022-02-27)
+
+### Bug Fixes
+
+- run mdapi NUTs in CI ([#431](https://github.com/salesforcecli/plugin-source/issues/431)) ([e33fd1e](https://github.com/salesforcecli/plugin-source/commit/e33fd1e93a92cd95586d29d8fb0ff6cb6e038fbb))
+
+### [1.8.15](https://github.com/salesforcecli/plugin-source/compare/v1.8.14...v1.8.15) (2022-02-24)
+
+### [1.8.14](https://github.com/salesforcecli/plugin-source/compare/v1.8.13...v1.8.14) (2022-02-23)
+
+### [1.8.13](https://github.com/salesforcecli/plugin-source/compare/v1.8.12...v1.8.13) (2022-02-23)
+
 ### [1.8.12](https://github.com/salesforcecli/plugin-source/compare/v1.8.11...v1.8.12) (2022-02-14)
 
 ### [1.8.11](https://github.com/salesforcecli/plugin-source/compare/v1.8.10...v1.8.11) (2022-02-03)

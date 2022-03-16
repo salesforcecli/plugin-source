@@ -6,20 +6,20 @@
  */
 import { UX } from '@salesforce/command';
 import {
+  ChangeResult,
+  getTrackingFileVersion,
+  replaceRenamedCommands,
   SourceTracking,
   SourceTrackingOptions,
-  ChangeResult,
   throwIfInvalid,
-  replaceRenamedCommands,
-  getTrackingFileVersion,
 } from '@salesforce/source-tracking';
 import { Messages, SfdxError } from '@salesforce/core';
 import {
-  RetrieveResult,
-  DeployResult,
-  ComponentStatus,
   ComponentSet,
+  ComponentStatus,
+  DeployResult,
   FileResponse,
+  RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
 
 Messages.importMessagesDirectory(__dirname);

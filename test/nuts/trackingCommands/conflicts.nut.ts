@@ -125,8 +125,6 @@ describe('conflict detection and resolution', () => {
     execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 1 });
   });
   it('can push with forceoverwrite', () => {
-    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), {
-      ensureExitCode: 0,
-    });
+    execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json --forceoverwrite'), { ensureExitCode: 0 });
   });
 });

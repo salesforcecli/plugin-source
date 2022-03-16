@@ -92,7 +92,7 @@ describe('reset and clear', () => {
   });
 
   describe('reset remote tracking', () => {
-    let lowestRevision: number;
+    let lowestRevision = 0;
     it('creates 2 apex classes to get some tracking going', async () => {
       const createResult = await conn.tooling.create('ApexClass', {
         Name: 'CreatedClass',

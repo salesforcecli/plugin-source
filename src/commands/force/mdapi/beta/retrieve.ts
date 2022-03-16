@@ -6,29 +6,24 @@
  */
 
 import * as os from 'os';
-import * as fs from 'fs';
-import { resolve, extname } from 'path';
+import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { MetadataApiRetrieve, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSetBuilder,
+  MetadataApiRetrieve,
+  RequestStatus,
+  RetrieveResult,
+} from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
 import { SourceCommand } from '../../../../sourceCommand';
 import { Stash } from '../../../../stash';
-import { ComponentSetBuilder } from '../../../../componentSetBuilder';
-import { FsError } from '../../../../types';
 import {
-  RetrieveCommandResult,
   RetrieveCommandAsyncResult,
+  RetrieveCommandResult,
   RetrieveResultFormatter,
 } from '../../../../formatters/mdapi/retrieveResultFormatter';
-
-interface EnsureFlagOptions {
-  flagName: string;
-  path: string;
-  type: 'dir' | 'file' | 'any';
-  throwOnENOENT?: boolean;
-}
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
@@ -238,46 +233,6 @@ export class Retrieve extends SourceCommand {
     } catch (error) {
       this.logger.debug('No SFDX project found for default package directory');
     }
-  }
-
-  private ensureFlagPath(options: EnsureFlagOptions): string {
-    const { flagName, path, type, throwOnENOENT } = options;
-
-    const trimmedPath = path?.trim();
-    let resolvedPath: string;
-    if (trimmedPath?.length) {
-      resolvedPath = resolve(trimmedPath);
-    }
-
-    try {
-      const stats = fs.statSync(resolvedPath);
-      if (type !== 'any') {
-        const isDir = stats.isDirectory();
-        if (type === 'dir' && !isDir) {
-          const msg = 'Expected a directory but found a file';
-          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path, msg]);
-        } else if (type === 'file' && isDir) {
-          const msg = 'Expected a file but found a directory';
-          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [flagName, path, msg]);
-        }
-      }
-    } catch (error: unknown) {
-      const err = error as FsError;
-      if (err.code !== 'ENOENT') {
-        throw err;
-      } else {
-        if (throwOnENOENT) {
-          const enoent = 'No such file or directory';
-          throw SfdxError.create('@salesforce/plugin-source', 'md.convert', 'InvalidFlagPath', [
-            flagName,
-            path,
-            enoent,
-          ]);
-        }
-        fs.mkdirSync(resolvedPath, { recursive: true });
-      }
-    }
-    return resolvedPath;
   }
 
   private resolveRootDir(rootDir?: string): string {

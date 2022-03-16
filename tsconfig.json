@@ -5,10 +5,12 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
+      "@oclif/config": ["node_modules/@oclif/config"],
       "@salesforce/kit": ["node_modules/@salesforce/kit"],
       "@salesforce/source-deploy-retrieve": ["node_modules/@salesforce/source-deploy-retrieve"],
       "@salesforce/core": ["node_modules/@salesforce/core"]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": ["./src/**/*.ts"]
 }

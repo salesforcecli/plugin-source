@@ -9,7 +9,6 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
-
 import { replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
 import { DeployCommand, getVersionMessage } from '../../../../deployCommand';
@@ -17,7 +16,7 @@ import { PushResponse, PushResultFormatter } from '../../../../formatters/source
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
+import { trackingSetup, updateTracking } from '../../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');

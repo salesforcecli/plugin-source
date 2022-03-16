@@ -18,7 +18,7 @@ import {
 import { ChangeResult, replaceRenamedCommands, SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../../sourceCommand';
 import { PullResponse, PullResultFormatter } from '../../../../formatters/source/pullFormatter';
-import { updateTracking, trackingSetup } from '../../../../trackingFunctions';
+import { trackingSetup, updateTracking } from '../../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
@@ -63,6 +63,7 @@ export default class Pull extends SourceCommand {
   }
 
   protected async preChecks(): Promise<void> {
+    this.ux.startSpinner('Loading source tracking information');
     this.tracking = await trackingSetup({
       commandName: replaceRenamedCommands('force:source:pull'),
       ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),

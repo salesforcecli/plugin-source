@@ -14,12 +14,14 @@ import { Dictionary } from '@salesforce/ts-types';
 
 describe('force:source:manifest:create', () => {
   let session: TestSession;
+  const orgAlias = 'smc';
 
   before(async () => {
     session = await TestSession.create({
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
+      setupCommands: [`sfdx force:org:create -f config/project-scratch-def.json -a ${orgAlias} -s -w 10 -d 1`],
     });
   });
 
@@ -86,5 +88,17 @@ describe('force:source:manifest:create', () => {
       ensureExitCode: 0,
     }).shellOutput;
     expect(result).to.include('successfully wrote package.xml');
+  });
+
+  it('should produce a manifest from metadata in an org', async () => {
+    const manifestName = 'org-metadata.xml';
+    const result = execCmd<Dictionary>(`force:source:manifest:create --fromorg ${orgAlias} -n ${manifestName} --json`, {
+      ensureExitCode: 0,
+    }).jsonOutput.result;
+    expect(result).to.be.ok;
+    expect(result).to.include({ path: manifestName, name: manifestName });
+    const stats = fs.statSync(join(session.project.dir, manifestName));
+    expect(stats.isFile()).to.be.true;
+    expect(stats.size).to.be.greaterThan(100);
   });
 });

@@ -8,7 +8,7 @@
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import * as chalk from 'chalk';
-import { SourceTracking, throwIfInvalid, replaceRenamedCommands } from '@salesforce/source-tracking';
+import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
