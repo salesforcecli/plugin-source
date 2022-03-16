@@ -59,17 +59,17 @@ describe('PullFormatter', () => {
   describe('getJson', () => {
     it('should return expected json for a success', async () => {
       process.exitCode = 0;
-      const expectedSuccessResults: PullResponse[] = retrieveResultSuccess.getFileResponses();
+      const expectedSuccessResults: PullResponse['pulledSource'] = retrieveResultSuccess.getFileResponses();
       const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultSuccess);
-      expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
+      expect(formatter.getJson().pulledSource).to.deep.equal(expectedSuccessResults);
     });
 
     it('should return expected json for a failure', async () => {
       process.exitCode = 1;
-      const expectedFailureResults: PullResponse[] = retrieveResultFailure.getFileResponses();
+      const expectedFailureResults: PullResponse['pulledSource'] = retrieveResultFailure.getFileResponses();
       const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultFailure);
       try {
-        formatter.getJson();
+        formatter.getJson().pulledSource;
         throw new Error('should have thrown');
       } catch (error) {
         expect(error).to.have.property('message', 'Pull failed.');
@@ -80,9 +80,9 @@ describe('PullFormatter', () => {
     });
 
     it('should return expected json for an InProgress', async () => {
-      const expectedInProgressResults: PullResponse[] = retrieveResultInProgress.getFileResponses();
+      const expectedInProgressResults: PullResponse['pulledSource'] = retrieveResultInProgress.getFileResponses();
       const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultInProgress);
-      expect(formatter.getJson()).to.deep.equal(expectedInProgressResults);
+      expect(formatter.getJson().pulledSource).to.deep.equal(expectedInProgressResults);
     });
 
     describe('display', () => {

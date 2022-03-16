@@ -97,12 +97,14 @@ describe('remote changes', () => {
       expect(result).to.deep.equal([]);
     });
     it('can pull the delete', () => {
-      const result = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
+      const result = execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
         .jsonOutput.result;
       // the 2 files for the apexClass, and possibly one for the Profile (depending on whether it got created in time)
       expect(result, JSON.stringify(result)).to.have.length.greaterThanOrEqual(2);
       expect(result, JSON.stringify(result)).to.have.length.lessThanOrEqual(4);
-      result.filter((r) => r.fullName === 'TestOrderController').map((r) => expect(r.state).to.equal('Deleted'));
+      result.pulledSource
+        .filter((r) => r.fullName === 'TestOrderController')
+        .map((r) => expect(r.state).to.equal('Deleted'));
     });
     it('local file was deleted', () => {
       expect(

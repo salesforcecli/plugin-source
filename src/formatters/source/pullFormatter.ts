@@ -21,7 +21,7 @@ import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultForma
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
-export type PullResponse = Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>;
+export type PullResponse = { pulledSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
 
 export class PullResultFormatter extends ResultFormatter {
   protected result: RetrieveResult;
@@ -53,7 +53,7 @@ export class PullResultFormatter extends ResultFormatter {
    *
    * @returns RetrieveCommandResult
    */
-  public getJson(): PullResponse[] {
+  public getJson(): PullResponse {
     if (!this.isSuccess()) {
       const error = new SfdxError('Pull failed.', 'PullFailed', [], process.exitCode);
       error.setData(
@@ -61,7 +61,14 @@ export class PullResultFormatter extends ResultFormatter {
       );
       throw error;
     }
-    return this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }));
+    return {
+      pulledSource: this.fileResponses.map(({ state, fullName, type, filePath }) => ({
+        state,
+        fullName,
+        type,
+        filePath,
+      })),
+    };
   }
 
   /**

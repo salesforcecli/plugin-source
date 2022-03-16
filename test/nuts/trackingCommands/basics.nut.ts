@@ -70,11 +70,11 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     });
 
     it('can pull the remote profile', () => {
-      const pullResult = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), {
+      const pullResult = execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
       expect(
-        pullResult.some((item) => item.type === 'Profile'),
+        pullResult.pulledSource.some((item) => item.type === 'Profile'),
         JSON.stringify(pullResult)
       ).to.equal(true);
     });

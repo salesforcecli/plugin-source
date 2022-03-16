@@ -47,7 +47,7 @@ export default class Pull extends SourceCommand {
   protected retrieveResult: RetrieveResult;
   protected deleteFileResponses: FileResponse[];
 
-  public async run(): Promise<PullResponse[]> {
+  public async run(): Promise<PullResponse> {
     await this.preChecks();
     await this.retrieve();
     // do not parallelize delete and retrieve...we only get to delete IF retrieve was successful
@@ -139,7 +139,7 @@ export default class Pull extends SourceCommand {
     }
   }
 
-  protected formatResult(): PullResponse[] {
+  protected formatResult(): PullResponse {
     const formatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
     };

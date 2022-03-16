@@ -142,10 +142,10 @@ describe('forceignore changes', () => {
       expect(statusOutput.some((result) => result.fullName === 'CreatedClass')).to.equal(true);
 
       // pull doesn't retrieve that change
-      const pullOutput = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), {
+      const pullOutput = execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(pullOutput.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
+      expect(pullOutput.pulledSource.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
     });
   });
 });
