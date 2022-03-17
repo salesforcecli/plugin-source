@@ -100,8 +100,8 @@ describe('remote changes', () => {
       const result = execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
         .jsonOutput.result;
       // the 2 files for the apexClass, and possibly one for the Profile (depending on whether it got created in time)
-      expect(result, JSON.stringify(result)).to.have.length.greaterThanOrEqual(2);
-      expect(result, JSON.stringify(result)).to.have.length.lessThanOrEqual(4);
+      expect(result.pulledSource, JSON.stringify(result)).to.have.length.greaterThanOrEqual(2);
+      expect(result.pulledSource, JSON.stringify(result)).to.have.length.lessThanOrEqual(4);
       result.pulledSource
         .filter((r) => r.fullName === 'TestOrderController')
         .map((r) => expect(r.state).to.equal('Deleted'));
@@ -153,10 +153,12 @@ describe('remote changes', () => {
       ).to.equal(true);
     });
     it('can pull the add', () => {
-      const result = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
+      const result = execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), { ensureExitCode: 0 })
         .jsonOutput.result;
       // SDR marks all retrieves as 'Changed' even if it creates new local files.  This is different from toolbelt, which marked those as 'Created'
-      result.filter((r) => r.fullName === className).map((r) => expect(r.state, JSON.stringify(r)).to.equal('Created'));
+      result.pulledSource
+        .filter((r) => r.fullName === className)
+        .map((r) => expect(r.state, JSON.stringify(r)).to.equal('Created'));
     });
     it('sees correct local and remote status', () => {
       const remoteResult = execCmd<StatusResult[]>(replaceRenamedCommands('force:source:status --json --remote'), {
