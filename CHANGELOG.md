@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.20](https://github.com/salesforcecli/plugin-source/compare/v1.8.19...v1.8.20) (2022-03-17)
+
+### Bug Fixes
+
+- error structure for json on push/pull ([5f36a37](https://github.com/salesforcecli/plugin-source/commit/5f36a3720c08cd909e567249b597fdbae2e35dd1))
+
 ### [1.8.19](https://github.com/salesforcecli/plugin-source/compare/v1.8.18...v1.8.19) (2022-03-16)
 
 ### Bug Fixes
