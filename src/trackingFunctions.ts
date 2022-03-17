@@ -4,6 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import * as path from 'path';
 import { UX } from '@salesforce/command';
 import {
   ChangeResult,
@@ -21,7 +22,6 @@ import {
   FileResponse,
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
-
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
@@ -174,7 +174,7 @@ const processConflicts = (conflicts: ChangeResult[], ux: UX, message: string): v
       state: 'Conflict',
       fullName: conflict.name,
       type: conflict.type,
-      filePath: f,
+      filePath: path.resolve(f),
     }))
   );
   writeConflictTable(reformattedConflicts, ux);
