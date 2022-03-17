@@ -42,6 +42,12 @@ interface TrackingUpdateRequest {
   fileResponses?: FileResponse[];
 }
 
+interface ConflictResponse {
+  state: 'Conflict';
+  fullName: string;
+  type: string;
+  filePath: string;
+}
 /**
  * Check if any conflicts exist in a specific component set.
  * If conflicts exist, this will output the table and throw
@@ -141,18 +147,15 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
   ux.stopSpinner();
 };
 
-const writeConflictTable = (conflicts: ChangeResult[], ux: UX): void => {
-  ux.table(
-    conflicts.map((conflict) => ({ ...conflict, state: 'Conflict' })),
-    {
-      columns: [
-        { label: 'STATE', key: 'state' },
-        { label: 'FULL NAME', key: 'name' },
-        { label: 'TYPE', key: 'type' },
-        { label: 'PROJECT PATH', key: 'filenames' },
-      ],
-    }
-  );
+const writeConflictTable = (conflicts: ConflictResponse[], ux: UX): void => {
+  ux.table(conflicts, {
+    columns: [
+      { label: 'STATE', key: 'state' },
+      { label: 'FULL NAME', key: 'name' },
+      { label: 'TYPE', key: 'type' },
+      { label: 'PROJECT PATH', key: 'filenames' },
+    ],
+  });
 };
 
 /**
@@ -166,8 +169,16 @@ const processConflicts = (conflicts: ChangeResult[], ux: UX, message: string): v
   if (conflicts.length === 0) {
     return;
   }
-  writeConflictTable(conflicts, ux);
-  const err = new SfdxError(message);
-  err.setData(conflicts);
+  const reformattedConflicts: ConflictResponse[] = conflicts.flatMap((conflict) =>
+    conflict.filenames.map((f) => ({
+      state: 'Conflict',
+      fullName: conflict.name,
+      type: conflict.type,
+      filePath: f,
+    }))
+  );
+  writeConflictTable(reformattedConflicts, ux);
+  const err = new SfdxError(message, 'sourceConflictDetected');
+  err.setData(reformattedConflicts);
   throw err;
 };
