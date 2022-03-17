@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import { expect } from 'chai';
 import * as shelljs from 'shelljs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
+import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { replaceRenamedCommands } from '@salesforce/source-tracking';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
@@ -70,11 +70,11 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     });
 
     it('can pull the remote profile', () => {
-      const pullResult = execCmd<PullResponse[]>(replaceRenamedCommands('force:source:pull --json'), {
+      const pullResult = execCmd<PullResponse>(replaceRenamedCommands('force:source:pull --json'), {
         ensureExitCode: 0,
       }).jsonOutput.result;
       expect(
-        pullResult.some((item) => item.type === 'Profile'),
+        pullResult.pulledSource.some((item) => item.type === 'Profile'),
         JSON.stringify(pullResult)
       ).to.equal(true);
     });
@@ -172,10 +172,22 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         ]);
       });
       it('fails to push', () => {
-        const result = execCmd<PushResponse>(replaceRenamedCommands('force:source:push --json'), {
+        const failure = execCmd(replaceRenamedCommands('force:source:push --json'), {
           ensureExitCode: 1,
-        }).jsonOutput.result.pushedSource;
-        expect(result.every((r) => r.type === 'ApexClass' && r.state === 'Failed')).to.equal(true);
+        }).jsonOutput as unknown as { name: string; exitCode: number; result: FileResponse[]; data: FileResponse[] };
+        expect(failure).to.have.property('exitCode', 1);
+        expect(failure).to.have.property('commandName', 'Push');
+        expect(
+          failure.result.every((r) => r.type === 'ApexClass' && r.state === 'Failed' && r.problemType === 'Error')
+        ).to.equal(true);
+        failure.result.forEach((f) => {
+          if (f.state === 'Failed') {
+            expect(f.lineNumber).to.exist;
+            expect(f.columnNumber).to.exist;
+            expect(f.error).to.be.a('string');
+          }
+        });
+        expect(failure.result).to.deep.equal(failure.data);
       });
       it('classes that failed to deploy are still in local status', () => {
         it('sees no local changes', () => {

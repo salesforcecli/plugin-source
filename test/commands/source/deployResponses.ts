@@ -102,12 +102,16 @@ export const getDeployResponse = (
   if (type === 'failed') {
     response.status = RequestStatus.Failed;
     response.success = false;
-    response.details.componentFailures = cloneJson(baseDeployResponse.details.componentSuccesses[1]) as DeployMessage;
     response.details.componentSuccesses = cloneJson(baseDeployResponse.details.componentSuccesses[0]) as DeployMessage;
-    response.details.componentFailures.success = 'false';
+    response.details.componentFailures = {
+      ...(cloneJson(baseDeployResponse.details.componentSuccesses[1]) as DeployMessage),
+      success: false,
+      problemType: 'Error',
+      problem: 'This component has some problems',
+      lineNumber: '27',
+      columnNumber: '18',
+    };
     delete response.details.componentFailures.id;
-    response.details.componentFailures.problemType = 'Error';
-    response.details.componentFailures.problem = 'This component has some problems';
   }
 
   if (type === 'failedTest') {
@@ -305,6 +309,8 @@ export const getDeployResult = (
           type: comp.componentType,
           error: comp.problem,
           problemType: comp.problemType,
+          lineNumber: comp.lineNumber,
+          columnNumber: comp.columnNumber,
         }));
       } else {
         const successes = response.details.componentSuccesses;
