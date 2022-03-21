@@ -154,6 +154,8 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
+    cs.apiVersion = this.getFlag<string>('apiversion') ?? (await this.org.retrieveMaxApiVersion());
+    cs.sourceApiVersion = this.getFlag<string>('apiversion') ?? (await this.getSourceApiVersion());
     this.components.map((component) => {
       if (component instanceof SourceComponent) {
         cs.add(component, DestructiveChangesType.POST);

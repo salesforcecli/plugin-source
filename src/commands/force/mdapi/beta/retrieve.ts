@@ -130,7 +130,7 @@ export class Retrieve extends SourceCommand {
     this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.componentSetBuild'));
 
     this.componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag<string>('apiversion'),
+      apiversion: this.getFlag<string>('apiversion') ?? (await this.org.retrieveMaxApiVersion()),
       packagenames,
       sourcepath: this.sourceDir ? [this.sourceDir] : undefined,
       manifest: manifest && {
