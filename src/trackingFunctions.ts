@@ -9,7 +9,6 @@ import { UX } from '@salesforce/command';
 import {
   ChangeResult,
   getTrackingFileVersion,
-  replaceRenamedCommands,
   SourceTracking,
   SourceTrackingOptions,
   throwIfInvalid,
@@ -77,13 +76,13 @@ export const filterConflictsByComponentSet = async ({
 export const trackingSetup = async (options: TrackingSetupRequest): Promise<SourceTracking> => {
   const { ux, org, ignoreConflicts, commandName, ...createOptions } = options;
   const projectPath = options.project.getPath();
-  // 2 commands use throwIfInvalid
+  // 3 commands use throwIfInvalid
   if (commandName.endsWith('push') || commandName.endsWith('pull') || commandName.endsWith('status')) {
     throwIfInvalid({
       org,
       projectPath,
       toValidate: 'plugin-source',
-      command: replaceRenamedCommands(commandName),
+      command: commandName,
     });
   } else {
     // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
@@ -92,7 +91,7 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
         'You cannot use the "tracksource" flag with the old version of the tracking files',
         'sourceTrackingFileVersionMismatch',
         [
-          'Clear the old version of the tracking files with "sfdx force:source:tracking:clear"',
+          'Clear the old version of the tracking files with "sfdx force:source:legacy:tracking:clear"',
           'Create a new org to use the new tracking files',
         ]
       );
