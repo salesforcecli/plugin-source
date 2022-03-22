@@ -151,9 +151,9 @@ const writeConflictTable = (conflicts: ConflictResponse[], ux: UX): void => {
   ux.table(conflicts, {
     columns: [
       { label: 'STATE', key: 'state' },
-      { label: 'FULL NAME', key: 'name' },
+      { label: 'FULL NAME', key: 'fullName' },
       { label: 'TYPE', key: 'type' },
-      { label: 'PROJECT PATH', key: 'filenames' },
+      { label: 'PROJECT PATH', key: 'filePath' },
     ],
   });
 };
@@ -169,14 +169,19 @@ const processConflicts = (conflicts: ChangeResult[], ux: UX, message: string): v
   if (conflicts.length === 0) {
     return;
   }
-  const reformattedConflicts: ConflictResponse[] = conflicts.flatMap((conflict) =>
-    conflict.filenames.map((f) => ({
-      state: 'Conflict',
-      fullName: conflict.name,
-      type: conflict.type,
-      filePath: path.resolve(f),
-    }))
-  );
+  // map do dedupe by name-type-filename
+  const conflictMap = new Map<string, ConflictResponse>();
+  conflicts.forEach((c) => {
+    c.filenames?.forEach((f) => {
+      conflictMap.set(`${c.name}#${c.type}#${f}`, {
+        state: 'Conflict',
+        fullName: c.name,
+        type: c.type,
+        filePath: path.resolve(f),
+      });
+    });
+  });
+  const reformattedConflicts = Array.from(conflictMap.values());
   writeConflictTable(reformattedConflicts, ux);
   const err = new SfdxError(message, 'sourceConflictDetected');
   err.setData(reformattedConflicts);
