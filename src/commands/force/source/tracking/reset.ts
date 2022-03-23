@@ -19,8 +19,8 @@ export type SourceTrackingResetResult = {
 };
 
 export class Reset extends SfdxCommand {
+  public static aliases = ['force:source:beta:tracking:reset'];
   public static readonly description = messages.getMessage('resetDescription');
-
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
 

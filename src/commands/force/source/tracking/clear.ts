@@ -18,8 +18,8 @@ export type SourceTrackingClearResult = {
 };
 
 export class Clear extends SfdxCommand {
+  public static aliases = ['force:source:beta:tracking:clear'];
   public static readonly description = messages.getMessage('clearDescription');
-
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
 

@@ -196,13 +196,13 @@
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"],
-    "alias": []
+    "alias": ["force:source:beta:pull"]
   },
   {
     "command": "force:source:push",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "targetusername", "wait"],
-    "alias": []
+    "alias": ["force:source:beta:push"]
   },
   {
     "command": "force:source:retrieve",
@@ -227,18 +227,18 @@
     "command": "force:source:status",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "concise", "json", "local", "loglevel", "remote", "targetusername"],
-    "alias": []
+    "alias": ["force:source:beta:status"]
   },
   {
     "command": "force:source:tracking:clear",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "json", "loglevel", "noprompt", "targetusername"],
-    "alias": []
+    "alias": ["force:source:beta:tracking:clear"]
   },
   {
     "command": "force:source:tracking:reset",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "json", "loglevel", "noprompt", "revision", "targetusername"],
-    "alias": []
+    "alias": ["force:source:beta:tracking:reset"]
   }
 ]

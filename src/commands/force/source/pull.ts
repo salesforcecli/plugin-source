@@ -24,6 +24,7 @@ Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export default class Pull extends SourceCommand {
+  public static aliases = ['force:source:beta:pull'];
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');
   protected static readonly flagsConfig: FlagsConfig = {
