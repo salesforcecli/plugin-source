@@ -104,8 +104,7 @@ export class create extends SourceCommand {
     }
 
     const componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag('apiversion'),
-      sourceapiversion: await this.getSourceApiVersion(),
+      apiversion: this.getFlag('apiversion') ?? (await this.getSourceApiVersion()),
       sourcepath: this.getFlag<string[]>('sourcepath'),
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
