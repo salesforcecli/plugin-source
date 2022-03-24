@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/salesforcecli/plugin-source/compare/v1.8.20...v1.9.0) (2022-03-23)
+
+### Features
+
+- GA new tracking commands ([#457](https://github.com/salesforcecli/plugin-source/issues/457)) ([eb54c09](https://github.com/salesforcecli/plugin-source/commit/eb54c097d0a714c3c42f0a435941d2f30d609eea))
+
 ### [1.8.20](https://github.com/salesforcecli/plugin-source/compare/v1.8.19...v1.8.20) (2022-03-17)
 
 ### Bug Fixes

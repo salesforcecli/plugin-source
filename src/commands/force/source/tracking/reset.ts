@@ -8,7 +8,7 @@
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import * as chalk from 'chalk';
-import { replaceRenamedCommands, SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import { SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 
 Messages.importMessagesDirectory(__dirname);
 const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
@@ -19,8 +19,8 @@ export type SourceTrackingResetResult = {
 };
 
 export class Reset extends SfdxCommand {
-  public static readonly description = replaceRenamedCommands(messages.getMessage('resetDescription'));
-
+  public static aliases = ['force:source:beta:tracking:reset'];
+  public static readonly description = messages.getMessage('resetDescription');
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
 
@@ -41,13 +41,10 @@ export class Reset extends SfdxCommand {
       org: this.org,
       projectPath: this.project.getPath(),
       toValidate: 'plugin-source',
-      command: replaceRenamedCommands('force:source:tracking:clear'),
+      command: 'force:source:tracking:clear',
     });
 
-    if (
-      this.flags.noprompt ||
-      (await this.ux.confirm(chalk.dim(replaceRenamedCommands(messages.getMessage('promptMessage')))))
-    ) {
+    if (this.flags.noprompt || (await this.ux.confirm(chalk.dim(messages.getMessage('promptMessage'))))) {
       const sourceTracking = await SourceTracking.create({
         project: this.project,
         org: this.org,
