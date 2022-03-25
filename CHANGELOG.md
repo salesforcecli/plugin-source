@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/salesforcecli/plugin-source/compare/v1.9.0...v1.9.1) (2022-03-25)
+
+### Bug Fixes
+
+- bump stl for graceful ([#459](https://github.com/salesforcecli/plugin-source/issues/459)) ([b611415](https://github.com/salesforcecli/plugin-source/commit/b611415d32f29ac5f8bc091652031d635d7338fe))
+
 ## [1.9.0](https://github.com/salesforcecli/plugin-source/compare/v1.8.20...v1.9.0) (2022-03-23)
 
 ### Features
