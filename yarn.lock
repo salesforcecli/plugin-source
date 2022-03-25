@@ -1012,14 +1012,15 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.2.0.tgz#3a64ce059dffbfaae2871e4197260b34ca8bfe59"
-  integrity sha512-7kVD5dXg0ksIYmsZxDfo9qcpOjFiEjNEH3GY5liYDeAatQPKyjKuvRtjeY5NLbblpvZiu2yjLLSACpKq0B1vWw==
+"@salesforce/source-tracking@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.3.0.tgz#a31f4d6a812e6da6b132f441e2dd1f6fd1bfef51"
+  integrity sha512-SCuiQZcpcZy/Emznd/FqCZGIQ+BkmPsFISv/rVhZCWj+v1wJTZGGDs/0XWObTaHAU7lTcv1VfMkAXcr6RMt0Pg==
   dependencies:
     "@salesforce/core" "^2.33.1"
     "@salesforce/kit" "^1.5.17"
     "@salesforce/source-deploy-retrieve" "^5.9.4"
+    graceful-fs "^4.2.9"
     isomorphic-git "1.16.0"
     ts-retry-promise "^0.6.0"
 
@@ -4114,7 +4115,7 @@ got@^6.2.0:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.8:
+graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.8, graceful-fs@^4.2.9:
   version "4.2.9"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.9.tgz#041b05df45755e587a24942279b9d113146e1c96"
   integrity sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==
