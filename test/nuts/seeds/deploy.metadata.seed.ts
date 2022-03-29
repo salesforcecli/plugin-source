@@ -50,7 +50,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the metadata is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnsupportedType';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'UnsupportedType';
       testkit.expect.errorToHaveName(deploy, expectedError);
     });
 

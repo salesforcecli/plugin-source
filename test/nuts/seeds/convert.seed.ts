@@ -142,7 +142,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         id: string;
         result: { id: string };
       }>;
-      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnsupportedType';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'UnsupportedType';
       testkit.expect.errorToHaveName(convert, expectedError);
     });
   });
@@ -176,7 +176,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         id: string;
         result: { id: string };
       }>;
-      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'SourcePathInvalid';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'SourcePathInvalid';
       testkit.expect.errorToHaveName(convert, expectedError);
     });
   });
