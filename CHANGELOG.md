@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.3](https://github.com/salesforcecli/plugin-source/compare/v1.9.2...v1.9.3) (2022-04-07)
+
+### Bug Fixes
+
+- bump to latest sdr ([#467](https://github.com/salesforcecli/plugin-source/issues/467)) ([a71881c](https://github.com/salesforcecli/plugin-source/commit/a71881c276f160b0c50cd4d7bee2bad2096eef1e))
+
 ### [1.9.2](https://github.com/salesforcecli/plugin-source/compare/v1.9.1...v1.9.2) (2022-03-25)
 
 ### Bug Fixes
