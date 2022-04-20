@@ -59,6 +59,7 @@ workflows:
               - os: windows
                 node_version: maintenance
       - release-management/test-nut:
+          context: na40-auth-url
           sfdx_version: latest
           node_version: lts
           size: large
@@ -93,6 +94,7 @@ workflows:
           context:
             - CLI_CTC
             - AWS
+            - release
   test-ts-update:
     triggers:
       - schedule:
@@ -117,6 +119,7 @@ workflows:
                 - linux
                 - windows
           npm_module_name: << pipeline.parameters.npm_module_name >>
+          context: na40-auth-url
   dependabot-automerge:
     triggers:
       - schedule:
