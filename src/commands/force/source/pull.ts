@@ -8,14 +8,8 @@
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import {
-  ComponentSet,
-  FileResponse,
-  RequestStatus,
-  RetrieveResult,
-  SourceComponent,
-} from '@salesforce/source-deploy-retrieve';
-import { ChangeResult, SourceTracking } from '@salesforce/source-tracking';
+import { FileResponse, RequestStatus, RetrieveResult, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter';
 import { trackingSetup, updateTracking } from '../../../trackingFunctions';
@@ -85,22 +79,9 @@ export default class Pull extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const componentSet = new ComponentSet();
-    (
-      await this.tracking.getChanges<ChangeResult>({
-        origin: 'remote',
-        state: 'nondelete',
-        format: 'ChangeResult',
-      })
-    ).map((component) => {
-      if (component.type && component.name) {
-        componentSet.add({
-          type: component.type,
-          fullName: component.name,
-        });
-      }
-    });
+    const componentSet = await this.tracking.remoteNonDeletesAsComponentSet();
 
+    // if it is't local, add it as a
     if (componentSet.size === 0) {
       return;
     }
