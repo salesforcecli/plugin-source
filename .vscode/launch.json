@@ -9,8 +9,7 @@
       "request": "attach",
       "name": "Attach",
       "port": 9229,
-      "skipFiles": ["<node_internals>/**"],
-      "continueOnAttach": true
+      "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "Run All Tests",
