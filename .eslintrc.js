@@ -6,5 +6,5 @@
  */
 module.exports = {
   extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license'],
-  ignorePatterns: ['test/nuts/ebikes-lwc/**', 'test/nuts/nestedLWCProject/**'],
+  ignorePatterns: ['test/nuts/ebikes-lwc/**'],
 };
