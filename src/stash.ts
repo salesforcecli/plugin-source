@@ -45,17 +45,17 @@ export class Stash {
     'force:mdapi:deploy': Stash.KEYS.MDAPI_DEPLOY,
     'force:mdapi:deploy:cancel': Stash.KEYS.MDAPI_DEPLOY,
     'force:mdapi:deploy:report': Stash.KEYS.MDAPI_DEPLOY,
-    'force:mdapi:deploy': Stash.KEYS.MDAPI_DEPLOY,
-    'force:mdapi:deploy:cancel': Stash.KEYS.MDAPI_DEPLOY,
-    'force:mdapi:deploy:report': Stash.KEYS.MDAPI_DEPLOY,
+    'force:mdapi:beta:deploy': Stash.KEYS.MDAPI_DEPLOY,
+    'force:mdapi:beta:deploy:cancel': Stash.KEYS.MDAPI_DEPLOY,
+    'force:mdapi:beta:deploy:report': Stash.KEYS.MDAPI_DEPLOY,
     'force:source:deploy': Stash.KEYS.SOURCE_DEPLOY,
     'force:source:deploy:cancel': Stash.KEYS.SOURCE_DEPLOY,
     'force:source:deploy:report': Stash.KEYS.SOURCE_DEPLOY,
     'force:source:delete': Stash.KEYS.SOURCE_DEPLOY,
     'force:mdapi:retrieve': Stash.KEYS.MDAPI_RETRIEVE,
     'force:mdapi:retrieve:report': Stash.KEYS.MDAPI_RETRIEVE,
-    'force:mdapi:retrieve': Stash.KEYS.MDAPI_RETRIEVE,
-    'force:mdapi:retrieve:report': Stash.KEYS.MDAPI_RETRIEVE,
+    'force:mdapi:beta:retrieve': Stash.KEYS.MDAPI_RETRIEVE,
+    'force:mdapi:beta:retrieve:report': Stash.KEYS.MDAPI_RETRIEVE,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
