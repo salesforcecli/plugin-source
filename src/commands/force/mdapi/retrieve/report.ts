@@ -11,19 +11,20 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { SourceCommand } from '../../../../../sourceCommand';
-import { Stash, MdRetrieveData } from '../../../../../stash';
+import { SourceCommand } from '../../../../sourceCommand';
+import { Stash, MdRetrieveData } from '../../../../stash';
 import {
   RetrieveCommandResult,
   RetrieveCommandAsyncResult,
   RetrieveResultFormatter,
-} from '../../../../../formatters/mdapi/retrieveResultFormatter';
+} from '../../../../formatters/mdapi/retrieveResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 
 export class Report extends SourceCommand {
+  public static aliases = ['force:mdapi:beta:retrieve:report'];
   public static readonly description = messages.getMessage('reportCmd.description');
   public static readonly examples = messages.getMessage('reportCmd.examples').split(os.EOL);
   public static readonly requiresUsername = true;

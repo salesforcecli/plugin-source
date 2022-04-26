@@ -88,11 +88,11 @@ USAGE
 
 <!-- commands -->
 
-- [`sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaconvert--r-directory--d-directory--p-array---x-string---m-array---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetadeploy--d-directory--w-minutes--q-id---l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg---r-array---o---g---c--f-filepath--s---soapdeploy---purgeondelete--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetadeployreport--w-minutes--i-id--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaretrieve--r-directory--k-filepath---d-directory---p-array--s--n-string--z--w-minutes--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaretrievereport--r-directory--i-id--n-string--z--w-minutes--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:mdapi:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaconvert--r-directory--d-directory--p-array---x-string---m-array---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:mdapi:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetadeploy--d-directory--w-minutes--q-id---l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg---r-array---o---g---c--f-filepath--s---soapdeploy---purgeondelete--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:mdapi:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetadeployreport--w-minutes--i-id--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:mdapi:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaretrieve--r-directory--k-filepath---d-directory---p-array--s--n-string--z--w-minutes--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:mdapi:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaretrievereport--r-directory--i-id--n-string--z--w-minutes--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapideploycancel--w-minutes--i-id--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:mdapi:describemetadata [-f <filepath>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapidescribemetadata--f-filepath--u-string--a-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:mdapi:listmetadata -m <string> [-f <filepath>] [--folder <string>] [-u <string>] [-a <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapilistmetadata--m-string--f-filepath---folder-string--u-string--a-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -111,13 +111,13 @@ USAGE
 - [`sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcetrackingclear--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcetrackingreset--r-integer--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
-## `sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 convert metadata from the Metadata API format into the source format
 
 ```
 USAGE
-  $ sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json]
+  $ sfdx force:mdapi:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json]
   [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -152,19 +152,19 @@ DESCRIPTION
   force:mdapi:deploy", run "sfdx force:source:convert".
 
 EXAMPLES
-  $ sfdx force:mdapi:beta:convert -r path/to/metadata
-  $ sfdx force:mdapi:beta:convert -r path/to/metadata -d path/to/outputdir
+  $ sfdx force:mdapi:convert -r path/to/metadata
+  $ sfdx force:mdapi:convert -r path/to/metadata -d path/to/outputdir
 ```
 
 _See code: [src/commands/force/mdapi/beta/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v1.9.2/src/commands/force/mdapi/beta/convert.ts)_
 
-## `sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 deploy metadata to an org using Metadata API
 
 ```
 USAGE
-  $ sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l
+  $ sfdx force:mdapi:deploy [-d <directory>] [-w <minutes>] [-q <id> | -l
   NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -o | -g | -c] [-f <filepath>] [-s]
   [--soapdeploy] [--purgeondelete] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
@@ -229,26 +229,26 @@ OPTIONS
 
 EXAMPLES
   Return a job ID you can use to check the deploy status:
-    sfdx force:mdapi:beta:deploy -d some/path
+    sfdx force:mdapi:deploy -d some/path
   Deploy and poll for 1000 minutes:
-    sfdx force:mdapi:beta:deploy -d some/path -w 1000
+    sfdx force:mdapi:deploy -d some/path -w 1000
   Deploy a ZIP file:
-    sfdx force:mdapi:beta:deploy -f stuff.zip
+    sfdx force:mdapi:deploy -f stuff.zip
   Validate a deployment so the ID can be used for a quick deploy:
-    sfdx force:mdapi:beta:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg
+    sfdx force:mdapi:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg
   Quick deploy using a previously validated deployment:
-    sfdx force:mdapi:beta:deploy -q MyValidatedId
+    sfdx force:mdapi:deploy -q MyValidatedId
 ```
 
 _See code: [src/commands/force/mdapi/beta/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v1.9.2/src/commands/force/mdapi/beta/deploy.ts)_
 
-## `sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 check the status of a metadata deployment
 
 ```
 USAGE
-  $ sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose]
+  $ sfdx force:mdapi:deploy:report [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--verbose]
   [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
@@ -280,20 +280,20 @@ OPTIONS
 
 EXAMPLES
   Check the status of the most recent deployment
-   sfdx force:mdapi:beta:deploy:report
+   sfdx force:mdapi:deploy:report
   Check the status of a deploy with job ID 1234 and wait for 10 minutes for the result:
-   sfdx force:mdapi:beta:deploy:report -i 1234 -w 10
+   sfdx force:mdapi:deploy:report -i 1234 -w 10
 ```
 
 _See code: [src/commands/force/mdapi/beta/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.9.2/src/commands/force/mdapi/beta/deploy/report.ts)_
 
-## `sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 retrieve metadata from an org using Metadata API
 
 ```
 USAGE
-  $ sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z]
+  $ sfdx force:mdapi:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z]
   [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
@@ -343,24 +343,24 @@ DESCRIPTION
 
 EXAMPLES
   Retrieve metadata in the default project directory into the target directory:
-    sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir
+    sfdx force:mdapi:retrieve -r path/to/retrieve/dir
   Retrieve metadata defined in the specified manifest into the target directory:
-    sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir -k package.xml
+    sfdx force:mdapi:retrieve -r path/to/retrieve/dir -k package.xml
   Retrieve metadata defined by the specified directory, name the retrieved zipfile and extract all contents
-    sfdx force:mdapi:beta:retrieve -d path/to/apexClasses -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
+    sfdx force:mdapi:retrieve -d path/to/apexClasses -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
   Enqueue a retrieve request but do not wait for the metadata to be retrieved:
-    sfdx force:mdapi:beta:retrieve -r path/to/retrieve/dir --wait 0
+    sfdx force:mdapi:retrieve -r path/to/retrieve/dir --wait 0
 ```
 
 _See code: [src/commands/force/mdapi/beta/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v1.9.2/src/commands/force/mdapi/beta/retrieve.ts)_
 
-## `sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 check the status of a metadata retrieval
 
 ```
 USAGE
-  $ sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>]
+  $ sfdx force:mdapi:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>]
   [--apiversion <string>] [--verbose] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
@@ -401,13 +401,13 @@ DESCRIPTION
 
 EXAMPLES
   Poll until the metadata is retrieved (or timeout is reached) using data from the last force:mdapi:retrieve command:
-    sfdx force:mdapi:beta:retrieve:report
+    sfdx force:mdapi:retrieve:report
   Report the current status of the last retrieve command. If the retrieve is complete the zip file of metadata is
   written to the target directoy:
-    sfdx force:mdapi:beta:retrieve:report -r path/to/retrieve/dir -w 0
+    sfdx force:mdapi:retrieve:report -r path/to/retrieve/dir -w 0
   Poll until the metadata is retrieved (or timeout is reached) using the provided RetrieveID, naming the zip file and
   extracting all contents:
-    sfdx force:mdapi:beta:retrieve:report -i retrieveId -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
+    sfdx force:mdapi:retrieve:report -i retrieveId -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
 ```
 
 _See code: [src/commands/force/mdapi/beta/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/v1.9.2/src/commands/force/mdapi/beta/retrieve/report.ts)_
@@ -763,9 +763,9 @@ DESCRIPTION
 
 EXAMPLES
   To deploy the source files in a directory:
-  	 $ sfdx force:source:deploy -p path/to/source
+    $ sfdx force:source:deploy -p path/to/source
   To deploy a specific Apex class and the objects whose source is in a directory:
-  	$ sfdx force:source:deploy -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+   $ sfdx force:source:deploy -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
   To deploy source files in a comma-separated list that contains spaces:
      $ sfdx force:source:deploy -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
   To deploy all Apex classes:

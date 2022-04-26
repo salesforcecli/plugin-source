@@ -14,11 +14,11 @@ import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
-import { Retrieve } from '../../../src/commands/force/mdapi/beta/retrieve';
+import { Retrieve } from '../../../src/commands/force/mdapi/retrieve';
 import { Stash, StashData } from '../../../src/stash';
 import { getRetrieveResult } from '../source/retrieveResponses';
 
-describe('force:mdapi:beta:retrieve', () => {
+describe('force:mdapi:retrieve', () => {
   const sandbox = sinon.createSandbox();
   const username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';
@@ -45,7 +45,7 @@ describe('force:mdapi:beta:retrieve', () => {
     public async runIt() {
       await this.init();
       // oclif would normally populate this, but UT don't have it
-      this.id ??= 'force:mdapi:beta:retrieve';
+      this.id ??= 'force:mdapi:retrieve';
       return this.run();
     }
     public setOrg(org: Org) {

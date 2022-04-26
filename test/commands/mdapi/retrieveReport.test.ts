@@ -14,11 +14,11 @@ import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
-import { Report } from '../../../src/commands/force/mdapi/beta/retrieve/report';
+import { Report } from '../../../src/commands/force/mdapi/retrieve/report';
 import { Stash } from '../../../src/stash';
 import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses';
 
-describe('force:mdapi:beta:retrieve:report', () => {
+describe('force:mdapi:retrieve:report', () => {
   const sandbox = sinon.createSandbox();
   const username = 'report-test@org.com';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
@@ -49,7 +49,7 @@ describe('force:mdapi:beta:retrieve:report', () => {
     public async runIt() {
       await this.init();
       // set a Command.id for use with Stash
-      this.id ??= 'force:mdapi:beta:retrieve:report';
+      this.id ??= 'force:mdapi:retrieve:report';
       return this.run();
     }
     public setOrg(org: Org) {

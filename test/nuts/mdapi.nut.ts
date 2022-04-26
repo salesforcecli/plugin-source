@@ -95,7 +95,7 @@ describe('mdapi NUTs', () => {
     });
   });
 
-  describe('mdapi:beta:convert', () => {
+  describe('mdapi:convert', () => {
     let convertedToMdPath: string;
 
     before(() => {
@@ -106,7 +106,7 @@ describe('mdapi NUTs', () => {
     it('should convert the dreamhouse project', () => {
       const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_all');
       const result = execCmd<ConvertCommandResult>(
-        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
+        `force:mdapi:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
       );
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
@@ -116,7 +116,7 @@ describe('mdapi NUTs', () => {
     it('should convert the dreamhouse project using metadata flag', () => {
       const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_metadataFlag');
       const result = execCmd<ConvertCommandResult>(
-        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -m ApexClass --json`
+        `force:mdapi:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -m ApexClass --json`
       );
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
@@ -127,7 +127,7 @@ describe('mdapi NUTs', () => {
       const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_metadatapathFlag');
       const metadataPath = path.join(convertedToMdPath, 'classes', 'PagedResult.cls');
       const result = execCmd<ConvertCommandResult>(
-        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -p ${metadataPath} --json`
+        `force:mdapi:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -p ${metadataPath} --json`
       );
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.lengthOf(2);
@@ -139,7 +139,7 @@ describe('mdapi NUTs', () => {
       const manifestPath = path.join(session.dir, 'manifestFlag-package.xml');
       writeManifest(manifestPath);
       const result = execCmd<ConvertCommandResult>(
-        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -x ${manifestPath} --json`
+        `force:mdapi:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} -x ${manifestPath} --json`
       );
       expect(result.jsonOutput.status).to.equal(0);
       expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
@@ -150,7 +150,7 @@ describe('mdapi NUTs', () => {
       const convertedToSrcPath = path.join(session.dir, 'convertedToSrcPath_mdapi');
       const convertedToMd2 = path.join(session.dir, 'convertedToMdPath_dh_backAgain');
       const result = execCmd<ConvertCommandResult>(
-        `force:mdapi:beta:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
+        `force:mdapi:convert -r ${convertedToMdPath} -d ${convertedToSrcPath} --json`
       );
       expect(result.jsonOutput.status).to.equal(0);
       expect(fs.existsSync(convertedToSrcPath)).to.be.true;
@@ -192,7 +192,7 @@ describe('mdapi NUTs', () => {
     it('will cancel an mdapi deploy via the stash.json', () => {
       const convertDir = 'mdConvert1';
       execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
-      const deploy = execCmd<{ id: string }>(`force:mdapi:beta:deploy -d ${convertDir} -w 0 --json`, {
+      const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
       const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json', { ensureExitCode: 0 });
@@ -206,7 +206,7 @@ describe('mdapi NUTs', () => {
     it('will cancel an mdapi deploy via the specified deploy id', () => {
       const convertDir = 'mdConvert2';
       execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
-      const deploy = execCmd<{ id: string }>(`force:mdapi:beta:deploy -d ${convertDir} -w 0 --json`, {
+      const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
       expect(deploy.result).to.have.property('id');
@@ -245,7 +245,7 @@ describe('mdapi NUTs', () => {
       it('retrieves content from manifest', () => {
         const retrieveTargetDir = 'mdRetrieveFromManifest';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
-        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath} --json`;
+        const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath} --json`;
         const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify unpackaged.zip exists in retrieveTargetDir
@@ -262,7 +262,7 @@ describe('mdapi NUTs', () => {
       it('retrieves single package', () => {
         const retrieveTargetDir = 'mdRetrieveSinglePackage';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
-        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -p ${ELECTRON.name} --json`;
+        const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -p ${ELECTRON.name} --json`;
         const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify unpackaged.zip exists in retrieveTargetDir
@@ -281,7 +281,7 @@ describe('mdapi NUTs', () => {
         const zipName = `${name}.zip`;
         const retrieveTargetDir = 'mdRetrieveNamedZipAndUnzip';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
-        const cmd = `force:mdapi:beta:retrieve -w 10 -r ${retrieveTargetDir} -k ${apexManifestPath} -z -n ${zipName} --json`;
+        const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${apexManifestPath} -z -n ${zipName} --json`;
         const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify apexClasses.zip exists in retrieveTargetDir
@@ -305,7 +305,7 @@ describe('mdapi NUTs', () => {
       it('retrieves report (async)', () => {
         const retrieveTargetDir = 'mdRetrieveReportAsync';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
-        const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} --json -w 0`;
+        const retrieveCmd = `force:mdapi:retrieve -r ${retrieveTargetDir} -k ${manifestPath} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
 
@@ -317,7 +317,7 @@ describe('mdapi NUTs', () => {
         expect(result1).to.have.property('timedOut', true);
 
         // Async report, from stash
-        let reportCmd = 'force:mdapi:beta:retrieve:report -w 0 --json';
+        let reportCmd = 'force:mdapi:retrieve:report -w 0 --json';
         const rv2 = execCmd<RetrieveCommandAsyncResult>(reportCmd, { ensureExitCode: 0 });
         const result2 = rv2.jsonOutput.result;
 
@@ -336,7 +336,7 @@ describe('mdapi NUTs', () => {
           expect(result2).to.have.property('timedOut', true);
 
           // Now sync report, from stash
-          reportCmd = 'force:mdapi:beta:retrieve:report -w 10 --json';
+          reportCmd = 'force:mdapi:retrieve:report -w 10 --json';
           const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
           syncResult = rv3.jsonOutput.result;
         }
@@ -348,7 +348,7 @@ describe('mdapi NUTs', () => {
       });
 
       it('retrieves report (sync) with overrides of stash', () => {
-        const retrieveCmd = `force:mdapi:beta:retrieve -r mdRetrieveReportTmp -k ${manifestPath} --json -w 0`;
+        const retrieveCmd = `force:mdapi:retrieve -r mdRetrieveReportTmp -k ${manifestPath} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
 
@@ -360,7 +360,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const extractPath = path.join(retrieveTargetDirPath, name);
 
-        const reportCmd = `force:mdapi:beta:retrieve:report -i ${result1.id} -z -n ${zipName} -r ${retrieveTargetDir} --json`;
+        const reportCmd = `force:mdapi:retrieve:report -i ${result1.id} -z -n ${zipName} -r ${retrieveTargetDir} --json`;
         const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
         expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
 
@@ -384,13 +384,13 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveReportStash';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const extractPath = path.join(retrieveTargetDirPath, name);
-        const retrieveCmd = `force:mdapi:beta:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -n ${zipName} --json -w 0`;
+        const retrieveCmd = `force:mdapi:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -n ${zipName} --json -w 0`;
         const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
 
         const result1 = rv1.jsonOutput.result;
 
-        const reportCmd = 'force:mdapi:beta:retrieve:report --json';
+        const reportCmd = 'force:mdapi:retrieve:report --json';
         const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
         expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
 
@@ -427,16 +427,13 @@ describe('mdapi NUTs', () => {
     describe('Test stash', () => {
       describe('Deploy zip and report using soap with non default username', () => {
         it('should deploy zip file', () => {
-          execCmd<MdDeployResult>(
-            'force:mdapi:beta:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg',
-            {
-              ensureExitCode: 0,
-            }
-          );
+          execCmd<MdDeployResult>('force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg', {
+            ensureExitCode: 0,
+          });
         });
 
         it('request non-verbose deploy report without a deployId', () => {
-          const reportCommandResponse = execCmd('force:mdapi:beta:deploy:report --wait 200 -u nonDefaultOrg', {
+          const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 200 -u nonDefaultOrg', {
             ensureExitCode: 0,
           }).shellOutput.stdout;
 
@@ -446,12 +443,9 @@ describe('mdapi NUTs', () => {
         });
 
         it('request verbose deploy report without a deployId', () => {
-          const reportCommandResponse = execCmd(
-            'force:mdapi:beta:deploy:report --wait 200 -u nonDefaultOrg --verbose',
-            {
-              ensureExitCode: 0,
-            }
-          ).shellOutput.stdout;
+          const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 200 -u nonDefaultOrg --verbose', {
+            ensureExitCode: 0,
+          }).shellOutput.stdout;
           // has the basic table output
           expect(reportCommandResponse).to.include('Deployed Source');
         });
@@ -461,13 +455,13 @@ describe('mdapi NUTs', () => {
         let deployCommandResponse: MdDeployResult;
         it('should deploy a directory', () => {
           deployCommandResponse = execCmd<MdDeployResult>(
-            'force:mdapi:beta:deploy --deploydir mdapiOut --json --soapdeploy',
+            'force:mdapi:deploy --deploydir mdapiOut --json --soapdeploy',
             { ensureExitCode: 0 }
           ).jsonOutput.result;
         });
         it('should fail report', () => {
           const errorReport = execCmd(
-            `force:mdapi:beta:deploy:report --wait 200 --jobid ${deployCommandResponse.id} --targetusername nonDefaultOrg`,
+            `force:mdapi:deploy:report --wait 200 --jobid ${deployCommandResponse.id} --targetusername nonDefaultOrg`,
             { ensureExitCode: 1 }
           ).shellOutput.stderr;
           expect(errorReport).to.include('INVALID_CROSS_REFERENCE_KEY: invalid cross reference id');
@@ -478,12 +472,12 @@ describe('mdapi NUTs', () => {
         let deployCommandResponse: MdDeployResult;
         it('should check-only deploy a directory with tests', () => {
           deployCommandResponse = execCmd<MdDeployResult>(
-            'force:mdapi:beta:deploy --deploydir mdapiOut --json --soapdeploy --checkonly --testlevel RunAllTestsInOrg --wait 100',
+            'force:mdapi:deploy --deploydir mdapiOut --json --soapdeploy --checkonly --testlevel RunAllTestsInOrg --wait 100',
             { ensureExitCode: 0 }
           ).jsonOutput.result;
         });
         it('should deploy validated Id', () => {
-          execCmd(`force:mdapi:beta:deploy --wait 200 --validateddeployrequestid ${deployCommandResponse.id}`, {
+          execCmd(`force:mdapi:deploy --wait 200 --validateddeployrequestid ${deployCommandResponse.id}`, {
             ensureExitCode: 0,
           });
         });
