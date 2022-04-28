@@ -11,7 +11,7 @@ import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { PushResponse } from '../../src/formatters/source/pushResultFormatter';
 
-describe('mdapi NUTs', () => {
+describe('Nested LWCs', () => {
   let session: TestSession;
 
   before(async () => {
