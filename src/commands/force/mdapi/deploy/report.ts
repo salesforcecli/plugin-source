@@ -10,16 +10,17 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 
-import { MdDeployResult, MdDeployResultFormatter } from '../../../../../formatters/mdapi/mdDeployResultFormatter';
-import { DeployCommand } from '../../../../../deployCommand';
-import { ProgressFormatter } from '../../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../../formatters/deployProgressStatusFormatter';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter';
+import { DeployCommand } from '../../../../deployCommand';
+import { ProgressFormatter } from '../../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployreport');
 
 export class Report extends DeployCommand {
+  public static aliases = ['force:mdapi:beta:deploy:report'];
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(EOL);
   public static readonly requiresUsername = true;
