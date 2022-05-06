@@ -9,19 +9,20 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, getVersionMessage, TestLevel } from '../../../../deployCommand';
-import { DeployCommandAsyncResult } from '../../../../formatters/source/deployAsyncResultFormatter';
-import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { MdDeployAsyncResultFormatter } from '../../../../formatters/mdapi/mdDeployAsyncResultFormatter';
+import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
+import { ProgressFormatter } from '../../../formatters/progressFormatter';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
+import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
 export class Deploy extends DeployCommand {
+  public static aliases = ['force:mdapi:beta:deploy'];
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(EOL);
   public static readonly requiresUsername = true;

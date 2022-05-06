@@ -14,7 +14,7 @@ import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { SfdxProject } from '@salesforce/core';
 import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
-import { Convert } from '../../../src/commands/force/mdapi/beta/convert';
+import { Convert } from '../../../src/commands/force/mdapi/convert';
 import { FsError } from '../../../src/types';
 
 const testConvertResult = {
@@ -51,7 +51,7 @@ const expectedConvertResult = [
   },
 ];
 
-const commandName = 'mdapi:beta:convert';
+const commandName = 'mdapi:convert';
 
 describe(`force:${commandName}`, () => {
   const sandbox = sinon.createSandbox();

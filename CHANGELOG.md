@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.7](https://github.com/salesforcecli/plugin-source/compare/v1.9.6...v1.9.7) (2022-05-04)
+
+### [1.9.6](https://github.com/salesforcecli/plugin-source/compare/v1.9.5...v1.9.6) (2022-04-29)
+
+### Bug Fixes
+
+- use fixed stl, bump other deps for maintenance ([#477](https://github.com/salesforcecli/plugin-source/issues/477)) ([7c7f411](https://github.com/salesforcecli/plugin-source/commit/7c7f411d6f9e55141ac077cafc1e0f1e1efe5120))
+
+### [1.9.5](https://github.com/salesforcecli/plugin-source/compare/v1.9.4...v1.9.5) (2022-04-28)
+
+### Bug Fixes
+
+- pull non-default directory in default project ([#471](https://github.com/salesforcecli/plugin-source/issues/471)) ([02d91ca](https://github.com/salesforcecli/plugin-source/commit/02d91caf1e39c00a32d53012f6916a86dea2b2f8))
+
+### [1.9.4](https://github.com/salesforcecli/plugin-source/compare/v1.9.3...v1.9.4) (2022-04-26)
+
+### [1.9.3](https://github.com/salesforcecli/plugin-source/compare/v1.9.2...v1.9.3) (2022-04-07)
+
+### Bug Fixes
+
+- bump to latest sdr ([#467](https://github.com/salesforcecli/plugin-source/issues/467)) ([a71881c](https://github.com/salesforcecli/plugin-source/commit/a71881c276f160b0c50cd4d7bee2bad2096eef1e))
+
+### [1.9.2](https://github.com/salesforcecli/plugin-source/compare/v1.9.1...v1.9.2) (2022-03-25)
+
+### Bug Fixes
+
+- fix from stl ([#460](https://github.com/salesforcecli/plugin-source/issues/460)) ([1ac35ac](https://github.com/salesforcecli/plugin-source/commit/1ac35aca178c21fdae9100064fafaccf3d66cf02))
+
+### [1.9.1](https://github.com/salesforcecli/plugin-source/compare/v1.9.0...v1.9.1) (2022-03-25)
+
+### Bug Fixes
+
+- bump stl for graceful ([#459](https://github.com/salesforcecli/plugin-source/issues/459)) ([b611415](https://github.com/salesforcecli/plugin-source/commit/b611415d32f29ac5f8bc091652031d635d7338fe))
+
 ## [1.9.0](https://github.com/salesforcecli/plugin-source/compare/v1.8.20...v1.9.0) (2022-03-23)
 
 ### Features

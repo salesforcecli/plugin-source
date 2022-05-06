@@ -10,13 +10,14 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ComponentSetBuilder, ConvertResult, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
-import { SourceCommand } from '../../../../sourceCommand';
-import { ConvertCommandResult, ConvertResultFormatter } from '../../../../formatters/mdapi/convertResultFormatter';
+import { SourceCommand } from '../../../sourceCommand';
+import { ConvertCommandResult, ConvertResultFormatter } from '../../../formatters/mdapi/convertResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.convert');
 
 export class Convert extends SourceCommand {
+  public static aliases = ['force:mdapi:beta:convert'];
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
   public static readonly requiresProject = true;

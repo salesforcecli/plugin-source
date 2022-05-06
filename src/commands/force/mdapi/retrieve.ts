@@ -17,19 +17,20 @@ import {
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
-import { SourceCommand } from '../../../../sourceCommand';
-import { Stash } from '../../../../stash';
+import { SourceCommand } from '../../../sourceCommand';
+import { Stash } from '../../../stash';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
   RetrieveResultFormatter,
-} from '../../../../formatters/mdapi/retrieveResultFormatter';
+} from '../../../formatters/mdapi/retrieveResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 
 export class Retrieve extends SourceCommand {
+  public static aliases = ['force:mdapi:beta:retrieve'];
   public static readonly description = messages.getMessage('retrieveCmd.description');
   public static readonly examples = messages.getMessage('retrieveCmd.examples').split(os.EOL);
   public static readonly requiresUsername = true;
