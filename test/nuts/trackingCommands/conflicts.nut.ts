@@ -40,7 +40,7 @@ describe('conflict detection and resolution', () => {
     const pushResult = execCmd<PushResponse>('force:source:push --json', {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
-    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(231);
+    expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(230);
     expect(
       pushResult.every((r) => r.state !== ComponentStatus.Failed),
       JSON.stringify(pushResult.filter((r) => r.state === ComponentStatus.Failed))
