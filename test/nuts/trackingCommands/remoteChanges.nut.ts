@@ -23,6 +23,8 @@ import { PullResponse } from '../../../src/formatters/source/pullFormatter';
 let session: TestSession;
 let conn: Connection;
 
+const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
+
 describe('remote changes', () => {
   before(async () => {
     session = await TestSession.create({
@@ -48,7 +50,7 @@ describe('remote changes', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
-      expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(231);
+      expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(230);
       expect(
         pushResult.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(pushResult)
@@ -93,7 +95,7 @@ describe('remote changes', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.deep.equal([]);
+      expect(result.filter(filterIgnored)).to.deep.equal([]);
     });
     it('can pull the delete', () => {
       const result = execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 0 }).jsonOutput.result;
@@ -125,7 +127,7 @@ describe('remote changes', () => {
       const localStatus = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(localStatus).to.deep.equal([]);
+      expect(localStatus.filter(filterIgnored)).to.deep.equal([]);
     });
   });
 
@@ -169,7 +171,7 @@ describe('remote changes', () => {
       const localStatus = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(localStatus).to.deep.equal([]);
+      expect(localStatus.filter(filterIgnored)).to.deep.equal([]);
     });
   });
 

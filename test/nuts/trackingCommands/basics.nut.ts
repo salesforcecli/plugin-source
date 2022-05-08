@@ -15,6 +15,8 @@ import { PushResponse } from '../../../src/formatters/source/pushResultFormatter
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
 
+const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
+
 let session: TestSession;
 describe('end-to-end-test for tracking with an org (single packageDir)', () => {
   before(async () => {
@@ -50,7 +52,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
-      expect(result, JSON.stringify(result)).to.have.lengthOf(231);
+      expect(result, JSON.stringify(result)).to.have.lengthOf(230);
       expect(
         result.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(result.filter((r) => r.state === ComponentStatus.Failed))
@@ -60,7 +62,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const localResult = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(localResult).to.deep.equal([]);
+      expect(localResult.filter(filterIgnored)).to.deep.equal([]);
 
       const remoteResult = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
@@ -82,10 +84,9 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(
-        result.filter((r) => r.type === 'Profile'),
-        JSON.stringify(result)
-      ).to.have.length(0);
+      expect(result.filter((r) => r.type === 'Profile').filter(filterIgnored), JSON.stringify(result)).to.have.length(
+        0
+      );
     });
 
     it('sees a local delete in local status', async () => {
@@ -97,7 +98,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result).to.deep.equal([
+      expect(result.filter(filterIgnored)).to.deep.equal([
         {
           type: 'ApexClass',
           state: 'Local Deleted',
@@ -138,7 +139,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(0);
+      expect(result.filter(filterIgnored), JSON.stringify(result)).to.be.an.instanceof(Array).with.length(0);
     });
   });
 
@@ -193,7 +194,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
           const result = execCmd<StatusResult[]>('force:source:status --json --local', {
             ensureExitCode: 0,
           }).jsonOutput.result;
-          expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
+          expect(result.filter(filterIgnored), JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
         });
       });
     });
