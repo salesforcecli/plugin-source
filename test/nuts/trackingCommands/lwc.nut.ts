@@ -16,6 +16,8 @@ let session: TestSession;
 let cssPathAbsolute: string;
 let cssPathRelative: string;
 
+const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
+
 describe('lwc', () => {
   before(async () => {
     session = await TestSession.create({
@@ -62,7 +64,9 @@ describe('lwc', () => {
   it('sees no local changes', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.filter((r) => r.origin === 'Local');
+    })
+      .jsonOutput.result.filter((r) => r.origin === 'Local')
+      .filter(filterIgnored);
     expect(result).to.have.length(0);
   });
 
@@ -70,7 +74,9 @@ describe('lwc', () => {
     await fs.promises.rm(cssPathAbsolute);
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.find((r) => r.filePath === cssPathRelative);
+    })
+      .jsonOutput.result.filter(filterIgnored)
+      .find((r) => r.filePath === cssPathRelative);
     expect(result).to.deep.equal({
       fullName: 'heroDetails',
       type: 'LightningComponentBundle',
@@ -96,7 +102,9 @@ describe('lwc', () => {
   it('sees no local changes', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.filter((r) => r.origin === 'Local');
+    })
+      .jsonOutput.result.filter((r) => r.origin === 'Local')
+      .filter(filterIgnored);
     expect(result).to.have.length(0);
   });
 
@@ -116,9 +124,9 @@ describe('lwc', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
     }).jsonOutput.result.filter((r) => r.origin === 'Local');
-    expect(result).to.have.length(4);
-    expect(result.filter((r) => r.actualState === 'Deleted')).to.have.length(3);
-    expect(result.filter((r) => r.actualState === 'Changed')).to.have.length(1);
+    expect(result.filter(filterIgnored)).to.have.length(4);
+    expect(result.filter(filterIgnored).filter((r) => r.actualState === 'Deleted')).to.have.length(3);
+    expect(result.filter(filterIgnored).filter((r) => r.actualState === 'Changed')).to.have.length(1);
   });
 
   it('push deletes the LWC remotely', () => {
@@ -137,7 +145,9 @@ describe('lwc', () => {
   it('sees no local changes', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.filter((r) => r.origin === 'Local');
+    })
+      .jsonOutput.result.filter((r) => r.origin === 'Local')
+      .filter(filterIgnored);
     expect(result).to.have.length(0);
   });
 
