@@ -155,7 +155,7 @@ export class Deploy extends DeployCommand {
         progressFormatter.progress(deploy);
       }
       this.displayDeployId(deploy.id);
-      this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
+      this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
     }
   }
 

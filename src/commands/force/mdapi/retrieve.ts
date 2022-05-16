@@ -168,7 +168,10 @@ export class Retrieve extends SourceCommand {
       this.ux.stopSpinner('queued');
     } else {
       this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.polling'));
-      this.retrieveResult = await this.mdapiRetrieve.pollStatus(1000, this.wait.seconds);
+      this.retrieveResult = await this.mdapiRetrieve.pollStatus({
+        frequency: Duration.milliseconds(1000),
+        timeout: this.wait,
+      });
       this.ux.stopSpinner();
     }
   }
