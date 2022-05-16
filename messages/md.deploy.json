@@ -15,7 +15,7 @@
   "flags": {
     "checkOnly": "validate deploy but don’t save to the org",
     "deployDir": "root of directory tree of files to deploy",
-    "wait": "wait time for command to finish in minutes. Use -1 to poll indefinitely",
+    "wait": "wait time for command to finish in minutes. Use -1 to wait indefinitely",
     "jobId": "job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; if not specified, defaults to your most recent CLI deployment",
     "testLevel": "deployment testing level",
     "runTests": "tests to run if --testlevel RunSpecifiedTests",

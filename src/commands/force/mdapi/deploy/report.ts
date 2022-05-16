@@ -28,7 +28,7 @@ export class Report extends DeployCommand {
   public static readonly flagsConfig: FlagsConfig = {
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(-1),
+      default: Duration.minutes(0),
       min: Duration.minutes(-1),
       description: messages.getMessage('flags.wait'),
       longDescription: messages.getMessage('flagsLong.wait'),
