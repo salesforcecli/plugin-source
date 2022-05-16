@@ -28,10 +28,10 @@ export class Report extends DeployCommand {
   public static readonly flagsConfig: FlagsConfig = {
     wait: flags.minutes({
       char: 'w',
-      default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
-      min: Duration.minutes(1),
-      description: messages.getMessage('flags.wait', [DeployCommand.DEFAULT_WAIT_MINUTES]),
-      longDescription: messages.getMessage('flagsLong.wait', [DeployCommand.DEFAULT_WAIT_MINUTES]),
+      default: Duration.minutes(-1),
+      min: Duration.minutes(-1),
+      description: messages.getMessage('flags.wait'),
+      longDescription: messages.getMessage('flagsLong.wait'),
     }),
     jobid: flags.id({
       char: 'i',
@@ -58,6 +58,9 @@ export class Report extends DeployCommand {
     if (this.flags.verbose) {
       this.ux.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
     }
+    const waitFlag = this.getFlag<Duration>('wait');
+    const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
+
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
     this.displayDeployId(deployId);
 
@@ -68,7 +71,7 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    this.deployResult = await deploy.pollStatus(500, this.getFlag<Duration>('wait').seconds);
+    this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
   }
 
   // this is different from the source:report uses report error codes (unfortunately)

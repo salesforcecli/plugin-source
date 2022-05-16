@@ -118,7 +118,8 @@ export class Retrieve extends SourceCommand {
     const singlePackage = this.getFlag<boolean>('singlepackage');
     this.zipFileName = this.resolveZipFileName(this.getFlag<string>('zipfilename'));
     this.unzip = this.getFlag<boolean>('unzip');
-    this.wait = this.getFlag<Duration>('wait');
+    const waitFlag = this.getFlag<Duration>('wait');
+    this.wait = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
     this.isAsync = this.wait.quantity === 0;
 
     if (singlePackage && packagenames?.length > 1) {

@@ -110,10 +110,8 @@ export class Deploy extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    const { quantity, unit } = this.getFlag<Duration>('wait');
-
-    // 10080m === 1w
-    const waitDuration = quantity === -1 && unit === 0 ? Duration.minutes(10080) : this.getFlag<Duration>('wait');
+    const waitFlag = this.getFlag<Duration>('wait');
+    const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
