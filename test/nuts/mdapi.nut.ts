@@ -477,7 +477,7 @@ describe('mdapi NUTs', () => {
           ).jsonOutput.result;
         });
         it('should deploy validated Id', () => {
-          execCmd(`force:mdapi:deploy --wait 200 --validateddeployrequestid ${deployCommandResponse.id}`, {
+          execCmd(`force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse.id}`, {
             ensureExitCode: 0,
           });
         });
