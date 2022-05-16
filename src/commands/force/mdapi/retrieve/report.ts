@@ -55,6 +55,7 @@ export class Report extends SourceCommand {
       char: 'w',
       description: messages.getMessage('flags.wait'),
       longDescription: messages.getMessage('flagsLong.wait'),
+      min: -1,
       default: Duration.minutes(1440), // 24 hours is a reasonable default versus -1 (no timeout)
     }),
     verbose: flags.builtin({
@@ -99,7 +100,9 @@ export class Report extends SourceCommand {
       this.unzip = this.getFlag<boolean>('unzip');
     }
 
-    this.wait = this.getFlag<Duration>('wait');
+    const waitFlag = this.getFlag<Duration>('wait');
+    this.wait = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
+
     this.isAsync = this.wait.quantity === 0;
 
     this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
