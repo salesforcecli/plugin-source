@@ -71,7 +71,7 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
+    this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
   }
 
   // this is different from the source:report uses report error codes (unfortunately)
