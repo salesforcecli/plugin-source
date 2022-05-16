@@ -145,7 +145,6 @@ export class Deploy extends DeployCommand {
 
     // we might not know the source api version without unzipping a zip file, so we don't use componentSet
     this.ux.log(getVersionMessage('Deploying', undefined, this.isRest));
-    this.logger.debug('Deploy result: %o', deploy);
 
     if (!this.isAsync) {
       if (!this.isJsonOutput()) {
