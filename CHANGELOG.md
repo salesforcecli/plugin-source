@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.8](https://github.com/salesforcecli/plugin-source/compare/v1.9.7...v1.9.8) (2022-05-17)
+
+### Bug Fixes
+
+- mdapi deploy negative one ([#487](https://github.com/salesforcecli/plugin-source/issues/487)) ([c7e2494](https://github.com/salesforcecli/plugin-source/commit/c7e24941f770336ea31e067067c12942ec01bf49))
+
 ### [1.9.7](https://github.com/salesforcecli/plugin-source/compare/v1.9.6...v1.9.7) (2022-05-04)
 
 ### [1.9.6](https://github.com/salesforcecli/plugin-source/compare/v1.9.5...v1.9.6) (2022-04-29)
