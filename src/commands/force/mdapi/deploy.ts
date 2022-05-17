@@ -110,7 +110,9 @@ export class Deploy extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    const waitDuration = this.getFlag<Duration>('wait');
+    const waitFlag = this.getFlag<Duration>('wait');
+    const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
+
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
 
@@ -143,7 +145,6 @@ export class Deploy extends DeployCommand {
 
     // we might not know the source api version without unzipping a zip file, so we don't use componentSet
     this.ux.log(getVersionMessage('Deploying', undefined, this.isRest));
-    this.logger.debug('Deploy result: %o', deploy);
 
     if (!this.isAsync) {
       if (!this.isJsonOutput()) {
@@ -153,7 +154,7 @@ export class Deploy extends DeployCommand {
         progressFormatter.progress(deploy);
       }
       this.displayDeployId(deploy.id);
-      this.deployResult = await deploy.pollStatus(500, waitDuration.seconds);
+      this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
     }
   }
 
