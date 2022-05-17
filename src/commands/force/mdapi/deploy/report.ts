@@ -61,6 +61,13 @@ export class Report extends DeployCommand {
     const waitFlag = this.getFlag<Duration>('wait');
     const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
+    this.isAsync = waitDuration.quantity === 0;
+
+    if (this.isAsync) {
+      this.deployResult = await this.report(this.getFlag<string>('jobid'));
+      return;
+    }
+
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
     this.displayDeployId(deployId);
 
