@@ -99,7 +99,7 @@ export class Open extends SourceCommand {
       try {
         await new SfdcUrl(url).checkLightningDomain();
       } catch (error) {
-        throw new SfError('SourceOpenCommandTimeoutError');
+        throw new SfError('SourceOpenCommandTimeoutError', 'SourceOpenCommandTimeoutError');
       }
     }
 

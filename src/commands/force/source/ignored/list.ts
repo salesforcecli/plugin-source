@@ -57,7 +57,10 @@ export class SourceIgnoredCommand extends SfdxCommand {
     } catch (err) {
       const error = err as FsError;
       if (error.code === 'ENOENT') {
-        throw new SfError(messages.getMessage('invalidSourcePath', [this.flags.sourcepath as string]));
+        throw new SfError(
+          messages.getMessage('invalidSourcePath', [this.flags.sourcepath as string]),
+          'invalidSourcePath'
+        );
       }
       throw SfError.wrap(error);
     }

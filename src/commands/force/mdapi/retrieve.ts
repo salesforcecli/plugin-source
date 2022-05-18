@@ -123,7 +123,7 @@ export class Retrieve extends SourceCommand {
     this.isAsync = this.wait.quantity === 0;
 
     if (singlePackage && packagenames?.length > 1) {
-      throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]));
+      throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]), 'InvalidPackageNames');
     }
 
     this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));

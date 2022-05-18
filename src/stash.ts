@@ -89,7 +89,7 @@ export class Stash {
     const key = Stash.keyMap[commandId] as StashKey;
     if (!key) {
       const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
-      throw new SfError(messages.getMessage('InvalidStashKey', [commandId]));
+      throw new SfError(messages.getMessage('InvalidStashKey', [commandId]), 'InvalidStashKey');
     }
     return key;
   }

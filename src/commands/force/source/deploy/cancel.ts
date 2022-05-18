@@ -53,7 +53,7 @@ export class Cancel extends DeployCommand {
       this.deployResult = await this.poll(deployId);
     } catch (e) {
       const err = e as Error;
-      throw new SfError(messages.getMessage('CancelFailed', [err.message]));
+      throw new SfError(messages.getMessage('CancelFailed', [err.message]), 'CancelFailed');
     }
   }
 
