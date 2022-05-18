@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { IConfig } from '@oclif/config';
 import { Deploy } from '../../../src/commands/force/source/deploy';
@@ -78,7 +78,7 @@ describe('force:source:deploy', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
@@ -86,13 +86,13 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[]) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

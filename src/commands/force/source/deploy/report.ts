@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { Messages, SfdxProject } from '@salesforce/core';
+import { Messages, SfProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
@@ -59,7 +59,7 @@ export class Report extends DeployCommand {
     if (this.getFlag<boolean>('verbose')) {
       let sourcepath: string[];
       try {
-        this.project = await SfdxProject.resolve();
+        this.project = await SfProject.resolve();
         sourcepath = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
       } catch (err) {
         // ignore the error. this was just to get improved command output.

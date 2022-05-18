@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfError, SfdxProject } from '@salesforce/core';
+import { Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
   ComponentSetBuilder,
@@ -232,7 +232,7 @@ export class Retrieve extends SourceCommand {
 
   private resolveProjectPath(): string {
     try {
-      return SfdxProject.getInstance().getDefaultPackage().fullPath;
+      return SfProject.getInstance().getDefaultPackage().fullPath;
     } catch (error) {
       this.logger.debug('No SFDX project found for default package directory');
     }

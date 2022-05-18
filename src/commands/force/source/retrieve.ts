@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxProject } from '@salesforce/core';
+import { Messages, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { ComponentSet, ComponentSetBuilder, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
@@ -176,7 +176,7 @@ export class Retrieve extends SourceCommand {
 
   protected async formatResult(): Promise<RetrieveCommandResult> {
     const packages: PackageRetrieval[] = [];
-    const projectPath = await SfdxProject.resolveProjectPath();
+    const projectPath = await SfProject.resolveProjectPath();
 
     this.getFlag<string[]>('packagenames', []).forEach((name) => {
       packages.push({ name, path: join(projectPath, name) });

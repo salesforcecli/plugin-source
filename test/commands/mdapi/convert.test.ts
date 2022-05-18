@@ -12,7 +12,7 @@ import { assert, expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
-import { SfdxProject } from '@salesforce/core';
+import { SfProject } from '@salesforce/core';
 import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Convert } from '../../../src/commands/force/mdapi/convert';
 import { FsError } from '../../../src/types';
@@ -73,7 +73,7 @@ describe(`force:${commandName}`, () => {
       await this.init();
       return this.run();
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
@@ -81,12 +81,12 @@ describe(`force:${commandName}`, () => {
   const runConvertCmd = async (params: string[]) => {
     const cmd = new TestConvert(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ path: defaultDir }),
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg');
 

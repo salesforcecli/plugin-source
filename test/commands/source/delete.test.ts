@@ -18,7 +18,7 @@ import {
 import {
   // Lifecycle,
   Org,
-  SfdxProject,
+  SfProject,
 } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
@@ -55,23 +55,23 @@ describe('force:source:delete', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
 
   const runDeleteCmd = async (params: string[]) => {
     const cmd = new TestDelete(params, oclifConfigStub);
-    stubMethod(sandbox, SfdxProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
+    stubMethod(sandbox, SfProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
           getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

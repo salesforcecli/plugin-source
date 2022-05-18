@@ -12,7 +12,7 @@ import { expect } from 'chai';
 import { MetadataResolver, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
-import { AuthInfo, MyDomainResolver, Org, SfdxProject } from '@salesforce/core';
+import { AuthInfo, MyDomainResolver, Org, SfProject } from '@salesforce/core';
 import { Open } from '../../../src/commands/force/source/open';
 import { OpenCommandResult } from '../../../src/formatters/source/openResultFormatter';
 
@@ -74,7 +74,7 @@ describe('force:source:open', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
@@ -82,13 +82,13 @@ describe('force:source:open', () => {
   const runOpenCmd = async (params: string[]) => {
     const cmd = new TestOpen(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ path: defaultDir }),
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

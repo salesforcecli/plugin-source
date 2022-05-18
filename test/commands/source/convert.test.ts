@@ -11,7 +11,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
-import { SfdxProject } from '@salesforce/core';
+import { SfProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
 
 describe('force:source:convert', () => {
@@ -30,7 +30,7 @@ describe('force:source:convert', () => {
       await this.init();
       return this.run();
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
@@ -38,14 +38,14 @@ describe('force:source:convert', () => {
   const runConvertCmd = async (params: string[]) => {
     const cmd = new TestConvert(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ path: defaultDir }),
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg');
     return cmd.runIt();
