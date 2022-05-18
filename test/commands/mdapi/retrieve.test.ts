@@ -17,6 +17,7 @@ import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
 import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
+import { Duration } from '@salesforce/kit';
 import { Retrieve } from '../../../src/commands/force/mdapi/retrieve';
 import { Stash, StashData } from '../../../src/stash';
 import { getRetrieveResult } from '../source/retrieveResponses';
@@ -173,8 +174,10 @@ describe('force:mdapi:retrieve', () => {
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
     // should use the default polling timeout of 1440 minutes (86400 seconds)
-    expect(pollStub.firstCall.args[0]).to.equal(1000);
-    expect(pollStub.firstCall.args[1]).to.equal(86400);
+    expect(pollStub.firstCall.args[0]).to.deep.equal({
+      frequency: Duration.milliseconds(1000),
+      timeout: Duration.minutes(1440),
+    });
   });
 
   it('should pass along unpackaged', async () => {
@@ -267,8 +270,10 @@ describe('force:mdapi:retrieve', () => {
     // ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
-    expect(pollStub.firstCall.args[0]).to.equal(1000);
-    expect(pollStub.firstCall.args[1]).to.equal(300);
+    expect(pollStub.firstCall.args[0]).to.deep.equal({
+      frequency: Duration.milliseconds(1000),
+      timeout: Duration.minutes(5),
+    });
   });
 
   it('should display expected output', async () => {

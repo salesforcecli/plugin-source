@@ -432,6 +432,17 @@ describe('mdapi NUTs', () => {
           });
         });
 
+        it('async report from stash', () => {
+          // we can't know the exit code so don't use ensureExitCode
+          const reportCommandResponse = execCmd<MdDeployResult>(
+            'force:mdapi:deploy:report --wait 0 -u nonDefaultOrg --json'
+          ).jsonOutput.result;
+
+          // this output is a change from mdapi:deploy:report which returned NOTHING after the progress bar
+          expect(reportCommandResponse).to.have.property('status');
+          expect(['Pending', 'Succeeded', 'Failed', 'InProgress'].includes(reportCommandResponse.status));
+        });
+
         it('request non-verbose deploy report without a deployId', () => {
           const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 200 -u nonDefaultOrg', {
             ensureExitCode: 0,
@@ -448,6 +459,16 @@ describe('mdapi NUTs', () => {
           }).shellOutput.stdout;
           // has the basic table output
           expect(reportCommandResponse).to.include('Deployed Source');
+        });
+
+        it('async report without a deployId', () => {
+          const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 0 -u nonDefaultOrg', {
+            ensureExitCode: 0,
+          }).shellOutput.stdout;
+
+          // this output is a change from mdapi:deploy:report which returned NOTHING after the progress bar
+          expect(reportCommandResponse).to.include('Status: Succeeded', reportCommandResponse);
+          expect(reportCommandResponse).to.include('Deployed: ', reportCommandResponse);
         });
       });
 
@@ -477,7 +498,7 @@ describe('mdapi NUTs', () => {
           ).jsonOutput.result;
         });
         it('should deploy validated Id', () => {
-          execCmd(`force:mdapi:deploy --wait 200 --validateddeployrequestid ${deployCommandResponse.id}`, {
+          execCmd(`force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse.id}`, {
             ensureExitCode: 0,
           });
         });
