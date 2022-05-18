@@ -10,7 +10,7 @@ import { ComponentSetBuilder, ComponentSetOptions, MetadataConverter } from '@sa
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { SfProject } from '@salesforce/core';
 import { Convert } from '../../../src/commands/force/source/convert';
 
@@ -22,7 +22,7 @@ describe('force:source:convert', () => {
   const defaultDir = join('my', 'default', 'package');
   const myApp = join('new', 'package', 'directory');
   const packageXml = 'package.xml';
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let resolveProjectConfigStub: sinon.SinonStub;
 
   class TestConvert extends Convert {

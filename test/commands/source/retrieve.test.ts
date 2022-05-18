@@ -23,7 +23,7 @@ import {
   SfProject,
 } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
@@ -39,7 +39,7 @@ describe('force:source:retrieve', () => {
   const packageXml = 'package.xml';
   const defaultPackagePath = 'defaultPackagePath';
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   const retrieveResult = getRetrieveResult('success');
   const expectedResults: RetrieveCommandResult = {

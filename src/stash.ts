@@ -89,7 +89,7 @@ export class Stash {
     const key = Stash.keyMap[commandId] as StashKey;
     if (!key) {
       const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
-      throw messages.createError('InvalidStashKey', [commandId]);
+      throw new SfError(messages.getMessage('InvalidStashKey', [commandId]));
     }
     return key;
   }
@@ -140,11 +140,12 @@ export class Stash {
         const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
         fs.renameSync(stashFilePath, corruptFilePath);
         const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
-        const invalidStashErr = messages.createError('InvalidStashKey', [corruptFilePath]);
-
-        invalidStashErr.message = `${invalidStashErr.message}\n${error.message}`;
-        invalidStashErr.stack = `${invalidStashErr.stack}\nDue to:\n${error.stack}`;
-        throw invalidStashErr;
+        throw new SfError(
+          `${messages.getMessage('InvalidStashKey', [corruptFilePath])}\n\n${error.message}`,
+          'InvalidStashFile',
+          [],
+          error
+        );
       }
       throw SfError.wrap(error);
     }

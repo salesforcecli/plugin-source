@@ -88,7 +88,7 @@ export class Report extends SourceCommand {
 
       // throw if no Retrieve ID in stash either
       if (!mdRetrieveStash?.jobid) {
-        throw new SfError(messages.getMessage('MissingRetrieveId'));
+        throw new SfError(messages.getMessage('MissingRetrieveId'), 'MissingRetrieveId');
       }
       retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);

@@ -11,7 +11,7 @@ import { exec } from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { DescribeMetadataResult } from 'jsforce';
+import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';

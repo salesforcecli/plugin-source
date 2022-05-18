@@ -9,9 +9,9 @@ import * as fs from 'fs';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
 import { Org } from '@salesforce/core';
-import { FileProperties } from 'jsforce';
+import { FileProperties } from 'jsforce/api/metadata';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { ListMetadata } from '../../../src/commands/force/mdapi/listmetadata';
 
@@ -33,7 +33,7 @@ describe('force:mdapi:listmetadata', () => {
     type: 'ApexClass',
   };
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let listMetadataStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxStyledJsonStub: sinon.SinonStub;

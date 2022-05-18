@@ -11,7 +11,7 @@ import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile, Org, SfProject } from '@salesforce/core';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Report } from '../../../src/commands/force/source/deploy/report';
@@ -35,7 +35,7 @@ describe('force:source:report', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let checkDeployStatusStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let pollStatusStub: sinon.SinonStub;

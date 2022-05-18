@@ -93,10 +93,10 @@ export abstract class SourceCommand extends SfdxCommand {
         const isDir = stats.isDirectory();
         if (type === 'dir' && !isDir) {
           const msg = messages.getMessage('expectedDirectory');
-          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, msg]));
+          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, msg]), 'InvalidFlagPath');
         } else if (type === 'file' && isDir) {
           const msg = messages.getMessage('expectedFile');
-          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, msg]));
+          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, msg]), 'InvalidFlagPath');
         }
       }
     } catch (error: unknown) {
@@ -106,7 +106,7 @@ export abstract class SourceCommand extends SfdxCommand {
       } else {
         if (throwOnENOENT) {
           const enoent = messages.getMessage('notFound');
-          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, enoent]));
+          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, enoent]), 'InvalidFlagPath');
         }
         const dir = type === 'dir' ? resolvedPath : dirname(resolvedPath);
         fs.mkdirSync(dir, { recursive: true });

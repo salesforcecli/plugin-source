@@ -46,7 +46,7 @@ export abstract class DeployCommand extends SourceCommand {
     if (id.startsWith('0Af')) {
       return true;
     } else {
-      throw new SfError(messages.getMessage('invalidDeployId'));
+      throw new SfError(messages.getMessage('invalidDeployId'), 'invalidDeployId');
     }
   };
   /**

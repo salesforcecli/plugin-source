@@ -6,7 +6,8 @@
  */
 
 import * as path from 'path';
-import { AuthInfo, Connection, fs } from '@salesforce/core';
+import * as fs from 'fs';
+import { AuthInfo, Connection } from '@salesforce/core';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
@@ -24,14 +25,16 @@ describe('multiple pkgDirs deployed sequentially', () => {
     });
 
     // set `pushPackageDirectoriesSequentially`
-    const originalProject = (await fs.readJson(path.join(session.project.dir, 'sfdx-project.json'))) as Record<
-      string,
-      unknown
-    >;
-    await fs.writeJson(path.join(session.project.dir, 'sfdx-project.json'), {
-      ...originalProject,
-      pushPackageDirectoriesSequentially: true,
-    });
+    const originalProject = JSON.parse(
+      await fs.promises.readFile(path.join(session.project.dir, 'sfdx-project.json'), 'utf8')
+    ) as Record<string, unknown>;
+    await fs.promises.writeFile(
+      path.join(session.project.dir, 'sfdx-project.json'),
+      JSON.stringify({
+        ...originalProject,
+        pushPackageDirectoriesSequentially: true,
+      })
+    );
 
     conn = await Connection.create({
       authInfo: await AuthInfo.create({

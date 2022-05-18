@@ -12,7 +12,7 @@ import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } fr
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
 import {
@@ -31,7 +31,7 @@ describe('force:source:deploy', () => {
   const username = 'deploy-test@org.com';
   const packageXml = 'package.xml';
   const defaultDir = join('my', 'default', 'package');
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   const deployResult = getDeployResult('successSync');
   const expectedResults = deployResult.response as DeployCommandResult;

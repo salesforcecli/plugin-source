@@ -21,7 +21,7 @@ import {
   SfProject,
 } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { Delete } from '../../../src/commands/force/source/delete';
 import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
@@ -34,7 +34,7 @@ describe('force:source:delete', () => {
   const defaultPackagePath = 'defaultPackagePath';
   let confirm = true;
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;

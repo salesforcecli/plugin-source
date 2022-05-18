@@ -10,7 +10,7 @@
 
 import { SfdxCommand } from '@salesforce/command';
 import got from 'got';
-import { Help } from '@oclif/plugin-help';
+import { Help } from '@oclif/core';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { ConfigAggregator } from '@salesforce/core';
@@ -80,10 +80,10 @@ export class ForceCommand extends SfdxCommand {
   }
 
   // overrides the help so that it shows the help for the `force` topic and not "help" for this command
-  protected _help(): never {
+  protected _help(): void {
     const help = new Help(this.config);
     // We need to include force in the args for topics to be shown
-    help.showHelp(process.argv.slice(2));
+    void help.showHelp(process.argv.slice(2));
     return this.exit(0);
   }
 }

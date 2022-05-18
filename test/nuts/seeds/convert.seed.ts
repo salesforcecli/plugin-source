@@ -4,12 +4,11 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
+import * as fs from 'fs';
 import * as path from 'path';
 import * as shelljs from 'shelljs';
 import { getString } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { fs } from '@salesforce/core';
 import { Result } from '@salesforce/source-testkit/lib/types';
 import { TEST_REPOS_MAP } from '../testMatrix';
 

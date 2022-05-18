@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile, Org, SfProject } from '@salesforce/core';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
@@ -32,7 +32,7 @@ describe('force:source:deploy:cancel', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let checkDeployStatusStub: sinon.SinonStub;
   let cancelStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
