@@ -13,7 +13,7 @@ import { StatusFormatter, StatusResult } from '../../../formatters/source/status
 import { trackingSetup } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 export default class Status extends SfdxCommand {
   public static aliases = ['force:source:beta:status'];
@@ -48,7 +48,6 @@ export default class Status extends SfdxCommand {
       org: this.org,
       project: this.project,
       ux: this.ux,
-      apiVersion: this.flags.apiversion as string,
     });
 
     const wantsLocal = (this.flags.local as boolean) || (!this.flags.remote && !this.flags.local);

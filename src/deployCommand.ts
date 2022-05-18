@@ -13,7 +13,7 @@ import {
   RequestStatus,
   AsyncResult,
 } from '@salesforce/source-deploy-retrieve';
-import { ConfigAggregator, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
+import { ConfigAggregator, PollingClient, SfError, StatusResult, Messages } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
@@ -21,6 +21,8 @@ import { DeployData, Stash } from './stash';
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.load('@salesforce/plugin-source', 'deploy', ['invalidDeployId', 'MissingDeployId']);
 export abstract class DeployCommand extends SourceCommand {
   protected displayDeployId = once((id: string) => {
     if (!this.isJsonOutput()) {
@@ -44,7 +46,7 @@ export abstract class DeployCommand extends SourceCommand {
     if (id.startsWith('0Af')) {
       return true;
     } else {
-      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
+      throw new SfError(messages.getMessage('invalidDeployId'));
     }
   };
   /**
@@ -99,7 +101,7 @@ export abstract class DeployCommand extends SourceCommand {
     } else {
       const stash = Stash.get<DeployData>(Stash.getKey(this.id));
       if (!stash) {
-        throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
+        throw new SfError(messages.getMessage('MissingDeployId'));
       }
       return stash.jobid;
     }

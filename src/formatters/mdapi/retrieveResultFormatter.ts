@@ -88,12 +88,11 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
 
     this.ux.log('');
     this.ux.styledHeader(blue(`Components Retrieved [${retrievedFiles.length}]`));
-    const columns = [
-      { key: 'type', label: 'TYPE' },
-      { key: 'fileName', label: 'FILE' },
-      { key: 'fullName', label: 'NAME' },
-      { key: 'id', label: 'ID' },
-    ];
-    this.ux.table(retrievedFiles, { columns });
+    this.ux.table(retrievedFiles, {
+      type: { header: 'TYPE' },
+      fileName: { header: 'FILE' },
+      fullName: { header: 'NAME' },
+      id: { header: 'ID' },
+    });
   }
 }

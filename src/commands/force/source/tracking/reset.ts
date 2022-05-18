@@ -11,7 +11,7 @@ import * as chalk from 'chalk';
 import { SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
 export type SourceTrackingResetResult = {
   sourceMembersSynced: number;
@@ -48,7 +48,6 @@ export class Reset extends SfdxCommand {
       const sourceTracking = await SourceTracking.create({
         project: this.project,
         org: this.org,
-        apiVersion: this.flags.apiversion as string,
       });
 
       const [remoteResets, localResets] = await Promise.all([

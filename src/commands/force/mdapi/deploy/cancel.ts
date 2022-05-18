@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { DeployCommand } from '../../../../deployCommand';
@@ -17,7 +17,14 @@ import {
 } from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');
+const messages = Messages.load('@salesforce/plugin-source', 'md.cancel', [
+  'CancelFailed',
+  'description',
+  'examples',
+  'flags.wait',
+  'flags.waitLong',
+  'flags.jobid',
+]);
 
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
@@ -53,7 +60,7 @@ export class Cancel extends DeployCommand {
       this.deployResult = await this.poll(deployId);
     } catch (e) {
       const err = e as Error;
-      throw SfdxError.create('@salesforce/plugin-source', 'cancel', 'CancelFailed', [err.message]);
+      throw new SfError(messages.getMessage('CancelFailed', [err.message]));
     }
   }
 

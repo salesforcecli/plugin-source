@@ -5,8 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as fs from 'fs';
-import { ConfigFile, Logger, SfdxError } from '@salesforce/core';
+import { ConfigFile, Logger, Messages, SfError } from '@salesforce/core';
 import { JsonMap, Optional } from '@salesforce/ts-types';
+
+Messages.importMessagesDirectory(__dirname);
 
 interface StashFile {
   isGlobal: boolean;
@@ -86,7 +88,8 @@ export class Stash {
   public static getKey(commandId: string): StashKey {
     const key = Stash.keyMap[commandId] as StashKey;
     if (!key) {
-      throw SfdxError.create('@salesforce/plugin-source', 'stash', 'InvalidStashKey', [commandId]);
+      const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
+      throw messages.createError('InvalidStashKey', [commandId]);
     }
     return key;
   }
@@ -136,14 +139,14 @@ export class Stash {
         const stashFilePath = Stash.instance?.getPath();
         const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
         fs.renameSync(stashFilePath, corruptFilePath);
-        const invalidStashErr = SfdxError.create('@salesforce/plugin-source', 'stash', 'InvalidStashFile', [
-          corruptFilePath,
-        ]);
+        const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
+        const invalidStashErr = messages.createError('InvalidStashKey', [corruptFilePath]);
+
         invalidStashErr.message = `${invalidStashErr.message}\n${error.message}`;
         invalidStashErr.stack = `${invalidStashErr.stack}\nDue to:\n${error.stack}`;
         throw invalidStashErr;
       }
-      throw SfdxError.wrap(error);
+      throw SfError.wrap(error);
     }
 
     return Stash.instance;

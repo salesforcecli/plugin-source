@@ -5,8 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
+import * as fs from 'fs';
 import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
-import { fs as fsCore, Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ForceIgnore } from '@salesforce/source-deploy-retrieve';
 import { FsError } from '../../../../types';
 
@@ -56,17 +57,15 @@ export class SourceIgnoredCommand extends SfdxCommand {
     } catch (err) {
       const error = err as FsError;
       if (error.code === 'ENOENT') {
-        throw SfdxError.create('@salesforce/plugin-source', 'ignored_list', 'invalidSourcePath', [
-          this.flags.sourcepath as string,
-        ]);
+        throw new SfError(messages.getMessage('invalidSourcePath', [this.flags.sourcepath as string]));
       }
-      throw SfdxError.wrap(error);
+      throw SfError.wrap(error);
     }
   }
 
   // Stat the filepath.  Test if a file, recurse if a directory.
   private async statIgnored(filepath: string): Promise<string[]> {
-    const stats = await fsCore.stat(filepath);
+    const stats = await fs.promises.stat(filepath);
     if (stats.isDirectory()) {
       return (await Promise.all(await this.findIgnored(filepath))).flat();
     } else {
@@ -77,7 +76,7 @@ export class SourceIgnoredCommand extends SfdxCommand {
   // Recursively search a directory for source files to test.
   private async findIgnored(dir: string): Promise<Array<Promise<string[]>>> {
     this.logger.debug(`Searching dir: ${dir}`);
-    return (await fsCore.readdir(dir)).map((filename) => this.statIgnored(path.join(dir, filename)));
+    return (await fs.promises.readdir(dir)).map((filename) => this.statIgnored(path.join(dir, filename)));
   }
 
   // Test if a source file is denied, adding any ignored files to

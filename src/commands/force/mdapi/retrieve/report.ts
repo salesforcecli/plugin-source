@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../../sourceCommand';
@@ -88,7 +88,7 @@ export class Report extends SourceCommand {
 
       // throw if no Retrieve ID in stash either
       if (!mdRetrieveStash?.jobid) {
-        throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'MissingRetrieveId');
+        throw new SfError(messages.getMessage('MissingRetrieveId'));
       }
       retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);

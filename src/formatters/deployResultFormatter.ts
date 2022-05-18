@@ -7,7 +7,7 @@
 
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { Logger, Messages, SfError } from '@salesforce/core';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
   CodeCoverage,
@@ -73,7 +73,7 @@ export class DeployResultFormatter extends ResultFormatter {
     }
     if (this.hasStatus(RequestStatus.Canceled)) {
       const canceledByName = getString(this.result, 'response.canceledByName', 'unknown');
-      throw new SfdxError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
+      throw new SfError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
     }
     this.displaySuccesses();
     this.displayDeletions();
@@ -82,7 +82,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
-      throw new SfdxError(messages.getMessage('deployFailed'), 'DeployFailed');
+      throw new SfError(messages.getMessage('deployFailed'), 'DeployFailed');
     }
   }
 
@@ -118,11 +118,9 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
       this.ux.table(successes, {
-        columns: [
-          { key: 'fullName', label: 'FULL NAME' },
-          { key: 'type', label: 'TYPE' },
-          { key: 'filePath', label: 'PROJECT PATH' },
-        ],
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
       });
     }
   }
@@ -138,11 +136,9 @@ export class DeployResultFormatter extends ResultFormatter {
     this.ux.log('');
     this.ux.styledHeader(chalk.blue('Deleted Source'));
     this.ux.table(deletions, {
-      columns: [
-        { key: 'fullName', label: 'FULL NAME' },
-        { key: 'type', label: 'TYPE' },
-        { key: 'filePath', label: 'PROJECT PATH' },
-      ],
+      fullName: { header: 'FULL NAME' },
+      type: { header: 'TYPE' },
+      filePath: { header: 'PROJECT PATH' },
     });
   }
 
@@ -178,11 +174,9 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       this.ux.table(failures, {
-        columns: [
-          { key: 'problemType', label: 'Type' },
-          { key: 'fullName', label: 'Name' },
-          { key: 'error', label: 'Problem' },
-        ],
+        problem: { header: 'Type' },
+        fullName: { header: 'Name' },
+        error: { header: 'Problem' },
       });
       this.ux.log('');
     }
@@ -216,12 +210,10 @@ export class DeployResultFormatter extends ResultFormatter {
         chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
       );
       this.ux.table(tests, {
-        columns: [
-          { key: 'name', label: 'Name' },
-          { key: 'methodName', label: 'Method' },
-          { key: 'message', label: 'Message' },
-          { key: 'stackTrace', label: 'Stacktrace' },
-        ],
+        name: { header: 'Name' },
+        methodName: { header: 'Method' },
+        message: { header: 'Message' },
+        stackTrace: { header: 'Stacktrace' },
       });
     }
   }
@@ -233,10 +225,8 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
       this.ux.table(tests, {
-        columns: [
-          { key: 'name', label: 'Name' },
-          { key: 'methodName', label: 'Method' },
-        ],
+        name: { header: 'Name' },
+        methodName: { header: 'Method' },
       });
     }
     const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
@@ -271,17 +261,9 @@ export class DeployResultFormatter extends ResultFormatter {
       });
 
       this.ux.table(coverage, {
-        columns: [
-          { key: 'name', label: 'Name' },
-          {
-            key: 'numLocations',
-            label: '% Covered',
-          },
-          {
-            key: 'lineNotCovered',
-            label: 'Uncovered Lines',
-          },
-        ],
+        name: { header: 'Name' },
+        numLocations: { header: '% Covered' },
+        lineNotCovered: { header: 'Uncovered Lines' },
       });
     }
   }

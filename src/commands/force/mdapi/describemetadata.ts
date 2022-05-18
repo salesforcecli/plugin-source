@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-import { DescribeMetadataResult } from 'jsforce';
+import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { RegistryAccess } from '@salesforce/source-deploy-retrieve';
 import { SourceCommand } from '../../../sourceCommand';
 

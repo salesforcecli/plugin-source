@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
+import { Messages, SfError, SfdxProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
   ComponentSetBuilder,
@@ -123,9 +123,7 @@ export class Retrieve extends SourceCommand {
     this.isAsync = this.wait.quantity === 0;
 
     if (singlePackage && packagenames?.length > 1) {
-      throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'InvalidPackageNames', [
-        packagenames.toString(),
-      ]);
+      throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]));
     }
 
     this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
