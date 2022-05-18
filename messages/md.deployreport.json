@@ -3,9 +3,9 @@
   "mdDeployReportCommandCliHelp": "Specify the job ID for the deploy you want to check. The job ID is returned by the force:mdapi:deploy command when run without the --wait parameter. You can also specify a wait time (minutes) to check for updates to the deploy status.",
   "examples": [
     "Check the status of the most recent deployment",
-    " sfdx force:mdapi:deploy:report",
+    "$ sfdx force:mdapi:deploy:report",
     "Check the status of a deploy with job ID 1234 and wait for 10 minutes for the result:",
-    " sfdx force:mdapi:deploy:report -i 1234 -w 10"
+    "$ sfdx force:mdapi:deploy:report -i 1234 -w 10"
   ],
   "flags": {
     "verbose": "verbose output of deploy results",

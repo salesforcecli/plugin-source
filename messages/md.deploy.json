@@ -2,15 +2,15 @@
   "description": "deploy metadata to an org using Metadata API",
   "examples": [
     "Return a job ID you can use to check the deploy status:",
-    "  sfdx force:mdapi:deploy -d some/path",
+    "$ sfdx force:mdapi:deploy -d some/path",
     "Deploy and poll for 1000 minutes:",
-    "  sfdx force:mdapi:deploy -d some/path -w 1000",
+    "$ sfdx force:mdapi:deploy -d some/path -w 1000",
     "Deploy a ZIP file:",
-    "  sfdx force:mdapi:deploy -f stuff.zip",
+    "$ sfdx force:mdapi:deploy -f stuff.zip",
     "Validate a deployment so the ID can be used for a quick deploy:",
-    "  sfdx force:mdapi:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg",
+    "$ sfdx force:mdapi:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg",
     "Quick deploy using a previously validated deployment:",
-    "  sfdx force:mdapi:deploy -q MyValidatedId"
+    "$ sfdx force:mdapi:deploy -q MyValidatedId"
   ],
   "flags": {
     "checkOnly": "validate deploy but don’t save to the org",
