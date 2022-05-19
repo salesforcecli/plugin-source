@@ -109,7 +109,7 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         id: string;
         result: { id: string };
       }>;
-      testkit.expect.errorToHaveName(convert, 'Error');
+      testkit.expect.errorToHaveName(convert, 'SfError');
     });
   });
 
