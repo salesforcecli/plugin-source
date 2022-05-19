@@ -24,11 +24,6 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       executable: EXECUTABLE,
       nut: __filename,
     });
-
-    //
-    // *** REMOVE THIS DEPLOY WHEN --checkonly SERVER BUG IS FIXED *** 2/23/2022
-    //
-    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {

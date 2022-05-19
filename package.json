@@ -179,7 +179,7 @@
     "test:nuts:tracking:flag": "mocha \"test/nuts/trackingCommands/deployRetrieveDelete.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:forceignore": "mocha \"test/nuts/trackingCommands/forceIgnore.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:lwc": "mocha \"test/nuts/trackingCommands/lwc.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
-    "test:nuts:tracking:mpd": "mocha \"test/nuts/trackingCommands/mpd*\" --slow 3000 --timeout 600000 --retries 0",
+    "test:nuts:tracking:mpd": "mocha \"test/nuts/trackingCommands/mpd*\" --slow 3000 --timeout 600000 --retries 0 -parallel",
     "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:resetClear": "mocha \"test/nuts/trackingCommands/resetClear.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:watch": "mocha --watch \"./test/**/*.test.ts\"",

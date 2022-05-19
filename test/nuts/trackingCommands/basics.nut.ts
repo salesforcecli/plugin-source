@@ -153,7 +153,8 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const failure = execCmd(`force:source:status -u ${hubUsername} --remote --json`, {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };
-      expect(failure.name).to.equal('NonSourceTrackedOrgError');
+      // command5 is removing `Error` from the end of the error names.
+      expect(failure.name).to.include('NonSourceTrackedOrg');
     });
 
     describe('push failures', () => {

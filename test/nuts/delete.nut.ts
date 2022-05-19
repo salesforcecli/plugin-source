@@ -16,7 +16,7 @@ import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { isNameObsolete } from './shared/isNameObsolete';
 
 describe('source:delete NUTs', () => {
-  const executable = path.join(process.cwd(), 'bin', 'run');
+  const executable = path.join(process.cwd(), 'bin', 'dev');
   let testkit: SourceTestkit;
 
   const queryOrgAndFS = async (name: string, fsPath: string): Promise<void> => {

@@ -11,7 +11,7 @@ import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
 import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
-const EXECUTABLE = path.join(process.cwd(), 'bin', 'run');
+const EXECUTABLE = path.join(process.cwd(), 'bin', 'dev');
 
 const repo = {
   name: 'dreamhouse-lwc',

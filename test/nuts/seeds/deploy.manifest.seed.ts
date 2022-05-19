@@ -55,7 +55,7 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the package.xml is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'Error' : 'InvalidManifestError';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'InvalidManifestError';
       testkit.expect.errorToHaveName(deploy, expectedError);
     });
   });
