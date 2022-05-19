@@ -454,11 +454,18 @@ describe('mdapi NUTs', () => {
         });
 
         it('request verbose deploy report without a deployId', () => {
-          const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 200 -u nonDefaultOrg --verbose', {
-            ensureExitCode: 0,
-          }).shellOutput.stdout;
+          const reportCommandResponse = execCmd(
+            'force:mdapi:deploy:report --wait 200 -u nonDefaultOrg --verbose --coverageformatters clover --junit --outputdir outputDir',
+            {
+              ensureExitCode: 0,
+            }
+          ).shellOutput.stdout;
           // has the basic table output
           expect(reportCommandResponse).to.include('Deployed Source');
+          // check for coverage/junit output
+          const reportFiles = fs.readFileSync('outputDir');
+          expect(reportFiles).to.include('coverage');
+          expect(reportFiles).to.include('junit');
         });
 
         it('async report without a deployId', () => {

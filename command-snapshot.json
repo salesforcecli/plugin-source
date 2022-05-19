@@ -18,11 +18,14 @@
       "apiversion",
       "checkonly",
       "concise",
+      "coverageformatters",
       "deploydir",
       "ignoreerrors",
       "ignorewarnings",
       "json",
+      "junit",
       "loglevel",
+      "outputdir",
       "purgeondelete",
       "runtests",
       "singlepackage",
@@ -45,7 +48,19 @@
   {
     "command": "force:mdapi:deploy:report",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "concise", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"],
+    "flags": [
+      "apiversion",
+      "concise",
+      "coverageformatters",
+      "jobid",
+      "json",
+      "junit",
+      "loglevel",
+      "outputdir",
+      "targetusername",
+      "verbose",
+      "wait"
+    ],
     "alias": ["force:mdapi:beta:deploy:report"]
   },
   {
@@ -129,13 +144,16 @@
     "flags": [
       "apiversion",
       "checkonly",
+      "coverageformatters",
       "forceoverwrite",
       "ignoreerrors",
       "ignorewarnings",
       "json",
+      "junit",
       "loglevel",
       "manifest",
       "metadata",
+      "outputdir",
       "postdestructivechanges",
       "predestructivechanges",
       "purgeondelete",
@@ -160,7 +178,18 @@
   {
     "command": "force:source:deploy:report",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "verbose", "wait"],
+    "flags": [
+      "apiversion",
+      "coverageformatters",
+      "jobid",
+      "json",
+      "junit",
+      "loglevel",
+      "outputdir",
+      "targetusername",
+      "verbose",
+      "wait"
+    ],
     "alias": []
   },
   {

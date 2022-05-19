@@ -10,7 +10,7 @@ import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { DeployCommand, reportsFormatters, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
   DeployAsyncResultFormatter,
@@ -20,6 +20,7 @@ import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
 import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
+import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -123,6 +124,15 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.forceoverwrite'),
       dependsOn: ['tracksource'],
     }),
+    outputdir: flags.directory({
+      description: messages.getMessage('flags.outputDir'),
+    }),
+    coverageformatters: flags.array({
+      description: messages.getMessage('flags.coverageFormatters'),
+      options: reportsFormatters,
+      helpValue: reportsFormatters.join(','),
+    }),
+    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   protected tracking: SourceTracking;
@@ -227,14 +237,26 @@ export class Deploy extends DeployCommand {
   }
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
-    const formatterOptions = {
+    this.flags.outputdir = this.resolveOutputDir(
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.outputdir,
+      this.deployResult?.response?.id
+    );
+
+    const formatterOptions: ResultFormatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
       username: this.org.getUsername(),
+      coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+      junitTestResults: this.flags.junit as boolean,
+      outputDir: this.flags.outputdir as string,
     };
 
     const formatter = this.isAsync
       ? new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
       : new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
+    this.createRequestedReports();
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {

@@ -1,0 +1,3 @@
+{
+  "outputDirMissing": "You must supply outputdir when choosing to produce code coverage or junit reports."
+}
