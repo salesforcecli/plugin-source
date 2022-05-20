@@ -51,6 +51,7 @@ export abstract class DeployCommand extends SourceCommand {
   protected asyncDeployResult: AsyncResult;
 
   protected deployResult: DeployResult;
+  protected outputDir: string;
   protected updateDeployId = once((id: string) => {
     this.displayDeployId(id);
     const stashKey = Stash.getKey(this.id);
@@ -183,7 +184,7 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected createRequestedReports(): void {
     if (this.flags.coverageformatters) {
-      this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.flags.outputdir);
+      this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.outputDir);
     }
     if (this.flags.junit && !this.isAsync) {
       this.createJunitResults(this.deployResult);
@@ -240,7 +241,7 @@ export abstract class DeployCommand extends SourceCommand {
     const jUnitReporter = new JUnitReporter();
     const junitResults = jUnitReporter.format(testResult);
 
-    const junitReportPath = path.join(this.flags.outputdir, 'junit');
+    const junitReportPath = path.join(this.outputDir, 'junit');
     fs.mkdirSync(junitReportPath, { recursive: true });
     fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
   }

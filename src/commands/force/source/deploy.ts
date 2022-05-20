@@ -237,7 +237,7 @@ export class Deploy extends DeployCommand {
   }
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
-    this.flags.outputdir = this.resolveOutputDir(
+    this.outputDir = this.resolveOutputDir(
       this.flags.coverageformatters,
       this.flags.junit,
       this.flags.outputdir,
@@ -249,7 +249,7 @@ export class Deploy extends DeployCommand {
       username: this.org.getUsername(),
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
-      outputDir: this.flags.outputdir as string,
+      outputDir: this.outputDir,
     };
 
     const formatter = this.isAsync
