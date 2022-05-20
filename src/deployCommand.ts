@@ -25,6 +25,7 @@ import {
   DefaultReportOptions,
   JUnitReporter,
 } from '@salesforce/apex-node';
+import { cloneJson } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 import { DeployData, Stash } from './stash';
 import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResult } from './coverageUtils';
@@ -206,16 +207,14 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected getCoverageFormattersOptions(formatters: string[] = []): CoverageReporterOptions {
     /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
-    const options: CoverageReporterOptions = {} as CoverageReporterOptions;
+    const options = {} as CoverageReporterOptions;
     // set requested report formats
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    options.reportFormats = formatters.map((format) => format as CoverageReportFormats);
+    options.reportFormats = formatters as CoverageReportFormats[];
     // set report options to default report options for each format
     options.reportOptions = Object.fromEntries(
       options.reportFormats.map((format) => {
-        const reportOptions = JSON.parse(
-          JSON.stringify(DefaultReportOptions[format as string])
-        ) as typeof DefaultReportOptions;
+        const reportOptions = cloneJson(DefaultReportOptions[format as string]);
         const keys = Object.keys(reportOptions);
         if (keys.includes('file')) {
           reportOptions['file'] = reportOptions['file'] as string;
