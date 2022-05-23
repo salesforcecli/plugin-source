@@ -36,7 +36,7 @@
     "purgeOnDelete": "specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin",
     "junit": "output JUnit test results",
     "coverageFormatters": "format of the code coverage results",
-    "outputDir": "output directory for results (defaults to deploy id)"
+    "outputDir": "output directory for code coverage and JUnit results; defaults to the deploy ID"
   },
   "flagsLong": {
     "sourcePath": [
