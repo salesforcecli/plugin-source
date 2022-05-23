@@ -9,10 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import {
-  // Lifecycle,
-  Org,
-} from '@salesforce/core';
+import { Lifecycle, Org } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
@@ -36,7 +33,7 @@ describe('force:mdapi:retrieve', () => {
   let buildComponentSetStub: sinon.SinonStub;
   let retrieveStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
-  // let lifecycleEmitStub: sinon.SinonStub;
+  let lifecycleEmitStub: sinon.SinonStub;
   let stopSpinnerStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxStyledHeaderStub: sinon.SinonStub;
@@ -104,7 +101,7 @@ describe('force:mdapi:retrieve', () => {
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
     });
-    // lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
+    lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
   });
 
   afterEach(() => {
@@ -143,12 +140,12 @@ describe('force:mdapi:retrieve', () => {
   };
 
   // Ensure Lifecycle hooks are called properly
-  // const ensureHookArgs = (manifest?: string) => {
-  //   const failureMsg = 'Lifecycle.emit() should be called for preretrieve';
-  //   expect(lifecycleEmitStub.calledOnce, failureMsg).to.equal(true);
-  //   expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
-  //   expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({ packageXmlPath: manifest });
-  // };
+  const ensureHookArgs = (manifest?: string) => {
+    const failureMsg = 'Lifecycle.emit() should be called for preretrieve';
+    expect(lifecycleEmitStub.calledOnce, failureMsg).to.equal(true);
+    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal({ packageXmlPath: manifest });
+  };
 
   const ensureStashSet = (overrides?: Partial<StashData>) => {
     const defaultArgs = {
@@ -170,7 +167,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs();
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
     // should use the default polling timeout of 1440 minutes (86400 seconds)
@@ -205,7 +202,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs({ sourcepath: [resolvedSourceDir] });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
   });
@@ -216,7 +213,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs({ packagenames: packagenames.split(',') });
     ensureRetrieveArgs({ packageOptions: packagenames.split(',') });
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
   });
@@ -226,7 +223,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs();
     ensureRetrieveArgs({ singlePackage: true });
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
   });
@@ -237,7 +234,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs({ apiversion });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
   });
@@ -257,7 +254,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedResult);
     ensureCreateComponentSetArgs();
     ensureRetrieveArgs({ zipFileName: zipfilename, unzip: true });
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet({ zipfilename, unzip: true });
     expect(fsStatStub.called).to.be.true;
   });
@@ -267,7 +264,7 @@ describe('force:mdapi:retrieve', () => {
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs();
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
     expect(pollStub.firstCall.args[0]).to.deep.equal({
@@ -309,7 +306,7 @@ describe('force:mdapi:retrieve', () => {
     });
     ensureCreateComponentSetArgs();
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
     expect(pollStub.called, 'should not poll for status with --wait 0').to.be.false;

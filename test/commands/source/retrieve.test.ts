@@ -16,12 +16,7 @@ import {
   MetadataType,
   RetrieveOptions,
 } from '@salesforce/source-deploy-retrieve';
-import {
-  // Lifecycle,
-  Messages,
-  Org,
-  SfProject,
-} from '@salesforce/core';
+import { Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
@@ -53,7 +48,7 @@ describe('force:source:retrieve', () => {
   let buildComponentSetStub: sinon.SinonStub;
   let retrieveStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
-  // let lifecycleEmitStub: sinon.SinonStub;
+  let lifecycleEmitStub: sinon.SinonStub;
   let resolveProjectConfigStub: sinon.SinonStub;
   let warnStub: sinon.SinonStub;
 
@@ -118,7 +113,7 @@ describe('force:source:retrieve', () => {
         return false;
       },
     });
-    // lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
+    lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
     warnStub = stubMethod(sandbox, UX.prototype, 'warn');
   });
 
@@ -157,14 +152,14 @@ describe('force:source:retrieve', () => {
   };
 
   // Ensure Lifecycle hooks are called properly
-  // const ensureHookArgs = () => {
-  //   const failureMsg = 'Lifecycle.emit() should be called for preretrieve and postretrieve';
-  //   expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
-  //   expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
-  //   expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
-  //   expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
-  //   expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.inboundFiles);
-  // };
+  const ensureHookArgs = () => {
+    const failureMsg = 'Lifecycle.emit() should be called for preretrieve and postretrieve';
+    expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
+    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('preretrieve');
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
+    expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postretrieve');
+    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(expectedResults.inboundFiles);
+  };
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
@@ -172,7 +167,7 @@ describe('force:source:retrieve', () => {
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along metadata', async () => {
@@ -186,7 +181,7 @@ describe('force:source:retrieve', () => {
       },
     });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along manifest', async () => {
@@ -200,7 +195,7 @@ describe('force:source:retrieve', () => {
       },
     });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along apiversion', async () => {
@@ -216,7 +211,7 @@ describe('force:source:retrieve', () => {
       },
     });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along sourceapiversion', async () => {
@@ -233,7 +228,7 @@ describe('force:source:retrieve', () => {
       },
     });
     ensureRetrieveArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along packagenames', async () => {
@@ -250,7 +245,7 @@ describe('force:source:retrieve', () => {
       },
     });
     ensureRetrieveArgs({ packageOptions: packagenames });
-    // ensureHookArgs();
+    ensureHookArgs();
     // reset the packages for other tests
     expectedResults.packages = [];
   });
@@ -271,7 +266,7 @@ describe('force:source:retrieve', () => {
       },
     });
     ensureRetrieveArgs({ packageOptions: packagenames });
-    // ensureHookArgs();
+    ensureHookArgs();
     // reset the packages for other tests
     expectedResults.packages = [];
   });

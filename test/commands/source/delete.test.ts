@@ -15,11 +15,7 @@ import {
   ComponentSetOptions,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import {
-  // Lifecycle,
-  Org,
-  SfProject,
-} from '@salesforce/core';
+import { Lifecycle, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
@@ -38,7 +34,7 @@ describe('force:source:delete', () => {
 
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
-  // let lifecycleEmitStub: sinon.SinonStub;
+  let lifecycleEmitStub: sinon.SinonStub;
   let resolveProjectConfigStub: sinon.SinonStub;
   let fsUnlink: sinon.SinonStub;
   let moveToStashStub: sinon.SinonStub;
@@ -104,7 +100,7 @@ describe('force:source:delete', () => {
         return [new SourceComponent(exampleSourceComponent)];
       },
     });
-    // lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
+    lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
   });
 
   afterEach(() => {
@@ -126,19 +122,19 @@ describe('force:source:delete', () => {
   };
 
   // Ensure Lifecycle hooks are called properly
-  // const ensureHookArgs = () => {
-  //   const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
-  //   expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
-  //   expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-  //   expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
-  // };
+  const ensureHookArgs = () => {
+    const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
+    expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
+    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+    expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
+  };
 
   it('should pass along sourcepath', async () => {
     const sourcepath = ['somepath'];
     stubMethod(sandbox, fs, 'statSync').returns({ isDirectory: () => false });
     await runDeleteCmd(['--sourcepath', sourcepath[0], '--json', '-r']);
     ensureCreateComponentSetArgs({ sourcepath });
-    // ensureHookArgs();
+    ensureHookArgs();
     // deleting the component and its xml
     expect(fsUnlink.callCount).to.equal(2);
   });
@@ -153,7 +149,7 @@ describe('force:source:delete', () => {
         directoryPaths: [defaultPackagePath],
       },
     });
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along apiversion', async () => {
@@ -168,7 +164,7 @@ describe('force:source:delete', () => {
       },
       apiversion: '52.0',
     });
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   it('should pass along sourceapiversion', async () => {
@@ -186,7 +182,7 @@ describe('force:source:delete', () => {
         directoryPaths: [defaultPackagePath],
       },
     });
-    // ensureHookArgs();
+    ensureHookArgs();
   });
 
   const stubLWC = (): string => {

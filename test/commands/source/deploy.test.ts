@@ -170,14 +170,14 @@ describe('force:source:deploy', () => {
   };
 
   // Ensure Lifecycle hooks are called properly
-  // const ensureHookArgs = () => {
-  //   const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
-  //   expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
-  //   expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-  //   expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
-  //   expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
-  //   expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(deployResult);
-  // };
+  const ensureHookArgs = () => {
+    const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
+    expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
+    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
+    expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
+    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(deployResult);
+  };
 
   const ensureProgressBar = (callCount: number) => {
     expect(initProgressBarStub.callCount).to.equal(callCount);
@@ -189,7 +189,7 @@ describe('force:source:deploy', () => {
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureDeployArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -204,7 +204,7 @@ describe('force:source:deploy', () => {
       },
     });
     ensureDeployArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -221,7 +221,7 @@ describe('force:source:deploy', () => {
       },
     });
     ensureDeployArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -240,7 +240,7 @@ describe('force:source:deploy', () => {
       },
     });
     ensureDeployArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -260,7 +260,7 @@ describe('force:source:deploy', () => {
       },
     });
     ensureDeployArgs();
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -301,7 +301,7 @@ describe('force:source:deploy', () => {
         destructiveChangesPre: undefined,
       },
     });
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -341,7 +341,7 @@ describe('force:source:deploy', () => {
         destructiveChangesPre: undefined,
       },
     });
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -379,7 +379,7 @@ describe('force:source:deploy', () => {
         testLevel,
       },
     });
-    // ensureHookArgs();
+    ensureHookArgs();
     ensureProgressBar(0);
   });
 
@@ -466,7 +466,7 @@ describe('force:source:deploy', () => {
     });
   });
 
-  describe.skip('Hooks', () => {
+  describe('Hooks', () => {
     it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
       await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
       expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
@@ -488,7 +488,7 @@ describe('force:source:deploy', () => {
         expect(result).to.deep.equal(expectedResults);
         ensureCreateComponentSetArgs({ sourcepath });
         ensureDeployArgs();
-        // ensureHookArgs();
+        ensureHookArgs();
         expect(progressStatusStub.calledOnce).to.be.true;
         expect(progressBarStub.calledOnce).to.be.false;
       } finally {
@@ -502,7 +502,7 @@ describe('force:source:deploy', () => {
       expect(result).to.deep.equal(expectedResults);
       ensureCreateComponentSetArgs({ sourcepath });
       ensureDeployArgs();
-      // ensureHookArgs();
+      ensureHookArgs();
       expect(progressStatusStub.calledOnce).to.be.false;
       expect(progressBarStub.calledOnce).to.be.true;
     });
@@ -513,7 +513,7 @@ describe('force:source:deploy', () => {
       expect(result).to.deep.equal(expectedResults);
       ensureCreateComponentSetArgs({ sourcepath });
       ensureDeployArgs();
-      // ensureHookArgs();
+      ensureHookArgs();
       ensureProgressBar(0);
     });
   });
