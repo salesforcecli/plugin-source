@@ -124,8 +124,8 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.forceoverwrite'),
       dependsOn: ['tracksource'],
     }),
-    outputdir: flags.directory({
-      description: messages.getMessage('flags.outputDir'),
+    resultsdir: flags.directory({
+      description: messages.getMessage('flags.resultsDir'),
     }),
     coverageformatters: flags.array({
       description: messages.getMessage('flags.coverageFormatters'),
@@ -237,10 +237,10 @@ export class Deploy extends DeployCommand {
   }
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
-    this.outputDir = this.resolveOutputDir(
+    this.resultsDir = this.resolveOutputDir(
       this.flags.coverageformatters,
       this.flags.junit,
-      this.flags.outputdir,
+      this.flags.resultsdir,
       this.deployResult?.response?.id
     );
 
@@ -249,7 +249,7 @@ export class Deploy extends DeployCommand {
       username: this.org.getUsername(),
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
-      outputDir: this.outputDir,
+      resultsDir: this.resultsDir,
     };
 
     const formatter = this.isAsync

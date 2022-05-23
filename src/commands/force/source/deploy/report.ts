@@ -44,8 +44,8 @@ export class Report extends DeployCommand {
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
-    outputdir: flags.directory({
-      description: messages.getMessage('flags.outputDir'),
+    resultsdir: flags.directory({
+      description: messages.getMessage('flags.resultsDir'),
     }),
     coverageformatters: flags.array({
       description: messages.getMessage('flags.coverageFormatters'),
@@ -63,10 +63,10 @@ export class Report extends DeployCommand {
   protected async doReport(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
-    this.outputDir = this.resolveOutputDir(
+    this.resultsDir = this.resolveOutputDir(
       this.flags.coverageformatters,
       this.flags.junit,
-      this.flags.outputdir,
+      this.flags.resultsdir,
       deployId
     );
 
@@ -108,7 +108,7 @@ export class Report extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
-      outputDir: this.outputDir,
+      resultsDir: this.resultsDir,
     };
     const formatter = new DeployReportResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 

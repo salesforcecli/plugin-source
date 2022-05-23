@@ -25,8 +25,8 @@
       "json",
       "junit",
       "loglevel",
-      "outputdir",
       "purgeondelete",
+      "resultsdir",
       "runtests",
       "singlepackage",
       "soapdeploy",
@@ -44,24 +44,6 @@
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "jobid", "json", "loglevel", "targetusername", "wait"],
     "alias": []
-  },
-  {
-    "command": "force:mdapi:deploy:report",
-    "plugin": "@salesforce/plugin-source",
-    "flags": [
-      "apiversion",
-      "concise",
-      "coverageformatters",
-      "jobid",
-      "json",
-      "junit",
-      "loglevel",
-      "outputdir",
-      "targetusername",
-      "verbose",
-      "wait"
-    ],
-    "alias": ["force:mdapi:beta:deploy:report"]
   },
   {
     "command": "force:mdapi:describemetadata",
@@ -153,10 +135,10 @@
       "loglevel",
       "manifest",
       "metadata",
-      "outputdir",
       "postdestructivechanges",
       "predestructivechanges",
       "purgeondelete",
+      "resultsdir",
       "runtests",
       "soapdeploy",
       "sourcepath",
@@ -185,7 +167,7 @@
       "json",
       "junit",
       "loglevel",
-      "outputdir",
+      "resultsdir",
       "targetusername",
       "verbose",
       "wait"

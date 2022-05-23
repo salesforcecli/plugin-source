@@ -51,7 +51,7 @@ export abstract class DeployCommand extends SourceCommand {
   protected asyncDeployResult: AsyncResult;
 
   protected deployResult: DeployResult;
-  protected outputDir: string;
+  protected resultsDir: string;
   protected updateDeployId = once((id: string) => {
     this.displayDeployId(id);
     const stashKey = Stash.getKey(this.id);
@@ -184,7 +184,7 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected maybeCreateRequestedReports(): void {
     if (this.flags.coverageformatters) {
-      this.maybeCreateCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.outputDir);
+      this.maybeCreateCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
     }
     if (this.flags.junit && !this.isAsync) {
       this.maybeCreateJunitResults(this.deployResult);
@@ -195,14 +195,14 @@ export abstract class DeployCommand extends SourceCommand {
     deployResult: DeployResult,
     formatters: string[],
     sourceDir: string,
-    outputDir: string
+    resultsDir: string
   ): void {
     const apexCoverage = transformCoverageToApexCoverage(
       toArray(deployResult.response?.details?.runTestResult?.codeCoverage)
     );
-    fs.mkdirSync(outputDir, { recursive: true });
+    fs.mkdirSync(resultsDir, { recursive: true });
     const options = this.getCoverageFormattersOptions(formatters);
-    const coverageReport = new CoverageReporter(apexCoverage, outputDir, sourceDir, options);
+    const coverageReport = new CoverageReporter(apexCoverage, resultsDir, sourceDir, options);
     coverageReport.generateReports();
   }
 
@@ -241,7 +241,7 @@ export abstract class DeployCommand extends SourceCommand {
     const jUnitReporter = new JUnitReporter();
     const junitResults = jUnitReporter.format(testResult);
 
-    const junitReportPath = path.join(this.outputDir, 'junit');
+    const junitReportPath = path.join(this.resultsDir, 'junit');
     fs.mkdirSync(junitReportPath, { recursive: true });
     fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
   }
@@ -249,16 +249,16 @@ export abstract class DeployCommand extends SourceCommand {
   protected resolveOutputDir(
     coverageFormatters: string[],
     junit: boolean,
-    outputDir: string,
+    resultsDir: string,
     deployId: string
   ): string {
     if (!coverageFormatters && !junit) {
-      return outputDir;
+      return resultsDir;
     }
-    if ((coverageFormatters || junit) && !outputDir && deployId) {
+    if ((coverageFormatters || junit) && !resultsDir && deployId) {
       return deployId;
     }
-    throw new SfdxError(messages.getMessage('outputDirMissing'));
+    throw new SfdxError(messages.getMessage('resultsDirMissing'));
   }
 }
 
