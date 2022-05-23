@@ -1381,6 +1381,23 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
+"@salesforce/source-deploy-retrieve@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-6.0.1.tgz#f358d256cc21a32140a33e1ee0c154f0a838176f"
+  integrity sha512-JRoZkS2PTIKklCxbegUnC+wa3n5tTFP+7gBPaYXFd34IRm3JTTAzqTMSEHoHWM1+gUj6OgAup1tfKcJFfyxLrQ==
+  dependencies:
+    "@salesforce/core" "^3.19.0"
+    "@salesforce/kit" "^1.5.41"
+    "@salesforce/ts-types" "^1.5.20"
+    archiver "^5.3.0"
+    fast-xml-parser "^3.17.4"
+    got "^11.8.2"
+    graceful-fs "^4.2.8"
+    ignore "^5.1.8"
+    mime "2.6.0"
+    unzipper "0.10.11"
+    xmldom-sfdx-encoding "^0.1.29"
+
 "@salesforce/source-testkit@^0.0.16":
   version "0.0.16"
   resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-0.0.16.tgz#e5d800e65cfdccd5586ae6c10dbef0a768770102"
@@ -4979,7 +4996,7 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
-got@^11.8.3:
+got@^11.8.2, got@^11.8.3:
   version "11.8.3"
   resolved "https://registry.yarnpkg.com/got/-/got-11.8.3.tgz#f496c8fdda5d729a90b4905d2b07dbd148170770"
   integrity sha512-7gtQ5KiPh1RtGS9/Jbv1ofDpBFuq42gyfEib+ejaRBJuj/3tQFeR5+gw57e4ipaU8c/rCjvX6fkQz2lyDlGAOg==
