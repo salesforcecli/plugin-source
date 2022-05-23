@@ -14,7 +14,7 @@
     "concise": "omit success messages for smaller JSON output",
     "junit": "output JUnit test results",
     "coverageFormatters": "format of the code coverage results",
-    "outputDir": "output directory for results"
+    "outputDir": "output directory for code coverage and JUnit results"
   },
   "flagsLong": {
     "jobId": "The job ID (id field value for AsyncResult) of the deployment you want to check. The job ID is required if you haven’t previously deployed using Salesforce CLI. If you deploy using Salesforce CLI and don’t specify a job ID, we use the ID of the most recent metadata deployment.",
