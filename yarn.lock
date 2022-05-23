@@ -1161,7 +1161,7 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^2.1.4", "@salesforce/core@^2.20.11", "@salesforce/core@^2.24.0", "@salesforce/core@^2.29.0", "@salesforce/core@^2.3.0", "@salesforce/core@^2.31.0", "@salesforce/core@^2.33.1", "@salesforce/core@^2.35.0":
+"@salesforce/core@^2.1.4", "@salesforce/core@^2.20.11", "@salesforce/core@^2.24.0", "@salesforce/core@^2.29.0", "@salesforce/core@^2.3.0", "@salesforce/core@^2.31.0", "@salesforce/core@^2.35.0":
   version "2.36.0"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-2.36.0.tgz#eadade3d663f0a2e11d0cc9f9097c528c182997d"
   integrity sha512-VsKt7SXArxrOelaJl5Ez21Pmtdp2eU6qimqZ5clxnNaZDZKOySDPYnKHu7AYCt1LUNFN9cfsX8K5yOHxS+wT+w==
@@ -1285,7 +1285,7 @@
     typedoc-plugin-missing-exports "0.22.6"
     typescript "^4.1.3"
 
-"@salesforce/kit@^1.2.0", "@salesforce/kit@^1.4.5", "@salesforce/kit@^1.5.0", "@salesforce/kit@^1.5.13", "@salesforce/kit@^1.5.17", "@salesforce/kit@^1.5.18", "@salesforce/kit@^1.5.32":
+"@salesforce/kit@^1.2.0", "@salesforce/kit@^1.4.5", "@salesforce/kit@^1.5.0", "@salesforce/kit@^1.5.13", "@salesforce/kit@^1.5.17", "@salesforce/kit@^1.5.18":
   version "1.5.33"
   resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.5.33.tgz#d3b947e23b2917778d03ea8bf6413892fe8ff332"
   integrity sha512-CrrfalLDlr6dLyaON7HHu5GK+nwhz0Q3zYkBccMds20liRbGzozbUaX9uVZ6J1pDECaaPxtrZTpv1ljdKP2D6A==
@@ -1365,22 +1365,6 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^5.12.12":
-  version "5.12.12"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.12.12.tgz#3425ccb100a1f17f0dd7f8153af25a003bf9982d"
-  integrity sha512-XND/uJn7n0m38aJJ60MKy8alUP6Vg7WILm9NNb2Xh4Cu2agPpTOxru6pn32UKdNbjMMaxD7NmrAIk58eHm6sWw==
-  dependencies:
-    "@salesforce/core" "^2.35.0"
-    "@salesforce/kit" "^1.5.32"
-    "@salesforce/ts-types" "^1.4.2"
-    archiver "^5.3.0"
-    fast-xml-parser "^3.17.4"
-    graceful-fs "^4.2.8"
-    ignore "^5.1.8"
-    mime "2.6.0"
-    unzipper "0.10.11"
-    xmldom-sfdx-encoding "^0.1.29"
-
 "@salesforce/source-deploy-retrieve@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-6.0.1.tgz#f358d256cc21a32140a33e1ee0c154f0a838176f"
@@ -1415,14 +1399,14 @@
     sinon "^10.0.0"
     strip-ansi "^6.0.0"
 
-"@salesforce/source-tracking@^1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.4.2.tgz#312f03dfe996b3e680be8014aa66655fb499cd6f"
-  integrity sha512-BIVLyoa5JRfEFCMTfoPBZ4S5Sz4ky1gVu7mRoebBol0PUHnyj7MG0n0UoRhNM/VcWJcoqGueO16hVaW6/BKCqw==
+"@salesforce/source-tracking@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.0.0.tgz#161082a73392cbbe934127d851c2be5860a2a713"
+  integrity sha512-Luq327bpBKViFP6Zk21FcS0TdOUPlRLwPUFmNGZf2DhnRfv5UaQkzgOXG32fq3t56Mo1e1WYLS4IvyJum8srzg==
   dependencies:
-    "@salesforce/core" "^2.33.1"
+    "@salesforce/core" "^3.19.0"
     "@salesforce/kit" "^1.5.17"
-    "@salesforce/source-deploy-retrieve" "^5.12.12"
+    "@salesforce/source-deploy-retrieve" "^6.0.1"
     graceful-fs "^4.2.9"
     isomorphic-git "1.17.0"
     ts-retry-promise "^0.6.0"
