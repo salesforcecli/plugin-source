@@ -256,7 +256,7 @@ export class Deploy extends DeployCommand {
       ? new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
       : new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
-    this.createRequestedReports();
+    this.maybeCreateRequestedReports();
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {

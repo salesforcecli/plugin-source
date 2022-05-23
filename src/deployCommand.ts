@@ -182,16 +182,16 @@ export abstract class DeployCommand extends SourceCommand {
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 
-  protected createRequestedReports(): void {
+  protected maybeCreateRequestedReports(): void {
     if (this.flags.coverageformatters) {
-      this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.outputDir);
+      this.maybeCreateCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.outputDir);
     }
     if (this.flags.junit && !this.isAsync) {
-      this.createJunitResults(this.deployResult);
+      this.maybeCreateJunitResults(this.deployResult);
     }
   }
 
-  protected createCoverageReport(
+  protected maybeCreateCoverageReport(
     deployResult: DeployResult,
     formatters: string[],
     sourceDir: string,
@@ -233,7 +233,7 @@ export abstract class DeployCommand extends SourceCommand {
     /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
   }
 
-  protected createJunitResults(deployResult: DeployResult): void {
+  protected maybeCreateJunitResults(deployResult: DeployResult): void {
     const testResult = transformDeployTestsResultsToTestResult(
       this.org.getConnection(),
       deployResult.response?.details?.runTestResult

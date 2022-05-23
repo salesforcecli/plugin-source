@@ -112,7 +112,7 @@ export class Report extends DeployCommand {
     };
     const formatter = new DeployReportResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
-    this.createRequestedReports();
+    this.maybeCreateRequestedReports();
 
     if (!this.isJsonOutput()) {
       formatter.display();
