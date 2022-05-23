@@ -46,6 +46,24 @@
     "alias": []
   },
   {
+    "command": "force:mdapi:deploy:report",
+    "plugin": "@salesforce/plugin-source",
+    "flags": [
+      "apiversion",
+      "concise",
+      "coverageformatters",
+      "jobid",
+      "json",
+      "junit",
+      "loglevel",
+      "resultsdir",
+      "targetusername",
+      "verbose",
+      "wait"
+    ],
+    "alias": ["force:mdapi:beta:deploy:report"]
+  },
+  {
     "command": "force:mdapi:describemetadata",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "filterknown", "json", "loglevel", "resultfile", "targetusername"],

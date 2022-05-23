@@ -46,7 +46,7 @@ export class Report extends DeployCommand {
       description: messages.getMessage('flags.concise'),
     }),
     resultsdir: flags.directory({
-      description: messages.getMessage('flags.resultsdir'),
+      description: messages.getMessage('flags.resultsDir'),
     }),
     coverageformatters: flags.array({
       description: messages.getMessage('flags.coverageFormatters'),
