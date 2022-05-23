@@ -40,29 +40,22 @@ function mapTestResults(testResults: Failures[] | Successes[]): ApexTestResultDa
 }
 
 export function prepCoverageForDisplay(codeCoverage: CodeCoverage[]): CodeCoverage[] {
-  const coverage = codeCoverage.sort((a, b) => {
-    return a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1;
-  });
+  const coverage = codeCoverage.sort((a, b) => (a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1));
 
   coverage.forEach((cov: CodeCoverage & { lineNotCovered: string }) => {
     const numLocationsNum = parseInt(cov.numLocations, 10);
-    const numLocationsNotCovered: number = parseInt(cov.numLocationsNotCovered, 10);
+    const numLocationsNotCovered = parseInt(cov.numLocationsNotCovered, 10);
     const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
 
-    let pctCovered = 100;
-    const coverageDecimal: number = parseFloat(
-      ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
-    );
-    if (numLocationsNum > 0) {
-      pctCovered = coverageDecimal * 100;
-    }
+    const coverageDecimal = parseFloat(((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2));
+    const pctCovered = numLocationsNum > 0 ? coverageDecimal * 100 : 100;
     cov.numLocations = color(`${pctCovered}%`);
 
-    if (!cov.locationsNotCovered) {
-      cov.lineNotCovered = '';
-    }
-    const locations = toArray(cov.locationsNotCovered);
-    cov.lineNotCovered = locations.map((location) => location.line).join(',');
+    cov.lineNotCovered = cov.locationsNotCovered
+      ? toArray(cov.locationsNotCovered)
+          .map((location) => location.line)
+          .join(',')
+      : '';
   });
   return coverage;
 }
