@@ -13,7 +13,7 @@
     "wait": "wait time for command to finish in minutes.  Use -1 to poll indefinitely",
     "concise": "omit success messages for smaller JSON output",
     "junit": "output JUnit test results",
-    "coverageFormatters": "output coverage results in the specified formatters",
+    "coverageFormatters": "format of the code coverage results",
     "outputDir": "output directory for results"
   },
   "flagsLong": {
