@@ -174,7 +174,7 @@ export class Deploy extends DeployCommand {
       this.flags.coverageformatters,
       this.flags.junit,
       this.flags.resultsdir,
-      this.deployResult.response.id
+      this.deployResult?.response.id
     );
 
     const formatterOptions: ResultFormatterOptions = {
