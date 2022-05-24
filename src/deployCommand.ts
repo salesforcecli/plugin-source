@@ -252,13 +252,16 @@ export abstract class DeployCommand extends SourceCommand {
     resultsDir: string,
     deployId: string
   ): string {
-    if (!coverageFormatters && !junit) {
+    if (resultsDir) {
       return resultsDir;
     }
-    if ((coverageFormatters || junit) && !resultsDir && deployId) {
-      return deployId;
+    if (coverageFormatters || junit) {
+      if (deployId) {
+        return deployId;
+      }
+      throw new SfdxError(messages.getMessage('resultsDirMissing'));
     }
-    throw new SfdxError(messages.getMessage('resultsDirMissing'));
+    return undefined;
   }
 }
 
