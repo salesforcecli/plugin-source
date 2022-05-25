@@ -6,6 +6,7 @@
  */
 
 import * as path from 'path';
+import * as fs from 'fs';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { Failures, FileProperties, FileResponse, Successes } from '@salesforce/source-deploy-retrieve';
@@ -107,6 +108,10 @@ export abstract class ResultFormatter {
   }
 
   protected displayOutputFileLocations(): void {
+    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
+      return;
+    }
+
     if (this.options.verbose && (this.options.coverageOptions?.reportFormats || this.options.junitTestResults)) {
       this.ux.log();
       this.ux.styledHeader(chalk.blue('Coverage or Junit Result Report Locations'));
@@ -125,6 +130,9 @@ export abstract class ResultFormatter {
   }
 
   protected getCoverageFileInfo(): CoverageResultsFileInfo {
+    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
+      return undefined;
+    }
     /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
     const formatters = this.options.coverageOptions?.reportFormats;
     if (!formatters) {
@@ -144,6 +152,9 @@ export abstract class ResultFormatter {
   }
 
   protected getJunitFileInfo(): string | undefined {
+    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
+      return undefined;
+    }
     if (this.options.junitTestResults) {
       return path.join(this.options.resultsDir, 'junit', 'junit.xml');
     }

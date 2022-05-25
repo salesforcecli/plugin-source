@@ -49,7 +49,9 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
       })) as Result<{ id: string; result: { id: string } }>;
       // test the stashed deploy id
-      const report = (await testkit.deployReport()) as Result<{ id: string; result: { id: string } }>;
+      const report = (await testkit.deployReport({
+        args: '--coverageformatters clover --junit',
+      })) as Result<{ id: string; result: { id: string } }>;
 
       testkit.expect.toHaveProperty(deploy.result, 'id');
       testkit.expect.toHavePropertyAndNotValue(deploy.result, 'status', 'Succeeded');
