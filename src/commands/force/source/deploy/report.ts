@@ -67,7 +67,8 @@ export class Report extends DeployCommand {
       this.flags.coverageformatters,
       this.flags.junit,
       this.flags.resultsdir,
-      deployId
+      deployId,
+      false
     );
 
     // If the verbose flag is set, AND the command was executed from within

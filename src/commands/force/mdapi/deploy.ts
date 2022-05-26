@@ -126,7 +126,9 @@ export class Deploy extends DeployCommand {
 
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
-
+    if (this.isAsync && (this.flags.coverageformatters || this.flags.junit)) {
+      this.warn(messages.getMessage('asyncCoverageJunitWarning'));
+    }
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
       return;
@@ -174,7 +176,8 @@ export class Deploy extends DeployCommand {
       this.flags.coverageformatters,
       this.flags.junit,
       this.flags.resultsdir,
-      this.deployResult?.response.id
+      this.deployResult?.response.id,
+      true
     );
 
     const formatterOptions: ResultFormatterOptions = {

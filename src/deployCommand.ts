@@ -255,7 +255,8 @@ export abstract class DeployCommand extends SourceCommand {
     coverageFormatters: string[],
     junit: boolean,
     resultsDir: string,
-    deployId: string
+    deployId: string,
+    noThrow: boolean
   ): string {
     if (resultsDir) {
       return resultsDir;
@@ -264,7 +265,9 @@ export abstract class DeployCommand extends SourceCommand {
       if (deployId) {
         return deployId;
       }
-      throw new SfdxError(messages.getMessage('resultsDirMissing'));
+      if (!noThrow) {
+        throw new SfdxError(messages.getMessage('resultsDirMissing'));
+      }
     }
     return undefined;
   }

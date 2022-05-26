@@ -77,7 +77,8 @@ export class Report extends DeployCommand {
       this.flags.coverageformatters,
       this.flags.junit,
       this.flags.resultsdir,
-      deployId
+      deployId,
+      false
     );
 
     if (this.isAsync) {
