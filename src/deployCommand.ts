@@ -188,7 +188,7 @@ export abstract class DeployCommand extends SourceCommand {
       if (this.flags.coverageformatters) {
         this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
       }
-      if (this.flags.junit && !this.isAsync) {
+      if (this.flags.junit) {
         this.createJunitResults(this.deployResult);
       }
     }
