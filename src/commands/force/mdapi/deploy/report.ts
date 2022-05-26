@@ -128,9 +128,7 @@ export class Report extends DeployCommand {
       this.deployResult
     );
 
-    if (!this.isAsync) {
-      this.maybeCreateRequestedReports();
-    }
+    this.maybeCreateRequestedReports();
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {
