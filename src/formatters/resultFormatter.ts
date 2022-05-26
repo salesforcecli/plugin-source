@@ -6,10 +6,13 @@
  */
 
 import * as path from 'path';
+import * as fs from 'fs';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { Failures, FileProperties, FileResponse, Successes } from '@salesforce/source-deploy-retrieve';
 import { getNumber } from '@salesforce/ts-types';
+import * as chalk from 'chalk';
+import { CoverageReporterOptions, DefaultReportOptions } from '@salesforce/apex-node';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
@@ -17,6 +20,10 @@ export interface ResultFormatterOptions {
   waitTime?: number;
   concise?: boolean;
   username?: string;
+  coverageOptions?: CoverageReporterOptions;
+  junitTestResults?: boolean;
+  resultsDir?: string;
+  testsRan?: boolean;
 }
 
 export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
@@ -25,6 +32,8 @@ export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
   }
   return [];
 }
+
+export type CoverageResultsFileInfo = Record<keyof Partial<typeof DefaultReportOptions>, string>;
 
 export abstract class ResultFormatter {
   public logger: Logger;
@@ -97,6 +106,52 @@ export abstract class ResultFormatter {
         file.filePath = path.relative(process.cwd(), file.filePath);
       }
     });
+  }
+
+  protected displayOutputFileLocations(): void {
+    if (this.options.testsRan && this.options.verbose) {
+      this.ux.log();
+      this.ux.styledHeader(chalk.blue('Coverage or Junit Result Report Locations'));
+    }
+    if (this.options.testsRan && this.options.coverageOptions?.reportFormats?.length > 0) {
+      this.ux.log(
+        `Code Coverage formats, [${this.options.coverageOptions.reportFormats.join(',')}], written to ${path.join(
+          this.options.resultsDir,
+          'coverage'
+        )}`
+      );
+    }
+    if (this.options.testsRan && this.options.junitTestResults) {
+      this.ux.log(`Junit results written to ${path.join(this.options.resultsDir, 'junit', 'junit.xml')}`);
+    }
+  }
+
+  protected getCoverageFileInfo(): CoverageResultsFileInfo {
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+    const formatters = this.options.coverageOptions?.reportFormats;
+    if (!formatters) {
+      return undefined;
+    }
+    const reportOptions = this.options.coverageOptions?.reportOptions || DefaultReportOptions;
+    return Object.fromEntries(
+      formatters.map((formatter) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+        const selectedReportOptions = reportOptions[formatter];
+        const filename = selectedReportOptions['file'] as string;
+        const subdir = selectedReportOptions['subdir'] as string;
+        return [formatter, path.join(...[this.options.resultsDir, subdir, filename].filter((part) => part))];
+      })
+    ) as CoverageResultsFileInfo;
+  }
+
+  protected getJunitFileInfo(): string | undefined {
+    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
+      return undefined;
+    }
+    if (this.options.junitTestResults) {
+      return path.join(this.options.resultsDir, 'junit', 'junit.xml');
+    }
+    return undefined;
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

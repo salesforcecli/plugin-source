@@ -9,9 +9,8 @@ import { Messages } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
-
 import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter';
-import { DeployCommand } from '../../../../deployCommand';
+import { DeployCommand, reportsFormatters } from '../../../../deployCommand';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
@@ -46,6 +45,15 @@ export class Report extends DeployCommand {
     concise: flags.builtin({
       description: messages.getMessage('flags.concise'),
     }),
+    resultsdir: flags.directory({
+      description: messages.getMessage('flags.resultsDir'),
+    }),
+    coverageformatters: flags.array({
+      description: messages.getMessage('flags.coverageFormatters'),
+      options: reportsFormatters,
+      helpValue: reportsFormatters.join(','),
+    }),
+    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
   };
 
   public async run(): Promise<MdDeployResult> {
@@ -63,12 +71,21 @@ export class Report extends DeployCommand {
 
     this.isAsync = waitDuration.quantity === 0;
 
+    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+
+    this.resultsDir = this.resolveOutputDir(
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
+      deployId,
+      false
+    );
+
     if (this.isAsync) {
       this.deployResult = await this.report(this.getFlag<string>('jobid'));
       return;
     }
 
-    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
     this.displayDeployId(deployId);
 
     const deploy = this.createDeploy(deployId);
@@ -103,9 +120,15 @@ export class Report extends DeployCommand {
       {
         concise: this.getFlag<boolean>('concise', false),
         verbose: this.getFlag<boolean>('verbose', false),
+        coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+        junitTestResults: this.getFlag<boolean>('junit', false),
+        resultsDir: this.resultsDir,
+        testsRan: !!this.deployResult?.response?.numberTestsTotal,
       },
       this.deployResult
     );
+
+    this.maybeCreateRequestedReports();
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {

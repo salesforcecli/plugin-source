@@ -1,0 +1,3 @@
+{
+  "resultsDirMissing": "You must supply the --resultsdir parameter when choosing to produce code coverage or JUnit reports."
+}

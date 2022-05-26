@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as path from 'path';
+import * as fs from 'fs';
 import {
   ComponentSet,
   DeployResult,
@@ -13,13 +15,29 @@ import {
   RequestStatus,
   AsyncResult,
 } from '@salesforce/source-deploy-retrieve';
-import { ConfigAggregator, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
+import { ConfigAggregator, Messages, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
+import {
+  CoverageReporter,
+  CoverageReporterOptions,
+  CoverageReportFormats,
+  DefaultReportOptions,
+  JUnitReporter,
+} from '@salesforce/apex-node';
+import { cloneJson } from '@salesforce/kit';
 import { SourceCommand } from './sourceCommand';
 import { DeployData, Stash } from './stash';
+import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResult } from './coverageUtils';
+// TODO: this function needs to be moved to a shared location
+import { toArray } from './formatters/resultFormatter';
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
+
+export const reportsFormatters = Object.keys(DefaultReportOptions);
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
 export abstract class DeployCommand extends SourceCommand {
   protected displayDeployId = once((id: string) => {
@@ -33,6 +51,7 @@ export abstract class DeployCommand extends SourceCommand {
   protected asyncDeployResult: AsyncResult;
 
   protected deployResult: DeployResult;
+  protected resultsDir: string;
   protected updateDeployId = once((id: string) => {
     this.displayDeployId(id);
     const stashKey = Stash.getKey(this.id);
@@ -161,6 +180,96 @@ export abstract class DeployCommand extends SourceCommand {
     this.asyncDeployResult = { id: validatedDeployId };
 
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
+  }
+
+  protected maybeCreateRequestedReports(): void {
+    // only generate reports if test results are present
+    if (this.deployResult.response?.numberTestsTotal) {
+      if (this.flags.coverageformatters) {
+        this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
+      }
+      if (this.flags.junit) {
+        this.createJunitResults(this.deployResult);
+      }
+    }
+  }
+
+  protected createCoverageReport(
+    deployResult: DeployResult,
+    formatters: string[],
+    sourceDir: string,
+    resultsDir: string
+  ): void {
+    const apexCoverage = transformCoverageToApexCoverage(
+      toArray(deployResult.response?.details?.runTestResult?.codeCoverage)
+    );
+    fs.mkdirSync(resultsDir, { recursive: true });
+    const options = this.getCoverageFormattersOptions(formatters);
+    const coverageReport = new CoverageReporter(apexCoverage, resultsDir, sourceDir, options);
+    coverageReport.generateReports();
+  }
+
+  protected getCoverageFormattersOptions(formatters: string[] = []): CoverageReporterOptions {
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+    const options = {} as CoverageReporterOptions;
+    // set requested report formats
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    options.reportFormats = formatters as CoverageReportFormats[];
+    // set report options to default report options for each format
+    options.reportOptions = Object.fromEntries(
+      options.reportFormats.map((format) => {
+        const reportOptions = cloneJson(DefaultReportOptions[format as string]);
+        const keys = Object.keys(reportOptions);
+        if (keys.includes('file')) {
+          reportOptions['file'] = reportOptions['file'] as string;
+          if (!keys.includes('subdir')) {
+            reportOptions['file'] = path.join('coverage', reportOptions['file']);
+          }
+        }
+        if (keys.includes('subdir')) {
+          reportOptions['subdir'] = path.join('coverage', reportOptions['subdir'] as string);
+        }
+        return [format, reportOptions];
+      })
+    );
+    return options;
+    /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+  }
+
+  protected createJunitResults(deployResult: DeployResult): void {
+    const testResult = transformDeployTestsResultsToTestResult(
+      this.org.getConnection(),
+      deployResult.response?.details?.runTestResult
+    );
+    if (testResult.summary.testsRan > 0) {
+      const jUnitReporter = new JUnitReporter();
+      const junitResults = jUnitReporter.format(testResult);
+
+      const junitReportPath = path.join(this.resultsDir, 'junit');
+      fs.mkdirSync(junitReportPath, { recursive: true });
+      fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
+    }
+  }
+
+  protected resolveOutputDir(
+    coverageFormatters: string[],
+    junit: boolean,
+    resultsDir: string,
+    deployId: string,
+    noThrow: boolean
+  ): string {
+    if (resultsDir) {
+      return resultsDir;
+    }
+    if (coverageFormatters || junit) {
+      if (deployId) {
+        return deployId;
+      }
+      if (!noThrow) {
+        throw new SfdxError(messages.getMessage('resultsDirMissing'));
+      }
+    }
+    return undefined;
   }
 }
 

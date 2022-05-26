@@ -10,7 +10,7 @@ import { Messages, SfdxProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand } from '../../../../deployCommand';
+import { DeployCommand, reportsFormatters } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
@@ -18,6 +18,7 @@ import {
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
+import { ResultFormatterOptions } from '../../../../formatters/resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
@@ -43,6 +44,15 @@ export class Report extends DeployCommand {
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
+    resultsdir: flags.directory({
+      description: messages.getMessage('flags.resultsDir'),
+    }),
+    coverageformatters: flags.array({
+      description: messages.getMessage('flags.coverageFormatters'),
+      options: reportsFormatters,
+      helpValue: reportsFormatters.join(','),
+    }),
+    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
   };
   public async run(): Promise<DeployReportCommandResult> {
     await this.doReport();
@@ -52,6 +62,14 @@ export class Report extends DeployCommand {
 
   protected async doReport(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+
+    this.resultsDir = this.resolveOutputDir(
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
+      deployId,
+      false
+    );
 
     // If the verbose flag is set, AND the command was executed from within
     // an SFDX project, we need to build a ComponentSet so we have mapped
@@ -87,10 +105,16 @@ export class Report extends DeployCommand {
   protected resolveSuccess(): void {}
 
   protected formatResult(): DeployReportCommandResult {
-    const formatterOptions = {
+    const formatterOptions: ResultFormatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
+      coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+      junitTestResults: this.flags.junit as boolean,
+      resultsDir: this.resultsDir,
+      testsRan: !!this.deployResult?.response.numberTestsTotal,
     };
     const formatter = new DeployReportResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
+    this.maybeCreateRequestedReports();
 
     if (!this.isJsonOutput()) {
       formatter.display();
