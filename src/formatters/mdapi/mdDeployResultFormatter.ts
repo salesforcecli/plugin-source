@@ -43,8 +43,10 @@ export class MdDeployResultFormatter extends ResultFormatter {
     // concise omits success messages
     // spread properties prevents modification of the object from impacting tests
     const response = this.getResponse();
-    response.coverage = this.getCoverageFileInfo();
-    response.junit = this.getJunitFileInfo();
+    if (this.options.testsRan) {
+      response.coverage = this.getCoverageFileInfo();
+      response.junit = this.getJunitFileInfo();
+    }
 
     if (this.isConcise()) {
       return {

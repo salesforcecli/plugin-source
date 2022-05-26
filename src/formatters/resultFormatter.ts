@@ -23,6 +23,7 @@ export interface ResultFormatterOptions {
   coverageOptions?: CoverageReporterOptions;
   junitTestResults?: boolean;
   resultsDir?: string;
+  testsRan?: boolean;
 }
 
 export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
@@ -108,15 +109,11 @@ export abstract class ResultFormatter {
   }
 
   protected displayOutputFileLocations(): void {
-    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
-      return;
-    }
-
-    if (this.options.verbose && (this.options.coverageOptions?.reportFormats || this.options.junitTestResults)) {
+    if (this.options.testsRan) {
       this.ux.log();
       this.ux.styledHeader(chalk.blue('Coverage or Junit Result Report Locations'));
     }
-    if (this.options.coverageOptions?.reportFormats?.length > 0) {
+    if (this.options.testsRan && this.options.coverageOptions?.reportFormats?.length > 0) {
       this.ux.log(
         `Code Coverage formats, [${this.options.coverageOptions.reportFormats.join(',')}], written to ${path.join(
           this.options.resultsDir,
@@ -124,15 +121,12 @@ export abstract class ResultFormatter {
         )}`
       );
     }
-    if (this.options.junitTestResults) {
+    if (this.options.testsRan && this.options.junitTestResults) {
       this.ux.log(`Junit results written to ${path.join(this.options.resultsDir, 'junit', 'junit.xml')}`);
     }
   }
 
   protected getCoverageFileInfo(): CoverageResultsFileInfo {
-    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
-      return undefined;
-    }
     /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
     const formatters = this.options.coverageOptions?.reportFormats;
     if (!formatters) {
@@ -148,7 +142,6 @@ export abstract class ResultFormatter {
         return [formatter, path.join(...[this.options.resultsDir, subdir, filename].filter((part) => part))];
       })
     ) as CoverageResultsFileInfo;
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
   }
 
   protected getJunitFileInfo(): string | undefined {

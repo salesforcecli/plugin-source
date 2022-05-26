@@ -109,6 +109,7 @@ export class Report extends DeployCommand {
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
       resultsDir: this.resultsDir,
+      testsRan: !!this.deployResult?.response.numberTestsTotal,
     };
     const formatter = new DeployReportResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 

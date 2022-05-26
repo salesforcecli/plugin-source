@@ -184,6 +184,7 @@ export class Deploy extends DeployCommand {
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
       resultsDir: this.resultsDir,
+      testsRan: this.getFlag<string>('testlevel', 'NoTestRun') === 'NoTestRun',
     };
     const formatter = this.isAsync
       ? new MdDeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)

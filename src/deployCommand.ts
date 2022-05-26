@@ -183,15 +183,18 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected maybeCreateRequestedReports(): void {
-    if (this.flags.coverageformatters) {
-      this.maybeCreateCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
-    }
-    if (this.flags.junit && !this.isAsync) {
-      this.maybeCreateJunitResults(this.deployResult);
+    // only generate reports if test results are present
+    if (this.deployResult.response?.numberTestsTotal) {
+      if (this.flags.coverageformatters) {
+        this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
+      }
+      if (this.flags.junit && !this.isAsync) {
+        this.createJunitResults(this.deployResult);
+      }
     }
   }
 
-  protected maybeCreateCoverageReport(
+  protected createCoverageReport(
     deployResult: DeployResult,
     formatters: string[],
     sourceDir: string,
@@ -233,17 +236,19 @@ export abstract class DeployCommand extends SourceCommand {
     /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
   }
 
-  protected maybeCreateJunitResults(deployResult: DeployResult): void {
+  protected createJunitResults(deployResult: DeployResult): void {
     const testResult = transformDeployTestsResultsToTestResult(
       this.org.getConnection(),
       deployResult.response?.details?.runTestResult
     );
-    const jUnitReporter = new JUnitReporter();
-    const junitResults = jUnitReporter.format(testResult);
+    if (testResult.summary.testsRan > 0) {
+      const jUnitReporter = new JUnitReporter();
+      const junitResults = jUnitReporter.format(testResult);
 
-    const junitReportPath = path.join(this.resultsDir, 'junit');
-    fs.mkdirSync(junitReportPath, { recursive: true });
-    fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
+      const junitReportPath = path.join(this.resultsDir, 'junit');
+      fs.mkdirSync(junitReportPath, { recursive: true });
+      fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
+    }
   }
 
   protected resolveOutputDir(
