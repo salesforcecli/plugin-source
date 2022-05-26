@@ -71,13 +71,7 @@ export class Report extends DeployCommand {
 
     this.isAsync = waitDuration.quantity === 0;
 
-    if (this.isAsync) {
-      this.deployResult = await this.report(this.getFlag<string>('jobid'));
-      return;
-    }
-
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
-    this.displayDeployId(deployId);
 
     this.resultsDir = this.resolveOutputDir(
       this.flags.coverageformatters,
@@ -85,6 +79,13 @@ export class Report extends DeployCommand {
       this.flags.resultsdir,
       deployId
     );
+
+    if (this.isAsync) {
+      this.deployResult = await this.report(this.getFlag<string>('jobid'));
+      return;
+    }
+
+    this.displayDeployId(deployId);
 
     const deploy = this.createDeploy(deployId);
     if (!this.isJsonOutput()) {
@@ -120,7 +121,7 @@ export class Report extends DeployCommand {
         verbose: this.getFlag<boolean>('verbose', false),
         coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
         junitTestResults: this.getFlag<boolean>('junit', false),
-        resultsDir: this.getFlag<string>('resultsdir', undefined),
+        resultsDir: this.resultsDir,
         testsRan: !!this.deployResult?.response?.numberTestsTotal,
       },
       this.deployResult

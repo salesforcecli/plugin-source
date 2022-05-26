@@ -109,7 +109,7 @@ export abstract class ResultFormatter {
   }
 
   protected displayOutputFileLocations(): void {
-    if (this.options.testsRan) {
+    if (this.options.testsRan && this.options.verbose) {
       this.ux.log();
       this.ux.styledHeader(chalk.blue('Coverage or Junit Result Report Locations'));
     }
