@@ -16,7 +16,7 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import { prepCoverageForDisplay } from '../../src/coverageUtils';
+import { prepCoverageForDisplay } from '../coverageUtils';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
 
