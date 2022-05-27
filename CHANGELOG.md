@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.1](https://github.com/salesforcecli/plugin-source/compare/v1.10.0...v1.10.1) (2022-05-27)
+
+### Bug Fixes
+
+- import coverageUtils from parent folder ([#493](https://github.com/salesforcecli/plugin-source/issues/493)) ([c4f471e](https://github.com/salesforcecli/plugin-source/commit/c4f471e97b50a43c1809518432f7ec4dddc05041))
+
 ## [1.10.0](https://github.com/salesforcecli/plugin-source/compare/v1.9.9...v1.10.0) (2022-05-26)
 
 ### Features
