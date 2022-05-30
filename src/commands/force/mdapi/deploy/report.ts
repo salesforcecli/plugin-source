@@ -80,9 +80,9 @@ export class Report extends DeployCommand {
     this.displayDeployId(deployId);
 
     this.outputDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.outputdir,
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('outputdir'),
       deployId
     );
 

@@ -171,10 +171,10 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     this.outputDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.outputdir,
-      this.deployResult.response.id
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('outputdir'),
+      this.deployResult?.response?.id
     );
 
     const formatterOptions: ResultFormatterOptions = {

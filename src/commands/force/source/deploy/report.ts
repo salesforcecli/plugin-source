@@ -64,9 +64,9 @@ export class Report extends DeployCommand {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
     this.outputDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.outputdir,
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('outputdir'),
       deployId
     );
 

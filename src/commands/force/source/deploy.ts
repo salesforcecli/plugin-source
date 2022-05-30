@@ -238,9 +238,9 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     this.outputDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.outputdir,
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('outputdir'),
       this.deployResult?.response?.id
     );
 
