@@ -708,10 +708,10 @@
     is-wsl "^2.1.1"
     tslib "^2.3.1"
 
-"@oclif/core@^1.0.8", "@oclif/core@^1.2.1", "@oclif/core@^1.3.1", "@oclif/core@^1.3.4", "@oclif/core@^1.3.6", "@oclif/core@^1.6.4", "@oclif/core@^1.7.0", "@oclif/core@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.8.2.tgz#a29bce3e555614be7a17962dd4743d8da21d6b27"
-  integrity sha512-0fP+mY/APCRoVuaf4YqOlSar6xe5rsnKq1oApoknMVDE4jCTN/eVqOkE5/lGOEcS+EB2MNM+HFz/8lcR6+gY3Q==
+"@oclif/core@^1.0.8", "@oclif/core@^1.2.1", "@oclif/core@^1.3.1", "@oclif/core@^1.3.4", "@oclif/core@^1.3.6", "@oclif/core@^1.6.4", "@oclif/core@^1.7.0", "@oclif/core@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.9.0.tgz#bb2a7820a9176f28921f449c0f577d39c15e74d0"
+  integrity sha512-duvlaRQf4JM+mKuwwos1DNa/Q9x6tnF3khV5RU0fy5hhETF7THlTmxioKlIvKMyQDVpySqtZXZ0OKHeCi2EWuQ==
   dependencies:
     "@oclif/linewrap" "^1.0.0"
     "@oclif/screen" "^3.0.2"
@@ -730,7 +730,6 @@
     indent-string "^4.0.0"
     is-wsl "^2.2.0"
     js-yaml "^3.14.1"
-    lodash "^4.17.21"
     natural-orderby "^2.0.3"
     object-treeify "^1.1.33"
     password-prompt "^1.1.2"
@@ -5921,32 +5920,6 @@ jsforce@2.0.0-beta.10:
   version "2.0.0-beta.10"
   resolved "https://registry.yarnpkg.com/jsforce/-/jsforce-2.0.0-beta.10.tgz#c33fee5dd01c96d121235cffb8fee1458a35423e"
   integrity sha512-AFigJHQocj8t36Eu+9XffoKoC2FO4/uMDMg08TfTXgvIp53lzvnQJoQrhEnwnKReof4tO2d+7j+d1QyiOa2yGg==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    "@babel/runtime-corejs3" "^7.12.5"
-    "@types/node" "^12.19.9"
-    abort-controller "^3.0.0"
-    base64url "^3.0.1"
-    commander "^4.0.1"
-    core-js "^3.6.4"
-    csv-parse "^4.8.2"
-    csv-stringify "^5.3.4"
-    faye "^1.4.0"
-    form-data "^4.0.0"
-    fs-extra "^8.1.0"
-    https-proxy-agent "^5.0.0"
-    inquirer "^7.0.0"
-    multistream "^3.1.0"
-    node-fetch "^2.6.1"
-    open "^7.0.0"
-    regenerator-runtime "^0.13.3"
-    strip-ansi "^6.0.0"
-    xml2js "^0.4.22"
-
-jsforce@2.0.0-beta.9:
-  version "2.0.0-beta.9"
-  resolved "https://registry.yarnpkg.com/jsforce/-/jsforce-2.0.0-beta.9.tgz#692f205151551a601cb17fc6b891ecbb230eff58"
-  integrity sha512-DsmjBiLaAL4ECmpNjwcMuYoA2o7v42cnokmTvNtnsOoABb7goIZp/PIXRHhmN44HJxNw2RpEpjMv0rJNOkrAtg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@babel/runtime-corejs3" "^7.12.5"
