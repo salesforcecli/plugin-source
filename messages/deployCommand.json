@@ -1,3 +1,5 @@
 {
-  "outputDirMissing": "You must supply outputdir when choosing to produce code coverage or junit reports."
+  "outputDirMissing": "You must supply outputdir when choosing to produce code coverage or junit reports.",
+  "MissingDeployId": "No deploy ID was provided or found in deploy history.",
+  "invalidDeployId": "The provided ID is invalid, deploy IDs must start with '0Af'."
 }

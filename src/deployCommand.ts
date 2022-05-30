@@ -35,7 +35,7 @@ import { toArray } from './formatters/resultFormatter';
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'deploy', [
+const messages = Messages.load('@salesforce/plugin-source', 'deployCommand', [
   'invalidDeployId',
   'MissingDeployId',
   'outputDirMissing',
