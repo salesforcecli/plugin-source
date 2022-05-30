@@ -35,6 +35,7 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
         const testErrs = `Errors: ${testErrors}`;
         this.ux.log(`${deploys} ${deployErrors}`);
         this.ux.log(`${tests} ${testErrs}`);
+        this.displayOutputFileLocations();
       } else {
         this.ux.log('No components deployed');
       }
@@ -42,6 +43,7 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
       this.displaySuccesses();
       this.displayFailures();
       this.displayTestResults();
+      this.displayOutputFileLocations();
     }
 
     if (status === RequestStatus.Failed) {

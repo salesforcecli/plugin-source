@@ -10,19 +10,20 @@ import { UX } from '@salesforce/command';
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
-  CodeCoverage,
   DeployMessage,
   DeployResult,
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
+import { prepCoverageForDisplay } from '../../src/coverageUtils';
 import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
+import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
-export interface DeployCommandResult extends MetadataApiDeployStatus {
+export interface DeployCommandResult extends MdDeployResult {
   deletedSource?: FileResponse[];
   deployedSource: FileResponse[];
   outboundFiles: string[];
@@ -50,6 +51,8 @@ export class DeployResultFormatter extends ResultFormatter {
     json.deployedSource = this.fileResponses;
     json.outboundFiles = []; // to match toolbelt version
     json.deploys = [Object.assign({}, this.getResponse())]; // to match toolbelt version
+    json.coverage = this.getCoverageFileInfo();
+    json.junit = this.getJunitFileInfo();
 
     return json;
   }
@@ -79,6 +82,7 @@ export class DeployResultFormatter extends ResultFormatter {
     this.displayDeletions();
     this.displayFailures();
     this.displayTestResults();
+    this.displayOutputFileLocations();
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
@@ -232,34 +236,10 @@ export class DeployResultFormatter extends ResultFormatter {
     const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
     if (codeCoverage.length) {
-      const coverage = codeCoverage.sort((a, b) => {
-        return a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1;
-      });
+      const coverage = prepCoverageForDisplay(codeCoverage);
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
-
-      coverage.map((cov: CodeCoverage & { lineNotCovered: string }) => {
-        const numLocationsNum = parseInt(cov.numLocations, 10);
-        const numLocationsNotCovered: number = parseInt(cov.numLocationsNotCovered, 10);
-        const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
-
-        let pctCovered = 100;
-        const coverageDecimal: number = parseFloat(
-          ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
-        );
-        if (numLocationsNum > 0) {
-          pctCovered = coverageDecimal * 100;
-        }
-        cov.numLocations = color(`${pctCovered}%`);
-
-        if (!cov.locationsNotCovered) {
-          cov.lineNotCovered = '';
-        }
-        const locations = toArray(cov.locationsNotCovered);
-        cov.lineNotCovered = locations.map((location) => location.line).join(',');
-      });
-
       this.ux.table(coverage, {
         name: { header: 'Name' },
         numLocations: { header: '% Covered' },

@@ -9,18 +9,20 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { DeployCommand, reportsFormatters, getVersionMessage, TestLevel } from '../../../deployCommand';
 import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
 import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter';
+import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
+
 export class Deploy extends DeployCommand {
   public static aliases = ['force:mdapi:beta:deploy'];
   public static readonly description = messages.getMessage('description');
@@ -101,6 +103,15 @@ export class Deploy extends DeployCommand {
     concise: flags.builtin({
       description: messages.getMessage('flags.concise'),
     }),
+    outputdir: flags.directory({
+      description: messages.getMessage('flags.outputDir'),
+    }),
+    coverageformatters: flags.array({
+      description: messages.getMessage('flags.coverageFormatters'),
+      options: reportsFormatters,
+      helpValue: reportsFormatters.join(','),
+    }),
+    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
   };
 
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
@@ -159,14 +170,26 @@ export class Deploy extends DeployCommand {
   }
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
-    const formatterOptions = {
+    this.outputDir = this.resolveOutputDir(
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.outputdir,
+      this.deployResult.response.id
+    );
+
+    const formatterOptions: ResultFormatterOptions = {
       concise: this.getFlag<boolean>('concise', false),
       verbose: this.getFlag<boolean>('verbose', false),
       username: this.org.getUsername(),
+      coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+      junitTestResults: this.flags.junit as boolean,
+      outputDir: this.outputDir,
     };
     const formatter = this.isAsync
       ? new MdDeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
       : new MdDeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+
+    this.createRequestedReports();
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {

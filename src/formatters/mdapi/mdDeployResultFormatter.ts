@@ -10,18 +10,21 @@ import { getNumber } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfError } from '@salesforce/core';
 import {
-  CodeCoverage,
   DeployMessage,
   DeployResult,
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
+import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
+import { prepCoverageForDisplay } from '../../coverageUtils';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
-export type MdDeployResult = MetadataApiDeployStatus;
+export type MdDeployResult = MetadataApiDeployStatus & {
+  coverage?: CoverageResultsFileInfo;
+  junit?: string;
+};
 
 export class MdDeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
@@ -39,8 +42,11 @@ export class MdDeployResultFormatter extends ResultFormatter {
   public getJson(): MdDeployResult {
     // concise omits success messages
     // spread properties prevents modification of the object from impacting tests
+    const response = this.getResponse();
+    response.coverage = this.getCoverageFileInfo();
+    response.junit = this.getJunitFileInfo();
+
     if (this.isConcise()) {
-      const response = this.getResponse();
       return {
         ...response,
         details: {
@@ -49,7 +55,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
         },
       };
     }
-    return this.getResponse();
+    return response;
   }
 
   /**
@@ -70,6 +76,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.displaySuccesses();
       this.displayFailures();
       this.displayTestResults(isReportCommand);
+      this.displayOutputFileLocations();
     } else if (isReportCommand) {
       this.ux.log(`Status: ${this.result.response.status ?? 'unknown'}`);
       const deploys = `Deployed: ${this.getNumResult('numberComponentsDeployed')}/${this.getNumResult(
@@ -82,10 +89,12 @@ export class MdDeployResultFormatter extends ResultFormatter {
       const testErrs = `Errors: ${this.getNumResult('numberTestErrors')}`;
       this.ux.log(`${deploys} ${deployErrors}`);
       this.ux.log(`${tests} ${testErrs}`);
+      this.displayOutputFileLocations();
     } else {
       // always show failures
       this.displayFailures();
       this.displayTestResults(isReportCommand);
+      this.displayOutputFileLocations();
     }
     // TODO: the toolbelt version of this is returning an SfError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
@@ -99,8 +108,8 @@ export class MdDeployResultFormatter extends ResultFormatter {
     return this.result.response.status === status;
   }
 
-  protected getResponse(): MetadataApiDeployStatus {
-    return this.result.response ?? ({} as MetadataApiDeployStatus);
+  protected getResponse(): MdDeployResult {
+    return this.result.response ?? ({} as MdDeployResult);
   }
 
   protected displaySuccesses(): void {
@@ -188,33 +197,10 @@ export class MdDeployResultFormatter extends ResultFormatter {
     const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
     if (codeCoverage.length) {
-      const coverage = codeCoverage.sort((a, b) => {
-        return a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1;
-      });
+      const coverage = prepCoverageForDisplay(codeCoverage);
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
-
-      coverage.map((cov: CodeCoverage & { lineNotCovered: string }) => {
-        const numLocationsNum = parseInt(cov.numLocations, 10);
-        const numLocationsNotCovered: number = parseInt(cov.numLocationsNotCovered, 10);
-        const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
-
-        let pctCovered = 100;
-        const coverageDecimal: number = parseFloat(
-          ((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2)
-        );
-        if (numLocationsNum > 0) {
-          pctCovered = coverageDecimal * 100;
-        }
-        cov.numLocations = color(`${pctCovered}%`);
-
-        if (!cov.locationsNotCovered) {
-          cov.lineNotCovered = '';
-        }
-        const locations = toArray(cov.locationsNotCovered);
-        cov.lineNotCovered = locations.map((location) => location.line).join(',');
-      });
 
       this.ux.table(coverage, {
         name: { header: 'Name' },
