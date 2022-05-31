@@ -175,7 +175,7 @@ export class Deploy extends DeployCommand {
     this.resultsDir = this.resolveOutputDir(
       this.getFlag<string[]>('coverageformatters', undefined),
       this.getFlag<boolean>('junit'),
-      this.getFlag<string>('outputdir'),
+      this.getFlag<string>('resultsdir'),
       this.deployResult?.response?.id,
       true
     );

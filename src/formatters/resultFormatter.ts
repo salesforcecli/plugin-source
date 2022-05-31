@@ -122,7 +122,7 @@ export abstract class ResultFormatter {
       );
     }
     if (this.options.junitTestResults) {
-      this.ux.log(`Junit results written to ${path.join(this.options.outputDir, 'junit', 'junit.xml')}`);
+      this.ux.log(`Junit results written to ${path.join(this.options.resultsDir, 'junit', 'junit.xml')}`);
     }
   }
 
