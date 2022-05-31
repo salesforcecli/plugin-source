@@ -13,7 +13,6 @@ import { SourceTestkit } from '@salesforce/source-testkit';
 import { isNameObsolete } from './shared/isNameObsolete';
 
 describe('source:deploy --destructive NUTs', () => {
-  const executable = path.join(process.cwd(), 'bin', 'dev');
   let testkit: SourceTestkit;
 
   const createApexClass = (apexName = 'myApexClass') => {
