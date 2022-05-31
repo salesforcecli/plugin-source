@@ -9,13 +9,16 @@ import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
+import { Env } from '@salesforce/kit';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 
 describe('metadata types that go in folders', () => {
   let session: TestSession;
+  const env = new Env();
 
   before(async () => {
+    env.setString('TESTKIT_EXECUTABLE_PATH', path.join(process.cwd(), 'bin', 'dev'));
     session = await TestSession.create({
       project: {
         gitClone: 'https://github.com/mshanemc/nestedFolders',

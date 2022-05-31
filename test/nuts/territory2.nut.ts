@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
+import { Env } from '@salesforce/kit';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 
@@ -15,8 +16,10 @@ describe('territories', () => {
   let session: TestSession;
   let projectPath: string;
   let modelPath: string;
+  const env = new Env();
 
   before(async () => {
+    env.setString('TESTKIT_EXECUTABLE_PATH', path.join(process.cwd(), 'bin', 'dev'));
     session = await TestSession.create({
       project: {
         // special thanks to Scott Wells for this sample project
