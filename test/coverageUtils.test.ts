@@ -213,9 +213,13 @@ describe('transform md RunTestResult', () => {
     expect(apexCoverage.records).to.have.length(4);
     expect(apexCoverage.records[0].ApexClassOrTrigger.Name).to.equal('PagedResult');
     expect(apexCoverage.records[1].ApexClassOrTrigger.Name).to.equal('PropertyController');
+    expect(apexCoverage.records[2].ApexClassOrTrigger.Name).to.equal('SampleDataController');
     expect(apexCoverage.records[1].NumLinesCovered).to.equal(44);
     expect(apexCoverage.records[1].NumLinesUncovered).to.equal(3);
     expect(apexCoverage.records[1].Coverage.uncoveredLines).to.deep.equal([26, 31, 78]);
+    expect(apexCoverage.records[2].Coverage.uncoveredLines).to.have.lengthOf(0);
+    expect(apexCoverage.records[2].Coverage.uncoveredLines).to.have.lengthOf(apexCoverage.records[2].NumLinesUncovered);
+    expect(apexCoverage.records[2].Coverage.coveredLines).to.have.lengthOf(apexCoverage.records[2].NumLinesCovered);
   });
   it('should transform md test results to apex test results format', () => {
     const apexTestResults = transformDeployTestsResultsToTestResult(mockConnection, sampleRunTestResult);
