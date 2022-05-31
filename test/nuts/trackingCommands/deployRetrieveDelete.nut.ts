@@ -9,13 +9,18 @@ import * as path from 'path';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
+import { Env } from '@salesforce/kit';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 
 let session: TestSession;
 describe('-t flag for deploy, retrieve, and delete', () => {
+  const env = new Env();
+
   before(async () => {
+    env.setString('TESTKIT_EXECUTABLE_PATH', path.join(process.cwd(), 'bin', 'dev'));
+
     session = await TestSession.create({
       project: {
         gitClone: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
