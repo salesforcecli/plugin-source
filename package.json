@@ -31,7 +31,7 @@
     "@salesforce/plugin-config": "^1.3.30",
     "@salesforce/plugin-user": "^1.7.1",
     "@salesforce/prettier-config": "^0.0.2",
-    "@salesforce/source-testkit": "^0.0.16",
+    "@salesforce/source-testkit": "^0.0.18",
     "@salesforce/ts-sinon": "1.3.21",
     "@types/archiver": "^5.1.1",
     "@types/debug": "^4.1.7",
