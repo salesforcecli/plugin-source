@@ -6,6 +6,7 @@
  */
 
 import * as path from 'path';
+import * as fs from 'fs';
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { Failures, FileProperties, FileResponse, Successes } from '@salesforce/source-deploy-retrieve';
@@ -21,7 +22,8 @@ export interface ResultFormatterOptions {
   username?: string;
   coverageOptions?: CoverageReporterOptions;
   junitTestResults?: boolean;
-  outputDir?: string;
+  resultsDir?: string;
+  testsRan?: boolean;
 }
 
 export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
@@ -107,14 +109,14 @@ export abstract class ResultFormatter {
   }
 
   protected displayOutputFileLocations(): void {
-    if (this.options.verbose && (this.options.coverageOptions?.reportFormats || this.options.junitTestResults)) {
+    if (this.options.testsRan && this.options.verbose) {
       this.ux.log();
       this.ux.styledHeader(chalk.blue('Coverage or Junit Result Report Locations'));
     }
-    if (this.options.coverageOptions?.reportFormats?.length > 0) {
+    if (this.options.testsRan && this.options.coverageOptions?.reportFormats?.length > 0) {
       this.ux.log(
         `Code Coverage formats, [${this.options.coverageOptions.reportFormats.join(',')}], written to ${path.join(
-          this.options.outputDir,
+          this.options.resultsDir,
           'coverage'
         )}`
       );
@@ -137,15 +139,17 @@ export abstract class ResultFormatter {
         const selectedReportOptions = reportOptions[formatter];
         const filename = selectedReportOptions['file'] as string;
         const subdir = selectedReportOptions['subdir'] as string;
-        return [formatter, path.join(...[this.options.outputDir, subdir, filename].filter((part) => part))];
+        return [formatter, path.join(...[this.options.resultsDir, subdir, filename].filter((part) => part))];
       })
     ) as CoverageResultsFileInfo;
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
   }
 
   protected getJunitFileInfo(): string | undefined {
+    if (!this.options.resultsDir || !fs.statSync(this.options.resultsDir, { throwIfNoEntry: false })) {
+      return undefined;
+    }
     if (this.options.junitTestResults) {
-      return path.join(this.options.outputDir, 'junit', 'junit.xml');
+      return path.join(this.options.resultsDir, 'junit', 'junit.xml');
     }
     return undefined;
   }

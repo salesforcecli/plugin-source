@@ -116,6 +116,7 @@
       "loglevel",
       "outputdir",
       "purgeondelete",
+      "resultsdir",
       "runtests",
       "singlepackage",
       "soapdeploy",
@@ -145,7 +146,7 @@
       "json",
       "junit",
       "loglevel",
-      "outputdir",
+      "resultsdir",
       "targetusername",
       "verbose",
       "wait"
@@ -276,6 +277,7 @@
       "postdestructivechanges",
       "predestructivechanges",
       "purgeondelete",
+      "resultsdir",
       "runtests",
       "soapdeploy",
       "sourcepath",
@@ -304,7 +306,7 @@
       "json",
       "junit",
       "loglevel",
-      "outputdir",
+      "resultsdir",
       "targetusername",
       "verbose",
       "wait"

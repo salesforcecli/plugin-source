@@ -44,8 +44,8 @@ export class Report extends DeployCommand {
     verbose: flags.builtin({
       description: messages.getMessage('flags.verbose'),
     }),
-    outputdir: flags.directory({
-      description: messages.getMessage('flags.outputDir'),
+    resultsdir: flags.directory({
+      description: messages.getMessage('flags.resultsDir'),
     }),
     coverageformatters: flags.array({
       description: messages.getMessage('flags.coverageFormatters'),
@@ -63,11 +63,12 @@ export class Report extends DeployCommand {
   protected async doReport(): Promise<void> {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
-    this.outputDir = this.resolveOutputDir(
+    this.resultsDir = this.resolveOutputDir(
       this.getFlag<string[]>('coverageformatters', undefined),
       this.getFlag<boolean>('junit'),
-      this.getFlag<string>('outputdir'),
-      deployId
+      this.getFlag<string>('resultsdir'),
+      deployId,
+      false
     );
 
     // If the verbose flag is set, AND the command was executed from within
@@ -108,11 +109,12 @@ export class Report extends DeployCommand {
       verbose: this.getFlag<boolean>('verbose', false),
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
-      outputDir: this.outputDir,
+      resultsDir: this.resultsDir,
+      testsRan: !!this.deployResult?.response.numberTestsTotal,
     };
     const formatter = new DeployReportResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
-    this.createRequestedReports();
+    this.maybeCreateRequestedReports();
 
     if (!this.isJsonOutput()) {
       formatter.display();

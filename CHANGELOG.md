@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/salesforcecli/plugin-source/compare/v1.9.9...v1.10.0) (2022-05-26)
+
+### Features
+
+- add code coverage and junit reporting ([#491](https://github.com/salesforcecli/plugin-source/issues/491)) ([3e6ff90](https://github.com/salesforcecli/plugin-source/commit/3e6ff908d937c526abe219831f67e749a828c640))
+
 ### [1.9.9](https://github.com/salesforcecli/plugin-source/compare/v1.9.8...v1.9.9) (2022-05-18)
 
 ### [1.9.8](https://github.com/salesforcecli/plugin-source/compare/v1.9.7...v1.9.8) (2022-05-17)

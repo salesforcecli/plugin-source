@@ -103,8 +103,8 @@ export class Deploy extends DeployCommand {
     concise: flags.builtin({
       description: messages.getMessage('flags.concise'),
     }),
-    outputdir: flags.directory({
-      description: messages.getMessage('flags.outputDir'),
+    resultsdir: flags.directory({
+      description: messages.getMessage('flags.resultsDir'),
     }),
     coverageformatters: flags.array({
       description: messages.getMessage('flags.coverageFormatters'),
@@ -126,7 +126,9 @@ export class Deploy extends DeployCommand {
 
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = await this.isRestDeploy();
-
+    if (this.isAsync && (this.flags.coverageformatters || this.flags.junit)) {
+      this.warn(messages.getMessage('asyncCoverageJunitWarning'));
+    }
     if (this.flags.validateddeployrequestid) {
       this.deployResult = await this.deployRecentValidation();
       return;
@@ -170,11 +172,12 @@ export class Deploy extends DeployCommand {
   }
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
-    this.outputDir = this.resolveOutputDir(
+    this.resultsDir = this.resolveOutputDir(
       this.getFlag<string[]>('coverageformatters', undefined),
       this.getFlag<boolean>('junit'),
       this.getFlag<string>('outputdir'),
-      this.deployResult?.response?.id
+      this.deployResult?.response?.id,
+      true
     );
 
     const formatterOptions: ResultFormatterOptions = {
@@ -183,13 +186,16 @@ export class Deploy extends DeployCommand {
       username: this.org.getUsername(),
       coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
-      outputDir: this.outputDir,
+      resultsDir: this.resultsDir,
+      testsRan: this.getFlag<string>('testlevel', 'NoTestRun') !== 'NoTestRun',
     };
     const formatter = this.isAsync
       ? new MdDeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
       : new MdDeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
 
-    this.createRequestedReports();
+    if (!this.isAsync) {
+      this.maybeCreateRequestedReports();
+    }
 
     // Only display results to console when JSON flag is unset.
     if (!this.isJsonOutput()) {

@@ -51,8 +51,10 @@ export class DeployResultFormatter extends ResultFormatter {
     json.deployedSource = this.fileResponses;
     json.outboundFiles = []; // to match toolbelt version
     json.deploys = [Object.assign({}, this.getResponse())]; // to match toolbelt version
-    json.coverage = this.getCoverageFileInfo();
-    json.junit = this.getJunitFileInfo();
+    if (this.options.testsRan) {
+      json.coverage = this.getCoverageFileInfo();
+      json.junit = this.getJunitFileInfo();
+    }
 
     return json;
   }

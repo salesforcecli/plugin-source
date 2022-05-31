@@ -35,8 +35,8 @@
     "forceoverwrite": "ignore conflict warnings and overwrite changes to the org",
     "purgeOnDelete": "specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin",
     "junit": "output JUnit test results",
-    "coverageFormatters": "output coverage results in the specified formatters",
-    "outputDir": "output directory for results (defaults to deploy id)"
+    "coverageFormatters": "format of the code coverage results",
+    "resultsDir": "output directory for code coverage and JUnit results; defaults to the deploy ID"
   },
   "flagsLong": {
     "sourcePath": [
@@ -86,5 +86,7 @@
   "asyncDeployQueued": "Deploy has been queued.",
   "asyncDeployCancel": "Run sfdx force:source:deploy:cancel -i %s -u %s to cancel the deploy.",
   "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s -u %s to get the latest status.",
-  "deployWontDelete": "You currently have files deleted locally.  The deploy command will NOT delete them from your org unless you use one of the destructivechanges flags."
+  "invalidDeployId": "The provided ID is invalid, deploy IDs must start with '0Af'.",
+  "deployWontDelete": "You currently have files deleted locally.  The deploy command will NOT delete them from your org unless you use one of the destructivechanges flags.",
+  "asyncCoverageJunitWarning": "You requested an async deploy with code coverage or JUnit results. The reports will be available when the deploy completes."
 }

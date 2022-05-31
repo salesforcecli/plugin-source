@@ -38,7 +38,7 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-source', 'deployCommand', [
   'invalidDeployId',
   'MissingDeployId',
-  'outputDirMissing',
+  'resultsDirMissing',
 ]);
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 
@@ -54,7 +54,7 @@ export abstract class DeployCommand extends SourceCommand {
   protected asyncDeployResult: AsyncResult;
 
   protected deployResult: DeployResult;
-  protected outputDir: string;
+  protected resultsDir: string;
   protected updateDeployId = once((id: string) => {
     this.displayDeployId(id);
     const stashKey = Stash.getKey(this.id);
@@ -185,12 +185,15 @@ export abstract class DeployCommand extends SourceCommand {
     return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
   }
 
-  protected createRequestedReports(): void {
-    if (this.flags.coverageformatters) {
-      this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.outputDir);
-    }
-    if (this.flags.junit && !this.isAsync) {
-      this.createJunitResults(this.deployResult);
+  protected maybeCreateRequestedReports(): void {
+    // only generate reports if test results are present
+    if (this.deployResult.response?.numberTestsTotal) {
+      if (this.flags.coverageformatters) {
+        this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
+      }
+      if (this.flags.junit) {
+        this.createJunitResults(this.deployResult);
+      }
     }
   }
 
@@ -198,14 +201,14 @@ export abstract class DeployCommand extends SourceCommand {
     deployResult: DeployResult,
     formatters: string[],
     sourceDir: string,
-    outputDir: string
+    resultsDir: string
   ): void {
     const apexCoverage = transformCoverageToApexCoverage(
       toArray(deployResult.response?.details?.runTestResult?.codeCoverage)
     );
-    fs.mkdirSync(outputDir, { recursive: true });
+    fs.mkdirSync(resultsDir, { recursive: true });
     const options = this.getCoverageFormattersOptions(formatters);
-    const coverageReport = new CoverageReporter(apexCoverage, outputDir, sourceDir, options);
+    const coverageReport = new CoverageReporter(apexCoverage, resultsDir, sourceDir, options);
     coverageReport.generateReports();
   }
 
@@ -241,27 +244,35 @@ export abstract class DeployCommand extends SourceCommand {
       this.org.getConnection(),
       deployResult.response?.details?.runTestResult
     );
-    const jUnitReporter = new JUnitReporter();
-    const junitResults = jUnitReporter.format(testResult);
+    if (testResult.summary.testsRan > 0) {
+      const jUnitReporter = new JUnitReporter();
+      const junitResults = jUnitReporter.format(testResult);
 
-    const junitReportPath = path.join(this.outputDir, 'junit');
-    fs.mkdirSync(junitReportPath, { recursive: true });
-    fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
+      const junitReportPath = path.join(this.resultsDir, 'junit');
+      fs.mkdirSync(junitReportPath, { recursive: true });
+      fs.writeFileSync(path.join(junitReportPath, 'junit.xml'), junitResults, 'utf8');
+    }
   }
 
   protected resolveOutputDir(
     coverageFormatters: string[],
     junit: boolean,
-    outputDir: string,
-    deployId: string
+    resultsDir: string,
+    deployId: string,
+    noThrow: boolean
   ): string {
-    if (!coverageFormatters && !junit) {
-      return outputDir;
+    if (resultsDir) {
+      return resultsDir;
     }
-    if ((coverageFormatters || junit) && !outputDir && deployId) {
-      return deployId;
+    if (coverageFormatters || junit) {
+      if (deployId) {
+        return deployId;
+      }
+      if (!noThrow) {
+        throw new SfError(messages.getMessage('resultsDirMissing'));
+      }
     }
-    throw new SfError(messages.getMessage('outputDirMissing'));
+    return undefined;
   }
 }
 

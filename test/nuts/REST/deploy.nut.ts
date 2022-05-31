@@ -123,7 +123,7 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
       await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
 
       const checkOnly = (await testkit.deploy({
-        args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors',
+        args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors --wait 0',
       })) as { id: string; result: DeployCommandResult };
 
       const quickDeploy = (await testkit.deploy({
