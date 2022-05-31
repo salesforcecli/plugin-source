@@ -124,11 +124,11 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
 
       const checkOnly = (await testkit.deploy({
         args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors --wait 0',
-      })) as { id: string; result: DeployCommandResult };
+      })) as { result: DeployCommandResult };
 
       const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
-      })) as { id: string; result: DeployCommandResult };
+      })) as { result: DeployCommandResult };
       const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
 
       expect(quickDeploy.result.status).to.equal('Succeeded');
