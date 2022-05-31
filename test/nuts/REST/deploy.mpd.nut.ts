@@ -164,15 +164,14 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
 
       const checkOnly = (await testkit.deploy({
         args: `--sourcepath ${classes} --testlevel RunLocalTests --checkonly --ignoreerrors`,
-      })) as { id: string; result: DeployCommandResult };
+      })) as { result: DeployCommandResult };
 
       const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
-      })) as { id: string; result: DeployCommandResult };
-      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+      })) as { result: DeployCommandResult };
 
       expect(quickDeploy.result.status).to.equal('Succeeded');
-      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
+      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], quickDeploy.result.deployedSource);
     });
   });
 });
