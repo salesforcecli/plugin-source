@@ -64,8 +64,8 @@ function generateCoveredLines(cov: CodeCoverage): [number[], number[]] {
   const numCovered = parseInt(cov.numLocations, 10);
   const numUncovered = parseInt(cov.numLocationsNotCovered, 10);
   const uncoveredLines = toArray(cov.locationsNotCovered).map((location) => parseInt(location.line, 10));
-  const mminLineNumber = Math.min(...uncoveredLines);
-  const lines = [...Array(numCovered + numUncovered).keys()].map((i) => i + mminLineNumber);
+  const minLineNumber = uncoveredLines.length ? Math.min(...uncoveredLines) : 1;
+  const lines = [...Array(numCovered + numUncovered).keys()].map((i) => i + minLineNumber);
   const coveredLines = lines.filter((line) => !uncoveredLines.includes(line));
   return [uncoveredLines, coveredLines];
 }
