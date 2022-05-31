@@ -427,9 +427,12 @@ describe('mdapi NUTs', () => {
     describe('Test stash', () => {
       describe('Deploy zip and report using soap with non default username', () => {
         it('should deploy zip file', () => {
-          execCmd<MdDeployResult>('force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg', {
-            ensureExitCode: 0,
-          });
+          execCmd<MdDeployResult>(
+            'force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg --testlevel RunAllTestsInOrg',
+            {
+              ensureExitCode: 0,
+            }
+          );
         });
 
         it('async report from stash', () => {
