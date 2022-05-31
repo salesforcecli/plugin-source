@@ -14,13 +14,11 @@ import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retriev
 import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
-import { Env } from '@salesforce/kit';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
 import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
 let session: TestSession;
-const env = new Env();
 
 const writeManifest = (manifestPath: string, contents?: string) => {
   contents ??= `<?xml version="1.0" encoding="UTF-8"?>
@@ -35,8 +33,6 @@ const writeManifest = (manifestPath: string, contents?: string) => {
 };
 
 describe('mdapi NUTs', () => {
-  env.setString('TESTKIT_EXECUTABLE_PATH', path.join(process.cwd(), 'bin', 'dev'));
-
   before(async () => {
     session = await TestSession.create({
       project: {
@@ -467,7 +463,7 @@ describe('mdapi NUTs', () => {
           // has the basic table output
           expect(reportCommandResponse).to.include('Deployed Source');
           // check for coverage/junit output
-          const reportFiles = fs.readdirSync('resultsdir');
+          const reportFiles = fs.readdirSync(path.join(session.project.dir, 'resultsdir'));
           expect(reportFiles).to.include('coverage');
           expect(reportFiles).to.include('junit');
         });

@@ -8,17 +8,13 @@
 import * as path from 'path';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { Env } from '@salesforce/kit';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { PushResponse } from '../../src/formatters/source/pushResultFormatter';
-
-const env = new Env();
 
 describe('Nested LWCs', () => {
   let session: TestSession;
 
   before(async () => {
-    env.setString('TESTKIT_EXECUTABLE_PATH', path.join(process.cwd(), 'bin', 'dev'));
     session = await TestSession.create({
       project: {
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'nestedLWCProject'),

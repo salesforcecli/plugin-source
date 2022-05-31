@@ -8,7 +8,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { Env } from '@salesforce/kit';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 
@@ -16,10 +15,8 @@ describe('translations', () => {
   let session: TestSession;
   let projectPath: string;
   let translationPath: string;
-  const env = new Env();
 
   before(async () => {
-    env.setString('TESTKIT_EXECUTABLE_PATH', path.join(process.cwd(), 'bin', 'dev'));
     session = await TestSession.create({
       project: {
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'customTranslationProject'),

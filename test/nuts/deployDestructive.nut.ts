@@ -6,7 +6,6 @@
  */
 
 import * as path from 'path';
-import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';

@@ -6,7 +6,6 @@
  */
 
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { Result } from '@salesforce/source-testkit/lib/types';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
@@ -39,15 +38,15 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   it('should deploy validated (checkonly) deploy', async () => {
     // delete the lwc test stubs which will cause errors with the source tracking/globbing
     await testkit.deleteGlobs(['force-app/test/**/*']);
-    const checkOnly = (await testkit.deploy({
+    const checkOnly = await testkit.deploy({
       args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
-    })) as Result<{ id: string; result: { id: string } }>;
+    });
     testkit.expect.toHaveProperty(checkOnly.result, 'id');
     await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
 
-    const quickDeploy = (await testkit.deploy({
+    const quickDeploy = await testkit.deploy({
       args: `--validateddeployrequestid ${checkOnly.result.id}`,
-    })) as Result<{ id: string; result: { id: string } }>;
+    });
     testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
 
     const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
