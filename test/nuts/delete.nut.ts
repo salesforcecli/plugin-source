@@ -39,7 +39,7 @@ describe('source:delete NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       nut: __filename,
-      executable: os.platform() === 'win32' ? executable.replace(/\\/g, '\\\\') : executable,
+      executable: path.join(process.cwd(), 'bin', 'dev'),
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
     execCmd('force:source:deploy --sourcepath force-app');
