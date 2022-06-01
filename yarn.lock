@@ -949,23 +949,7 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-deploy-retrieve@^5.12.12":
-  version "5.12.12"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.12.12.tgz#3425ccb100a1f17f0dd7f8153af25a003bf9982d"
-  integrity sha512-XND/uJn7n0m38aJJ60MKy8alUP6Vg7WILm9NNb2Xh4Cu2agPpTOxru6pn32UKdNbjMMaxD7NmrAIk58eHm6sWw==
-  dependencies:
-    "@salesforce/core" "^2.35.0"
-    "@salesforce/kit" "^1.5.32"
-    "@salesforce/ts-types" "^1.4.2"
-    archiver "^5.3.0"
-    fast-xml-parser "^3.17.4"
-    graceful-fs "^4.2.8"
-    ignore "^5.1.8"
-    mime "2.6.0"
-    unzipper "0.10.11"
-    xmldom-sfdx-encoding "^0.1.29"
-
-"@salesforce/source-deploy-retrieve@^5.12.14":
+"@salesforce/source-deploy-retrieve@^5.12.12", "@salesforce/source-deploy-retrieve@^5.12.14":
   version "5.12.14"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-5.12.14.tgz#1c63e5caf8ed53a37561b603c019424c00e77823"
   integrity sha512-AYavRb8CoHonaFeOjvWSCLfvC833dywkYQoEaShoKeSMF36hgJegIdX383+4alOxUavAiuwPFOy3yVEIR8FmsQ==
@@ -999,9 +983,9 @@
     strip-ansi "^6.0.0"
 
 "@salesforce/source-tracking@^1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.4.2.tgz#312f03dfe996b3e680be8014aa66655fb499cd6f"
-  integrity sha512-BIVLyoa5JRfEFCMTfoPBZ4S5Sz4ky1gVu7mRoebBol0PUHnyj7MG0n0UoRhNM/VcWJcoqGueO16hVaW6/BKCqw==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-1.5.0.tgz#699c2666076d5a1b0841a7eb5fb52d39e4ee7c27"
+  integrity sha512-LLN1r0qn3eEoMsAC/C9eaJuM+pNkmTd1S904ZnssUSNU1faW+cVmU/zZ3GcngEa/Z4WqC9aA5ohWg59eOWkuGA==
   dependencies:
     "@salesforce/core" "^2.33.1"
     "@salesforce/kit" "^1.5.17"
