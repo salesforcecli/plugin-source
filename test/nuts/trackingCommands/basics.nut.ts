@@ -48,14 +48,14 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('pushes the initial metadata to the org', () => {
-      const result = execCmd<PushResponse>('force:source:push --json', {
-        ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
-      expect(result).to.be.an.instanceof(Array);
-      expect(result, JSON.stringify(result)).to.have.lengthOf(230);
+      const resp = execCmd<PushResponse>('force:source:push --json').jsonOutput;
+      expect(resp.status, JSON.stringify(resp)).to.equal(0);
+      const pushedSource = resp.result.pushedSource;
+      expect(resp.result.pushedSource).to.be.an.instanceof(Array);
+      expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(230);
       expect(
-        result.every((r) => r.state !== ComponentStatus.Failed),
-        JSON.stringify(result.filter((r) => r.state === ComponentStatus.Failed))
+        pushedSource.every((r) => r.state !== ComponentStatus.Failed),
+        JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))
       ).to.equal(true);
     });
     it('sees no local changes (all were committed from push), but profile updated in remote', () => {

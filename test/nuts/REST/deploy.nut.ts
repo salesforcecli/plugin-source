@@ -10,6 +10,7 @@ import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
+import { DeployReportCommandResult } from '../../../lib/formatters/deployReportResultFormatter';
 import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
 const EXECUTABLE = path.join(process.cwd(), 'bin', 'dev');
 
@@ -127,9 +128,11 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
       })) as { result: DeployCommandResult };
 
       // quick deploy won't work unless the checkonly has finished successfully
-      await testkit.deployReport({
+      const waitResult = (await testkit.deployReport({
         args: `--wait 60 --jobid ${checkOnly.result.id}`,
-      });
+      })) as unknown as { status: number; result: DeployReportCommandResult };
+
+      expect(waitResult.status, JSON.stringify(waitResult)).to.equal(0);
 
       const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
