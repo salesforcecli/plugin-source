@@ -161,8 +161,13 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
       const classes = path.join('foo-bar', 'app', 'classes');
 
       const checkOnly = (await testkit.deploy({
-        args: `--sourcepath ${classes} --testlevel RunLocalTests --checkonly --ignoreerrors`,
+        args: `--sourcepath ${classes} --testlevel RunAllTestsInOrg --checkonly --ignoreerrors`,
       })) as { result: DeployCommandResult };
+
+      // quick deploy won't work unless the checkonly has finished successfully
+      await testkit.deployReport({
+        args: `--wait 60 --jobid ${checkOnly.result.id}`,
+      });
 
       const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,

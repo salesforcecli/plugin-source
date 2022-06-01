@@ -126,6 +126,11 @@ context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
         args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors --wait 0',
       })) as { result: DeployCommandResult };
 
+      // quick deploy won't work unless the checkonly has finished successfully
+      await testkit.deployReport({
+        args: `--wait 60 --jobid ${checkOnly.result.id}`,
+      });
+
       const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
       })) as { result: DeployCommandResult };
