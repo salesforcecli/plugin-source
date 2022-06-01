@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  release-management: salesforce/npm-release-management@4
+  release-management: salesforce/npm-release-management@dev:84d63f5
 parameters:
   run-auto-workflows:
     description: >
@@ -65,6 +65,7 @@ workflows:
           size: large
           requires:
             - release-management/test-package
+          no_output_timeout: 30m
           matrix:
             parameters:
               os:
