@@ -157,8 +157,6 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       // deploy all metadata to the org so that we can run tests
       await testkit.deploy({ args: '--sourcepath force-app' });
-      // running tests requires a special permission in the 'dreamhouse' permission set
-      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
 
       const classes = path.join('foo-bar', 'app', 'classes');
 

@@ -26,7 +26,9 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     });
     // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
-    await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    if (REPO.gitUrl.includes('dreamhouse')) {
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    }
   });
 
   after(async () => {
