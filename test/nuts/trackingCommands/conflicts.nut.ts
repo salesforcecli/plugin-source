@@ -13,7 +13,7 @@ import * as fs from 'fs';
 import { expect } from 'chai';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { AuthInfo, Connection } from '@salesforce/core';
+import { AuthInfo, Connection, GlobalInfo } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
@@ -48,6 +48,7 @@ describe('conflict detection and resolution', () => {
   });
 
   it('edits a remote file', async () => {
+    GlobalInfo.clearInstance();
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
         username: (session.setup[0] as { result: { username: string } }).result?.username,

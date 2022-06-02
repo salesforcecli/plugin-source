@@ -13,7 +13,7 @@ import * as fs from 'fs';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { AuthInfo, Connection } from '@salesforce/core';
+import { AuthInfo, Connection, GlobalInfo } from '@salesforce/core';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { SourceTrackingClearResult } from '../../../src/commands/force/source/tracking/clear';
 
@@ -47,6 +47,7 @@ describe('reset and clear', () => {
     });
     orgId = (session.setup[0] as { result: { orgId: string } }).result?.orgId;
     trackingFileFolder = path.join(session?.project.dir, '.sf', 'orgs', orgId);
+    GlobalInfo.clearInstance();
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
         username: (session.setup[0] as { result: { username: string } }).result?.username,

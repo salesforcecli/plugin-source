@@ -15,7 +15,7 @@ import { expect } from 'chai';
 import * as shell from 'shelljs';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { AuthInfo, Connection } from '@salesforce/core';
+import { AuthInfo, Connection, GlobalInfo } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
@@ -38,6 +38,8 @@ describe('forceignore changes', () => {
       ],
     });
     originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
+
+    GlobalInfo.clearInstance();
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
         username: (session.setup[0] as { result: { username: string } }).result?.username,

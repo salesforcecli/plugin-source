@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { AuthInfo, Connection } from '@salesforce/core';
+import { AuthInfo, Connection, GlobalInfo } from '@salesforce/core';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
@@ -23,6 +23,7 @@ describe('multiple pkgDirectories pushed as one deploy', () => {
       setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
     });
 
+    GlobalInfo.clearInstance();
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
         username: (session.setup[0] as { result: { username: string } }).result?.username,
@@ -32,7 +33,7 @@ describe('multiple pkgDirectories pushed as one deploy', () => {
 
   after(async () => {
     await session?.zip(undefined, 'artifacts');
-    await session?.clean();
+    // await session?.clean();
   });
 
   describe('mpd non-sequential', () => {
