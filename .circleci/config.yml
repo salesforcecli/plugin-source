@@ -70,20 +70,8 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
               command:
-                - 'yarn test:nuts:convert'
-                - 'yarn test:nuts:commands:other'
-                - 'yarn test:nuts:delete'
-                - 'yarn test:nuts:deploy'
-                - 'yarn test:nuts:deploy:async'
-                - 'yarn test:nuts:deploy:rest'
-                - 'yarn test:nuts:manifest:create'
-                - 'yarn test:nuts:retrieve'
-                - 'yarn test:nuts:specialTypes'
-                - 'yarn test:nuts:deploy:destructive'
-                - 'yarn test:nuts:tracking'
-                - 'yarn test:nuts:mdapi'
+                - 'DEBUG=* yarn test:nuts:tracking'
       - release-management/release-package:
           sign: true
           github-release: true
