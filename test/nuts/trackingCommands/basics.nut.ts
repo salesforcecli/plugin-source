@@ -48,10 +48,10 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('pushes the initial metadata to the org', () => {
-      const resp = execCmd<PushResponse>('force:source:push --json').jsonOutput;
-      expect(resp.status, JSON.stringify(resp)).to.equal(0);
-      const pushedSource = resp.result.pushedSource;
-      expect(resp.result.pushedSource).to.be.an.instanceof(Array);
+      const resp = execCmd<PushResponse>('force:source:push --json');
+      expect(resp.jsonOutput?.status, JSON.stringify(resp)).to.equal(0);
+      const pushedSource = resp.jsonOutput.result.pushedSource;
+      expect(pushedSource).to.be.an.instanceof(Array);
       expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(230);
       expect(
         pushedSource.every((r) => r.state !== ComponentStatus.Failed),
