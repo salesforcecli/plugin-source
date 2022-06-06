@@ -59,8 +59,6 @@ workflows:
               - os: windows
                 node_version: maintenance
       - release-management/test-nut:
-          environment:
-            SFDX_USE_GENERIC_UNIX_KEYCHAIN: true
           context: na40-auth-url
           sfdx_version: latest
           node_version: lts
