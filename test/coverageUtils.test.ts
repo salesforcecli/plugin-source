@@ -186,7 +186,7 @@ describe('transform md RunTestResult', () => {
   beforeEach(async () => {
     sandboxStub = createSandbox();
 
-    $$.setConfigStubContents('GlobalInfo', {
+    $$.setConfigStubContents('StateAggregator', {
       contents: {
         orgs: {
           [testData.username]: await testData.getConfig(),
