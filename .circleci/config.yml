@@ -59,6 +59,8 @@ workflows:
               - os: windows
                 node_version: maintenance
       - release-management/test-nut:
+          environment:
+            SFDX_USE_GENERIC_UNIX_KEYCHAIN: true
           context: na40-auth-url
           sfdx_version: latest
           node_version: lts
@@ -76,7 +78,7 @@ workflows:
                 - 'yarn test:nuts:commands:other'
                 - 'yarn test:nuts:delete'
                 - 'yarn test:nuts:deploy'
-                - 'yarn test:nuts:deploy:async'
+                # - 'yarn test:nuts:deploy:async'
                 - 'yarn test:nuts:deploy:rest'
                 - 'yarn test:nuts:manifest:create'
                 - 'yarn test:nuts:retrieve'
