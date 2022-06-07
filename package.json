@@ -149,7 +149,7 @@
     "format": "sf-format",
     "lint": "sf-lint",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:command-reference",
+    "posttest": "yarn lint",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
     "pretest": "sf-compile-test",
