@@ -66,13 +66,13 @@ describe.only('5k files in mdapi:deploy', () => {
 
   it('should be able to handle a mdapi:deploy of 5k', async () => {
     execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
-    const res = execCmd<{ checkonly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
+    const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
       ensureExitCode: 0,
     }).jsonOutput;
     expect(res.status).to.equal(0);
     // check that the deploy actually happened, not just based on the exit code, otherwise something like
     // https://github.com/forcedotcom/cli/issues/1531 could happen
-    expect(res.result.checkonly).to.be.false;
+    expect(res.result.checkOnly).to.be.false;
     expect(res.result.done).to.be.true;
   });
 });
