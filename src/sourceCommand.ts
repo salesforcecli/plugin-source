@@ -11,7 +11,7 @@ import { SfdxCommand } from '@salesforce/command';
 import { Messages, Lifecycle, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
-import cli from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types';
 
 Messages.importMessagesDirectory(__dirname);
@@ -43,7 +43,7 @@ export abstract class SourceCommand extends SfdxCommand {
 
   protected initProgressBar(): void {
     this.logger.debug('initializing progress bar');
-    this.progressBar = cli.progress({
+    this.progressBar = CliUx.ux.progress({
       format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',
