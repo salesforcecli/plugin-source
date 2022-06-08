@@ -18,13 +18,15 @@ describe('source:deploy --destructive NUTs', () => {
     // create and deploy an ApexClass that can be deleted without dependency issues
     const output = path.join('force-app', 'main', 'default', 'classes');
     const pathToClass = path.join(testkit.projectDir, output, `${apexName}.cls`);
-    execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output}`);
-    execCmd(`force:source:deploy -m ApexClass:${apexName}`);
+    execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output}`, { ensureExitCode: 0 });
+    execCmd(`force:source:deploy -m ApexClass:${apexName}`, { ensureExitCode: 0 });
     return { apexName, output, pathToClass };
   };
 
   const createManifest = (metadata: string, manifesttype: string) => {
-    execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype}`);
+    execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype}`, {
+      ensureExitCode: 0,
+    });
   };
 
   before(async () => {
@@ -33,7 +35,7 @@ describe('source:deploy --destructive NUTs', () => {
       executable: path.join(process.cwd(), 'bin', 'dev'),
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
-    execCmd('force:source:deploy --sourcepath force-app');
+    execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0 });
   });
 
   after(async () => {
