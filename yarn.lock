@@ -1127,31 +1127,6 @@
     mkdirp "1.0.4"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^3.19.6-dev.0":
-  version "3.19.6-dev.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.19.6-dev.0.tgz#c6335c4775fe55d4ceec05bdac76f6cb104b448b"
-  integrity sha512-ji/rOS+k3v/m52m+juvH8DHoru4yIyw3mCtYhmTnN9hAbmURCqR0xplUO/WRyttB6ZJZVZSzNRLsACYf/tCTiQ==
-  dependencies:
-    "@salesforce/bunyan" "^2.0.0"
-    "@salesforce/kit" "^1.5.41"
-    "@salesforce/schemas" "^1.1.0"
-    "@salesforce/ts-types" "^1.5.20"
-    "@types/graceful-fs" "^4.1.5"
-    "@types/mkdirp" "^1.0.2"
-    "@types/semver" "^7.3.9"
-    ajv "^8.11.0"
-    archiver "^5.3.0"
-    change-case "^4.1.2"
-    debug "^3.2.7"
-    faye "^1.4.0"
-    form-data "^4.0.0"
-    graceful-fs "^4.2.9"
-    js2xmlparser "^4.0.1"
-    jsforce "2.0.0-beta.10"
-    jsonwebtoken "8.5.1"
-    mkdirp "1.0.4"
-    ts-retry-promise "^0.6.0"
-
 "@salesforce/dev-config@^3.0.0", "@salesforce/dev-config@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-3.0.1.tgz#631a952abfd69e7cdb0fb312ba4b1656ae632b90"
