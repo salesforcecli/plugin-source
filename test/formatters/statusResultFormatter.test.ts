@@ -21,6 +21,14 @@ const fakeResult: StatusResult[] = [
     state: 'Remote Add',
   },
   {
+    fullName: 'ignoredProfile',
+    type: 'Profile',
+    origin: 'Remote',
+    ignored: undefined,
+    actualState: 'Add',
+    state: 'Remote Add',
+  },
+  {
     fullName: 'regularProfile',
     type: 'Profile',
     origin: 'Remote',
@@ -67,7 +75,7 @@ describe('status results', () => {
       const formatter = new StatusFormatter(logger, ux as UX, { concise: true }, fakeResult);
       formatter.display();
       expect(tableStub.callCount).to.equal(1);
-      expect(tableStub.firstCall.args[0]).to.deep.equal([fakeResult[1]]);
+      expect(tableStub.firstCall.args[0]).to.deep.equal([fakeResult[2]]);
     });
     it('shows no results when there are none', () => {
       const formatter = new StatusFormatter(logger, ux as UX, { concise: false }, []);
@@ -75,6 +83,7 @@ describe('status results', () => {
       expect(logStub.callCount).to.equal(1);
       expect(logStub.firstCall.args[0]).to.contain('No local or remote changes found.');
     });
+
     it('shows no results when there are none because concise omitted them', () => {
       const formatter = new StatusFormatter(logger, ux as UX, { concise: true }, [fakeResult[0]]);
       formatter.display();
