@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.2](https://github.com/salesforcecli/plugin-source/compare/v1.10.1...v1.10.2) (2022-05-31)
+
+### Bug Fixes
+
+- default min line number to 1 when 100 pct coverage ([#494](https://github.com/salesforcecli/plugin-source/issues/494)) ([c974010](https://github.com/salesforcecli/plugin-source/commit/c974010b9e6ec54e9b4092e9918cdf4e5cbc5b46))
+
+### [1.10.1](https://github.com/salesforcecli/plugin-source/compare/v1.10.0...v1.10.1) (2022-05-27)
+
+### Bug Fixes
+
+- import coverageUtils from parent folder ([#493](https://github.com/salesforcecli/plugin-source/issues/493)) ([c4f471e](https://github.com/salesforcecli/plugin-source/commit/c4f471e97b50a43c1809518432f7ec4dddc05041))
+
 ## [1.10.0](https://github.com/salesforcecli/plugin-source/compare/v1.9.9...v1.10.0) (2022-05-26)
 
 ### Features
