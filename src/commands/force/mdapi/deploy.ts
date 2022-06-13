@@ -9,7 +9,8 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, reportsFormatters, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve/lib/src/client/types';
+import { DeployCommand, getVersionMessage, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
@@ -52,7 +53,6 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.testLevel'),
       longDescription: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
-      default: 'NoTestRun',
     }),
     runtests: flags.array({
       char: 'r',
@@ -114,6 +114,10 @@ export class Deploy extends DeployCommand {
     junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
   };
 
+  public static removeUndefinedKeyValues(data: Record<string, unknown>): MetadataApiDeployOptions {
+    return JSON.parse(JSON.stringify(data)) as MetadataApiDeployOptions;
+  }
+
   public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
     await this.deploy();
     this.resolveSuccess();
@@ -141,7 +145,11 @@ export class Deploy extends DeployCommand {
     const deploy = new MetadataApiDeploy({
       usernameOrConnection: this.org.getUsername(),
       ...deploymentOptions,
-      apiOptions: {
+      // the parse/stringify will remove undefined key/values from the options
+      // which if runTests is defaulted as 'NoTestRun' and deploying to prod, you'll get this error
+      // https://github.com/forcedotcom/cli/issues/1542
+      // TODO: use structuredClone https://developer.mozilla.org/en-US/docs/Web/API/structuredClone once available
+      apiOptions: Deploy.removeUndefinedKeyValues({
         purgeOnDelete: this.getFlag('purgeondelete', false),
         ignoreWarnings: this.getFlag('ignorewarnings', false),
         rollbackOnError: !this.getFlag('ignoreerrors', false),
@@ -150,7 +158,7 @@ export class Deploy extends DeployCommand {
         testLevel: this.getFlag<TestLevel>('testlevel'),
         singlePackage: this.getFlag('singlepackage', false),
         rest: this.isRest,
-      },
+      }),
     });
     await deploy.start();
     this.asyncDeployResult = { id: deploy.id };
