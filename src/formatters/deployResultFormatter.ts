@@ -180,7 +180,7 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       this.ux.table(failures, {
-        problem: { header: 'Type' },
+        problemType: { header: 'Type' },
         fullName: { header: 'Name' },
         error: { header: 'Problem' },
       });
