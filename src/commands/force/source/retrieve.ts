@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { join } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfProject } from '@salesforce/core';
+import { Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { ComponentSet, ComponentSetBuilder, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
@@ -90,6 +90,11 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async preChecks(): Promise<void> {
+    // we need something to retrieve
+    const retrieveInputs = [this.flags.manifest, this.flags.metadata, this.flags.sourcepath, this.flags.packagename];
+    if (!retrieveInputs.some((x) => x)) {
+      throw new SfError(messages.getMessage('nothingToRetrieve'));
+    }
     if (this.flags.tracksource) {
       this.tracking = await trackingSetup({
         ux: this.ux,
