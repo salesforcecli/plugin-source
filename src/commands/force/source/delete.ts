@@ -187,7 +187,11 @@ export class Delete extends DeployCommand {
     // fire predeploy event for the delete
     await this.lifecycle.emit('predeploy', this.components);
     this.isRest = await this.isRestDeploy();
-    this.ux.log(`*** Deleting with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
+    this.ux.log(
+      `*** Deleting${this.getFlag<boolean>('checkonly', false) ? ' (check only)' : ''} with ${
+        this.isRest ? 'REST' : 'SOAP'
+      } API ***`
+    );
 
     const deploy = await this.componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
