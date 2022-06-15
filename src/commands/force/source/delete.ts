@@ -187,11 +187,7 @@ export class Delete extends DeployCommand {
     // fire predeploy event for the delete
     await this.lifecycle.emit('predeploy', this.components);
     this.isRest = await this.isRestDeploy();
-    this.ux.log(
-      `*** Deleting${this.getFlag<boolean>('checkonly', false) ? ' (check only)' : ''} with ${
-        this.isRest ? 'REST' : 'SOAP'
-      } API ***`
-    );
+    this.ux.log(`*** Deleting with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     const deploy = await this.componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
@@ -386,7 +382,11 @@ export class Delete extends DeployCommand {
         message.push('\n', messages.getMessage('localPrompt', [[...new Set(local)].join('\n')]));
       }
 
-      message.push(messages.getMessage('areYouSure'));
+      message.push(
+        this.getFlag<boolean>('checkonly', false)
+          ? messages.getMessage('areYouSureCheckOnly')
+          : messages.getMessage('areYouSure')
+      );
       return CliUx.ux.confirm(message.join(''));
     }
     return true;
