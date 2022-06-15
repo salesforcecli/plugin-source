@@ -14,6 +14,7 @@ import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retriev
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+import { itemsInEBikesPush } from './consts';
 
 const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
 
@@ -52,7 +53,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(resp.jsonOutput?.status, JSON.stringify(resp)).to.equal(0);
       const pushedSource = resp.jsonOutput.result.pushedSource;
       expect(pushedSource).to.be.an.instanceof(Array);
-      expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(230);
+      expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
       expect(
         pushedSource.every((r) => r.state !== ComponentStatus.Failed),
         JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))

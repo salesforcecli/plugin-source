@@ -18,6 +18,7 @@ import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+import { itemsInEBikesPush } from './consts';
 
 let session: TestSession;
 describe('conflict detection and resolution', () => {
@@ -40,7 +41,7 @@ describe('conflict detection and resolution', () => {
     const pushResult = execCmd<PushResponse>('force:source:push --json');
     expect(pushResult.jsonOutput?.status, JSON.stringify(pushResult)).equals(0);
     const pushedSource = pushResult.jsonOutput.result.pushedSource;
-    expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(230);
+    expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
     expect(
       pushedSource.every((r) => r.state !== ComponentStatus.Failed),
       JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))
