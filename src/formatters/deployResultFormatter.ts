@@ -90,6 +90,8 @@ export class DeployResultFormatter extends ResultFormatter {
     if (!this.isSuccess()) {
       throw new SfError(messages.getMessage('deployFailed'), 'DeployFailed');
     }
+
+    this.ux.log(messages.getMessage(this.isCheckOnly() ? 'checkOnlySuccessVerbose' : 'deploySuccess'));
   }
 
   protected hasStatus(status: RequestStatus): boolean {

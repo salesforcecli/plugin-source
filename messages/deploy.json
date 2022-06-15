@@ -81,6 +81,8 @@
     ]
   },
   "checkOnlySuccess": "Successfully validated the deployment. %s components deployed and %s tests run.\nUse the --verbose parameter to see detailed output.",
+  "checkOnlySuccessVerbose": "Successfully validated the deployment",
+  "deploySuccess": "Deploy Succeeded.",
   "deployCanceled": "The deployment has been canceled by %s.",
   "deployFailed": "Deploy failed.",
   "asyncDeployQueued": "Deploy has been queued.",
