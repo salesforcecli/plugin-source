@@ -91,7 +91,7 @@ export class Retrieve extends SourceCommand {
 
   protected async preChecks(): Promise<void> {
     // we need something to retrieve
-    const retrieveInputs = [this.flags.manifest, this.flags.metadata, this.flags.sourcepath, this.flags.packagename];
+    const retrieveInputs = [this.flags.manifest, this.flags.metadata, this.flags.sourcepath, this.flags.packagenames];
     if (!retrieveInputs.some((x) => x)) {
       throw new SfError(messages.getMessage('nothingToRetrieve'));
     }
