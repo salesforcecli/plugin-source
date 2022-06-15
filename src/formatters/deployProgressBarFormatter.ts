@@ -8,7 +8,7 @@ import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { once } from '@salesforce/kit';
-import cli from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { ProgressBar } from '../types';
 import { ProgressFormatter } from './progressFormatter';
 
@@ -66,10 +66,10 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
     });
   }
 
-  // used to initialise the progress bar
+  // used to initialize the progress bar
   protected initProgressBar(): void {
     this.logger.debug('initializing progress bar');
-    this.progressBar = cli.progress({
+    this.progressBar = CliUx.ux.progress({
       format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',

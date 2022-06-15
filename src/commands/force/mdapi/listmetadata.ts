@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Optional } from '@salesforce/ts-types';
-import { FileProperties, ListMetadataQuery } from 'jsforce';
+import { FileProperties, ListMetadataQuery } from 'jsforce/api/metadata';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);

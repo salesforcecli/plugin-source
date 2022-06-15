@@ -58,7 +58,7 @@ context('Retrieve manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
         args: '--manifest DOES_NOT_EXIST.xml',
         exitCode: 1,
       })) as JsonMap;
-      const expectedError = testkit.isLocalExecutable() ? 'Error' : 'InvalidManifestError';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'InvalidManifestError';
       testkit.expect.errorToHaveName(retrieve, expectedError);
     });
   });

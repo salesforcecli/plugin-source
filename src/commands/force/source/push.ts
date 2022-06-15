@@ -19,7 +19,7 @@ import { DeployProgressStatusFormatter } from '../../../formatters/deployProgres
 import { trackingSetup, updateTracking } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export default class Push extends DeployCommand {
   public static aliases = ['force:source:beta:push'];

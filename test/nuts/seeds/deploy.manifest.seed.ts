@@ -26,7 +26,9 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     });
     // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
-    await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    if (REPO.gitUrl.includes('dreamhouse')) {
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    }
   });
 
   after(async () => {
@@ -55,7 +57,7 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the package.xml is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'Error' : 'InvalidManifestError';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'InvalidManifestError';
       testkit.expect.errorToHaveName(deploy, expectedError);
     });
   });

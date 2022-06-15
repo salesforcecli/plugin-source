@@ -25,7 +25,10 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     });
     // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
-    await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    // permset is only present in dreamhouse, not mpd
+    if (REPO.gitUrl.includes('dreamhouse')) {
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+    }
   });
 
   after(async () => {
@@ -50,7 +53,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the metadata is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'SfdxError' : 'UnsupportedType';
+      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'UnsupportedType';
       testkit.expect.errorToHaveName(deploy, expectedError);
     });
 

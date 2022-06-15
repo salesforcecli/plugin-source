@@ -10,9 +10,9 @@ import { join, resolve } from 'path';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
-import { SfdxProject } from '@salesforce/core';
+import { SfProject } from '@salesforce/core';
 import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Convert } from '../../../src/commands/force/mdapi/convert';
 import { FsError } from '../../../src/types';
@@ -56,7 +56,7 @@ const commandName = 'mdapi:convert';
 describe(`force:${commandName}`, () => {
   const sandbox = sinon.createSandbox();
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   const defaultDir = join('my', 'default', 'package');
   let uxLogStub: sinon.SinonStub;
@@ -73,7 +73,7 @@ describe(`force:${commandName}`, () => {
       await this.init();
       return this.run();
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
@@ -81,12 +81,12 @@ describe(`force:${commandName}`, () => {
   const runConvertCmd = async (params: string[]) => {
     const cmd = new TestConvert(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ path: defaultDir }),
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg');
 

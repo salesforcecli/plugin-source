@@ -11,7 +11,7 @@ import { exec } from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { DescribeMetadataResult } from 'jsforce';
+import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
@@ -427,9 +427,12 @@ describe('mdapi NUTs', () => {
     describe('Test stash', () => {
       describe('Deploy zip and report using soap with non default username', () => {
         it('should deploy zip file', () => {
-          execCmd<MdDeployResult>('force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg', {
-            ensureExitCode: 0,
-          });
+          execCmd<MdDeployResult>(
+            'force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg --testlevel RunAllTestsInOrg',
+            {
+              ensureExitCode: 0,
+            }
+          );
         });
 
         it('async report from stash', () => {
@@ -463,7 +466,7 @@ describe('mdapi NUTs', () => {
           // has the basic table output
           expect(reportCommandResponse).to.include('Deployed Source');
           // check for coverage/junit output
-          const reportFiles = fs.readdirSync('resultsdir');
+          const reportFiles = fs.readdirSync(path.join(session.project.dir, 'resultsdir'));
           expect(reportFiles).to.include('coverage');
           expect(reportFiles).to.include('junit');
         });

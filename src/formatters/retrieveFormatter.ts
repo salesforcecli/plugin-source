@@ -6,7 +6,7 @@
  */
 
 import { yellow } from 'chalk';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { Logger, Messages, SfError } from '@salesforce/core';
 import { get } from '@salesforce/ts-types';
 import {
   MetadataApiRetrieveStatus,
@@ -40,11 +40,7 @@ export abstract class RetrieveFormatter extends ResultFormatter {
 
   protected displayWarnings(): void {
     this.ux.styledHeader(yellow(this.messages.getMessage('retrievedSourceWarningsHeader')));
-    const columns = [
-      { key: 'fileName', label: 'FILE NAME' },
-      { key: 'problem', label: 'PROBLEM' },
-    ];
-    this.ux.table(this.warnings, { columns });
+    this.ux.table(this.warnings, { fileName: { header: 'FILE NAME' }, problem: { header: 'PROBLEM' } });
     this.ux.log();
   }
 
@@ -52,7 +48,7 @@ export abstract class RetrieveFormatter extends ResultFormatter {
     // an invalid packagename retrieval will end up with a message in the `errorMessage` entry
     const errorMessage = get(this.result, 'errorMessage') as string;
     if (errorMessage) {
-      throw new SfdxError(errorMessage);
+      throw new SfError(errorMessage);
     }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];

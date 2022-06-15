@@ -19,6 +19,7 @@ import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+import { itemsInEBikesPush } from './consts';
 
 let session: TestSession;
 let conn: Connection;
@@ -47,13 +48,13 @@ describe('remote changes', () => {
 
   describe('remote changes: delete', () => {
     it('pushes to initiate the remote', () => {
-      const pushResult = execCmd<PushResponse>('force:source:push --json', {
-        ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
-      expect(pushResult, JSON.stringify(pushResult)).to.have.lengthOf(230);
+      const pushResult = execCmd<PushResponse>('force:source:push --json');
+      expect(pushResult.jsonOutput?.status, JSON.stringify(pushResult)).equals(0);
+      const pushedSource = pushResult.jsonOutput.result.pushedSource;
+      expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
       expect(
-        pushResult.every((r) => r.state !== ComponentStatus.Failed),
-        JSON.stringify(pushResult)
+        pushedSource.every((r) => r.state !== ComponentStatus.Failed),
+        JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))
       ).to.equal(true);
     });
 

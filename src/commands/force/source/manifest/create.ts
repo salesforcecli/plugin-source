@@ -104,7 +104,7 @@ export class create extends SourceCommand {
     }
 
     const componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag('apiversion'),
+      apiversion: this.getFlag('apiversion') ?? (await this.getSourceApiVersion()),
       sourcepath: this.getFlag<string[]>('sourcepath'),
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
@@ -120,13 +120,13 @@ export class create extends SourceCommand {
     this.manifestName = this.manifestName.endsWith('.xml') ? this.manifestName : this.manifestName + '.xml';
 
     if (this.outputDir) {
-      fs.mkdirSync(this.outputDir, { recursive: true });
+      await fs.promises.mkdir(this.outputDir, { recursive: true });
       this.outputPath = join(this.outputDir, this.manifestName);
     } else {
       this.outputPath = this.manifestName;
     }
 
-    return fs.writeFileSync(this.outputPath, componentSet.getPackageXml());
+    return fs.promises.writeFile(this.outputPath, await componentSet.getPackageXml());
   }
 
   // noop this method because any errors will be reported by the createManifest method

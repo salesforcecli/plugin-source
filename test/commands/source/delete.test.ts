@@ -15,9 +15,9 @@ import {
   ComponentSetOptions,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Org, SfdxProject } from '@salesforce/core';
+import { Lifecycle, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { Delete } from '../../../src/commands/force/source/delete';
 import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
@@ -30,7 +30,7 @@ describe('force:source:delete', () => {
   const defaultPackagePath = 'defaultPackagePath';
   let confirm = true;
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
@@ -51,23 +51,23 @@ describe('force:source:delete', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
 
   const runDeleteCmd = async (params: string[]) => {
     const cmd = new TestDelete(params, oclifConfigStub);
-    stubMethod(sandbox, SfdxProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
+    stubMethod(sandbox, SfProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
           getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

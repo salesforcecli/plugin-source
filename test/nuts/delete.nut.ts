@@ -7,7 +7,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
@@ -16,7 +15,6 @@ import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { isNameObsolete } from './shared/isNameObsolete';
 
 describe('source:delete NUTs', () => {
-  const executable = path.join(process.cwd(), 'bin', 'run');
   let testkit: SourceTestkit;
 
   const queryOrgAndFS = async (name: string, fsPath: string): Promise<void> => {
@@ -31,18 +29,18 @@ describe('source:delete NUTs', () => {
     const apexName = 'myApexClass';
     const output = path.join('force-app', 'main', 'default', 'classes');
     const pathToClass = path.join(testkit.projectDir, output, `${apexName}.cls`);
-    execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output}`);
-    execCmd(`force:source:deploy -m ApexClass:${apexName}`);
+    execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output}`, { ensureExitCode: 0 });
+    execCmd(`force:source:deploy -m ApexClass:${apexName}`, { ensureExitCode: 0 });
     return { apexName, output, pathToClass };
   };
 
   before(async () => {
     testkit = await SourceTestkit.create({
       nut: __filename,
-      executable: os.platform() === 'win32' ? executable.replace(/\\/g, '\\\\') : executable,
+      executable: path.join(process.cwd(), 'bin', 'dev'),
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
-    execCmd('force:source:deploy --sourcepath force-app');
+    execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0 });
   });
 
   after(async () => {

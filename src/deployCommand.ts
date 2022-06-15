@@ -15,7 +15,7 @@ import {
   RequestStatus,
   AsyncResult,
 } from '@salesforce/source-deploy-retrieve';
-import { ConfigAggregator, Messages, PollingClient, SfdxError, StatusResult } from '@salesforce/core';
+import { ConfigAggregator, PollingClient, SfError, StatusResult, Messages } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once } from '@salesforce/kit';
 import {
@@ -34,10 +34,13 @@ import { toArray } from './formatters/resultFormatter';
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
-export const reportsFormatters = Object.keys(DefaultReportOptions);
-
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
+const messages = Messages.load('@salesforce/plugin-source', 'deployCommand', [
+  'invalidDeployId',
+  'MissingDeployId',
+  'resultsDirMissing',
+]);
+export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {
   protected displayDeployId = once((id: string) => {
@@ -63,7 +66,7 @@ export abstract class DeployCommand extends SourceCommand {
     if (id.startsWith('0Af')) {
       return true;
     } else {
-      throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'invalidDeployId');
+      throw new SfError(messages.getMessage('invalidDeployId'), 'invalidDeployId');
     }
   };
   /**
@@ -118,7 +121,7 @@ export abstract class DeployCommand extends SourceCommand {
     } else {
       const stash = Stash.get<DeployData>(Stash.getKey(this.id));
       if (!stash) {
-        throw SfdxError.create('@salesforce/plugin-source', 'deploy', 'MissingDeployId');
+        throw new SfError(messages.getMessage('MissingDeployId'));
       }
       return stash.jobid;
     }
@@ -266,7 +269,7 @@ export abstract class DeployCommand extends SourceCommand {
         return deployId;
       }
       if (!noThrow) {
-        throw new SfdxError(messages.getMessage('resultsDirMissing'));
+        throw new SfError(messages.getMessage('resultsDirMissing'));
       }
     }
     return undefined;

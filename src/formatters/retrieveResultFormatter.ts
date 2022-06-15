@@ -99,11 +99,10 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
   private displaySuccesses(retrievedFiles: FileResponse[]): void {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
-    const columns = [
-      { key: 'fullName', label: 'FULL NAME' },
-      { key: 'type', label: 'TYPE' },
-      { key: 'filePath', label: 'PROJECT PATH' },
-    ];
-    this.ux.table(retrievedFiles, { columns });
+    this.ux.table(retrievedFiles, {
+      fullName: { header: 'FULL NAME' },
+      type: { header: 'TYPE' },
+      filePath: { header: 'PROJECT PATH' },
+    });
   }
 }

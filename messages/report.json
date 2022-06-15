@@ -5,7 +5,6 @@
     " $ sfdx force:source:deploy -d <directory>",
     "Now cancel this deployment and wait two minutes",
     " $ sfdx force:source:deploy:cancel -w 2",
-
     "If you have multiple deployments in progress and want to cancel a specific one, specify the job ID",
     " $ sfdx force:source:deploy:cancel -i <jobid>",
     "Check the status of the cancel job",

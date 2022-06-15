@@ -94,7 +94,7 @@ describe('DeployResultFormatter', () => {
       const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
-      expect(logStub.calledOnce).to.equal(true);
+      expect(logStub.callCount).to.equal(2);
       expect(tableStub.called).to.equal(true);
       expect(styledHeaderStub.firstCall.args[0]).to.contain('Deployed Source');
       const fileResponses = deployResultSuccess.getFileResponses();
@@ -106,7 +106,7 @@ describe('DeployResultFormatter', () => {
       const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultFailure);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
-      expect(logStub.calledTwice).to.equal(true);
+      expect(logStub.callCount).to.equal(3);
       expect(tableStub.called).to.equal(true);
       expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
       const fileResponses = deployResultFailure.getFileResponses();
@@ -118,7 +118,7 @@ describe('DeployResultFormatter', () => {
       const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestFailure);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
-      expect(logStub.callCount).to.equal(7);
+      expect(logStub.callCount).to.equal(8);
       expect(tableStub.calledThrice).to.equal(true);
       expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
       expect(styledHeaderStub.args[1][0]).to.include('Test Failures [1]');
@@ -129,7 +129,7 @@ describe('DeployResultFormatter', () => {
       const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestSuccess);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
-      expect(logStub.callCount).to.equal(7);
+      expect(logStub.callCount).to.equal(8);
       expect(tableStub.calledThrice).to.equal(true);
       expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
       expect(styledHeaderStub.args[1][0]).to.include('Test Success [1]');
@@ -145,7 +145,7 @@ describe('DeployResultFormatter', () => {
       );
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(4);
-      expect(logStub.callCount).to.equal(8);
+      expect(logStub.callCount).to.equal(9);
       expect(tableStub.callCount).to.equal(4);
       expect(styledHeaderStub.args[0][0]).to.include('Component Failures [1]');
       expect(styledHeaderStub.args[1][0]).to.include('Test Failures [2]');
@@ -157,7 +157,7 @@ describe('DeployResultFormatter', () => {
       const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultPartialSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
-      expect(logStub.callCount, 'logStub.callCount').to.equal(3);
+      expect(logStub.callCount, 'logStub.callCount').to.equal(4);
       expect(tableStub.callCount, 'tableStub.callCount').to.equal(2);
       expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
       expect(styledHeaderStub.args[1][0]).to.include('Component Failures');

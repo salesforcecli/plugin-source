@@ -7,7 +7,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
-import { confirm } from 'cli-ux/lib/prompt';
+import { CliUx } from '@oclif/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import {
@@ -154,6 +154,8 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
+    cs.apiVersion = this.getFlag<string>('apiversion') ?? (await this.org.retrieveMaxApiVersion());
+    cs.sourceApiVersion = this.getFlag<string>('apiversion') ?? (await this.getSourceApiVersion());
     this.components.map((component) => {
       if (component instanceof SourceComponent) {
         cs.add(component, DestructiveChangesType.POST);
@@ -380,8 +382,12 @@ export class Delete extends DeployCommand {
         message.push('\n', messages.getMessage('localPrompt', [[...new Set(local)].join('\n')]));
       }
 
-      message.push(messages.getMessage('areYouSure'));
-      return confirm(message.join(''));
+      message.push(
+        this.getFlag<boolean>('checkonly', false)
+          ? messages.getMessage('areYouSureCheckOnly')
+          : messages.getMessage('areYouSure')
+      );
+      return CliUx.ux.confirm(message.join(''));
     }
     return true;
   }

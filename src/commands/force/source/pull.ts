@@ -15,7 +15,12 @@ import { PullResponse, PullResultFormatter } from '../../../formatters/source/pu
 import { trackingSetup, updateTracking } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
+const messages = Messages.load('@salesforce/plugin-source', 'pull', [
+  'flags.forceoverwrite',
+  'description',
+  'help',
+  'flags.waitLong',
+]);
 
 export default class Pull extends SourceCommand {
   public static aliases = ['force:source:beta:pull'];
