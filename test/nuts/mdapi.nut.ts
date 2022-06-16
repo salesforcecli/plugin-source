@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'shelljs';
 import { expect } from 'chai';
-import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { execCmd, SfdxExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
@@ -189,18 +189,29 @@ describe('mdapi NUTs', () => {
   });
 
   describe('mdapi:deploy:cancel', () => {
+    const cancelAssertions = (deployId: string, result: SfdxExecCmdResult<DeployCancelCommandResult>): void => {
+      if (result.jsonOutput.status === 0) {
+        const json = result.jsonOutput.result;
+        expect(json).to.have.property('canceledBy');
+        expect(json).to.have.property('status');
+        expect(json.status).to.equal('Canceled');
+        expect(json.id).to.equal(deployId);
+      } else {
+        expect(result.jsonOutput.name).to.equal('CancelFailed');
+        expect(result.jsonOutput.message).to.equal(
+          'The cancel command failed due to: INVALID_ID_FIELD: Deployment already completed'
+        );
+      }
+    };
+
     it('will cancel an mdapi deploy via the stash.json', () => {
       const convertDir = 'mdConvert1';
       execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
-      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json', { ensureExitCode: 0 });
-      const json = result.jsonOutput.result;
-      expect(json).to.have.property('canceledBy');
-      expect(json).to.have.property('status');
-      expect(json.status).to.equal('Canceled');
-      expect(json.id).to.equal(deploy.result.id);
+      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
+      cancelAssertions(deploy.result.id, result);
     });
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
@@ -209,21 +220,12 @@ describe('mdapi NUTs', () => {
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
-      expect(deploy.result).to.have.property('id');
-
-      const result = execCmd<DeployCancelCommandResult>(
-        `force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`,
-        { ensureExitCode: 0 }
-      );
-      const json = result.jsonOutput.result;
-      expect(json).to.have.property('canceledBy');
-      expect(json).to.have.property('status');
-      expect(json.status).to.equal('Canceled');
-      expect(json.id).to.equal(deploy.result.id);
+      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
+      cancelAssertions(deploy.result.id, result);
     });
   });
 
-  describe('MDAPI Retrieve Tests', () => {
+  describe.only('MDAPI Retrieve Tests', () => {
     const manifestPath = 'dreamhouseContent.xml';
     const apexManifestPath = 'dreamhouseApex.xml';
     const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
