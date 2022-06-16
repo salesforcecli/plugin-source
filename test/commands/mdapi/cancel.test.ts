@@ -9,8 +9,8 @@ import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigFile, Org, SfdxProject } from '@salesforce/core';
-import { IConfig } from '@oclif/config';
+import { ConfigFile, Org, SfProject } from '@salesforce/core';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel';
@@ -32,7 +32,7 @@ describe('force:mdapi:deploy:cancel', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let checkDeployStatusStub: sinon.SinonStub;
   let cancelStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
@@ -47,7 +47,7 @@ describe('force:mdapi:deploy:cancel', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
 
@@ -60,12 +60,12 @@ describe('force:mdapi:deploy:cancel', () => {
   const runCancelCmd = async (params: string[]) => {
     const cmd = new TestCancel(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

@@ -6,7 +6,7 @@
  */
 
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { Logger, Messages, SfError } from '@salesforce/core';
 import { ResultFormatter } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -37,7 +37,7 @@ export class OpenResultFormatter extends ResultFormatter {
       const { orgId, username, url } = this.result;
       this.ux.log(messages.getMessage('SourceOpenCommandHumanSuccess', [orgId, username, url]));
     } else {
-      throw new SfdxError(messages.getMessage('SourceOpenCommandError'), 'OpenFailed');
+      throw new SfError(messages.getMessage('SourceOpenCommandError'), 'OpenFailed');
     }
   }
 }

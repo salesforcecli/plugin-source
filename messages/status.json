@@ -4,8 +4,8 @@
   "examples": [
     "$ sfdx force:source:status -l",
     "$ sfdx force:source:status -r",
-    "$ sfdx force:source:status -a",
-    "$ sfdx force:source:status -a -u me@example.com --json"
+    "$ sfdx force:source:status",
+    "$ sfdx force:source:status -u me@example.com --json"
   ],
   "flags": {
     "all": "list all the changes that have been made",

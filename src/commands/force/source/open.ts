@@ -11,13 +11,18 @@ import * as fs from 'fs';
 import * as open from 'open';
 import { getString } from '@salesforce/ts-types';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { AuthInfo, Messages, sfdc, SfdcUrl, SfdxError } from '@salesforce/core';
+import { AuthInfo, Messages, sfdc, SfdcUrl, SfError } from '@salesforce/core';
 import { MetadataResolver, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { OpenCommandResult, OpenResultFormatter } from '../../../formatters/source/openResultFormatter';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'open');
+const messages = Messages.load('@salesforce/plugin-source', 'open', [
+  'description',
+  'examples',
+  'SourceOpenFileDescription',
+  'SourceOpenPathDescription',
+]);
 
 export class Open extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -74,7 +79,7 @@ export class Open extends SourceCommand {
       const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
       return components[0].type.name;
     }
-    throw new SfdxError(`File not found: ${fsPath}`, 'FileNotFound');
+    throw new SfError(`File not found: ${fsPath}`, 'FileNotFound');
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
@@ -94,7 +99,7 @@ export class Open extends SourceCommand {
       try {
         await new SfdcUrl(url).checkLightningDomain();
       } catch (error) {
-        throw SfdxError.create('@salesforce/plugin-source', 'open', 'SourceOpenCommandTimeoutError');
+        throw new SfError('SourceOpenCommandTimeoutError', 'SourceOpenCommandTimeoutError');
       }
     }
 

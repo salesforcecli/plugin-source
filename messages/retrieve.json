@@ -50,6 +50,7 @@
   "columnNumberColumn": "COLUMN NUMBER",
   "lineNumberColumn": "LINE NUMBER",
   "errorColumn": "PROBLEM",
+  "nothingToRetrieve": "Specify a source path, manifest, metadata, or package names to retrieve.",
   "wantsToRetrieveCustomFields": "Because you're retrieving one or more CustomFields, we're also retrieving the CustomObject to which it's associated.",
   "retrieveWontDelete": "You currently have files deleted in your org.  The retrieve command will NOT delete them from your local project"
 }

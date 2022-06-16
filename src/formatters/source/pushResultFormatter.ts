@@ -7,7 +7,7 @@
 import { resolve as pathResolve } from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { Logger, Messages, SfError } from '@salesforce/core';
 import {
   ComponentStatus,
   DeployMessage,
@@ -48,7 +48,7 @@ export class PushResultFormatter extends ResultFormatter {
   public getJson(): PushResponse {
     // throws a particular json structure.  commandName property will be appended by sfdxCommand when this throws
     if (process.exitCode !== 0) {
-      const error = new SfdxError(messages.getMessage('sourcepushFailed'), 'DeployFailed', [], process.exitCode);
+      const error = new SfError(messages.getMessage('sourcepushFailed'), 'DeployFailed', [], process.exitCode);
       const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
       error.setData(errorData);
       error['result'] = errorData;
@@ -84,7 +84,7 @@ export class PushResultFormatter extends ResultFormatter {
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
-      throw new SfdxError(messages.getMessage('sourcepushFailed'), 'PushFailed');
+      throw new SfError(messages.getMessage('sourcepushFailed'), 'PushFailed');
     }
   }
 
@@ -147,12 +147,10 @@ export class PushResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Pushed Source'));
       this.ux.table(successes, {
-        columns: [
-          { key: 'state', label: 'STATE' },
-          { key: 'fullName', label: 'FULL NAME' },
-          { key: 'type', label: 'TYPE' },
-          { key: 'filePath', label: 'PROJECT PATH' },
-        ],
+        state: { header: 'STATE' },
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
       });
     }
   }
@@ -190,11 +188,9 @@ export class PushResultFormatter extends ResultFormatter {
     this.ux.log('');
     this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
     this.ux.table(failures, {
-      columns: [
-        { key: 'problemType', label: 'Type' },
-        { key: 'fullName', label: 'Name' },
-        { key: 'error', label: 'Problem' },
-      ],
+      problemType: { header: 'Type' },
+      fullName: { header: 'Name' },
+      error: { header: 'Problem' },
     });
     this.ux.log('');
   }

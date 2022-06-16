@@ -11,7 +11,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Org } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { Report } from '../../../src/commands/force/mdapi/retrieve/report';
@@ -22,7 +22,7 @@ describe('force:mdapi:retrieve:report', () => {
   const sandbox = sinon.createSandbox();
   const username = 'report-test@org.com';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   const retrieveResult = getRetrieveResult('success');
   const defaultZipFileName = 'unpackaged.zip';
   const defaultZipFilePath = path.join(retrievetargetdir, defaultZipFileName);

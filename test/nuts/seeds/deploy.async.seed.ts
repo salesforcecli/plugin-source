@@ -40,14 +40,14 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     }
   });
 
-  describe.skip('async deploy', () => {
+  describe('async deploy', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       // delete the lwc test stubs which will cause errors with the source tracking/globbing
       await testkit.deleteGlobs(['force-app/test/**/*']);
 
-      const deploy = (await testkit.deploy({
+      const deploy = await testkit.deploy({
         args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-      })) as Result<{ id: string; result: { id: string } }>;
+      });
       // test the stashed deploy id
       const report = (await testkit.deployReport({
         args: '--coverageformatters clover --junit',
@@ -75,9 +75,9 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
         await testkit.deleteGlobs(['force-app/test/**/*']);
 
-        const deploy = (await testkit.deploy({
+        const deploy = await testkit.deploy({
           args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-        })) as Result<{ id: string; result: { id: string } }>;
+        });
         testkit.expect.toHaveProperty(deploy.result, 'id');
 
         const cancel = execCmd<DeployCancelCommandResult>(

@@ -7,8 +7,10 @@
 
 import { MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { getString } from '@salesforce/ts-types';
-import { SfdxError } from '@salesforce/core';
+import { SfError, Messages } from '@salesforce/core';
 import { DeployResultFormatter } from './deployResultFormatter';
+
+Messages.importMessagesDirectory(__dirname);
 
 export type DeployReportCommandResult = MetadataApiDeployStatus;
 
@@ -45,7 +47,8 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
     }
 
     if (status === RequestStatus.Failed) {
-      throw SfdxError.create('@salesforce/plugin-source', 'report', 'mdapiDeployFailed');
+      const messages = Messages.load('@salesforce/plugin-source', 'report', ['mdapiDeployFailed']);
+      throw new SfError(messages.getMessage('mdapiDeployFailed'), 'mdapiDeployFailed');
     }
 
     return;

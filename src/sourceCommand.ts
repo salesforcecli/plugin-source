@@ -8,14 +8,19 @@
 import { dirname, resolve } from 'path';
 import * as fs from 'fs';
 import { SfdxCommand } from '@salesforce/command';
-import { Messages, Lifecycle, SfdxError } from '@salesforce/core';
+import { Messages, Lifecycle, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
-import cli from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
+const messages = Messages.load('@salesforce/plugin-source', 'flags.validation', [
+  'InvalidFlagPath',
+  'expectedDirectory',
+  'expectedFile',
+  'notFound',
+]);
 
 // TODO: use messages for tracking version compatibility errors
 // Messages.importMessagesDirectory(__dirname);
@@ -38,7 +43,7 @@ export abstract class SourceCommand extends SfdxCommand {
 
   protected initProgressBar(): void {
     this.logger.debug('initializing progress bar');
-    this.progressBar = cli.progress({
+    this.progressBar = CliUx.ux.progress({
       format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',
@@ -88,18 +93,10 @@ export abstract class SourceCommand extends SfdxCommand {
         const isDir = stats.isDirectory();
         if (type === 'dir' && !isDir) {
           const msg = messages.getMessage('expectedDirectory');
-          throw SfdxError.create('@salesforce/plugin-source', 'flags.validation', 'InvalidFlagPath', [
-            flagName,
-            path,
-            msg,
-          ]);
+          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, msg]), 'InvalidFlagPath');
         } else if (type === 'file' && isDir) {
           const msg = messages.getMessage('expectedFile');
-          throw SfdxError.create('@salesforce/plugin-source', 'flags.validation', 'InvalidFlagPath', [
-            flagName,
-            path,
-            msg,
-          ]);
+          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, msg]), 'InvalidFlagPath');
         }
       }
     } catch (error: unknown) {
@@ -109,11 +106,7 @@ export abstract class SourceCommand extends SfdxCommand {
       } else {
         if (throwOnENOENT) {
           const enoent = messages.getMessage('notFound');
-          throw SfdxError.create('@salesforce/plugin-source', 'flags.validation', 'InvalidFlagPath', [
-            flagName,
-            path,
-            enoent,
-          ]);
+          throw new SfError(messages.getMessage('InvalidFlagPath', [flagName, path, enoent]), 'InvalidFlagPath');
         }
         const dir = type === 'dir' ? resolvedPath : dirname(resolvedPath);
         fs.mkdirSync(dir, { recursive: true });
