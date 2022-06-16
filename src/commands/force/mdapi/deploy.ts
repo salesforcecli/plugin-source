@@ -153,7 +153,7 @@ export class Deploy extends DeployCommand {
         // if runTests is defaulted as 'NoTestRun' and deploying to prod, you'll get this error
         // https://github.com/forcedotcom/cli/issues/1542
         // add additional properties conditionally ()
-        ...(this.getFlag<string[]>('testlevel') ? { testLevel: this.getFlag<TestLevel>('testlevel') } : {}),
+        ...(this.getFlag<string>('testlevel') ? { testLevel: this.getFlag<TestLevel>('testlevel') } : {}),
         ...(this.getFlag<string[]>('runtests') ? { runTests: this.getFlag<string[]>('runtests') } : {}),
       },
     });
