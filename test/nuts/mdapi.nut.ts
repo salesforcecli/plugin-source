@@ -225,7 +225,7 @@ describe('mdapi NUTs', () => {
     });
   });
 
-  describe.only('MDAPI Retrieve Tests', () => {
+  describe('MDAPI Retrieve Tests', () => {
     const manifestPath = 'dreamhouseContent.xml';
     const apexManifestPath = 'dreamhouseApex.xml';
     const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
