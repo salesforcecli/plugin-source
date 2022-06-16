@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/salesforcecli/plugin-source/compare/v2.0.0...v2.0.1) (2022-06-16)
+
+### Bug Fixes
+
+- let server determine testlevel when deploying to a prod org by passing `undefined` ([#509](https://github.com/salesforcecli/plugin-source/issues/509)) ([6d5a995](https://github.com/salesforcecli/plugin-source/commit/6d5a99515939eb9a356bd039d872e4ffad8158b7))
+
 ## [2.0.0](https://github.com/salesforcecli/plugin-source/compare/v1.10.2...v2.0.0) (2022-06-15)
 
 ### [1.10.2](https://github.com/salesforcecli/plugin-source/compare/v1.10.1...v1.10.2) (2022-05-31)
