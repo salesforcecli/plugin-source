@@ -156,8 +156,6 @@ describe('force:source:deploy', () => {
         rollbackOnError: true,
         checkOnly: false,
         purgeOnDelete: false,
-        runTests: [],
-        testLevel: 'NoTestRun',
         rest: false,
         ...overrides?.apiOptions,
       },
@@ -289,8 +287,8 @@ describe('force:source:deploy', () => {
         purgeOnDelete: true,
         rest: false,
         rollbackOnError: false,
-        runTests: ['MyClassTest'],
-        testLevel: 'RunSpecifiedTests',
+        runTests,
+        testLevel,
       },
     });
     ensureCreateComponentSetArgs({
@@ -329,8 +327,8 @@ describe('force:source:deploy', () => {
         purgeOnDelete: false,
         rest: false,
         rollbackOnError: false,
-        runTests: ['MyClassTest'],
-        testLevel: 'RunSpecifiedTests',
+        runTests,
+        testLevel,
       },
     });
     ensureCreateComponentSetArgs({
