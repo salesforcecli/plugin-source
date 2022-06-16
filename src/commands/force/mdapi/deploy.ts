@@ -57,7 +57,6 @@ export class Deploy extends DeployCommand {
       char: 'r',
       description: messages.getMessage('flags.runTests'),
       longDescription: messages.getMessage('flagsLong.runTests'),
-      default: [],
     }),
     ignoreerrors: flags.boolean({
       char: 'o',
