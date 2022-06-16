@@ -197,8 +197,8 @@ describe('mdapi NUTs', () => {
         expect(json.status).to.equal('Canceled');
         expect(json.id).to.equal(deployId);
       } else {
-        expect(result.jsonOutput.name).to.equal('CancelFailed');
-        expect(result.jsonOutput.message).to.equal(
+        expect(result.jsonOutput.name, JSON.stringify(result)).to.equal('CancelFailed');
+        expect(result.jsonOutput.message, JSON.stringify(result)).to.equal(
           'The cancel command failed due to: INVALID_ID_FIELD: Deployment already completed'
         );
       }
