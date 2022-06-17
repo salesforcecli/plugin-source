@@ -32,6 +32,51 @@ const writeManifest = (manifestPath: string, contents?: string) => {
   fs.writeFileSync(manifestPath, contents);
 };
 
+describe('1k files in mdapi:deploy', () => {
+  const classCount = 1000;
+
+  before(async () => {
+    session = await TestSession.create({
+      project: {
+        name: 'large-repo',
+      },
+      setupCommands: ['sfdx force:org:create -d 1 -s -f config/project-scratch-def.json'],
+    });
+    // create some number of files
+    const classdir = path.join(session.project.dir, 'force-app', 'main', 'default', 'classes');
+
+    for (let c = 0; c < classCount; c++) {
+      const className = `xx${c}`;
+      await Promise.all([
+        fs.promises.writeFile(
+          path.join(classdir, `${className}.cls`),
+          `public with sharing class ${className} {public ${className}() {}}`
+        ),
+        fs.promises.writeFile(
+          path.join(classdir, `${className}.cls-meta.xml`),
+          '<?xml version="1.0" encoding="UTF-8"?><ApexClass xmlns="http://soap.sforce.com/2006/04/metadata"><apiVersion>54.0</apiVersion><status>Active</status></ApexClass>'
+        ),
+      ]);
+    }
+  });
+
+  after(async () => {
+    await session?.clean();
+  });
+
+  it('should be able to handle a mdapi:deploy of 1k', async () => {
+    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
+    const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
+      ensureExitCode: 0,
+    }).jsonOutput;
+    expect(res.status).to.equal(0);
+    // check that the deploy actually happened, not just based on the exit code, otherwise something like
+    // https://github.com/forcedotcom/cli/issues/1531 could happen
+    expect(res.result.checkOnly).to.be.false;
+    expect(res.result.done).to.be.true;
+  });
+});
+
 describe('mdapi NUTs', () => {
   before(async () => {
     session = await TestSession.create({

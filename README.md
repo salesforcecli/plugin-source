@@ -192,7 +192,7 @@ FLAGS
       whether a warning will allow a deployment to complete successfully
 
   -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)
-      [default: NoTestRun] deployment testing level
+      deployment testing level
 
   -o, --ignoreerrors
       ignore any errors and do not roll back deployment
@@ -201,7 +201,7 @@ FLAGS
       request ID of the validated deployment to run a Quick Deploy
 
   -r, --runtests=<value>
-      [default: ] tests to run if --testlevel RunSpecifiedTests
+      tests to run if --testlevel RunSpecifiedTests
 
   -s, --singlepackage
       Indicates that the zip file points to a directory structure for a single package
@@ -524,7 +524,7 @@ FLAGS
       whether a warning will allow a deployment to complete successfully
 
   -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)
-      [default: NoTestRun] deployment testing level
+      deployment testing level
 
   -o, --ignoreerrors
       ignore any errors and do not roll back deployment
@@ -533,7 +533,7 @@ FLAGS
       request ID of the validated deployment to run a Quick Deploy
 
   -r, --runtests=<value>
-      [default: ] tests to run if --testlevel RunSpecifiedTests
+      tests to run if --testlevel RunSpecifiedTests
 
   -s, --singlepackage
       Indicates that the zip file points to a directory structure for a single package
@@ -1141,7 +1141,7 @@ USAGE
 
 FLAGS
   -d, --outputdir=<value>                                                           [default:
-                                                                                    metadataPackage_1655327894168]
+                                                                                    metadataPackage_1655413740300]
                                                                                     output directory to store the
                                                                                     Metadata API–formatted files in
   -m, --metadata=<value>                                                            comma-separated list of metadata
@@ -1258,7 +1258,7 @@ FLAGS
       whether a warning will allow a deployment to complete successfully
 
   -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)
-      [default: NoTestRun] deployment testing level
+      deployment testing level
 
   -m, --metadata=<value>
       comma-separated list of metadata component names
@@ -1273,7 +1273,7 @@ FLAGS
       deploy request ID of the validated deployment to run a Quick Deploy
 
   -r, --runtests=<value>
-      [default: ] tests to run if --testlevel RunSpecifiedTests
+      tests to run if --testlevel RunSpecifiedTests
 
   -t, --tracksource
       if the deploy succeeds, update source tracking information; doesn't delete locally deleted files from org unless you
