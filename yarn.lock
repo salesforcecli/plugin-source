@@ -1169,10 +1169,10 @@
     semver "^7.3.5"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^3.11.0", "@salesforce/core@^3.18.2", "@salesforce/core@^3.19.2", "@salesforce/core@^3.20.1", "@salesforce/core@^3.21.1", "@salesforce/core@^3.21.2":
-  version "3.21.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.21.2.tgz#7c01d0307830d8af2ad63970c23264863f280142"
-  integrity sha512-B8Qe2qeS0RsPg8nzMNA7SB6grgJOEJTVET8gyOfhEsfdYpgKH0XVn8ox+gCAha4bdj2ebiDrba7IeMMx7nl7Mw==
+"@salesforce/core@^3.11.0", "@salesforce/core@^3.18.2", "@salesforce/core@^3.19.2", "@salesforce/core@^3.20.1", "@salesforce/core@^3.21.1", "@salesforce/core@^3.21.3":
+  version "3.21.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.21.3.tgz#c19adb691d14c4c2c1ddcd9b63b054a7f69e4f05"
+  integrity sha512-tpGLCkkjKCsuK7gACwHjb6C0D7i9KRXMr4Na7hahHB7GxNvTWi8ZpgXcKd1nMumHpUeMZ5vmEQPuCP9MSOmeRQ==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.5.41"
@@ -1189,7 +1189,7 @@
     form-data "^4.0.0"
     graceful-fs "^4.2.9"
     js2xmlparser "^4.0.1"
-    jsforce "2.0.0-beta.11"
+    jsforce "2.0.0-beta.12"
     jsonwebtoken "8.5.1"
     mkdirp "1.0.4"
     ts-retry-promise "^0.6.0"
@@ -1324,13 +1324,13 @@
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
-"@salesforce/source-testkit@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-1.2.3.tgz#c4a069cec513118b6c15f7ff0a67dea7d2e39eae"
-  integrity sha512-d3ONObEyTCVkFgqf8Z3ssm+iT570msQRf3lo9MBtAKhkZTTwTwIsjlmBKcQkXywM5Oiz77eIZ6mQIvmLv7DY5A==
+"@salesforce/source-testkit@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-1.2.5.tgz#0326373cae959062750d064532d33862718f98d2"
+  integrity sha512-FjIvQAy0WgSJjIxtuCCKg812lNGul85XyzHakQUt38E6wQkC+QxjaM9ydG9dT3BU7ipyHQeaKroukQZJOazviQ==
   dependencies:
     "@salesforce/cli-plugins-testkit" "^2.3.0"
-    "@salesforce/core" "^3.21.2"
+    "@salesforce/core" "^3.21.3"
     "@salesforce/kit" "^1.5.42"
     "@salesforce/source-deploy-retrieve" "^6.1.0"
     "@salesforce/ts-types" "^1.5.20"
@@ -1341,12 +1341,12 @@
     sinon "^10.0.0"
     strip-ansi "^7.0.1"
 
-"@salesforce/source-tracking@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.1.0.tgz#98a344119ebd67d0b1741a50e5693aba27737a53"
-  integrity sha512-HTIE09YhOxxYOUvwARdq0ocqtz9AFADByxgRU99H3vahUmnF/xtpOj3uJvebsDFrKLrIZ/1yPG1XpOM3JBL18w==
+"@salesforce/source-tracking@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.1.1.tgz#ffe0a53bd81859142f9059742cef351feaaa82ed"
+  integrity sha512-7lnWvMK3SjfJ7ffSQnC58MfKgoKa+Tmt22nzG0P972bB6r7iT1P84+gw8zTo5bE4XkyU9xQh5KgSKOgFqq2GtQ==
   dependencies:
-    "@salesforce/core" "^3.21.2"
+    "@salesforce/core" "^3.21.3"
     "@salesforce/kit" "^1.5.17"
     "@salesforce/source-deploy-retrieve" "^6.0.4"
     graceful-fs "^4.2.9"
@@ -5959,10 +5959,10 @@ jsesc@^2.5.1:
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jsforce@2.0.0-beta.11:
-  version "2.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/jsforce/-/jsforce-2.0.0-beta.11.tgz#3bce7a91aee425e72392057bb3fda53b6b2b829f"
-  integrity sha512-K/4F7mqMya2mnT16aFvd743MMQCA7MfXR85aKd1V87b2Ol/MDzfxTDwXWC8iXWDjTCT7KkZtcYMnY7ZxqbUOQA==
+jsforce@2.0.0-beta.12:
+  version "2.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/jsforce/-/jsforce-2.0.0-beta.12.tgz#55e1d5d49ebde380fb3582f5964a74da51dc271e"
+  integrity sha512-HGGxDm0t5KUS7We2XMWTQQLmiwHLbZRdyEV9A/2rugorLwIPFJb3bnqKIyeO83cjETiVWYXFuEZwZR8XadWmEg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@babel/runtime-corejs3" "^7.12.5"
