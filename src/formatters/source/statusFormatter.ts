@@ -47,7 +47,7 @@ export class StatusFormatter extends ResultFormatter {
 
   public display(): void {
     if (this.options.concise) {
-      this.statusRows = this.statusRows.filter((row) => !row.ignored);
+      this.statusRows = this.statusRows.filter((row) => row.ignored === false);
     }
     if (this.statusRows.length === 0) {
       this.ux.log(messages.getMessage('noResults'));
