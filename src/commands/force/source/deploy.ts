@@ -55,13 +55,11 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.testLevel'),
       longDescription: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
-      default: 'NoTestRun',
     }),
     runtests: flags.array({
       char: 'r',
       description: messages.getMessage('flags.runTests'),
       longDescription: messages.getMessage('flagsLong.runTests'),
-      default: [],
     }),
     ignoreerrors: flags.boolean({
       char: 'o',
@@ -210,13 +208,18 @@ export class Deploy extends DeployCommand {
       const deploy = await this.componentSet.deploy({
         usernameOrConnection: this.org.getUsername(),
         apiOptions: {
-          purgeOnDelete: this.getFlag<boolean>('purgeondelete', false),
-          ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
-          rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
-          checkOnly: this.getFlag<boolean>('checkonly', false),
-          runTests: this.getFlag<string[]>('runtests'),
-          testLevel: this.getFlag<TestLevel>('testlevel'),
-          rest: this.isRest,
+          ...{
+            purgeOnDelete: this.getFlag<boolean>('purgeondelete', false),
+            ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+            rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
+            checkOnly: this.getFlag<boolean>('checkonly', false),
+            rest: this.isRest,
+          },
+          // if runTests is defaulted as 'NoTestRun' and deploying to prod, you'll get this error
+          // https://github.com/forcedotcom/cli/issues/1542
+          // add additional properties conditionally ()
+          ...(this.getFlag<string>('testlevel') ? { testLevel: this.getFlag<TestLevel>('testlevel') } : {}),
+          ...(this.getFlag<string[]>('runtests') ? { runTests: this.getFlag<string[]>('runtests') } : {}),
         },
       });
       this.asyncDeployResult = { id: deploy.id };
@@ -242,9 +245,9 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.resultsdir,
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('resultsdir'),
       this.deployResult?.response?.id,
       false
     );

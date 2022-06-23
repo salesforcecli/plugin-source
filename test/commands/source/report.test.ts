@@ -10,8 +10,8 @@ import * as fs from 'fs';
 import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigFile, Org, SfdxProject } from '@salesforce/core';
-import { IConfig } from '@oclif/config';
+import { ConfigFile, Org, SfProject } from '@salesforce/core';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Report } from '../../../src/commands/force/source/deploy/report';
@@ -35,7 +35,7 @@ describe('force:source:report', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let checkDeployStatusStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let pollStatusStub: sinon.SinonStub;
@@ -51,7 +51,7 @@ describe('force:source:report', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
 
@@ -64,12 +64,12 @@ describe('force:source:report', () => {
   const runReportCmd = async (params: string[]) => {
     const cmd = new TestReport(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

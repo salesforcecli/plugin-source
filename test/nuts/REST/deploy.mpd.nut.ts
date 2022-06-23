@@ -11,8 +11,9 @@ import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
 import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
+import { DeployReportCommandResult } from '../../../lib/formatters/deployReportResultFormatter';
 
-const EXECUTABLE = path.join(process.cwd(), 'bin', 'run');
+const EXECUTABLE = path.join(process.cwd(), 'bin', 'dev');
 
 const repo = {
   name: 'sample-project-multiple-packages',
@@ -157,22 +158,26 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () =
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       // deploy all metadata to the org so that we can run tests
       await testkit.deploy({ args: '--sourcepath force-app' });
-      // running tests requires a special permission in the 'dreamhouse' permission set
-      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
 
       const classes = path.join('foo-bar', 'app', 'classes');
 
       const checkOnly = (await testkit.deploy({
-        args: `--sourcepath ${classes} --testlevel RunLocalTests --checkonly --ignoreerrors`,
-      })) as { id: string; result: DeployCommandResult };
+        args: `--sourcepath ${classes} --testlevel RunAllTestsInOrg --checkonly --ignoreerrors --wait 0`,
+      })) as { result: DeployCommandResult };
+
+      // quick deploy won't work unless the checkonly has finished successfully
+      const waitResult = (await testkit.deployReport({
+        args: `--wait 60 --jobid ${checkOnly.result.id}`,
+      })) as unknown as { status: number; result: DeployReportCommandResult };
+
+      expect(waitResult.status, JSON.stringify(waitResult)).to.equal(0);
 
       const quickDeploy = (await testkit.deploy({
         args: `--validateddeployrequestid ${checkOnly.result.id}`,
-      })) as { id: string; result: DeployCommandResult };
-      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+      })) as { result: DeployCommandResult };
 
       expect(quickDeploy.result.status).to.equal('Succeeded');
-      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
+      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], quickDeploy.result.deployedSource);
     });
   });
 });

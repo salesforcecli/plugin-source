@@ -16,9 +16,9 @@ import {
   MetadataType,
   RetrieveOptions,
 } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
+import { Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
@@ -34,7 +34,7 @@ describe('force:source:retrieve', () => {
   const packageXml = 'package.xml';
   const defaultPackagePath = 'defaultPackagePath';
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   const retrieveResult = getRetrieveResult('success');
   const expectedResults: RetrieveCommandResult = {
@@ -60,23 +60,23 @@ describe('force:source:retrieve', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
 
   const runRetrieveCmd = async (params: string[]) => {
     const cmd = new TestRetrieve(params, oclifConfigStub);
-    stubMethod(sandbox, SfdxProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
+    stubMethod(sandbox, SfProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
           getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(

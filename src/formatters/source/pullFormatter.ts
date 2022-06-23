@@ -7,7 +7,7 @@
 
 import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { Logger, Messages, SfError } from '@salesforce/core';
 import { get, getNumber, getString } from '@salesforce/ts-types';
 import {
   ComponentStatus,
@@ -19,7 +19,12 @@ import {
 import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
+const messages = Messages.load('@salesforce/plugin-source', 'pull', [
+  'retrievedSourceWarningsHeader',
+  'retrievedSourceHeader',
+  'retrieveTimeout',
+  'NoResultsFound',
+]);
 
 export type PullResponse = { pulledSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
 
@@ -55,7 +60,7 @@ export class PullResultFormatter extends ResultFormatter {
    */
   public getJson(): PullResponse {
     if (!this.isSuccess()) {
-      const error = new SfdxError('Pull failed.', 'PullFailed', [], process.exitCode);
+      const error = new SfError('Pull failed.', 'PullFailed', [], process.exitCode);
       error.setData(
         this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
       );
@@ -107,11 +112,7 @@ export class PullResultFormatter extends ResultFormatter {
 
   private displayWarnings(): void {
     this.ux.styledHeader(yellow(messages.getMessage('retrievedSourceWarningsHeader')));
-    const columns = [
-      { key: 'fileName', label: 'FILE NAME' },
-      { key: 'problem', label: 'PROBLEM' },
-    ];
-    this.ux.table(this.warnings, { columns });
+    this.ux.table(this.warnings, { fileName: { header: 'FILE NAME' }, problem: { header: 'PROBLEM' } });
     this.ux.log();
   }
 
@@ -119,12 +120,10 @@ export class PullResultFormatter extends ResultFormatter {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
     this.ux.table(retrievedFiles, {
-      columns: [
-        { label: 'STATE', key: 'state' },
-        { label: 'FULL NAME', key: 'fullName' },
-        { label: 'TYPE', key: 'type' },
-        { label: 'PROJECT PATH', key: 'filePath' },
-      ],
+      state: { header: 'STATE' },
+      fullName: { header: 'FULL NAME' },
+      type: { header: 'TYPE' },
+      filePath: { header: 'PROJECT PATH' },
     });
   }
 
@@ -135,7 +134,7 @@ export class PullResultFormatter extends ResultFormatter {
     }
     const errorMessage = getString(this.result.response, 'errorMessage');
     if (errorMessage) {
-      throw new SfdxError(errorMessage);
+      throw new SfError(errorMessage);
     }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];

@@ -8,7 +8,7 @@
 import * as os from 'os';
 import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
+import { Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
   ComponentSetBuilder,
@@ -123,16 +123,14 @@ export class Retrieve extends SourceCommand {
     this.isAsync = this.wait.quantity === 0;
 
     if (singlePackage && packagenames?.length > 1) {
-      throw SfdxError.create('@salesforce/plugin-source', 'md.retrieve', 'InvalidPackageNames', [
-        packagenames.toString(),
-      ]);
+      throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]), 'InvalidPackageNames');
     }
 
     this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
     this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.componentSetBuild'));
 
     this.componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag<string>('apiversion'),
+      apiversion: this.getFlag<string>('apiversion') ?? (await this.org.retrieveMaxApiVersion()),
       packagenames,
       sourcepath: this.sourceDir ? [this.sourceDir] : undefined,
       manifest: manifest && {
@@ -234,7 +232,7 @@ export class Retrieve extends SourceCommand {
 
   private resolveProjectPath(): string {
     try {
-      return SfdxProject.getInstance().getDefaultPackage().fullPath;
+      return SfProject.getInstance().getDefaultPackage().fullPath;
     } catch (error) {
       this.logger.debug('No SFDX project found for default package directory');
     }

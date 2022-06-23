@@ -13,7 +13,7 @@ import {
   SourceTrackingOptions,
   throwIfInvalid,
 } from '@salesforce/source-tracking';
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import {
   ComponentSet,
   ComponentStatus,
@@ -87,7 +87,7 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
   } else {
     // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
     if (getTrackingFileVersion(org, projectPath) === 'toolbelt') {
-      throw new SfdxError(
+      throw new SfError(
         'You cannot use the "tracksource" flag with the old version of the tracking files',
         'sourceTrackingFileVersionMismatch',
         [
@@ -148,12 +148,10 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
 
 const writeConflictTable = (conflicts: ConflictResponse[], ux: UX): void => {
   ux.table(conflicts, {
-    columns: [
-      { label: 'STATE', key: 'state' },
-      { label: 'FULL NAME', key: 'fullName' },
-      { label: 'TYPE', key: 'type' },
-      { label: 'PROJECT PATH', key: 'filePath' },
-    ],
+    state: { header: 'STATE' },
+    fullName: { header: 'FULL NAME' },
+    type: { header: 'TYPE' },
+    filePath: { header: 'FILE PATH' },
   });
 };
 
@@ -182,7 +180,7 @@ const processConflicts = (conflicts: ChangeResult[], ux: UX, message: string): v
   });
   const reformattedConflicts = Array.from(conflictMap.values());
   writeConflictTable(reformattedConflicts, ux);
-  const err = new SfdxError(message, 'sourceConflictDetected');
+  const err = new SfError(message, 'sourceConflictDetected');
   err.setData(reformattedConflicts);
   throw err;
 };

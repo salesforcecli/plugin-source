@@ -65,6 +65,7 @@ workflows:
           size: large
           requires:
             - release-management/test-package
+          no_output_timeout: 30m
           matrix:
             parameters:
               os:

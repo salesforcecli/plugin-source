@@ -37,9 +37,8 @@ describe('lwc', () => {
   });
 
   it('pushes the repo to get source tracking started', () => {
-    execCmd<PushResponse>('force:source:push --json', {
-      ensureExitCode: 0,
-    });
+    const resp = execCmd<PushResponse>('force:source:push --json');
+    expect(resp.jsonOutput?.status, JSON.stringify(resp)).equals(0);
   });
 
   it('sees lwc css changes in local status', async () => {

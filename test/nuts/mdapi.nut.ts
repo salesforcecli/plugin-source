@@ -9,9 +9,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'shelljs';
 import { expect } from 'chai';
-import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { ComponentSet, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { DescribeMetadataResult } from 'jsforce';
+import { execCmd, SfdxExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
+import { ComponentSet, SourceComponent, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
@@ -31,6 +31,51 @@ const writeManifest = (manifestPath: string, contents?: string) => {
 </Package>`;
   fs.writeFileSync(manifestPath, contents);
 };
+
+describe('1k files in mdapi:deploy', () => {
+  const classCount = 1000;
+
+  before(async () => {
+    session = await TestSession.create({
+      project: {
+        name: 'large-repo',
+      },
+      setupCommands: ['sfdx force:org:create -d 1 -s -f config/project-scratch-def.json'],
+    });
+    // create some number of files
+    const classdir = path.join(session.project.dir, 'force-app', 'main', 'default', 'classes');
+
+    for (let c = 0; c < classCount; c++) {
+      const className = `xx${c}`;
+      await Promise.all([
+        fs.promises.writeFile(
+          path.join(classdir, `${className}.cls`),
+          `public with sharing class ${className} {public ${className}() {}}`
+        ),
+        fs.promises.writeFile(
+          path.join(classdir, `${className}.cls-meta.xml`),
+          '<?xml version="1.0" encoding="UTF-8"?><ApexClass xmlns="http://soap.sforce.com/2006/04/metadata"><apiVersion>54.0</apiVersion><status>Active</status></ApexClass>'
+        ),
+      ]);
+    }
+  });
+
+  after(async () => {
+    await session?.clean();
+  });
+
+  it('should be able to handle a mdapi:deploy of 1k', async () => {
+    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
+    const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
+      ensureExitCode: 0,
+    }).jsonOutput;
+    expect(res.status).to.equal(0);
+    // check that the deploy actually happened, not just based on the exit code, otherwise something like
+    // https://github.com/forcedotcom/cli/issues/1531 could happen
+    expect(res.result.checkOnly).to.be.false;
+    expect(res.result.done).to.be.true;
+  });
+});
 
 describe('mdapi NUTs', () => {
   before(async () => {
@@ -189,18 +234,35 @@ describe('mdapi NUTs', () => {
   });
 
   describe('mdapi:deploy:cancel', () => {
+    const cancelAssertions = (deployId: string, result: SfdxExecCmdResult<DeployCancelCommandResult>): void => {
+      if (result.jsonOutput.status === 0) {
+        // a successful cancel
+        const json = result.jsonOutput.result;
+        expect(json).to.have.property('canceledBy');
+        expect(json).to.have.property('status');
+        expect(json.status).to.equal(RequestStatus.Canceled);
+        expect(json.id).to.equal(deployId);
+      } else if (result.jsonOutput.status === 1 && result.jsonOutput.result) {
+        // status = 1 because the deploy is in Succeeded status
+        const json = result.jsonOutput.result;
+        expect(json.status).to.equal(RequestStatus.Succeeded);
+      } else {
+        // the other allowable error is that the server is telling us the deploy succeeded
+        expect(result.jsonOutput.name, JSON.stringify(result)).to.equal('CancelFailed');
+        expect(result.jsonOutput.message, JSON.stringify(result)).to.equal(
+          'The cancel command failed due to: INVALID_ID_FIELD: Deployment already completed'
+        );
+      }
+    };
+
     it('will cancel an mdapi deploy via the stash.json', () => {
       const convertDir = 'mdConvert1';
       execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
-      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json', { ensureExitCode: 0 });
-      const json = result.jsonOutput.result;
-      expect(json).to.have.property('canceledBy');
-      expect(json).to.have.property('status');
-      expect(json.status).to.equal('Canceled');
-      expect(json.id).to.equal(deploy.result.id);
+      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
+      cancelAssertions(deploy.result.id, result);
     });
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
@@ -209,17 +271,8 @@ describe('mdapi NUTs', () => {
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
-      expect(deploy.result).to.have.property('id');
-
-      const result = execCmd<DeployCancelCommandResult>(
-        `force:mdapi:deploy:cancel --json --jobid ${deploy.result.id}`,
-        { ensureExitCode: 0 }
-      );
-      const json = result.jsonOutput.result;
-      expect(json).to.have.property('canceledBy');
-      expect(json).to.have.property('status');
-      expect(json.status).to.equal('Canceled');
-      expect(json.id).to.equal(deploy.result.id);
+      const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
+      cancelAssertions(deploy.result.id, result);
     });
   });
 
@@ -252,7 +305,7 @@ describe('mdapi NUTs', () => {
         const retrievedZip = fs.existsSync(retrieveTargetDirPath);
         expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
         const result = rv.jsonOutput.result;
-        expect(result.status).to.equal('Succeeded');
+        expect(result.status).to.equal(RequestStatus.Succeeded);
         expect(result.success).to.be.true;
         expect(result.fileProperties).to.be.an('array').with.length.greaterThan(50);
         const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
@@ -269,7 +322,7 @@ describe('mdapi NUTs', () => {
         const retrievedZip = fs.existsSync(retrieveTargetDirPath);
         expect(retrievedZip, 'retrieved zip was not in expected path').to.be.true;
         const result = rv.jsonOutput.result;
-        expect(result.status).to.equal('Succeeded');
+        expect(result.status).to.equal(RequestStatus.Succeeded);
         expect(result.success).to.be.true;
         expect(result.fileProperties).to.be.an('array').with.length.greaterThan(5);
         const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
@@ -293,7 +346,7 @@ describe('mdapi NUTs', () => {
         expect(fs.readdirSync(extractPath)).to.deep.equal(['unpackaged']);
         expect(rv.jsonOutput, JSON.stringify(rv)).to.exist;
         const result = rv.jsonOutput.result;
-        expect(result.status).to.equal('Succeeded');
+        expect(result.status).to.equal(RequestStatus.Succeeded);
         expect(result.success).to.be.true;
         expect(result.fileProperties).to.be.an('array').with.length.greaterThan(5);
         const zipFileLocation = path.join(retrieveTargetDirPath, zipName);
@@ -340,7 +393,7 @@ describe('mdapi NUTs', () => {
           const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
           syncResult = rv3.jsonOutput.result;
         }
-        expect(syncResult.status).to.equal('Succeeded');
+        expect(syncResult.status).to.equal(RequestStatus.Succeeded);
         expect(syncResult.success).to.be.true;
         expect(syncResult.fileProperties).to.be.an('array').with.length.greaterThan(50);
         const zipFileLocation = path.join(retrieveTargetDirPath, 'unpackaged.zip');
@@ -365,7 +418,7 @@ describe('mdapi NUTs', () => {
         expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
 
         const result2 = rv2.jsonOutput.result;
-        expect(result2.status).to.equal('Succeeded');
+        expect(result2.status).to.equal(RequestStatus.Succeeded);
         expect(result2.success).to.be.true;
         expect(result2.id).to.equal(result1.id);
         expect(result2.fileProperties).to.be.an('array').with.length.greaterThan(5);
@@ -395,7 +448,7 @@ describe('mdapi NUTs', () => {
         expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
 
         const result2 = rv2.jsonOutput.result;
-        expect(result2.status).to.equal('Succeeded');
+        expect(result2.status).to.equal(RequestStatus.Succeeded);
         expect(result2.success).to.be.true;
         expect(result2.id).to.equal(result1.id);
         expect(result2.fileProperties).to.be.an('array').with.length.greaterThan(5);
@@ -427,20 +480,27 @@ describe('mdapi NUTs', () => {
     describe('Test stash', () => {
       describe('Deploy zip and report using soap with non default username', () => {
         it('should deploy zip file', () => {
-          execCmd<MdDeployResult>('force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg', {
-            ensureExitCode: 0,
-          });
+          execCmd<MdDeployResult>(
+            'force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg --testlevel RunAllTestsInOrg',
+            {
+              ensureExitCode: 0,
+            }
+          );
         });
 
         it('async report from stash', () => {
           // we can't know the exit code so don't use ensureExitCode
           const reportCommandResponse = execCmd<MdDeployResult>(
             'force:mdapi:deploy:report --wait 0 -u nonDefaultOrg --json'
-          ).jsonOutput.result;
+          ).jsonOutput;
 
           // this output is a change from mdapi:deploy:report which returned NOTHING after the progress bar
-          expect(reportCommandResponse).to.have.property('status');
-          expect(['Pending', 'Succeeded', 'Failed', 'InProgress'].includes(reportCommandResponse.status));
+          expect(reportCommandResponse.result, JSON.stringify(reportCommandResponse)).to.have.property('status');
+          expect(
+            [RequestStatus.Pending, RequestStatus.Succeeded, RequestStatus.Failed, RequestStatus.InProgress].includes(
+              reportCommandResponse.result.status
+            )
+          );
         });
 
         it('request non-verbose deploy report without a deployId', () => {
@@ -463,7 +523,7 @@ describe('mdapi NUTs', () => {
           // has the basic table output
           expect(reportCommandResponse).to.include('Deployed Source');
           // check for coverage/junit output
-          const reportFiles = fs.readdirSync('resultsdir');
+          const reportFiles = fs.readdirSync(path.join(session.project.dir, 'resultsdir'));
           expect(reportFiles).to.include('coverage');
           expect(reportFiles).to.include('junit');
         });

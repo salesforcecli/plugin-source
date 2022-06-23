@@ -71,11 +71,9 @@ export class DeleteResultFormatter extends DeployResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deleted Source'));
       this.ux.table(successes, {
-        columns: [
-          { key: 'fullName', label: 'FULL NAME' },
-          { key: 'type', label: 'TYPE' },
-          { key: 'filePath', label: 'PROJECT PATH' },
-        ],
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
       });
     }
   }

@@ -11,7 +11,7 @@ import * as chalk from 'chalk';
 import { SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
 export type SourceTrackingClearResult = {
   clearedFiles: string[];
@@ -43,7 +43,6 @@ export class Clear extends SfdxCommand {
       const sourceTracking = await SourceTracking.create({
         project: this.project,
         org: this.org,
-        apiVersion: this.flags.apiversion as string,
       });
       clearedFiles = await Promise.all([sourceTracking.clearLocalTracking(), sourceTracking.clearRemoteTracking()]);
       this.ux.log('Cleared local tracking files.');

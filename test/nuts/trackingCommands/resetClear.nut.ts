@@ -46,7 +46,7 @@ describe('reset and clear', () => {
       setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
     });
     orgId = (session.setup[0] as { result: { orgId: string } }).result?.orgId;
-    trackingFileFolder = path.join(session?.project.dir, '.sfdx', 'orgs', orgId);
+    trackingFileFolder = path.join(session?.project.dir, '.sf', 'orgs', orgId);
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
         username: (session.setup[0] as { result: { username: string } }).result?.username,

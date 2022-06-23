@@ -9,10 +9,10 @@ import * as fs from 'fs';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Org } from '@salesforce/core';
-import { DescribeMetadataResult } from 'jsforce';
+import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { cloneJson } from '@salesforce/kit';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
 import { RegistryAccess } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadata } from '../../../src/commands/force/mdapi/describemetadata';
@@ -29,6 +29,7 @@ describe('force:mdapi:describemetadata', () => {
         metaFile: false,
         suffix: 'mlPrediction',
         xmlName: 'MLPredictionDefinition',
+        childXmlNames: [],
       },
       {
         directoryName: 'fieldRestrictionRules',
@@ -36,6 +37,7 @@ describe('force:mdapi:describemetadata', () => {
         metaFile: false,
         suffix: 'rule',
         xmlName: 'FieldRestrictionRule',
+        childXmlNames: [],
       },
     ],
     organizationNamespace: '',
@@ -43,7 +45,7 @@ describe('force:mdapi:describemetadata', () => {
     testRequired: false,
   };
 
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   let describeMetadataStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxStyledJsonStub: sinon.SinonStub;

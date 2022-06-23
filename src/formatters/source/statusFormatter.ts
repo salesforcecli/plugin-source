@@ -9,7 +9,7 @@ import { Logger, Messages } from '@salesforce/core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
+const messages = Messages.load('@salesforce/plugin-source', 'status', ['humanSuccess', 'noResults']);
 
 type StatusActualState = 'Deleted' | 'Add' | 'Changed' | 'Unchanged';
 type StatusOrigin = 'Local' | 'Remote';
@@ -54,16 +54,12 @@ export class StatusFormatter extends ResultFormatter {
       return;
     }
     this.ux.log(messages.getMessage('humanSuccess'));
-    const baseColumns = [
-      { label: 'STATE', key: 'state' },
-      { label: 'FULL NAME', key: 'fullName' },
-      { label: 'TYPE', key: 'type' },
-      { label: 'PROJECT PATH', key: 'filePath' },
-    ];
     this.ux.table(this.statusRows.sort(rowSortFunction), {
-      columns: this.statusRows.some((row) => row.ignored)
-        ? [{ label: 'IGNORED', key: 'ignored' }, ...baseColumns]
-        : baseColumns,
+      ...(this.statusRows.some((row) => row.ignored) ? { ignored: { header: 'IGNORED' } } : {}),
+      state: { header: 'STATE' },
+      fullName: { header: 'FULL NAME' },
+      type: { header: 'TYPE' },
+      filePath: { header: 'PROJECT PATH' },
     });
   }
 }

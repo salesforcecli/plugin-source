@@ -9,7 +9,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, reportsFormatters, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { DeployCommand, getVersionMessage, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
@@ -52,13 +52,11 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.testLevel'),
       longDescription: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
-      default: 'NoTestRun',
     }),
     runtests: flags.array({
       char: 'r',
       description: messages.getMessage('flags.runTests'),
       longDescription: messages.getMessage('flagsLong.runTests'),
-      default: [],
     }),
     ignoreerrors: flags.boolean({
       char: 'o',
@@ -142,14 +140,20 @@ export class Deploy extends DeployCommand {
       usernameOrConnection: this.org.getUsername(),
       ...deploymentOptions,
       apiOptions: {
-        purgeOnDelete: this.getFlag('purgeondelete', false),
-        ignoreWarnings: this.getFlag('ignorewarnings', false),
-        rollbackOnError: !this.getFlag('ignoreerrors', false),
-        checkOnly: this.getFlag('checkonly', false),
-        runTests: this.getFlag<string[]>('runtests'),
-        testLevel: this.getFlag<TestLevel>('testlevel'),
-        singlePackage: this.getFlag('singlepackage', false),
-        rest: this.isRest,
+        // properties that will always have values
+        ...{
+          purgeOnDelete: this.getFlag('purgeondelete', false),
+          ignoreWarnings: this.getFlag('ignorewarnings', false),
+          rollbackOnError: !this.getFlag('ignoreerrors', false),
+          checkOnly: this.getFlag('checkonly', false),
+          singlePackage: this.getFlag('singlepackage', false),
+          rest: this.isRest,
+        },
+        // if runTests is defaulted as 'NoTestRun' and deploying to prod, you'll get this error
+        // https://github.com/forcedotcom/cli/issues/1542
+        // add additional properties conditionally ()
+        ...(this.getFlag<string>('testlevel') ? { testLevel: this.getFlag<TestLevel>('testlevel') } : {}),
+        ...(this.getFlag<string[]>('runtests') ? { runTests: this.getFlag<string[]>('runtests') } : {}),
       },
     });
     await deploy.start();
@@ -173,10 +177,10 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.resultsdir,
-      this.deployResult?.response.id,
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('resultsdir'),
+      this.deployResult?.response?.id,
       true
     );
 

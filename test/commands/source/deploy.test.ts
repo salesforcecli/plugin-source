@@ -10,9 +10,9 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Messages, Org, SfdxProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { UX } from '@salesforce/command';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
 import {
@@ -31,7 +31,7 @@ describe('force:source:deploy', () => {
   const username = 'deploy-test@org.com';
   const packageXml = 'package.xml';
   const defaultDir = join('my', 'default', 'package');
-  const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 
   const deployResult = getDeployResult('successSync');
   const expectedResults = deployResult.response as DeployCommandResult;
@@ -78,7 +78,7 @@ describe('force:source:deploy', () => {
     public setOrg(org: Org) {
       this.org = org;
     }
-    public setProject(project: SfdxProject) {
+    public setProject(project: SfProject) {
       this.project = project;
     }
   }
@@ -86,13 +86,13 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[]) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const sfdxProjectStub = fromStub(
-        stubInterface<SfdxProject>(sandbox, {
+      const SfProjectStub = fromStub(
+        stubInterface<SfProject>(sandbox, {
           getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
-      cmd.setProject(sfdxProjectStub);
+      cmd.setProject(SfProjectStub);
     });
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(
@@ -156,8 +156,6 @@ describe('force:source:deploy', () => {
         rollbackOnError: true,
         checkOnly: false,
         purgeOnDelete: false,
-        runTests: [],
-        testLevel: 'NoTestRun',
         rest: false,
         ...overrides?.apiOptions,
       },
@@ -289,8 +287,8 @@ describe('force:source:deploy', () => {
         purgeOnDelete: true,
         rest: false,
         rollbackOnError: false,
-        runTests: ['MyClassTest'],
-        testLevel: 'RunSpecifiedTests',
+        runTests,
+        testLevel,
       },
     });
     ensureCreateComponentSetArgs({
@@ -329,8 +327,8 @@ describe('force:source:deploy', () => {
         purgeOnDelete: false,
         rest: false,
         rollbackOnError: false,
-        runTests: ['MyClassTest'],
-        testLevel: 'RunSpecifiedTests',
+        runTests,
+        testLevel,
       },
     });
     ensureCreateComponentSetArgs({

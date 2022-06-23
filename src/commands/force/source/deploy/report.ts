@@ -6,7 +6,7 @@
  */
 
 import * as os from 'os';
-import { Messages, SfdxProject } from '@salesforce/core';
+import { Messages, SfProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
@@ -64,9 +64,9 @@ export class Report extends DeployCommand {
     const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
 
     this.resultsDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
-      this.flags.junit,
-      this.flags.resultsdir,
+      this.getFlag<string[]>('coverageformatters', undefined),
+      this.getFlag<boolean>('junit'),
+      this.getFlag<string>('resultsdir'),
       deployId,
       false
     );
@@ -77,7 +77,7 @@ export class Report extends DeployCommand {
     if (this.getFlag<boolean>('verbose')) {
       let sourcepath: string[];
       try {
-        this.project = await SfdxProject.resolve();
+        this.project = await SfProject.resolve();
         sourcepath = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
       } catch (err) {
         // ignore the error. this was just to get improved command output.

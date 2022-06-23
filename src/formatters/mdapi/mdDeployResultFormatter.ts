@@ -8,7 +8,7 @@
 import * as chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import { UX } from '@salesforce/command';
-import { Logger, Messages, SfdxError } from '@salesforce/core';
+import { Logger, Messages, SfError } from '@salesforce/core';
 import {
   DeployMessage,
   DeployResult,
@@ -72,7 +72,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
   public display(isReportCommand = false): void {
     if (this.hasStatus(RequestStatus.Canceled)) {
       const canceledByName = this.result.response.canceledByName ?? 'unknown';
-      throw new SfdxError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
+      throw new SfError(messages.getMessage('deployCanceled', [canceledByName]), 'DeployFailed');
     }
     if (this.isVerbose()) {
       this.displaySuccesses();
@@ -98,9 +98,9 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.displayTestResults(isReportCommand);
       this.displayOutputFileLocations();
     }
-    // TODO: the toolbelt version of this is returning an SfdxError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
+    // TODO: the toolbelt version of this is returning an SfError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
-      const error = new SfdxError(messages.getMessage('deployFailed'), 'mdapiDeployFailed');
+      const error = new SfError(messages.getMessage('deployFailed'), 'mdapiDeployFailed');
       error.setData(this.result);
       throw error;
     }
@@ -121,12 +121,10 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
       this.ux.table(successes, {
-        columns: [
-          { key: 'componentType', label: 'Type' },
-          { key: 'fileName', label: 'File' },
-          { key: 'fullName', label: 'Name' },
-          { key: 'id', label: 'Id' },
-        ],
+        componentType: { header: 'Type' },
+        fileName: { header: 'File' },
+        fullName: { header: 'Name' },
+        id: { header: 'Id' },
       });
     }
   }
@@ -140,12 +138,10 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
       this.ux.table(failures, {
-        columns: [
-          { key: 'problemType', label: 'Type' },
-          { key: 'fileName', label: 'File' },
-          { key: 'fullName', label: 'Name' },
-          { key: 'problem', label: 'Problem' },
-        ],
+        problemType: { header: 'Type' },
+        fileName: { header: 'File' },
+        fullName: { header: 'Name' },
+        problem: { header: 'Problem' },
       });
       this.ux.log('');
     }
@@ -181,12 +177,10 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Test Failures [${this.result.response.details.runTestResult?.numFailures}]`));
       this.ux.table(tests, {
-        columns: [
-          { key: 'name', label: 'Name' },
-          { key: 'methodName', label: 'Method' },
-          { key: 'message', label: 'Message' },
-          { key: 'stackTrace', label: 'Stacktrace' },
-        ],
+        name: { header: 'Name' },
+        methodName: { header: 'Method' },
+        message: { header: 'Message' },
+        stackTrace: { header: 'Stacktrace' },
       });
     }
   }
@@ -198,10 +192,8 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
       this.ux.table(tests, {
-        columns: [
-          { key: 'name', label: 'Name' },
-          { key: 'methodName', label: 'Method' },
-        ],
+        name: { header: 'Name' },
+        methodName: { header: 'Method' },
       });
     }
     const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
@@ -213,17 +205,9 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
 
       this.ux.table(coverage, {
-        columns: [
-          { key: 'name', label: 'Name' },
-          {
-            key: 'numLocations',
-            label: '% Covered',
-          },
-          {
-            key: 'lineNotCovered',
-            label: 'Uncovered Lines',
-          },
-        ],
+        name: { header: 'Name' },
+        numLocations: { header: '% Covered' },
+        lineNotCovered: { header: 'Uncovered Lines' },
       });
     }
   }

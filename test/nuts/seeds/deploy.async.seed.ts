@@ -10,6 +10,7 @@ import { getBoolean, getString } from '@salesforce/ts-types';
 import { expect } from '@salesforce/command/lib/test';
 import { Result } from '@salesforce/source-testkit/lib/types';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
+import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { TEST_REPOS_MAP } from '../testMatrix';
 import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelResultFormatter';
 
@@ -40,14 +41,14 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     }
   });
 
-  describe.skip('async deploy', () => {
+  describe('async deploy', () => {
     it('should return an id immediately when --wait is set to 0 and deploy:report should report results', async () => {
       // delete the lwc test stubs which will cause errors with the source tracking/globbing
       await testkit.deleteGlobs(['force-app/test/**/*']);
 
-      const deploy = (await testkit.deploy({
+      const deploy = await testkit.deploy({
         args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-      })) as Result<{ id: string; result: { id: string } }>;
+      });
       // test the stashed deploy id
       const report = (await testkit.deployReport({
         args: '--coverageformatters clover --junit',
@@ -75,26 +76,30 @@ context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
       it('should return an id immediately when --wait is set to 0 and deploy:cancel should cancel the deploy', async () => {
         await testkit.deleteGlobs(['force-app/test/**/*']);
 
-        const deploy = (await testkit.deploy({
+        const deploy = await testkit.deploy({
           args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
-        })) as Result<{ id: string; result: { id: string } }>;
+        });
         testkit.expect.toHaveProperty(deploy.result, 'id');
 
-        const cancel = execCmd<DeployCancelCommandResult>(
-          `force:source:deploy:cancel -i ${deploy.result.id} --json`
-        ).jsonOutput;
+        const result = execCmd<DeployCancelCommandResult>(`force:source:deploy:cancel -i ${deploy.result.id} --json`);
 
-        if (cancel.status === 0) {
-          // successful cancel
-          expect(cancel.result.status).to.equal('Canceled');
-          expect(cancel.result.canceledBy).to.not.be.undefined;
-          expect(cancel.result.canceledByName).to.not.be.undefined;
-          expect(cancel.result.success).to.be.false;
+        if (result.jsonOutput.status === 0) {
+          // a successful cancel
+          const json = result.jsonOutput.result;
+          expect(json).to.have.property('canceledBy');
+          expect(json).to.have.property('status');
+          expect(json.status).to.equal(RequestStatus.Canceled);
+          expect(json.id).to.equal(deploy.result.id);
+        } else if (result.jsonOutput.status === 1 && result.jsonOutput.result) {
+          // status = 1 because the deploy is in Succeeded status
+          const json = result.jsonOutput.result;
+          expect(json.status).to.equal(RequestStatus.Succeeded);
         } else {
-          // the deploy likely already finished
-          expect(cancel.status).to.equal(1);
-          expect(cancel.name).to.equal('CancelFailed');
-          expect(cancel.message).to.include('Deployment already completed');
+          // the other allowable error is that the server is telling us the deploy succeeded
+          expect(result.jsonOutput.name, JSON.stringify(result)).to.equal('CancelFailed');
+          expect(result.jsonOutput.message, JSON.stringify(result)).to.equal(
+            'The cancel command failed due to: INVALID_ID_FIELD: Deployment already completed'
+          );
         }
       });
     }

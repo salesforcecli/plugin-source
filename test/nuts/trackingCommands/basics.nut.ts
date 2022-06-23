@@ -14,6 +14,7 @@ import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retriev
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+import { itemsInEBikesPush } from './consts';
 
 const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
 
@@ -48,14 +49,14 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       expect(result.every((row) => row.type && row.fullName)).to.equal(true);
     });
     it('pushes the initial metadata to the org', () => {
-      const result = execCmd<PushResponse>('force:source:push --json', {
-        ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
-      expect(result).to.be.an.instanceof(Array);
-      expect(result, JSON.stringify(result)).to.have.lengthOf(230);
+      const resp = execCmd<PushResponse>('force:source:push --json');
+      expect(resp.jsonOutput?.status, JSON.stringify(resp)).to.equal(0);
+      const pushedSource = resp.jsonOutput.result.pushedSource;
+      expect(pushedSource).to.be.an.instanceof(Array);
+      expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
       expect(
-        result.every((r) => r.state !== ComponentStatus.Failed),
-        JSON.stringify(result.filter((r) => r.state === ComponentStatus.Failed))
+        pushedSource.every((r) => r.state !== ComponentStatus.Failed),
+        JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))
       ).to.equal(true);
     });
     it('sees no local changes (all were committed from push), but profile updated in remote', () => {
@@ -153,7 +154,8 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       const failure = execCmd(`force:source:status -u ${hubUsername} --remote --json`, {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };
-      expect(failure.name).to.equal('NonSourceTrackedOrgError');
+      // command5 is removing `Error` from the end of the error names.
+      expect(failure.name).to.include('NonSourceTrackedOrg');
     });
 
     describe('push failures', () => {
