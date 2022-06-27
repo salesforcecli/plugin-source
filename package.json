@@ -94,8 +94,8 @@
     "commands": "./lib/commands",
     "bin": "sfdx",
     "devPlugins": [
-      "@oclif/plugin-command-snapshot",
       "@oclif/plugin-help",
+      "@oclif/plugin-command-snapshot",
       "@salesforce/plugin-command-reference",
       "salesforcedx-templates",
       "@salesforce/plugin-config",
@@ -150,9 +150,9 @@
     "prepare": "sf-install",
     "pretest": "sf-compile-test",
     "test": "sf-test",
-    "test:command-reference": "./bin/dev commandreference:generate --erroronwarnings",
-    "test:deprecation-policy": "./bin/dev snapshot:compare",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 600000 --parallel --retries 0",
+    "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
+    "test:deprecation-policy": "./bin/run snapshot:compare",
+    "test:nuts": "nyc mocha \"**/*.nut.ts\" --slow 4500 --timeout 600000 --parallel",
     "test:nuts:commands:other": "mocha \"test/nuts/open.nut.ts\" \"test/nuts/ignored_list.nut.ts\" --slow 4500 --timeout 600000 --retries 0 --parallel",
     "test:nuts:convert": "cross-env PLUGIN_SOURCE_SEED_FILTER=convert ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 600000 --parallel --retries 0",
     "test:nuts:delete": "mocha \"test/nuts/delete.nut.ts\" --slow 4500 --timeout 600000 --retries 0",
@@ -183,7 +183,7 @@
     "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:nuts:tracking:resetClear": "mocha \"test/nuts/trackingCommands/resetClear.nut.ts\" --slow 3000 --timeout 600000 --retries 0",
     "test:watch": "mocha --watch \"./test/**/*.test.ts\"",
-    "version": "oclif readme"
+    "version": "oclif-dev readme"
   },
   "publishConfig": {
     "access": "public"
