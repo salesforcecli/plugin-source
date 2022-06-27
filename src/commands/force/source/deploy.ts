@@ -10,7 +10,7 @@ import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, reportsFormatters, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { DeployCommand, getVersionMessage, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
   DeployAsyncResultFormatter,
@@ -80,7 +80,7 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.validateDeployRequestId'),
       longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
       exactlyOne: xorFlags,
-      exclusive: ['checkonly', 'testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings', 'tracksource'],
+      exclusive: ['checkonly', 'testlevel', 'runtests', 'tracksource'],
       validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({

@@ -10,7 +10,7 @@ import * as path from 'path';
 import { exec } from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, SfdxExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
-import { ComponentSet, SourceComponent, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
@@ -565,9 +565,12 @@ describe('mdapi NUTs', () => {
           ).jsonOutput.result;
         });
         it('should deploy validated Id', () => {
-          execCmd(`force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse.id}`, {
-            ensureExitCode: 0,
-          });
+          execCmd(
+            `force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse.id} --ignorewarnings --ignoreerrors`,
+            {
+              ensureExitCode: 0,
+            }
+          );
         });
       });
     });

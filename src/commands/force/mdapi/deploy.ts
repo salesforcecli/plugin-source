@@ -73,7 +73,7 @@ export class Deploy extends DeployCommand {
       description: messages.getMessage('flags.validatedDeployRequestId'),
       longDescription: messages.getMessage('flagsLong.validatedDeployRequestId'),
       exactlyOne: xorFlags,
-      exclusive: ['testlevel', 'runtests', 'ignoreerrors', 'ignorewarnings', 'checkonly'],
+      exclusive: ['testlevel', 'runtests', 'checkonly'],
       validate: DeployCommand.isValidDeployId,
     }),
     verbose: flags.builtin({
