@@ -1063,12 +1063,12 @@
   dependencies:
     "@octokit/openapi-types" "^12.1.0"
 
-"@salesforce/apex-node@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-0.13.0.tgz#bec0b46c1420f087b185c7414f48bb12f7e4edde"
-  integrity sha512-SiK4DadNJP5qkY0jjjSawt2Lqdpi6Mp/YmW43HxNNB7gYeZ/Nv66e4llUmJyzpJCUrZadc7fhrBDtB2vXIPOow==
+"@salesforce/apex-node@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-1.0.0.tgz#95c99c6d18ed34f42741b505555da4ca10bfe60f"
+  integrity sha512-ZuR53tDq+/mVnhzjN+XwKeR6fzCWq2jjm2Tnsjzp36w9K9i8zZaqQfDb8vMaae7IezgnCX+yuyu8cN98MxZy0w==
   dependencies:
-    "@salesforce/core" "^2.35.0"
+    "@salesforce/core" "^3.13.0"
     faye "1.4.0"
     glob "^8.0.3"
     istanbul-lib-coverage "^3.2.0"
@@ -1173,6 +1173,31 @@
   version "3.21.5"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.21.5.tgz#d85aa87af8a553bbfe02f5c7574bd775384eb9d9"
   integrity sha512-UkWccO+oQ1EDa5ao+beTI3CpaBwwKWRZsbviIXZNL3oa19uB8Lv3kiQoMUSIGQKi2iWqZ5JuYjqkPBVhjBJjbg==
+  dependencies:
+    "@salesforce/bunyan" "^2.0.0"
+    "@salesforce/kit" "^1.5.41"
+    "@salesforce/schemas" "^1.1.0"
+    "@salesforce/ts-types" "^1.5.20"
+    "@types/graceful-fs" "^4.1.5"
+    "@types/mkdirp" "^1.0.2"
+    "@types/semver" "^7.3.9"
+    ajv "^8.11.0"
+    archiver "^5.3.0"
+    change-case "^4.1.2"
+    debug "^3.2.7"
+    faye "^1.4.0"
+    form-data "^4.0.0"
+    graceful-fs "^4.2.9"
+    js2xmlparser "^4.0.1"
+    jsforce "2.0.0-beta.14"
+    jsonwebtoken "8.5.1"
+    mkdirp "1.0.4"
+    ts-retry-promise "^0.6.0"
+
+"@salesforce/core@^3.13.0":
+  version "3.23.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.23.3.tgz#7eb72fb91383f6f36eacedcbd3ad412482f49278"
+  integrity sha512-nLrvvxq1PcrPZ53ylEkCvEVsnMuJLH7SW4F5GERBLNYGxqW6aZxjtoySqsMrYoHk53vCGtycno3j3KhaIYx1FQ==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.5.41"
