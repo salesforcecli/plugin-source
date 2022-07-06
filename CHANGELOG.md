@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.5](https://github.com/salesforcecli/plugin-source/compare/v2.0.4...v2.0.5) (2022-07-06)
+
+### Bug Fixes
+
+- apex-node from parking-orbit ([#533](https://github.com/salesforcecli/plugin-source/issues/533)) ([ebaf5ed](https://github.com/salesforcecli/plugin-source/commit/ebaf5edef0ec15ba2c2e2cf541701e7db08f10bf))
+
+### [2.0.4](https://github.com/salesforcecli/plugin-source/compare/v2.0.3...v2.0.4) (2022-07-05)
+
+### Bug Fixes
+
+- ebikes nuts fix ([#522](https://github.com/salesforcecli/plugin-source/issues/522)) ([990a2e1](https://github.com/salesforcecli/plugin-source/commit/990a2e1e6ba34fbf0c855358a433a3503faf708d))
+
 ### [2.0.3](https://github.com/salesforcecli/plugin-source/compare/v2.0.2...v2.0.3) (2022-06-23)
 
 ### [2.0.2](https://github.com/salesforcecli/plugin-source/compare/v2.0.1...v2.0.2) (2022-06-23)
