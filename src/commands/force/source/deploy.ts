@@ -10,7 +10,7 @@ import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, reportsFormatters, getVersionMessage, TestLevel } from '../../../deployCommand';
+import { DeployCommand, getVersionMessage, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
   DeployAsyncResultFormatter,
@@ -163,7 +163,7 @@ export class Deploy extends DeployCommand {
   protected async deploy(): Promise<void> {
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
-    this.isRest = await this.isRestDeploy();
+    this.isRest = this.isRestDeploy();
 
     if (this.isAsync && (this.flags.coverageformatters || this.flags.junit)) {
       this.warn(messages.getMessage('asyncCoverageJunitWarning'));
