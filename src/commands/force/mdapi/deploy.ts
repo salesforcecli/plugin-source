@@ -123,7 +123,7 @@ export class Deploy extends DeployCommand {
     const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
     this.isAsync = waitDuration.quantity === 0;
-    this.isRest = await this.isRestDeploy();
+    this.isRest = this.isRestDeploy();
     if (this.isAsync && (this.flags.coverageformatters || this.flags.junit)) {
       this.warn(messages.getMessage('asyncCoverageJunitWarning'));
     }
