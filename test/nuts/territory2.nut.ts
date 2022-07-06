@@ -39,7 +39,7 @@ describe('territories', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
-    it('can generate manifest for territory types', async () => {
+    it('can generate manifest for territory types', () => {
       execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0 });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
@@ -64,32 +64,32 @@ describe('territories', () => {
 
   describe('metadata', () => {
     describe('deploy', () => {
-      it('can deploy all metadata items', async () => {
+      it('can deploy all metadata items', () => {
         execCmd('force:source:deploy -m Territory2,Territory2Model,Territory2Rule,Territory2Type --json', {
           ensureExitCode: 0,
         });
       });
 
       describe('individual type deploys', () => {
-        it('can deploy Territory2Model', async () => {
+        it('can deploy Territory2Model', () => {
           execCmd('force:source:deploy -m Territory2Model --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2Rule', async () => {
+        it('can deploy Territory2Rule', () => {
           execCmd('force:source:deploy -m Territory2Rule --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2Type', async () => {
+        it('can deploy Territory2Type', () => {
           execCmd('force:source:deploy -m Territory2Type --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2', async () => {
+        it('can deploy Territory2', () => {
           execCmd('force:source:deploy -m Territory2 --json', {
             ensureExitCode: 0,
           });
@@ -97,19 +97,19 @@ describe('territories', () => {
       });
 
       describe('individual metadata item deploys', () => {
-        it('can deploy Territory2Model', async () => {
+        it('can deploy Territory2Model', () => {
           execCmd('force:source:deploy -m Territory2Model:SCW_Territory_Model --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2Rule', async () => {
+        it('can deploy Territory2Rule', () => {
           execCmd('force:source:deploy -m Territory2Rule:SCW_Territory_Model.Fishing_Stores --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2', async () => {
+        it('can deploy Territory2', () => {
           execCmd('force:source:deploy -m Territory2:SCW_Territory_Model.Austin  --json', {
             ensureExitCode: 0,
           });
@@ -118,32 +118,32 @@ describe('territories', () => {
     });
 
     describe('retrieve', () => {
-      it('can retrieve all metadata items', async () => {
+      it('can retrieve all metadata items', () => {
         execCmd('force:source:retrieve -m Territory2,Territory2Model,Territory2Rule,Territory2Type --json', {
           ensureExitCode: 0,
         });
       });
 
       describe('individual type retrieves', () => {
-        it('can retrieve Territory2Model', async () => {
+        it('can retrieve Territory2Model', () => {
           execCmd('force:source:retrieve -m Territory2Model --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve Territory2Rule', async () => {
+        it('can retrieve Territory2Rule', () => {
           execCmd('force:source:retrieve -m Territory2Rule --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve Territory2Type', async () => {
+        it('can retrieve Territory2Type', () => {
           execCmd('force:source:retrieve -m Territory2Type --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve Territory2', async () => {
+        it('can retrieve Territory2', () => {
           execCmd('force:source:retrieve -m Territory2 --json', {
             ensureExitCode: 0,
           });
@@ -151,19 +151,19 @@ describe('territories', () => {
       });
 
       describe('individual metadata item deploys', () => {
-        it('can deploy Territory2Model', async () => {
+        it('can deploy Territory2Model', () => {
           execCmd('force:source:deploy -m Territory2Model:SCW_Territory_Model --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2Rule', async () => {
+        it('can deploy Territory2Rule', () => {
           execCmd('force:source:deploy -m Territory2Rule:SCW_Territory_Model.Fishing_Stores --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2', async () => {
+        it('can deploy Territory2', () => {
           execCmd('force:source:deploy -m Territory2:SCW_Territory_Model.Austin  --json', {
             ensureExitCode: 0,
           });
@@ -174,26 +174,26 @@ describe('territories', () => {
 
   describe('sourcepath', () => {
     describe('deploy', () => {
-      it('can deploy the whole project', async () => {
+      it('can deploy the whole project', () => {
         execCmd('force:source:deploy -p force-app --json', {
           ensureExitCode: 0,
         });
       });
 
       describe('individual type deploys', () => {
-        it('can deploy Territory2Rule', async () => {
+        it('can deploy Territory2Rule', () => {
           execCmd(`force:source:deploy -p ${path.join(modelPath, 'rules')} --json`, {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2Type', async () => {
+        it('can deploy Territory2Type', () => {
           execCmd(`force:source:deploy -p ${path.join(projectPath, 'territory2Types')} --json`, {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2', async () => {
+        it('can deploy Territory2', () => {
           execCmd(`force:source:deploy -p ${path.join(modelPath, 'territories')} --json`, {
             ensureExitCode: 0,
           });
@@ -201,13 +201,13 @@ describe('territories', () => {
       });
 
       describe('individual metadata item deploys', () => {
-        it('can deploy Territory2Model', async () => {
+        it('can deploy Territory2Model', () => {
           execCmd('force:source:deploy -m Territory2Model:SCW_Territory_Model --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy Territory2Rule', async () => {
+        it('can deploy Territory2Rule', () => {
           execCmd(
             `force:source:deploy -p ${path.join(modelPath, 'rules', 'Fishing_Stores.territory2Rule-meta.xml')} --json`,
             {
@@ -216,7 +216,7 @@ describe('territories', () => {
           );
         });
 
-        it('can deploy Territory2', async () => {
+        it('can deploy Territory2', () => {
           execCmd(
             `force:source:deploy -p ${path.join(modelPath, 'territories', 'Austin.territory2-meta.xml')} --json`,
             {
@@ -228,26 +228,26 @@ describe('territories', () => {
     });
 
     describe('retrieve', () => {
-      it('can retrieve the whole project', async () => {
+      it('can retrieve the whole project', () => {
         execCmd('force:source:retrieve -p force-app --json', {
           ensureExitCode: 0,
         });
       });
 
       describe('individual type retrieves', () => {
-        it('can retrieve Territory2Rule', async () => {
+        it('can retrieve Territory2Rule', () => {
           execCmd(`force:source:retrieve -p ${path.join(modelPath, 'rules')} --json`, {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve Territory2Type', async () => {
+        it('can retrieve Territory2Type', () => {
           execCmd(`force:source:retrieve -p ${path.join(projectPath, 'territory2Types')} --json`, {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve Territory2', async () => {
+        it('can retrieve Territory2', () => {
           execCmd(`force:source:retrieve -p ${path.join(modelPath, 'territories')} --json`, {
             ensureExitCode: 0,
           });
@@ -255,13 +255,13 @@ describe('territories', () => {
       });
 
       describe('individual metadata item retrieves', () => {
-        it('can retrieve Territory2Model', async () => {
+        it('can retrieve Territory2Model', () => {
           execCmd('force:source:retrieve -m Territory2Model:SCW_Territory_Model --json', {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve Territory2Rule', async () => {
+        it('can retrieve Territory2Rule', () => {
           execCmd(
             `force:source:retrieve -p ${path.join(
               modelPath,
@@ -274,7 +274,7 @@ describe('territories', () => {
           );
         });
 
-        it('can retrieve Territory2', async () => {
+        it('can retrieve Territory2', () => {
           execCmd(
             `force:source:retrieve -p ${path.join(modelPath, 'territories', 'Austin.territory2-meta.xml')} --json`,
             {
