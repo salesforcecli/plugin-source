@@ -1307,10 +1307,10 @@
     chalk "^4"
     inquirer "^8.2.0"
 
-"@salesforce/source-deploy-retrieve@^6.0.4", "@salesforce/source-deploy-retrieve@^6.1.0", "@salesforce/source-deploy-retrieve@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-6.2.0.tgz#0b5928d4719102bad58702b1276f2197f5f169da"
-  integrity sha512-KtklCoPBW0hrIFxfXrB7MI8wVffQu0lE69HRmUPJW7RtLK5hdk8YEyvP0yzvDVuiYrJN3+RS7uKkM2zDc9VbPA==
+"@salesforce/source-deploy-retrieve@^6.0.4", "@salesforce/source-deploy-retrieve@^6.1.0", "@salesforce/source-deploy-retrieve@^6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-6.2.1.tgz#f08df98332fee8c819722b7d16f08eb98c1cfe21"
+  integrity sha512-UrQSSl2JT37SMleBfcX8ML6qePe5b6SkbY6ibVj+YiI/tApC5KTmE3Tpdyn+ZLQQkafO4geXIyKw9+ebOdS/Rg==
   dependencies:
     "@salesforce/core" "^3.21.1"
     "@salesforce/kit" "^1.5.41"
@@ -1321,6 +1321,8 @@
     graceful-fs "^4.2.8"
     ignore "^5.1.8"
     mime "2.6.0"
+    proxy-agent "^5.0.0"
+    proxy-from-env "^1.1.0"
     unzipper "0.10.11"
     xmldom-sfdx-encoding "^0.1.29"
 
