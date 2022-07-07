@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.6](https://github.com/salesforcecli/plugin-source/compare/v2.0.5...v2.0.6) (2022-07-07)
+
+### Bug Fixes
+
+- isRestDeploy correctly handles org-metadata-rest-deploy config conversion ([#535](https://github.com/salesforcecli/plugin-source/issues/535)) ([dd7e776](https://github.com/salesforcecli/plugin-source/commit/dd7e7763ade1244fdc66a34892a52d0a779f9b58))
+
 ### [2.0.5](https://github.com/salesforcecli/plugin-source/compare/v2.0.4...v2.0.5) (2022-07-06)
 
 ### Bug Fixes
