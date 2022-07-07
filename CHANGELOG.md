@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.7](https://github.com/salesforcecli/plugin-source/compare/v2.0.6...v2.0.7) (2022-07-07)
+
+### Bug Fixes
+
+- bump SDR ([#537](https://github.com/salesforcecli/plugin-source/issues/537)) ([fa405e4](https://github.com/salesforcecli/plugin-source/commit/fa405e4e9cdaee40d75b1c05cebb449a68533f30))
+
 ### [2.0.6](https://github.com/salesforcecli/plugin-source/compare/v2.0.5...v2.0.6) (2022-07-07)
 
 ### Bug Fixes
