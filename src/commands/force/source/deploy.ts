@@ -163,7 +163,7 @@ export class Deploy extends DeployCommand {
   protected async deploy(): Promise<void> {
     const waitDuration = this.getFlag<Duration>('wait');
     this.isAsync = waitDuration.quantity === 0;
-    this.isRest = await this.isRestDeploy();
+    this.isRest = this.isRestDeploy();
 
     if (this.isAsync && (this.flags.coverageformatters || this.flags.junit)) {
       this.warn(messages.getMessage('asyncCoverageJunitWarning'));
