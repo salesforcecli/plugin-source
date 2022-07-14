@@ -82,11 +82,9 @@ export class Report extends DeployCommand {
     );
 
     if (this.isAsync) {
-      this.deployResult = await this.report(this.getFlag<string>('jobid'));
+      this.deployResult = await this.report(deployId);
       return;
     }
-
-    this.displayDeployId(deployId);
 
     const deploy = this.createDeploy(deployId);
     if (!this.isJsonOutput()) {
@@ -95,7 +93,12 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
+
+    try {
+      await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
+    } finally {
+      this.deployResult = await this.report(deployId);
+    }
   }
 
   // this is different from the source:report uses report error codes (unfortunately)

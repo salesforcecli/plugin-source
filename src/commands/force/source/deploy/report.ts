@@ -93,8 +93,11 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    await deploy.pollStatus({ timeout: waitDuration });
-    this.deployResult = await this.report(deployId);
+    try {
+      await deploy.pollStatus({ timeout: waitDuration });
+    } finally {
+      this.deployResult = await this.report(deployId);
+    }
   }
 
   // No-op implementation since any DeployResult status would be a success.
