@@ -95,6 +95,7 @@ export class Report extends DeployCommand {
     }
 
     try {
+      this.displayDeployId(deployId);
       this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
     } catch (error) {
       if (error instanceof Error && error.message.includes('The client has timed out')) {
