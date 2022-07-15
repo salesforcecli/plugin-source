@@ -97,12 +97,11 @@ export class Report extends DeployCommand {
     try {
       this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
     } catch (error) {
-      const err = error as Error;
-      if (err.message.includes('The client has timed out')) {
+      if (error instanceof Error && error.message.includes('The client has timed out')) {
         this.logger.debug('mdapi:deploy:report polling timed out. Requesting status...');
         this.deployResult = await this.report(deployId);
       } else {
-        throw err;
+        throw error;
       }
     }
   }
