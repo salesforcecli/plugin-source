@@ -94,9 +94,15 @@ export class Report extends DeployCommand {
       progressFormatter.progress(deploy);
     }
     try {
-      await deploy.pollStatus({ timeout: waitDuration });
-    } finally {
-      this.deployResult = await this.report(deployId);
+      this.deployResult = await deploy.pollStatus({ timeout: waitDuration });
+    } catch (error) {
+      const err = error as Error;
+      if (err.message.includes('The client has timed out')) {
+        this.logger.debug('source:deploy:report polling timed out. Requesting status...');
+        this.deployResult = await this.report(deployId);
+      } else {
+        throw err;
+      }
     }
   }
 
