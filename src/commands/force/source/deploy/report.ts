@@ -93,8 +93,17 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    await deploy.pollStatus({ timeout: waitDuration });
-    this.deployResult = await this.report(deployId);
+    try {
+      await deploy.pollStatus({ timeout: waitDuration });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('The client has timed out')) {
+        this.logger.debug('source:deploy:report polling timed out. Requesting status...');
+      } else {
+        throw error;
+      }
+    } finally {
+      this.deployResult = await this.report(deployId);
+    }
   }
 
   // No-op implementation since any DeployResult status would be a success.

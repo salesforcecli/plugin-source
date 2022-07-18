@@ -20,7 +20,7 @@ import { DeployCommandResult } from '../../../src/formatters/deployResultFormatt
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
 import { Stash } from '../../../src/stash';
-import { getDeployResult } from './deployResponses';
+import { getDeployResult, getDeployResponse } from './deployResponses';
 
 describe('force:source:report', () => {
   const sandbox = sinon.createSandbox();
@@ -56,7 +56,6 @@ describe('force:source:report', () => {
     }
 
     public createDeploy(): MetadataApiDeploy {
-      pollStatusStub = sandbox.stub(MetadataApiDeploy.prototype, 'pollStatus');
       return MetadataApiDeploy.prototype;
     }
   }
@@ -86,13 +85,14 @@ describe('force:source:report', () => {
     });
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
     stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
-    checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
 
     return cmd.runIt();
   };
 
   beforeEach(() => {
     readSyncStub = stubMethod(sandbox, ConfigFile.prototype, 'readSync');
+    pollStatusStub = sandbox.stub(MetadataApiDeploy.prototype, 'pollStatus');
+    checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
   });
 
   afterEach(() => {
@@ -173,5 +173,15 @@ describe('force:source:report', () => {
     expect(progressStatusStub.calledOnce).to.equal(false);
     expect(progressBarStub.calledOnce).to.equal(true);
     expect(pollStatusStub.calledOnce).to.equal(true);
+  });
+
+  it('should NOT error with client timed out when --wait > 0', async () => {
+    const inProgressDeployResult = getDeployResponse('inProgress');
+    pollStatusStub.reset();
+    pollStatusStub.throws(Error('The client has timed out'));
+    checkDeployStatusStub.reset();
+    checkDeployStatusStub.resolves(inProgressDeployResult);
+    const result = await runReportCmd(['--json', '--wait', '1']);
+    expect(result).to.deep.equal(inProgressDeployResult);
   });
 });

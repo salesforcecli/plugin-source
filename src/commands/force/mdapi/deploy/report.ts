@@ -82,11 +82,9 @@ export class Report extends DeployCommand {
     );
 
     if (this.isAsync) {
-      this.deployResult = await this.report(this.getFlag<string>('jobid'));
+      this.deployResult = await this.report(deployId);
       return;
     }
-
-    this.displayDeployId(deployId);
 
     const deploy = this.createDeploy(deployId);
     if (!this.isJsonOutput()) {
@@ -95,7 +93,18 @@ export class Report extends DeployCommand {
         : new DeployProgressStatusFormatter(this.logger, this.ux);
       progressFormatter.progress(deploy);
     }
-    this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
+
+    try {
+      this.displayDeployId(deployId);
+      this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('The client has timed out')) {
+        this.logger.debug('mdapi:deploy:report polling timed out. Requesting status...');
+        this.deployResult = await this.report(deployId);
+      } else {
+        throw error;
+      }
+    }
   }
 
   // this is different from the source:report uses report error codes (unfortunately)

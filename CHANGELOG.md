@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.8](https://github.com/salesforcecli/plugin-source/compare/v2.0.7...v2.0.8) (2022-07-18)
+
+### Bug Fixes
+
+- try/finally on pollStatus to handle throws from timeout ([#538](https://github.com/salesforcecli/plugin-source/issues/538)) ([68ff738](https://github.com/salesforcecli/plugin-source/commit/68ff73850f853d5951be8667a8fc807ecf78f91f))
+
 ### [2.0.7](https://github.com/salesforcecli/plugin-source/compare/v2.0.6...v2.0.7) (2022-07-07)
 
 ### Bug Fixes
