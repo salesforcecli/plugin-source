@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.9](https://github.com/salesforcecli/plugin-source/compare/v2.0.8...v2.0.9) (2022-07-20)
+
+### Bug Fixes
+
+- fixes exclusive flags for mdapi/source:deploy when using quickdeploy ([#521](https://github.com/salesforcecli/plugin-source/issues/521)) ([7c52a05](https://github.com/salesforcecli/plugin-source/commit/7c52a05c91484dd1135b6b7498c4e89718092256))
+
 ### [2.0.8](https://github.com/salesforcecli/plugin-source/compare/v2.0.7...v2.0.8) (2022-07-18)
 
 ### Bug Fixes
