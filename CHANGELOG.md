@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.10](https://github.com/salesforcecli/plugin-source/compare/v2.0.9...v2.0.10) (2022-07-25)
+
+### Bug Fixes
+
+- caret for jsforce ([#540](https://github.com/salesforcecli/plugin-source/issues/540)) ([2142e70](https://github.com/salesforcecli/plugin-source/commit/2142e701b503d84bb38b6557283c3a49b1ee0b92))
+
 ### [2.0.9](https://github.com/salesforcecli/plugin-source/compare/v2.0.8...v2.0.9) (2022-07-20)
 
 ### Bug Fixes
