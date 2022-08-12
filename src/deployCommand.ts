@@ -17,7 +17,7 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { Messages, PollingClient, SfdxPropertyKeys, SfError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
-import { cloneJson, Duration, once } from '@salesforce/kit';
+import { Duration, once } from '@salesforce/kit';
 import {
   CoverageReporter,
   CoverageReporterOptions,
@@ -276,30 +276,27 @@ export const createCoverageReport = (
   const coverageReport = new CoverageReporter(apexCoverage, resultsDir, sourceDir, options);
   coverageReport.generateReports();
 };
-// eslint-disable-next-line class-methods-use-this
 export const getCoverageFormattersOptions = (formatters: string[] = []): CoverageReporterOptions => {
-  /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
-  const options = {} as CoverageReporterOptions;
-  // set requested report formats
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  options.reportFormats = formatters as CoverageReportFormats[];
-  // set report options to default report options for each format
-  options.reportOptions = Object.fromEntries(
-    options.reportFormats.map((format) => {
-      const reportOptions = cloneJson(DefaultReportOptions[format as string]);
-      const keys = Object.keys(reportOptions);
-      if (keys.includes('file')) {
-        reportOptions['file'] = reportOptions['file'] as string;
-        if (!keys.includes('subdir')) {
-          reportOptions['file'] = path.join('coverage', reportOptions['file']);
-        }
-      }
-      if (keys.includes('subdir')) {
-        reportOptions['subdir'] = path.join('coverage', reportOptions['subdir'] as string);
-      }
-      return [format, reportOptions];
+  const reportFormats = formatters as CoverageReportFormats[];
+  const reportOptions = Object.fromEntries(
+    reportFormats.map((format) => {
+      const formatDefaults = DefaultReportOptions[format];
+      return [
+        format,
+        {
+          ...formatDefaults,
+          // always join any subdir from the defaults with our custom coverage dir
+          ...('subdir' in formatDefaults ? { subdir: path.join('coverage', formatDefaults.subdir) } : {}),
+          // if there is no subdir, we also put the file in the coverage dir, other leave it alone
+          ...('file' in formatDefaults && !('subdir' in formatDefaults)
+            ? { file: path.join('coverage', formatDefaults.file) }
+            : {}),
+        },
+      ];
     })
   );
-  return options;
-  /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+  return {
+    reportFormats,
+    reportOptions,
+  };
 };

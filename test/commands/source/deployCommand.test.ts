@@ -7,7 +7,7 @@
 import { SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { assert, expect } from 'chai';
-import { getVersionMessage, DeployCommand } from '../../../src/deployCommand';
+import { getVersionMessage, DeployCommand, getCoverageFormattersOptions } from '../../../src/deployCommand';
 
 describe('test static method for valid deploy IDs', () => {
   it('valid deployId returns true', () => {
@@ -41,5 +41,30 @@ describe('various version formatting options', () => {
     expect(getVersionMessage('Pushing', CS, true)).to.equal(
       '*** Pushing v51.0 metadata with REST API v52.0 connection ***'
     );
+  });
+});
+
+describe('coverage functions', () => {
+  describe('getCoverageFormattersOptions', () => {
+    it('clover, json', () => {
+      const result = getCoverageFormattersOptions(['clover', 'json']);
+      expect(result).to.deep.equal({
+        reportFormats: ['clover', 'json'],
+        reportOptions: {
+          clover: { file: 'coverage/clover.xml', projectRoot: '.' },
+          json: { file: 'coverage/coverage.json' },
+        },
+      });
+    });
+
+    it('teamcity', () => {
+      const result = getCoverageFormattersOptions(['teamcity']);
+      expect(result).to.deep.equal({
+        reportFormats: ['teamcity'],
+        reportOptions: {
+          teamcity: { file: 'coverage/teamcity.txt', blockName: 'coverage' },
+        },
+      });
+    });
   });
 });
