@@ -113,9 +113,7 @@ export class Convert extends SourceCommand {
       try {
         fs.rmSync(this.convertResult.packagePath, { recursive: true });
       } catch (e) {
-        // rmdirSync is being deprecated and emits a warning
-        // but rmSync is introduced in node 14 so fall back to rmdirSync
-        fs.rmdirSync(this.convertResult.packagePath, { recursive: true });
+        await fs.promises.rm(this.convertResult.packagePath, { recursive: true });
       }
 
       this.convertResult.packagePath = outputDirectory;
