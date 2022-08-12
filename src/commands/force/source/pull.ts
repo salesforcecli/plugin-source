@@ -121,7 +121,7 @@ export default class Pull extends SourceCommand {
       [RequestStatus.Canceling, 69],
     ]);
     // there might not be a retrieveResult if we don't have anything to retrieve
-    if (this.retrieveResult && this.retrieveResult.response.status) {
+    if (this.retrieveResult?.response.status) {
       this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
     }
   }
