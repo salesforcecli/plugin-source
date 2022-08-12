@@ -39,6 +39,7 @@ const messages = Messages.load('@salesforce/plugin-source', 'deployCommand', [
   'MissingDeployId',
   'resultsDirMissing',
 ]);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {
@@ -187,7 +188,12 @@ export abstract class DeployCommand extends SourceCommand {
     // only generate reports if test results are present
     if (this.deployResult.response?.numberTestsTotal) {
       if (this.flags.coverageformatters) {
-        createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
+        createCoverageReport(
+          this.deployResult,
+          this.getFlag<string[]>('coverageformatters'),
+          'no-map',
+          this.resultsDir
+        );
       }
       if (this.flags.junit) {
         this.createJunitResults(this.deployResult);
@@ -278,7 +284,7 @@ export const createCoverageReport = (
 };
 // eslint-disable-next-line class-methods-use-this
 export const getCoverageFormattersOptions = (formatters: string[] = []): CoverageReporterOptions => {
-  /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
   const options = {} as CoverageReporterOptions;
   // set requested report formats
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -301,5 +307,5 @@ export const getCoverageFormattersOptions = (formatters: string[] = []): Coverag
     })
   );
   return options;
-  /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 };

@@ -29,12 +29,10 @@ describe('Progress Bar Events', () => {
     deploy.event = event;
   };
 
-  const getProgressbar = () => {
+  const getProgressbar = () =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore protected member access
-    return progressBarFormatter.progressBar;
-  };
-
+    progressBarFormatter.progressBar;
   afterEach(() => {
     sandbox.restore();
   });
