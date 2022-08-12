@@ -10,7 +10,13 @@ import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, getVersionMessage, reportsFormatters, TestLevel } from '../../../deployCommand';
+import {
+  DeployCommand,
+  getCoverageFormattersOptions,
+  getVersionMessage,
+  reportsFormatters,
+  TestLevel,
+} from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
   DeployAsyncResultFormatter,
@@ -255,7 +261,7 @@ export class Deploy extends DeployCommand {
     const formatterOptions: ResultFormatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
       username: this.org.getUsername(),
-      coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+      coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
       resultsDir: this.resultsDir,
       testsRan: this.getFlag<string>('testlevel', 'NoTestRun') !== 'NoTestRun',

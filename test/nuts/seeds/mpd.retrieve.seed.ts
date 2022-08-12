@@ -78,9 +78,12 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
     });
 
     beforeEach(async () => {
-      for (const [filename, contents] of Object.entries(originalState)) {
-        await testkit.writeFile(filename, contents);
-      }
+      await Promise.all(
+        Object.entries(originalState).map(([filename, contents]) => testkit.writeFile(filename, contents))
+      );
+      // for (const [filename, contents] of Object.entries(originalState)) {
+      //   await testkit.writeFile(filename, contents);
+      // }
     });
 
     describe('--metadata CustomLabels', () => {

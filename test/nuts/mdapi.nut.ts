@@ -47,6 +47,8 @@ describe('1k files in mdapi:deploy', () => {
 
     for (let c = 0; c < classCount; c++) {
       const className = `xx${c}`;
+      // intentionally batched to avoid fs limits on windows
+      // eslint-disable-next-line no-await-in-loop
       await Promise.all([
         fs.promises.writeFile(
           path.join(classdir, `${className}.cls`),

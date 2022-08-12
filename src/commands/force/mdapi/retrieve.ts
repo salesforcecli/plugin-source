@@ -6,7 +6,6 @@
  */
 
 import * as os from 'os';
-import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
@@ -17,7 +16,7 @@ import {
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
-import { SourceCommand } from '../../../sourceCommand';
+import { resolveZipFileName, SourceCommand } from '../../../sourceCommand';
 import { Stash } from '../../../stash';
 import {
   RetrieveCommandAsyncResult,
@@ -116,7 +115,7 @@ export class Retrieve extends SourceCommand {
     this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
     const manifest = this.resolveManifest(this.getFlag<string>('unpackaged'));
     const singlePackage = this.getFlag<boolean>('singlepackage');
-    this.zipFileName = this.resolveZipFileName(this.getFlag<string>('zipfilename'));
+    this.zipFileName = resolveZipFileName(this.getFlag<string>('zipfilename'));
     this.unzip = this.getFlag<boolean>('unzip');
     const waitFlag = this.getFlag<Duration>('wait');
     this.wait = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
@@ -220,14 +219,6 @@ export class Retrieve extends SourceCommand {
       }
       return formatter.getJson();
     }
-  }
-
-  private resolveZipFileName(zipFileName?: string): string {
-    // If no file extension was provided append, '.zip'
-    if (zipFileName && !extname(zipFileName)) {
-      zipFileName += '.zip';
-    }
-    return zipFileName || 'unpackaged.zip';
   }
 
   private resolveProjectPath(): string {

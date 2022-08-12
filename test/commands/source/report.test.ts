@@ -55,6 +55,7 @@ describe('force:source:report', () => {
       this.project = project;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     public createDeploy(): MetadataApiDeploy {
       return MetadataApiDeploy.prototype;
     }

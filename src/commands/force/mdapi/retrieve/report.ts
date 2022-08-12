@@ -6,12 +6,11 @@
  */
 
 import * as os from 'os';
-import { extname } from 'path';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
-import { SourceCommand } from '../../../../sourceCommand';
+import { resolveZipFileName, SourceCommand } from '../../../../sourceCommand';
 import { Stash, MdRetrieveData } from '../../../../stash';
 import {
   RetrieveCommandResult,
@@ -92,11 +91,11 @@ export class Report extends SourceCommand {
       }
       retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);
-      this.zipFileName = this.resolveZipFileName(mdRetrieveStash?.zipfilename);
+      this.zipFileName = resolveZipFileName(mdRetrieveStash?.zipfilename);
       this.unzip = mdRetrieveStash?.unzip;
     } else {
       this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
-      this.zipFileName = this.resolveZipFileName(this.getFlag<string>('zipfilename'));
+      this.zipFileName = resolveZipFileName(this.getFlag<string>('zipfilename'));
       this.unzip = this.getFlag<boolean>('unzip');
     }
 
@@ -135,7 +134,7 @@ export class Report extends SourceCommand {
   // The only time this command would report an error is if it failed
   // flag parsing or some error during the request, and those are captured
   // by the command framework.
-  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function, class-methods-use-this */
   protected resolveSuccess(): void {}
 
   protected formatResult(): RetrieveCommandResult | RetrieveCommandAsyncResult {
@@ -164,14 +163,6 @@ export class Report extends SourceCommand {
       formatter.display();
     }
     return formatter.getJson();
-  }
-
-  private resolveZipFileName(zipFileName?: string): string {
-    // If no file extension was provided append, '.zip'
-    if (zipFileName && !extname(zipFileName)) {
-      zipFileName += '.zip';
-    }
-    return zipFileName || 'unpackaged.zip';
   }
 
   private resolveOutputDir(dirPath: string): string {

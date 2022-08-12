@@ -130,7 +130,7 @@ export class create extends SourceCommand {
   }
 
   // noop this method because any errors will be reported by the createManifest method
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-empty-function, class-methods-use-this
   protected resolveSuccess(): void {}
 
   protected formatResult(): CreateCommandResult {

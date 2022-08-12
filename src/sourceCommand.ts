@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { dirname, resolve } from 'path';
+import { dirname, resolve, extname } from 'path';
 import * as fs from 'fs';
 import { SfdxCommand } from '@salesforce/command';
 import { Messages, Lifecycle, SfError } from '@salesforce/core';
@@ -57,6 +57,7 @@ export abstract class SourceCommand extends SfdxCommand {
    *
    * @param code The exit code to set on the process.
    */
+  // eslint-disable-next-line class-methods-use-this
   protected setExitCode(code: number): void {
     process.exitCode = code;
   }
@@ -78,6 +79,7 @@ export abstract class SourceCommand extends SfdxCommand {
    * @param options defines the path to resolve and the expectations
    * @returns the resolved flag path
    */
+  // eslint-disable-next-line class-methods-use-this
   protected ensureFlagPath(options: EnsureFsFlagOptions): string {
     const { flagName, path, type, throwOnENOENT } = options;
 
@@ -133,3 +135,11 @@ export abstract class SourceCommand extends SfdxCommand {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   protected abstract formatResult(): any;
 }
+
+export const resolveZipFileName = (zipFileName?: string): string => {
+  // If no file extension was provided append, '.zip'
+  if (zipFileName && !extname(zipFileName)) {
+    zipFileName += '.zip';
+  }
+  return zipFileName || 'unpackaged.zip';
+};

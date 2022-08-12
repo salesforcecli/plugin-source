@@ -88,6 +88,9 @@ export default class Push extends DeployCommand {
       this.isRestDeploy(),
     ]);
     for (const componentSet of componentSets) {
+      // intentionally to do this sequentially if there are multiple component sets
+      /* eslint-disable no-await-in-loop */
+
       if (sourceApiVersion) {
         componentSet.sourceApiVersion = sourceApiVersion;
       }
@@ -135,6 +138,7 @@ export default class Push extends DeployCommand {
           break;
         }
       }
+      /* eslint-enable no-await-in-loop */
     }
   }
 

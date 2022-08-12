@@ -51,6 +51,7 @@ describe('force:mdapi:deploy:cancel', () => {
       this.project = project;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     public createDeploy(): MetadataApiDeploy {
       cancelStub = sandbox.stub(MetadataApiDeploy.prototype, 'cancel');
       return MetadataApiDeploy.prototype;

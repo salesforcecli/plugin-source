@@ -10,7 +10,7 @@ import { Messages, SfProject } from '@salesforce/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { DeployCommand, reportsFormatters } from '../../../../deployCommand';
+import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand';
 import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
@@ -110,13 +110,13 @@ export class Report extends DeployCommand {
   // The only time this command would report an error is if it failed
   // flag parsing or some error during the request, and those are captured
   // by the command framework.
-  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function, class-methods-use-this */
   protected resolveSuccess(): void {}
 
   protected formatResult(): DeployReportCommandResult {
     const formatterOptions: ResultFormatterOptions = {
       verbose: this.getFlag<boolean>('verbose', false),
-      coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+      coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
       junitTestResults: this.flags.junit as boolean,
       resultsDir: this.resultsDir,
       testsRan: !!this.deployResult?.response.numberTestsTotal,
