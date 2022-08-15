@@ -8,6 +8,7 @@
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfError } from '@salesforce/core';
+import { ensureArray } from '@salesforce/kit';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
   DeployMessage,
@@ -17,7 +18,7 @@ import {
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
 import { prepCoverageForDisplay } from '../coverageUtils';
-import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -168,7 +169,7 @@ export class DeployResultFormatter extends ResultFormatter {
         failures.push(...fileResponses);
       }
 
-      const deployMessages = toArray(this.result?.response?.details?.componentFailures);
+      const deployMessages = ensureArray(this.result?.response?.details?.componentFailures);
       if (deployMessages.length > failures.length) {
         // if there's additional failures in the API response, find the failure and add it to the output
         deployMessages.map((deployMessage) => {
@@ -209,7 +210,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected verboseTestFailures(): void {
     if (this.result?.response?.numberTestErrors) {
-      const failures = toArray(this.result.response.details?.runTestResult?.failures);
+      const failures = ensureArray(this.result.response.details?.runTestResult?.failures);
 
       const tests = this.sortTestResults(failures);
 
@@ -227,7 +228,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected verboseTestSuccess(): void {
-    const success = toArray(this.result?.response?.details?.runTestResult?.successes);
+    const success = ensureArray(this.result?.response?.details?.runTestResult?.successes);
     if (success.length) {
       const tests = this.sortTestResults(success);
       this.ux.log('');
@@ -237,7 +238,7 @@ export class DeployResultFormatter extends ResultFormatter {
         methodName: { header: 'Method' },
       });
     }
-    const codeCoverage = toArray(this.result?.response?.details?.runTestResult?.codeCoverage);
+    const codeCoverage = ensureArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
     if (codeCoverage.length) {
       const coverage = prepCoverageForDisplay(codeCoverage);

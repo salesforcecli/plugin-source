@@ -26,13 +26,6 @@ export interface ResultFormatterOptions {
   testsRan?: boolean;
 }
 
-export function toArray<T>(entryOrArray: T | T[] | undefined): T[] {
-  if (entryOrArray) {
-    return Array.isArray(entryOrArray) ? entryOrArray : [entryOrArray];
-  }
-  return [];
-}
-
 export type CoverageResultsFileInfo = Record<keyof Partial<typeof DefaultReportOptions>, string>;
 
 export abstract class ResultFormatter {

@@ -15,8 +15,9 @@ import {
   RequestStatus,
   FileProperties,
 } from '@salesforce/source-deploy-retrieve';
+import { ensureArray } from '@salesforce/kit';
 import { RetrieveFormatter } from '../retrieveFormatter';
-import { ResultFormatterOptions, toArray } from '../resultFormatter';
+import { ResultFormatterOptions } from '../resultFormatter';
 
 export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string };
 
@@ -70,7 +71,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
         this.ux.log(`Extracted ${this.options.zipFileName} to: ${extractPath}`);
       }
       if (this.options.verbose) {
-        const retrievedFiles = toArray(this.result.fileProperties);
+        const retrievedFiles = ensureArray(this.result.fileProperties);
         if (retrievedFiles?.length) {
           this.displaySuccesses(retrievedFiles);
         }

@@ -7,7 +7,7 @@
 
 import { RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { RequestStatus, MetadataApiRetrieveStatus } from '@salesforce/source-deploy-retrieve';
-import { toArray } from '../../../src/formatters/resultFormatter';
+import { ensureArray } from '@salesforce/kit';
 
 const packageFileProp = {
   createdById: '00521000007KA39AAG',
@@ -92,7 +92,7 @@ export const getRetrieveResult = (
     response,
     getFileResponses() {
       let fileProps = response.fileProperties;
-      fileProps = toArray(fileProps);
+      fileProps = ensureArray(fileProps);
       return fileProps
         .filter((p) => p.type !== 'Package')
         .map((comp) => {

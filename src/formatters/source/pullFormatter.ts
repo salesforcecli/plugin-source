@@ -8,6 +8,7 @@
 import { blue, yellow } from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfError } from '@salesforce/core';
+import { ensureArray } from '@salesforce/kit';
 import { get, getNumber, getString } from '@salesforce/ts-types';
 import {
   ComponentStatus,
@@ -16,7 +17,7 @@ import {
   RetrieveMessage,
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
-import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/plugin-source', 'pull', [
@@ -46,7 +47,7 @@ export class PullResultFormatter extends ResultFormatter {
       deleteResult
     );
     const warnMessages = retrieveResult?.response?.messages ?? ([] as RetrieveMessage | RetrieveMessage[]);
-    this.warnings = toArray(warnMessages);
+    this.warnings = ensureArray(warnMessages);
     if (this.result?.response?.zipFile) {
       // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
       delete this.result.response.zipFile;
@@ -138,7 +139,7 @@ export class PullResultFormatter extends ResultFormatter {
     }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'response.messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
-    const errMsgs = toArray(responseMsgs);
+    const errMsgs = ensureArray(responseMsgs);
     const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
     this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
   }

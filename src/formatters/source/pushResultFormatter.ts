@@ -18,7 +18,8 @@ import {
   VirtualTreeContainer,
 } from '@salesforce/source-deploy-retrieve';
 import { isString } from '@salesforce/ts-types';
-import { ResultFormatter, ResultFormatterOptions, toArray } from '../resultFormatter';
+import { ensureArray } from '@salesforce/kit';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
@@ -172,7 +173,7 @@ export class PushResultFormatter extends ResultFormatter {
       failures.push(...fileResponses);
     }
 
-    const deployMessages = this.results?.flatMap((result) => toArray(result.response?.details?.componentFailures));
+    const deployMessages = this.results?.flatMap((result) => ensureArray(result.response?.details?.componentFailures));
     if (deployMessages.length > failures.length) {
       // if there's additional failures in the API response, find the failure and add it to the output
       deployMessages.map((deployMessage) => {
