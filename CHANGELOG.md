@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.12](https://github.com/salesforcecli/plugin-source/compare/v2.0.11...v2.0.12) (2022-08-15)
+
+### Bug Fixes
+
+- exclude sourcepath from component set builder ([#553](https://github.com/salesforcecli/plugin-source/issues/553)) ([b678d0c](https://github.com/salesforcecli/plugin-source/commit/b678d0c9023fc6a0f5c816b40d22ab4803356834))
+
 ### [2.0.11](https://github.com/salesforcecli/plugin-source/compare/v2.0.10...v2.0.11) (2022-07-26)
 
 ### Bug Fixes
