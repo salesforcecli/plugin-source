@@ -109,7 +109,7 @@ export class Retrieve extends SourceCommand {
 
   protected async retrieve(): Promise<void> {
     const packagenames = this.getFlag<string[]>('packagenames');
-    if (!packagenames) {
+    if (!packagenames && !this.flags.unpackaged) {
       this.sourceDir = this.resolveRootDir(this.getFlag<string>('sourcedir'));
     }
     this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
