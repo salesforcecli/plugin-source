@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Lifecycle, Org } from '@salesforce/core';
+import { Lifecycle, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
 import { UX } from '@salesforce/command';
@@ -28,6 +28,7 @@ describe('force:mdapi:retrieve', () => {
   const retrieveResult = getRetrieveResult('success');
   const defaultZipFilePath = path.join(retrievetargetdir, 'unpackaged.zip');
   const expectedDefaultResult = Object.assign({}, retrieveResult.response, { zipFilePath: defaultZipFilePath });
+  const projectPath = path.resolve('project-path');
 
   // Stubs
   let buildComponentSetStub: sinon.SinonStub;
@@ -102,6 +103,14 @@ describe('force:mdapi:retrieve', () => {
       getPackageXml: () => packageXml,
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
+
+    stubMethod(sandbox, SfProject, 'getInstance').returns({
+      getDefaultPackage: () => ({
+        name: 'myProjectPath',
+        fullPath: projectPath,
+        path: projectPath,
+      }),
+    });
   });
 
   afterEach(() => {
@@ -112,7 +121,7 @@ describe('force:mdapi:retrieve', () => {
   const ensureCreateComponentSetArgs = (overrides?: Partial<ComponentSetOptions>) => {
     const defaultArgs = {
       packagenames: undefined,
-      sourcepath: undefined,
+      sourcepath: [projectPath],
       manifest: undefined,
       apiversion: undefined,
     };
@@ -183,6 +192,7 @@ describe('force:mdapi:retrieve', () => {
     const result = await runRetrieveCmd(['-r', retrievetargetdir, '-k', packageXml, '--json']);
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs({
+      sourcepath: undefined,
       manifest: {
         manifestPath,
         directoryPaths: [],
@@ -211,7 +221,7 @@ describe('force:mdapi:retrieve', () => {
     const packagenames = 'foo,bar';
     const result = await runRetrieveCmd(['--retrievetargetdir', retrievetargetdir, '-p', packagenames, '--json']);
     expect(result).to.deep.equal(expectedDefaultResult);
-    ensureCreateComponentSetArgs({ packagenames: packagenames.split(',') });
+    ensureCreateComponentSetArgs({ sourcepath: undefined, packagenames: packagenames.split(',') });
     ensureRetrieveArgs({ packageOptions: packagenames.split(',') });
     ensureHookArgs();
     ensureStashSet();
