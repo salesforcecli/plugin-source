@@ -4,6 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import * as path from 'path';
 import { SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { assert, expect } from 'chai';
@@ -51,8 +52,8 @@ describe('coverage functions', () => {
       expect(result).to.deep.equal({
         reportFormats: ['clover', 'json'],
         reportOptions: {
-          clover: { file: 'coverage/clover.xml', projectRoot: '.' },
-          json: { file: 'coverage/coverage.json' },
+          clover: { file: path.join('coverage', 'clover.xml'), projectRoot: '.' },
+          json: { file: path.join('coverage', 'coverage.json') },
         },
       });
     });
@@ -62,7 +63,7 @@ describe('coverage functions', () => {
       expect(result).to.deep.equal({
         reportFormats: ['teamcity'],
         reportOptions: {
-          teamcity: { file: 'coverage/teamcity.txt', blockName: 'coverage' },
+          teamcity: { file: path.join('coverage', 'teamcity.txt'), blockName: 'coverage' },
         },
       });
     });
