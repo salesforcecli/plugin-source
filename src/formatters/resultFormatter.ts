@@ -4,6 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+/* eslint-disable class-methods-use-this */
 
 import * as path from 'path';
 import * as fs from 'fs';
@@ -78,6 +79,7 @@ export abstract class ResultFormatter {
   }
 
   // Sort by type > fileName > fullName
+  // eslint-disable-next-line class-methods-use-this
   protected sortFileProperties(fileProperties: FileProperties[]): void {
     fileProperties.sort((i, j) => {
       if (i.type === j.type) {

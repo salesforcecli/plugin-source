@@ -10,7 +10,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter';
-import { DeployCommand, reportsFormatters } from '../../../../deployCommand';
+import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
@@ -129,7 +129,7 @@ export class Report extends DeployCommand {
       {
         concise: this.getFlag<boolean>('concise', false),
         verbose: this.getFlag<boolean>('verbose', false),
-        coverageOptions: this.getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+        coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
         junitTestResults: this.getFlag<boolean>('junit', false),
         resultsDir: this.resultsDir,
         testsRan: !!this.deployResult?.response?.numberTestsTotal,

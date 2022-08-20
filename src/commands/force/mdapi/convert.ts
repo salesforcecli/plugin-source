@@ -104,7 +104,7 @@ export class Convert extends SourceCommand {
 
   // No-op.  Any failure would throw an error.  If no error, it's successful.
   // The framework provides this behavior.
-  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function, class-methods-use-this */
   protected resolveSuccess(): void {}
 
   protected formatResult(): ConvertCommandResult {

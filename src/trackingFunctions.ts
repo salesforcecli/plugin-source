@@ -84,19 +84,19 @@ export const trackingSetup = async (options: TrackingSetupRequest): Promise<Sour
       toValidate: 'plugin-source',
       command: commandName,
     });
-  } else {
-    // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
-    if (getTrackingFileVersion(org, projectPath) === 'toolbelt') {
-      throw new SfError(
-        'You cannot use the "tracksource" flag with the old version of the tracking files',
-        'sourceTrackingFileVersionMismatch',
-        [
-          'Clear the old version of the tracking files with "sfdx force:source:legacy:tracking:clear"',
-          'Create a new org to use the new tracking files',
-        ]
-      );
-    }
   }
+  // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
+  if (getTrackingFileVersion(org, projectPath) === 'toolbelt') {
+    throw new SfError(
+      'You cannot use the "tracksource" flag with the old version of the tracking files',
+      'sourceTrackingFileVersionMismatch',
+      [
+        'Clear the old version of the tracking files with "sfdx force:source:legacy:tracking:clear"',
+        'Create a new org to use the new tracking files',
+      ]
+    );
+  }
+
   const tracking = await SourceTracking.create({ org, ...createOptions });
   if (!ignoreConflicts) {
     processConflicts(await tracking.getConflicts(), ux, messages.getMessage('conflictMsg'));
