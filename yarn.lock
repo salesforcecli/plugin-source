@@ -3388,9 +3388,9 @@ eslint-config-salesforce-typescript@^0.2.7:
   integrity sha512-CDPcYWIfEVJFbcNG6IdhKW3whp0MujjuM4uRFESQ1Eq4cO8bMbZrwbLypUWxdMgZz7Ua3luMHmIKgkmR4k9FSg==
 
 eslint-config-salesforce-typescript@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/eslint-config-salesforce-typescript/-/eslint-config-salesforce-typescript-1.0.0.tgz"
-  integrity sha512-VkR0iydimCiAs/4v0Ialne2ry3UZh4rjfur1kaJBUJKKTXH+jGBmLEZKlZnoKGsw6OMKLVcMdoK0N8nshY2zcg==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-salesforce-typescript/-/eslint-config-salesforce-typescript-1.1.1.tgz#fb038f6423c5472d6439e9f780184b00ebcd2685"
+  integrity sha512-cjj2tU5wkushOUynecjg0JQtb/y61pWSjtOKKnNzWEdtbZEs7pe1/w5hsaZ79urdeFFUHQW2mr3qpzsWzUjgxQ==
 
 eslint-config-salesforce@^0.1.6:
   version "0.1.6"
