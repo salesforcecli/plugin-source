@@ -10,8 +10,8 @@ import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
-import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
-import { DeployReportCommandResult } from '../../../lib/formatters/deployReportResultFormatter';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { DeployReportCommandResult } from '../../../src/formatters/deployReportResultFormatter';
 
 const EXECUTABLE = path.join(process.cwd(), 'bin', 'dev');
 

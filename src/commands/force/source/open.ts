@@ -65,21 +65,12 @@ export class Open extends SourceCommand {
   }
 
   private async doOpen(): Promise<void> {
-    const typeName = this.getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile as string));
+    const typeName = getTypeNameDefinitionByFileName(path.resolve(this.flags.sourcefile as string));
     const openPath = ['FlexiPage', 'ApexPage'].includes(typeName)
       ? await this.setUpOpenPath(typeName)
       : await this.buildFrontdoorUrl();
 
     this.openResult = await this.open(openPath);
-  }
-
-  private getTypeNameDefinitionByFileName(fsPath: string): string | undefined {
-    if (fs.existsSync(fsPath)) {
-      const metadataResolver = new MetadataResolver();
-      const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
-      return components[0].type.name;
-    }
-    throw new SfError(`File not found: ${fsPath}`, 'FileNotFound');
   }
 
   private async buildFrontdoorUrl(): Promise<string> {
@@ -131,8 +122,20 @@ export class Open extends SourceCommand {
       return '_ui/flexipage/ui/FlexiPageFilterListPage';
     }
   }
+
+  // Leave it on the class because method stubbed test
+  // eslint-disable-next-line class-methods-use-this
   private openBrowser(url: string, options: OpenCommandResult): OpenCommandResult {
     void open(url);
     return options;
   }
 }
+
+const getTypeNameDefinitionByFileName = (fsPath: string): string | undefined => {
+  if (fs.existsSync(fsPath)) {
+    const metadataResolver = new MetadataResolver();
+    const components: SourceComponent[] = metadataResolver.getComponentsFromPath(fsPath);
+    return components[0].type.name;
+  }
+  throw new SfError(`File not found: ${fsPath}`, 'FileNotFound');
+};

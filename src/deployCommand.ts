@@ -17,7 +17,7 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { Messages, PollingClient, SfdxPropertyKeys, SfError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
-import { cloneJson, Duration, once, ensureArray } from '@salesforce/kit';
+import { Duration, once, ensureArray } from '@salesforce/kit';
 import {
   CoverageReporter,
   CoverageReporterOptions,
@@ -185,54 +185,12 @@ export abstract class DeployCommand extends SourceCommand {
     // only generate reports if test results are present
     if (this.deployResult.response?.numberTestsTotal) {
       if (this.flags.coverageformatters) {
-        this.createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
+        createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
       }
       if (this.flags.junit) {
         this.createJunitResults(this.deployResult);
       }
     }
-  }
-
-  protected createCoverageReport(
-    deployResult: DeployResult,
-    formatters: string[],
-    sourceDir: string,
-    resultsDir: string
-  ): void {
-    const apexCoverage = transformCoverageToApexCoverage(
-      ensureArray(deployResult.response?.details?.runTestResult?.codeCoverage)
-    );
-    fs.mkdirSync(resultsDir, { recursive: true });
-    const options = this.getCoverageFormattersOptions(formatters);
-    const coverageReport = new CoverageReporter(apexCoverage, resultsDir, sourceDir, options);
-    coverageReport.generateReports();
-  }
-
-  protected getCoverageFormattersOptions(formatters: string[] = []): CoverageReporterOptions {
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
-    const options = {} as CoverageReporterOptions;
-    // set requested report formats
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    options.reportFormats = formatters as CoverageReportFormats[];
-    // set report options to default report options for each format
-    options.reportOptions = Object.fromEntries(
-      options.reportFormats.map((format) => {
-        const reportOptions = cloneJson(DefaultReportOptions[format as string]);
-        const keys = Object.keys(reportOptions);
-        if (keys.includes('file')) {
-          reportOptions['file'] = reportOptions['file'] as string;
-          if (!keys.includes('subdir')) {
-            reportOptions['file'] = path.join('coverage', reportOptions['file']);
-          }
-        }
-        if (keys.includes('subdir')) {
-          reportOptions['subdir'] = path.join('coverage', reportOptions['subdir'] as string);
-        }
-        return [format, reportOptions];
-      })
-    );
-    return options;
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
   }
 
   protected createJunitResults(deployResult: DeployResult): void {
@@ -250,6 +208,7 @@ export abstract class DeployCommand extends SourceCommand {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   protected resolveOutputDir(
     coverageFormatters: string[],
     junit: boolean,
@@ -299,4 +258,43 @@ export const getVersionMessage = (
   return `*** ${action} v${componentSet.sourceApiVersion} metadata with ${isRest ? 'REST' : 'SOAP'} API v${
     componentSet.apiVersion
   } connection ***`;
+};
+
+export const createCoverageReport = (
+  deployResult: DeployResult,
+  formatters: string[],
+  sourceDir: string,
+  resultsDir: string
+): void => {
+  const apexCoverage = transformCoverageToApexCoverage(
+    ensureArray(deployResult.response?.details?.runTestResult?.codeCoverage)
+  );
+  fs.mkdirSync(resultsDir, { recursive: true });
+  const options = getCoverageFormattersOptions(formatters);
+  const coverageReport = new CoverageReporter(apexCoverage, resultsDir, sourceDir, options);
+  coverageReport.generateReports();
+};
+export const getCoverageFormattersOptions = (formatters: string[] = []): CoverageReporterOptions => {
+  const reportFormats = formatters as CoverageReportFormats[];
+  const reportOptions = Object.fromEntries(
+    reportFormats.map((format) => {
+      const formatDefaults = DefaultReportOptions[format];
+      return [
+        format,
+        {
+          ...formatDefaults,
+          // always join any subdir from the defaults with our custom coverage dir
+          ...('subdir' in formatDefaults ? { subdir: path.join('coverage', formatDefaults.subdir) } : {}),
+          // if there is no subdir, we also put the file in the coverage dir, otherwise leave it alone
+          ...('file' in formatDefaults && !('subdir' in formatDefaults)
+            ? { file: path.join('coverage', formatDefaults.file) }
+            : {}),
+        },
+      ];
+    })
+  );
+  return {
+    reportFormats,
+    reportOptions,
+  };
 };

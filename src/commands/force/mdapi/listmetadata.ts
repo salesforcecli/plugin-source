@@ -75,7 +75,7 @@ export class ListMetadata extends SourceCommand {
   // The only time this command would report an error is if it failed
   // flag parsing or some error during the request, and those are captured
   // by the command framework.
-  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function, class-methods-use-this */
   protected resolveSuccess(): void {}
 
   protected formatResult(): ListMetadataCommandResult {
