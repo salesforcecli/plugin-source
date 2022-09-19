@@ -11,6 +11,7 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Optional } from '@salesforce/ts-types';
 import { FileProperties, ListMetadataQuery } from 'jsforce/api/metadata';
+import { ensureArray } from '@salesforce/kit';
 import { SourceCommand } from '../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -66,13 +67,8 @@ export class ListMetadata extends SourceCommand {
       this.targetFilePath = this.ensureFlagPath({ flagName: 'resultfile', path: resultfile, type: 'file' });
     }
 
-    const query: ListMetadataQuery = { type };
-    if (folder) {
-      query.folder = folder;
-    }
-    const connection = this.org.getConnection();
-    const result = (await connection.metadata.list(query, apiversion)) || [];
-    this.listResult = Array.isArray(result) ? result : [result];
+    const query: ListMetadataQuery = folder ? { type, folder } : { type };
+    this.listResult = ensureArray(await this.org.getConnection().metadata.list(query, apiversion));
   }
 
   // No-op implementation since any list metadata status would be a success.

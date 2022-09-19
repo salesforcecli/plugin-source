@@ -15,7 +15,7 @@ import {
   TestResult,
 } from '@salesforce/apex-node';
 import { Connection } from '@salesforce/core';
-import { toArray } from './formatters/resultFormatter';
+import { ensureArray } from '@salesforce/kit';
 
 type SuccessOrFailure = Successes & Failures;
 
@@ -52,7 +52,7 @@ export function prepCoverageForDisplay(codeCoverage: CodeCoverage[]): CodeCovera
     cov.numLocations = color(`${pctCovered}%`);
 
     cov.lineNotCovered = cov.locationsNotCovered
-      ? toArray(cov.locationsNotCovered)
+      ? ensureArray(cov.locationsNotCovered)
           .map((location) => location.line)
           .join(',')
       : '';
@@ -63,7 +63,7 @@ export function prepCoverageForDisplay(codeCoverage: CodeCoverage[]): CodeCovera
 function generateCoveredLines(cov: CodeCoverage): [number[], number[]] {
   const numCovered = parseInt(cov.numLocations, 10);
   const numUncovered = parseInt(cov.numLocationsNotCovered, 10);
-  const uncoveredLines = toArray(cov.locationsNotCovered).map((location) => parseInt(location.line, 10));
+  const uncoveredLines = ensureArray(cov.locationsNotCovered).map((location) => parseInt(location.line, 10));
   const minLineNumber = uncoveredLines.length ? Math.min(...uncoveredLines) : 1;
   const lines = [...Array(numCovered + numUncovered).keys()].map((i) => i + minLineNumber);
   const coveredLines = lines.filter((line) => !uncoveredLines.includes(line));
@@ -119,8 +119,11 @@ export function transformDeployTestsResultsToTestResult(
       userId: connection.getConnectionOptions().userId,
       username: connection.getUsername(),
     },
-    tests: [...mapTestResults(toArray(runTestResult.successes)), ...mapTestResults(toArray(runTestResult.failures))],
-    codecoverage: toArray(runTestResult?.codeCoverage).map((cov) => {
+    tests: [
+      ...mapTestResults(ensureArray(runTestResult.successes)),
+      ...mapTestResults(ensureArray(runTestResult.failures)),
+    ],
+    codecoverage: ensureArray(runTestResult?.codeCoverage).map((cov) => {
       const codeCoverageResult: CodeCoverageResult = {} as CodeCoverageResult;
       codeCoverageResult.apexId = cov.id;
       codeCoverageResult.name = cov.name;

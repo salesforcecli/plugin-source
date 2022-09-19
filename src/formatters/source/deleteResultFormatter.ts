@@ -8,8 +8,9 @@ import { DeployMessage, DeployResult, FileResponse } from '@salesforce/source-de
 import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import * as chalk from 'chalk';
+import { ensureArray } from '@salesforce/kit';
 import { DeployCommandResult, DeployResultFormatter } from '../deployResultFormatter';
-import { ResultFormatterOptions, toArray } from '../resultFormatter';
+import { ResultFormatterOptions } from '../resultFormatter';
 
 export class DeleteResultFormatter extends DeployResultFormatter {
   public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result?: DeployResult) {
@@ -52,7 +53,7 @@ export class DeleteResultFormatter extends DeployResultFormatter {
         successes.push(...fileResponses);
       }
 
-      const deployMessages = toArray(this.result?.response?.details?.componentSuccesses).filter(
+      const deployMessages = ensureArray(this.result?.response?.details?.componentSuccesses).filter(
         (item) => !item.fileName.includes('package.xml')
       );
       if (deployMessages.length >= successes.length) {

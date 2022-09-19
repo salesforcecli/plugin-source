@@ -11,11 +11,10 @@ import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-// import { cloneJson } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
+import { ensureArray } from '@salesforce/kit';
 import { getRetrieveResult } from '../commands/source/retrieveResponses';
 import { PullResponse, PullResultFormatter } from '../../src/formatters/source/pullFormatter';
-import { toArray } from '../../src/formatters/resultFormatter';
 
 describe('PullFormatter', () => {
   const sandbox = sinon.createSandbox();
@@ -133,7 +132,7 @@ describe('PullFormatter', () => {
         expect(tableStub.calledOnce).to.equal(true);
         expect(styledHeaderStub.secondCall.args[0]).to.contain('Retrieved Source Warnings');
         const warnMessages = retrieveResultWarnings.response.messages;
-        const warnings = toArray(warnMessages);
+        const warnings = ensureArray(warnMessages);
         expect(tableStub.firstCall.args[0]).to.deep.equal(warnings);
       });
 

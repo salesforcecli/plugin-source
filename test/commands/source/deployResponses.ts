@@ -11,8 +11,7 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import { cloneJson } from '@salesforce/kit';
-import { toArray } from '../../../src/formatters/resultFormatter';
+import { cloneJson, ensureArray } from '@salesforce/kit';
 
 const baseDeployResponse = {
   checkOnly: false,
@@ -301,7 +300,7 @@ export const getDeployResult = (
       let fileProps: DeployMessage[] = [];
       if (type === 'failed') {
         const failures = response.details.componentFailures || [];
-        fileProps = toArray(failures);
+        fileProps = ensureArray(failures);
         return fileProps.map((comp) => ({
           fullName: comp.fullName,
           filePath: comp.fileName,
@@ -314,7 +313,7 @@ export const getDeployResult = (
         }));
       } else {
         const successes = response.details.componentSuccesses;
-        fileProps = toArray(successes);
+        fileProps = ensureArray(successes);
         return fileProps
           .filter((p) => p.fileName !== 'package.xml')
           .map((comp) => ({

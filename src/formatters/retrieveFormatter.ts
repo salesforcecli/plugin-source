@@ -15,7 +15,8 @@ import {
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
 import { UX } from '@salesforce/command';
-import { ResultFormatter, ResultFormatterOptions, toArray } from './resultFormatter';
+import { ensureArray } from '@salesforce/kit';
+import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 
@@ -31,7 +32,7 @@ export abstract class RetrieveFormatter extends ResultFormatter {
     this.result = result.response;
 
     // grab warnings
-    this.warnings = toArray(result?.response?.messages ?? []);
+    this.warnings = ensureArray(result?.response?.messages ?? []);
   }
 
   protected hasStatus(status: RequestStatus): boolean {
@@ -52,7 +53,7 @@ export abstract class RetrieveFormatter extends ResultFormatter {
     }
     const unknownMsg: RetrieveMessage[] = [{ fileName: 'unknown', problem: 'unknown' }];
     const responseMsgs = get(this.result, 'messages', unknownMsg) as RetrieveMessage | RetrieveMessage[];
-    const errMsgs = toArray(responseMsgs);
+    const errMsgs = ensureArray(responseMsgs);
     const errMsgsForDisplay = errMsgs.reduce<string>((p, c) => `${p}\n${c.fileName}: ${c.problem}`, '');
     this.ux.log(`Retrieve Failed due to: ${errMsgsForDisplay}`);
   }

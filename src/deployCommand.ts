@@ -17,7 +17,7 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { Messages, PollingClient, SfdxPropertyKeys, SfError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
-import { Duration, once } from '@salesforce/kit';
+import { Duration, once, ensureArray } from '@salesforce/kit';
 import {
   CoverageReporter,
   CoverageReporterOptions,
@@ -28,8 +28,6 @@ import {
 import { SourceCommand } from './sourceCommand';
 import { DeployData, Stash } from './stash';
 import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResult } from './coverageUtils';
-// TODO: this function needs to be moved to a shared location
-import { toArray } from './formatters/resultFormatter';
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
@@ -269,7 +267,7 @@ export const createCoverageReport = (
   resultsDir: string
 ): void => {
   const apexCoverage = transformCoverageToApexCoverage(
-    toArray(deployResult.response?.details?.runTestResult?.codeCoverage)
+    ensureArray(deployResult.response?.details?.runTestResult?.codeCoverage)
   );
   fs.mkdirSync(resultsDir, { recursive: true });
   const options = getCoverageFormattersOptions(formatters);
