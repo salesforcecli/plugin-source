@@ -30,7 +30,7 @@
     "@salesforce/plugin-command-reference": "^1.3.18",
     "@salesforce/plugin-config": "^2.3.2",
     "@salesforce/plugin-templates": "^55.1.0",
-    "@salesforce/plugin-user": "^2.0.2",
+    "@salesforce/plugin-user": "^2.1.4",
     "@salesforce/prettier-config": "^0.0.2",
     "@salesforce/source-testkit": "^1.2.11",
     "@salesforce/ts-sinon": "1.4.0",
