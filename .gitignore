@@ -9,7 +9,7 @@ package-lock.json
 # debug logs
 npm-error.log
 yarn-error.log
-lerna-debug.log
+
 
 # compile source
 lib
@@ -40,5 +40,4 @@ node_modules
 .DS_Store
 .idea
 
-# ignore generated nut tests
-test/nuts/generated/
+oclif.manifest.json
