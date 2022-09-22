@@ -7,7 +7,7 @@
 
 import * as fs from 'fs';
 import * as sinon from 'sinon';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import { Org } from '@salesforce/core';
 import { FileProperties } from 'jsforce/api/metadata';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
@@ -81,15 +81,6 @@ describe('force:mdapi:listmetadata', () => {
 
   afterEach(() => {
     sandbox.restore();
-  });
-
-  it('should fail without required metadatatype flag', async () => {
-    try {
-      await runListMetadataCmd([]);
-      assert(false, 'expected mdapi:listmetadata to error');
-    } catch (e: unknown) {
-      expect((e as Error).message).to.include('Missing required flag:');
-    }
   });
 
   it('should report when no matching metadata (json)', async () => {

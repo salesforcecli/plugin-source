@@ -110,15 +110,6 @@ describe(`force:${commandName}`, () => {
     sandbox.restore();
   });
 
-  it('should error without required rootdir flag', async () => {
-    try {
-      await runConvertCmd([]);
-      assert(false, `expected ${commandName} to error`);
-    } catch (e: unknown) {
-      expect((e as Error).message).to.include('Missing required flag:');
-    }
-  });
-
   it('should error when rootdir is not a directory', async () => {
     const fileName = ' imaFile.txt '; // spaces ensure trim() is done
     const trimmedFileName = fileName.trim();
