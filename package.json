@@ -34,6 +34,7 @@
     "@salesforce/prettier-config": "^0.0.2",
     "@salesforce/source-testkit": "^1.2.11",
     "@salesforce/ts-sinon": "1.4.0",
+    "@salesforce/ts-sinon": "1.3.21",
     "@types/archiver": "^5.1.1",
     "@types/debug": "^4.1.7",
     "@types/proxy-from-env": "^1.0.1",
