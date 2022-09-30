@@ -80,9 +80,7 @@ describe('force:source:delete', () => {
     stubMethod(sandbox, UX.prototype, 'log');
     stubMethod(sandbox, ComponentSet.prototype, 'deploy').resolves({
       id: '123',
-      pollStatus: () => {
-        return exampleDeleteResponse;
-      },
+      pollStatus: () => exampleDeleteResponse,
     });
     stubMethod(sandbox, cmd, 'handlePrompt').returns(confirm);
     fsUnlink = stubMethod(sandbox, fsPromises, 'unlink').resolves(true);
@@ -96,9 +94,7 @@ describe('force:source:delete', () => {
   beforeEach(() => {
     resolveProjectConfigStub = sandbox.stub();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
-      toArray: () => {
-        return [new SourceComponent(exampleSourceComponent)];
-      },
+      toArray: () => [new SourceComponent(exampleSourceComponent)],
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
   });
@@ -198,9 +194,7 @@ describe('force:source:delete', () => {
       },
     });
     stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
-      toArray: () => {
-        return [comp];
-      },
+      toArray: () => [comp],
     });
     const helperPath = join('dreamhouse-lwc', 'force-app', 'main', 'default', 'lwc', 'mylwc', 'helper.js');
 
