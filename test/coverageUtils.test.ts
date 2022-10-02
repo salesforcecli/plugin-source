@@ -200,9 +200,7 @@ describe('transform md RunTestResult', () => {
         username: testData.username,
       }),
     });
-    sandboxStub.stub(mockConnection, 'instanceUrl').get(() => {
-      return 'https://na139.salesforce.com';
-    });
+    sandboxStub.stub(mockConnection, 'instanceUrl').get(() => 'https://na139.salesforce.com');
   });
 
   afterEach(async () => {

@@ -68,13 +68,11 @@ describe('metadata types that go in folders', () => {
       },
     ];
 
-    const getRelativeFileResponses = (resp: FileResponse[]) => {
-      return resp.map((s) => {
+    const getRelativeFileResponses = (resp: FileResponse[]) => resp.map((s) => {
         // grab the last 2 directories with the file only
         s.filePath = s.filePath.split(path.sep).slice(-3).join(path.sep);
         return s;
       });
-    };
 
     it('can generate manifest for just the emailTemplates', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');

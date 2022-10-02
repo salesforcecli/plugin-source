@@ -56,8 +56,7 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
 
     let originalState: Dictionary<string>;
 
-    const filesAreInOriginalState = async () => {
-      return Promise.all([
+    const filesAreInOriginalState = async () => Promise.all([
         testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>'),
         testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>'),
         testkit.expect.filesToContainString(
@@ -71,7 +70,6 @@ context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
           '<fullName>force_app_Label_2</fullName>'
         ),
       ]);
-    };
 
     before(async () => {
       originalState = await testkit.readGlobs([forceAppLabels, myAppLabels]);
