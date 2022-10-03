@@ -25,6 +25,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

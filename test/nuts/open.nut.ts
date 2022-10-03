@@ -27,6 +27,7 @@ describe('force:source:open', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

@@ -20,6 +20,7 @@ describe('multiple pkgDirectories pushed as one deploy', () => {
       project: {
         gitClone: 'https://github.com/salesforcecli/sample-project-multiple-packages',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

@@ -21,6 +21,7 @@ describe('translations', () => {
       project: {
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'customTranslationProject'),
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

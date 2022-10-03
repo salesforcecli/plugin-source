@@ -20,6 +20,7 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       project: {
         gitClone: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

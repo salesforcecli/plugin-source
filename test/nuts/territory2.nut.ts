@@ -22,6 +22,7 @@ describe('territories', () => {
         // special thanks to Scott Wells for this sample project
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'territoryProject'),
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

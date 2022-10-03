@@ -32,6 +32,7 @@ describe('remote changes', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

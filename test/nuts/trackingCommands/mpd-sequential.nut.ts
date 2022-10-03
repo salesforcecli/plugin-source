@@ -21,6 +21,7 @@ describe('multiple pkgDirs deployed sequentially', () => {
       project: {
         gitClone: 'https://github.com/salesforcecli/sample-project-multiple-packages',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

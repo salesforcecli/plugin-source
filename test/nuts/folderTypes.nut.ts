@@ -20,6 +20,7 @@ describe('metadata types that go in folders', () => {
       project: {
         gitClone: 'https://github.com/mshanemc/nestedFolders',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

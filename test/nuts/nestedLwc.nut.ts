@@ -19,6 +19,7 @@ describe('Nested LWCs', () => {
       project: {
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'nestedLWCProject'),
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',

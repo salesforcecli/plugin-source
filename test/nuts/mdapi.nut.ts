@@ -40,6 +40,7 @@ describe('1k files in mdapi:deploy', () => {
       project: {
         name: 'large-repo',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',
@@ -92,6 +93,7 @@ describe('mdapi NUTs', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
+      devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
           executable: 'sfdx',
