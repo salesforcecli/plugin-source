@@ -7,15 +7,12 @@
 import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
-// DO NOT TOUCH. generateNuts.ts will insert these values
-const EXECUTABLE = '%EXECUTABLE%';
-context('MPD Deploy NUTs [exec: %EXECUTABLE%]', () => {
+context('MPD Deploy NUTs', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      executable: EXECUTABLE,
       nut: __filename,
     });
   });

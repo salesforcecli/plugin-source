@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'shelljs';
 import { expect } from 'chai';
-import { execCmd, SfdxExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
+import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
@@ -40,7 +40,14 @@ describe('1k files in mdapi:deploy', () => {
       project: {
         name: 'large-repo',
       },
-      setupCommands: ['sfdx force:org:create -d 1 -s -f config/project-scratch-def.json'],
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          config: path.join('config', 'project-scratch-def.json'),
+          setDefault: true,
+          duration: 1,
+        },
+      ],
     });
     // create some number of files
     const classdir = path.join(session.project.dir, 'force-app', 'main', 'default', 'classes');
@@ -85,16 +92,25 @@ describe('mdapi NUTs', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
-      setupCommands: [
-        // default org
-        'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
-        // required if running apex tests (WITH_SECURITY_ENFORCED)
-        'sfdx force:source:deploy -p force-app',
-        'sfdx force:user:permset:assign -n dreamhouse',
-        // non default org
-        'sfdx force:org:create -d 1 -f config/project-scratch-def.json -a nonDefaultOrg',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          config: path.join('config', 'project-scratch-def.json'),
+          setDefault: true,
+          duration: 1,
+        },
+        {
+          executable: 'sfdx',
+          config: path.join('config', 'project-scratch-def.json'),
+          duration: 1,
+          alias: 'nonDefaultOrg',
+        },
       ],
     });
+
+    execCmd('force:source:deploy -p force-app', { cli: 'sfdx' });
+    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx' });
+
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
 
@@ -236,7 +252,7 @@ describe('mdapi NUTs', () => {
   });
 
   describe('mdapi:deploy:cancel', () => {
-    const cancelAssertions = (deployId: string, result: SfdxExecCmdResult<DeployCancelCommandResult>): void => {
+    const cancelAssertions = (deployId: string, result: ExecCmdResult<DeployCancelCommandResult>): void => {
       if (result.jsonOutput.status === 0) {
         // a successful cancel
         const json = result.jsonOutput.result;

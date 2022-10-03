@@ -20,7 +20,15 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       project: {
         gitClone: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          wait: 10,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
+      ],
     });
   });
 

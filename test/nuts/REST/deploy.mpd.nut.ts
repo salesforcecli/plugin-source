@@ -13,8 +13,6 @@ import { expect } from 'chai';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { DeployReportCommandResult } from '../../../src/formatters/deployReportResultFormatter';
 
-const EXECUTABLE = path.join(process.cwd(), 'bin', 'dev');
-
 const repo = {
   name: 'sample-project-multiple-packages',
   gitUrl: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
@@ -71,14 +69,13 @@ const repo = {
   },
 };
 
-context(`MPD REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
+context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     process.env.SFDX_REST_DEPLOY = 'true';
     testkit = await SourceTestkit.create({
       repository: repo.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
   });

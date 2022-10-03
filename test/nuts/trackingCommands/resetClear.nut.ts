@@ -43,13 +43,21 @@ describe('reset and clear', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
+      ],
     });
-    orgId = (session.setup[0] as { result: { orgId: string } }).result?.orgId;
+
+    orgId = session.orgs.get('default').orgId;
     trackingFileFolder = path.join(session?.project.dir, '.sf', 'orgs', orgId);
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: session.orgs.get('default').username,
       }),
     });
   });

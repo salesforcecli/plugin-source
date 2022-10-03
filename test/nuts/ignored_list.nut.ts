@@ -9,7 +9,6 @@ import * as os from 'os';
 import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { AuthStrategy } from '@salesforce/cli-plugins-testkit/lib/hubAuth';
 import { SourceIgnoredResults } from '../../src/commands/force/source/ignored/list';
 
 describe('force:source:ignored:list', () => {
@@ -25,7 +24,6 @@ describe('force:source:ignored:list', () => {
       project: {
         gitClone: 'https://github.com/salesforcecli/sample-project-multiple-packages',
       },
-      authStrategy: AuthStrategy.NONE,
     });
     forceIgnorePath = path.join(session.project.dir, '.forceignore');
     originalForceIgnore = await fs.promises.readFile(forceIgnorePath, 'utf8');

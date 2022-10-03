@@ -22,8 +22,14 @@ describe('territories', () => {
         // special thanks to Scott Wells for this sample project
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'territoryProject'),
       },
-      setupCommands: [
-        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          wait: 10,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
       ],
     });
     projectPath = path.join(session.project.dir, 'force-app', 'main', 'default');

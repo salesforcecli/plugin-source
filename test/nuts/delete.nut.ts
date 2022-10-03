@@ -37,7 +37,6 @@ describe('source:delete NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       nut: __filename,
-      executable: path.join(process.cwd(), 'bin', 'dev'),
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
     execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0 });

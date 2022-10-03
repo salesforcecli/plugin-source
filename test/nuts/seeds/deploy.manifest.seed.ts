@@ -13,15 +13,13 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
-context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Deploy manifest NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
     // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
@@ -57,8 +55,7 @@ context('Deploy manifest NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
 
     it('should throw an error if the package.xml is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--manifest DOES_NOT_EXIST.xml', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'InvalidManifestError';
-      testkit.expect.errorToHaveName(deploy, expectedError);
+      testkit.expect.errorToHaveName(deploy, 'SfError');
     });
   });
 });

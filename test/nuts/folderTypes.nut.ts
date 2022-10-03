@@ -20,8 +20,14 @@ describe('metadata types that go in folders', () => {
       project: {
         gitClone: 'https://github.com/mshanemc/nestedFolders',
       },
-      setupCommands: [
-        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          config: path.join('config', 'project-scratch-def.json'),
+          setDefault: true,
+          wait: 10,
+          duration: 1,
+        },
       ],
     });
   });

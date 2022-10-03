@@ -19,9 +19,13 @@ describe('Nested LWCs', () => {
       project: {
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'nestedLWCProject'),
       },
-      setupCommands: [
-        // default org
-        'sfdx force:org:create -d 1 -s -f config/project-scratch-def.json',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
       ],
     });
   });

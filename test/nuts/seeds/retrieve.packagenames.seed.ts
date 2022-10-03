@@ -9,19 +9,15 @@ import * as path from 'path';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { exec } from 'shelljs';
 
-// DO NOT TOUCH. generateNuts.ts will insert these values
-const EXECUTABLE = '%EXECUTABLE%';
-
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const ESCAPEROOM = { id: '04t0P000000JFs1QAG', name: 'DFXP Escape Room' };
 
-context('Retrieve packagenames NUTs [exec: %EXECUTABLE%]', () => {
+context('Retrieve packagenames NUTs', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      executable: EXECUTABLE,
       nut: __filename,
     });
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
