@@ -1053,10 +1053,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.0.1.tgz#91eaacb89c4cf445dc13db4fb49368527185fd21"
-  integrity sha512-cRiNLHNxQg1YyM6s8Js0J0Yi6zhVDKkbwQ7lAt+Lkb4CRFuu7cO65GbEXkOq6td01dBI4DkwWf8Wdi7+A5a9lQ==
+"@salesforce/cli-plugins-testkit@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.0.2.tgz#34bdb477500850ba62d517983ec8a6b8747dfda0"
+  integrity sha512-+/vpP0SjbSHISFnskkYXujcwDIRbXwK37hsEkQIb6zdth1wMr3M41PCsiNksDLMXdkH49QenRR1rYRWVckH73Q==
   dependencies:
     "@salesforce/core" "^3.30.9"
     "@salesforce/kit" "^1.6.1"
@@ -1297,12 +1297,12 @@
     proxy-from-env "^1.1.0"
     unzipper "0.10.11"
 
-"@salesforce/source-testkit@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.0.1.tgz#7acb27d0005caa5ea4e02db38ba7dad6c134a93e"
-  integrity sha512-Yz2tv/OzmQu9/8CBXxwnUwUdraRMqK805jzMNyC5pkrCpSbA7y5uj3pfyTk2kgaQ58TlSzT+wwVk99CVSavleA==
+"@salesforce/source-testkit@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.0.2.tgz#002face5bb4c78a802bde56898943082c3543b5f"
+  integrity sha512-Hxo8/wjCje8hwYKPT6ts8ZKEMKrdLhZEvVYymel2z/kY2lAJ87QDabqOsZtYfpW903s7DlQEuhxfwsO6epFZwQ==
   dependencies:
-    "@salesforce/cli-plugins-testkit" "^3.0.1"
+    "@salesforce/cli-plugins-testkit" "^3.0.2"
     "@salesforce/core" "^3.30.2"
     "@salesforce/kit" "^1.5.42"
     "@salesforce/source-deploy-retrieve" "^6.8.2"
