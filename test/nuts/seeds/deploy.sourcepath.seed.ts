@@ -13,15 +13,13 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
-context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Deploy sourcepath NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
   });
@@ -49,8 +47,8 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'SourcePathInvalid';
-      testkit.expect.errorToHaveName(deploy, expectedError);
+      testkit.expect.errorToHaveName(deploy, 'SfError');
+      testkit.expect.errorToHaveMessage(deploy, 'not a valid source file path');
     });
   });
 });

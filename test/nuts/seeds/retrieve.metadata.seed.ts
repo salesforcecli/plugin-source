@@ -12,15 +12,13 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
-context('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Retrieve metadata NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
     await testkit.trackGlobs(testkit.packageGlobs);
@@ -48,7 +46,7 @@ context('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
     // the LWC is in the dreamhouse-lwc repo and is only deployed to dreamhouse projects
     // this sufficiently tests this metadata is WAD
-    if (REPO.gitUrl.includes('dreamhouse') && testkit && testkit.isLocalExecutable()) {
+    if (REPO.gitUrl.includes('dreamhouse') && testkit) {
       it('should ensure that -meta.xml file belongs to the .js not .css', async () => {
         // this will fail with toolbelt powered sfdx, but should pass with SDRL powered sfdx
         /**
@@ -72,8 +70,7 @@ context('Retrieve metadata NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () =>
 
     it('should throw an error if the metadata is not valid', async () => {
       const retrieve = (await testkit.retrieve({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 })) as JsonMap;
-      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'UnsupportedType';
-      testkit.expect.errorToHaveName(retrieve, expectedError);
+      testkit.expect.errorToHaveName(retrieve, 'SfError');
     });
   });
 });

@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import { expect } from '@salesforce/command/lib/test';
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
-import { AnyJson, Dictionary, getString, isArray } from '@salesforce/ts-types';
+import { Dictionary } from '@salesforce/ts-types';
 
 const flexiPagePath = 'force-app/main/default/flexipages/Property_Explorer.flexipage-meta.xml';
 const layoutDir = 'force-app/main/default/layouts';
@@ -27,16 +27,24 @@ describe('force:source:open', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
-      setupCommands: [
-        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
-        'sfdx force:source:deploy -p force-app',
+      devhubAuthStrategy: 'AUTO',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          wait: 10,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
       ],
     });
 
-    if (isArray<AnyJson>(session.setup)) {
-      defaultUsername = getString(session.setup[0], 'result.username');
-      defaultUserOrgId = getString(session.setup[0], 'result.orgId');
-    }
+    execCmd('force:source:deploy -p force-app', { cli: 'sfdx' });
+
+    const defaultOrg = session.orgs.get('default');
+    defaultUsername = defaultOrg.username;
+    defaultUserOrgId = defaultOrg.orgId;
+
     await fs.promises.writeFile(
       path.join(session.project.dir, layoutFilePath),
       '<layout xmlns="http://soap.sforce.com/2006/04/metadata">\n</layout>'

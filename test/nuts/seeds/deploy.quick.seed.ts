@@ -12,7 +12,6 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
 context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
@@ -20,7 +19,6 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
   });

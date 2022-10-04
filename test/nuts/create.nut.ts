@@ -21,7 +21,17 @@ describe('force:source:manifest:create', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
       },
-      setupCommands: [`sfdx force:org:create -f config/project-scratch-def.json -a ${orgAlias} -s -w 10 -d 1`],
+      devhubAuthStrategy: 'AUTO',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          config: join('config', 'project-scratch-def.json'),
+          alias: orgAlias,
+          setDefault: true,
+          wait: 10,
+          duration: 1,
+        },
+      ],
     });
   });
 

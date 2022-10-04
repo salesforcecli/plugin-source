@@ -25,7 +25,16 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      devhubAuthStrategy: 'AUTO',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          wait: 10,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
+      ],
     });
 
     // we also need to remove profiles from the forceignore

@@ -14,15 +14,13 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
-context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Convert NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
       orgless: true,
     });
@@ -141,8 +139,9 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         id: string;
         result: { id: string };
       }>;
-      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'UnsupportedType';
-      testkit.expect.errorToHaveName(convert, expectedError);
+
+      testkit.expect.errorToHaveName(convert, 'SfError');
+      testkit.expect.errorToHaveMessage(convert, 'specified metadata type is unsupported');
     });
   });
 
@@ -175,8 +174,9 @@ context('Convert NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
         id: string;
         result: { id: string };
       }>;
-      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'SourcePathInvalid';
-      testkit.expect.errorToHaveName(convert, expectedError);
+
+      testkit.expect.errorToHaveName(convert, 'SfError');
+      testkit.expect.errorToHaveMessage(convert, 'not a valid source file path');
     });
   });
 });

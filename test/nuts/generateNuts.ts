@@ -6,10 +6,9 @@
  */
 
 import * as path from 'path';
-import * as os from 'os';
 import * as fs from 'fs';
 import * as shelljs from 'shelljs';
-import { EXECUTABLES, RepoConfig, TEST_REPOS_MAP } from './testMatrix';
+import { RepoConfig, TEST_REPOS_MAP } from './testMatrix';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
 const SEED_EXCLUDE = process.env.PLUGIN_SOURCE_SEED_EXCLUDE;
@@ -28,29 +27,12 @@ function parseRepoName(repo?: RepoConfig): string {
   return repo ? repo.gitUrl.split('/').reverse()[0].replace('.git', '') : '';
 }
 
-function generateNut(
-  generatedDir: string,
-  seedName: string,
-  seedContents: string,
-  executable: string,
-  repo?: RepoConfig
-): void {
+function generateNut(generatedDir: string, seedName: string, seedContents: string, repo?: RepoConfig): void {
   const repoName = parseRepoName(repo);
-  const executableName = path.basename(executable);
-  const nutFileName = repoName
-    ? `${seedName}.${repoName}.${executableName}.nut.ts`
-    : `${seedName}.${executableName}.nut.ts`;
+  const nutFileName = repoName ? `${seedName}.${repoName}.nut.ts` : `${seedName}.nut.ts`;
   const nutFilePath = path.join(generatedDir, nutFileName);
 
-  // On windows the executable path is being changed to
-  // single backslashes so ensure proper path.sep.
-  if (os.platform() === 'win32') {
-    executable = executable.replace(/\\/g, '\\\\');
-  }
-  const contents = seedContents
-    .replace(/%REPO_URL%/g, repo?.gitUrl)
-    .replace(/%EXECUTABLE%/g, executable)
-    .replace(/%REPO_NAME%/g, repoName);
+  const contents = seedContents.replace(/%REPO_URL%/g, repo?.gitUrl).replace(/%REPO_NAME%/g, repoName);
   fs.writeFileSync(nutFilePath, contents);
 }
 
@@ -62,16 +44,14 @@ function generateNuts(): void {
   for (const seed of seeds) {
     const seedName = path.basename(seed).replace('.seed.ts', '');
     const seedContents = fs.readFileSync(seed).toString();
-    for (const executable of EXECUTABLES.filter((e) => !e.skip)) {
-      const hasRepo = /const\sREPO\s=\s/.test(seedContents);
-      if (hasRepo) {
-        const repos = Array.from(TEST_REPOS_MAP.values()).filter((r) => !r.skip);
-        for (const repo of repos) {
-          generateNut(generatedDir, seedName, seedContents, executable.path, repo);
-        }
-      } else {
-        generateNut(generatedDir, seedName, seedContents, executable.path);
+    const hasRepo = /const\sREPO\s=\s/.test(seedContents);
+    if (hasRepo) {
+      const repos = Array.from(TEST_REPOS_MAP.values()).filter((r) => !r.skip);
+      for (const repo of repos) {
+        generateNut(generatedDir, seedName, seedContents, repo);
       }
+    } else {
+      generateNut(generatedDir, seedName, seedContents);
     }
   }
 }

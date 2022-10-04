@@ -21,8 +21,15 @@ describe('translations', () => {
       project: {
         sourceDir: path.join(process.cwd(), 'test', 'nuts', 'customTranslationProject'),
       },
-      setupCommands: [
-        'sfdx force:org:create -f config/project-scratch-def.json --setdefaultusername --wait 10 --durationdays 1',
+      devhubAuthStrategy: 'AUTO',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          wait: 10,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
       ],
     });
     projectPath = path.join(session.project.dir, 'force-app', 'main', 'default');

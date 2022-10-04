@@ -16,15 +16,13 @@ import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelR
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
-context('Async Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Async Deploy NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
     // an initial deploy to initialize testkit source tracking

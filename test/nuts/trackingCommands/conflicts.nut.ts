@@ -27,7 +27,16 @@ describe('conflict detection and resolution', () => {
       project: {
         gitClone: 'https://github.com/trailheadapps/ebikes-lwc',
       },
-      setupCommands: [`sfdx force:org:create -d 1 -s -f ${path.join('config', 'project-scratch-def.json')}`],
+      devhubAuthStrategy: 'AUTO',
+      scratchOrgs: [
+        {
+          executable: 'sfdx',
+          duration: 1,
+          setDefault: true,
+          wait: 10,
+          config: path.join('config', 'project-scratch-def.json'),
+        },
+      ],
     });
   });
 
@@ -37,7 +46,6 @@ describe('conflict detection and resolution', () => {
   });
 
   it('pushes to initiate the remote', () => {
-    // This would go in setupCommands but we want it to use the bin/dev version
     const pushResult = execCmd<PushResponse>('force:source:push --json');
     expect(pushResult.jsonOutput?.status, JSON.stringify(pushResult)).equals(0);
     const pushedSource = pushResult.jsonOutput.result.pushedSource;
@@ -51,7 +59,7 @@ describe('conflict detection and resolution', () => {
   it('edits a remote file', async () => {
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: (session.setup[0] as { result: { username: string } }).result?.username,
+        username: session.orgs.get('default').username,
       }),
     });
     const app = await conn.singleRecordQuery<{ Id: string; Metadata: any }>(

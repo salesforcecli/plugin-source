@@ -6,20 +6,8 @@
  */
 
 import * as path from 'path';
-import { Env, set, keyBy } from '@salesforce/kit';
+import { set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
-
-const env = new Env();
-
-/**
- * The executables we want to test against. These can be toggled with environment variables
- */
-export const EXECUTABLES = [
-  {
-    path: path.join(process.cwd(), 'bin', 'dev'), // path to the plugin's executable
-    skip: !env.getBoolean('PLUGIN_SOURCE_TEST_BIN_RUN', true),
-  },
-];
 
 /**
  * The repositories we want to test against. See the type definition for explanation

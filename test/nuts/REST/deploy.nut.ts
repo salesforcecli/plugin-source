@@ -12,7 +12,6 @@ import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
 import { DeployReportCommandResult } from '../../../src/formatters/deployReportResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-const EXECUTABLE = path.join(process.cwd(), 'bin', 'dev');
 
 const repo = {
   name: 'dreamhouse-lwc',
@@ -44,14 +43,13 @@ const repo = {
   },
 };
 
-context(`REST Deploy NUTs [name: ${repo.name}] [exec: ${EXECUTABLE} ]`, () => {
+context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     process.env.SFDX_REST_DEPLOY = 'true';
     testkit = await SourceTestkit.create({
       repository: repo.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
   });

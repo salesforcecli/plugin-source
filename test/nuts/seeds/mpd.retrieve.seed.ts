@@ -10,16 +10,12 @@ import * as fs from 'fs';
 import { Dictionary } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
-// DO NOT TOUCH. generateNuts.ts will insert these values
-const EXECUTABLE = '%EXECUTABLE%';
-
-context('MPD Retrieve NUTs [exec: %EXECUTABLE%]', () => {
+context('MPD Retrieve NUTs', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      executable: EXECUTABLE,
       nut: __filename,
     });
     await testkit.trackGlobs(testkit.packageGlobs);

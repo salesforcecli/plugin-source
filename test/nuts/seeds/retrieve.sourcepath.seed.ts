@@ -12,15 +12,13 @@ import { TEST_REPOS_MAP } from '../testMatrix';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
-const EXECUTABLE = '%EXECUTABLE%';
 
-context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
+context('Retrieve Sourcepath NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
 
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      executable: EXECUTABLE,
       nut: __filename,
     });
     await testkit.trackGlobs(testkit.packageGlobs);
@@ -49,8 +47,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () 
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const retrieve = (await testkit.retrieve({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 })) as JsonMap;
-      const expectedError = testkit.isLocalExecutable() ? 'SfError' : 'UnexpectedFileFound';
-      testkit.expect.errorToHaveName(retrieve, expectedError);
+      testkit.expect.errorToHaveName(retrieve, 'SfError');
     });
   });
 });
