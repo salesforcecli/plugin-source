@@ -56,8 +56,7 @@ describe('translations', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify(pushResult, undefined, 2));
+      expect(pushResult.pushedSource.every((s) => s.type === 'CustomObjectTranslation')).to.be.true;
     });
 
     it('sees no local changes', () => {
