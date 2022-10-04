@@ -8,8 +8,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
+import { PushResponse } from 'src/formatters/source/pushResultFormatter';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
+import { StatusResult } from '../../src/formatters/source/statusFormatter';
 
 describe('translations', () => {
   let session: TestSession;
@@ -31,6 +33,39 @@ describe('translations', () => {
 
   after(async () => {
     await session?.clean();
+  });
+  describe('tracking/push', () => {
+    it('can deploy the whole project', async () => {
+      execCmd('force:source:push --json', {
+        ensureExitCode: 0,
+      });
+    });
+
+    it('modify and see local change', async () => {
+      const fieldFile = path.join(translationPath, 'customField__c.fieldTranslation-meta.xml');
+      const original = await fs.promises.readFile(fieldFile, 'utf8');
+      await fs.promises.writeFile(fieldFile, original.replace('spanish', 'español'));
+      const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+
+      expect(statusResult[0].type).to.equal('CustomObjectTranslation');
+    });
+
+    it('push local change', async () => {
+      const pushResult = execCmd<PushResponse>('force:source:push --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify(pushResult, undefined, 2));
+    });
+
+    it('sees no local changes', () => {
+      const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+      expect(statusResult).to.deep.equal([]);
+    });
   });
 
   describe('manifest', () => {
@@ -94,14 +129,14 @@ describe('translations', () => {
           });
         });
 
-        it('can "deploy" CFTs', async () => {
-          // should not actually deploy anything
-          execCmd(
+        it('can deploy CFTs', async () => {
+          const result = execCmd<DeployCommandResult>(
             `force:source:deploy -p ${path.join(translationPath, 'customField__c.fieldTranslation-meta.xml')} --json`,
             {
               ensureExitCode: 0,
             }
           );
+          expect(result.jsonOutput.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
         });
 
         it('can deploy COT', async () => {
