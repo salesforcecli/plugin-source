@@ -30,7 +30,7 @@ describe('forceignore changes', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        name: 'forceIngoreTest',
+        name: 'forceIgnoreTest',
       },
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
@@ -43,7 +43,8 @@ describe('forceignore changes', () => {
       ],
     });
 
-    execCmd(`force:apex:class:create -n IgnoreTest --ouputdir ${classdir}`, { cli: 'sfdx' });
+    execCmd(`force:apex:class:create -n IgnoreTest --outputdir ${classdir}`, { cli: 'sfdx' });
+
     originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
