@@ -81,7 +81,9 @@ describe('translations', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
-      expect(deployResults.deployedSource.length).to.equal(6);
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify(deployResults, undefined, 2));
+      expect(deployResults.deployedSource.length).to.equal(7);
     });
 
     it('retrieve without local metadata', async () => {
@@ -91,6 +93,8 @@ describe('translations', () => {
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify(retrieveResults, undefined, 2));
       expect(retrieveResults.inboundFiles).to.have.length(7);
     });
   });
