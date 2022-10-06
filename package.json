@@ -12,7 +12,7 @@
     "@salesforce/command": "^5.2.1",
     "@salesforce/core": "^3.26.2",
     "@salesforce/kit": "^1.6.0",
-    "@salesforce/source-deploy-retrieve": "^6.8.5",
+    "@salesforce/source-deploy-retrieve": "^6.8.6",
     "@salesforce/source-tracking": "^2.2.8",
     "chalk": "^4.1.2",
     "got": "^11.8.3",
@@ -66,7 +66,7 @@
     "shx": "0.3.4",
     "sinon": "10.0.0",
     "ts-node": "^10.4.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.4"
   },
   "config": {
     "commitizen": {
