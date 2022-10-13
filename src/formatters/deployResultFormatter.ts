@@ -89,7 +89,9 @@ export class DeployResultFormatter extends ResultFormatter {
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
-      throw new SfError(messages.getMessage('deployFailed'), 'DeployFailed');
+      // Add error message directly on the DeployResult (e.g., a GACK)
+      const errMsg = this.getResponse()?.errorMessage ?? '';
+      throw new SfError(messages.getMessage('deployFailed', [errMsg]), 'DeployFailed');
     }
 
     this.ux.log(messages.getMessage(this.isCheckOnly() ? 'checkOnlySuccessVerbose' : 'deploySuccess'));
@@ -180,14 +182,16 @@ export class DeployResultFormatter extends ResultFormatter {
         });
       }
 
-      this.ux.log('');
-      this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
-      this.ux.table(failures, {
-        problemType: { header: 'Type' },
-        fullName: { header: 'Name' },
-        error: { header: 'Problem' },
-      });
-      this.ux.log('');
+      if (failures.length) {
+        this.ux.log('');
+        this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
+        this.ux.table(failures, {
+          problemType: { header: 'Type' },
+          fullName: { header: 'Name' },
+          error: { header: 'Problem' },
+        });
+        this.ux.log('');
+      }
     }
   }
 

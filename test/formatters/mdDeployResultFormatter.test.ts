@@ -123,6 +123,27 @@ describe('mdDeployResultFormatter', () => {
       }
     });
 
+    it('should output as expected for a deploy failure (GACK)', async () => {
+      const errorMessage =
+        'UNKNOWN_EXCEPTION: An unexpected error occurred. Please include this ErrorId if you contact support: 1730955361-49792 (-1117026034)';
+      const deployFailure = getDeployResult('failed', { errorMessage });
+      deployFailure.response.details.componentFailures = [];
+      deployFailure.response.details.componentSuccesses = [];
+      delete deployFailure.response.details.runTestResult;
+      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployFailure);
+      sandbox.stub(formatter, 'isSuccess').returns(false);
+
+      try {
+        formatter.display();
+        expect(false, 'should have thrown a DeployFailed error').to.be.true;
+      } catch (err) {
+        const error = err as Error;
+        expect(error.message).to.equal(`The metadata deploy operation failed. ${errorMessage}`);
+        expect(styledHeaderStub.called).to.equal(false);
+        expect(tableStub.called).to.equal(false);
+      }
+    });
+
     it('should output as expected for a test failure with verbose', async () => {
       process.exitCode = 1;
       const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestFailure);

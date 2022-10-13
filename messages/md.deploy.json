@@ -48,7 +48,7 @@
     "soapDeploy": "Deploy metadata with SOAP API instead of the default REST API. Because SOAP API has a lower .ZIP file size limit (400 MB uncompressed, 39 MB compressed), Salesforce recommends REST API deployment. This flag provides backwards compatibility with API version 50.0 and earlier when deploy used SOAP API by default."
   },
   "noRestDeploy": "REST deploy is not available for this org. This feature is currently for internal Salesforce use only.",
-  "deployFailed": "The metadata deploy operation failed.",
+  "deployFailed": "The metadata deploy operation failed. %s",
   "asyncDeployQueued": "Deploy has been queued.",
   "asyncDeployCancel": "Run sfdx force:mdapi:deploy:cancel -i %s -u %s to cancel the deploy.",
   "asyncDeployReport": "Run sfdx force:mdapi:deploy:report -i %s -u %s to get the latest status.",

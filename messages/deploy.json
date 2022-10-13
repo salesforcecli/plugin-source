@@ -84,7 +84,7 @@
   "checkOnlySuccessVerbose": "Successfully validated the deployment.",
   "deploySuccess": "Deploy Succeeded.",
   "deployCanceled": "The deployment has been canceled by %s.",
-  "deployFailed": "Deploy failed.",
+  "deployFailed": "Deploy failed. %s",
   "asyncDeployQueued": "Deploy has been queued.",
   "asyncDeployCancel": "Run sfdx force:source:deploy:cancel -i %s -u %s to cancel the deploy.",
   "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s -u %s to get the latest status.",
