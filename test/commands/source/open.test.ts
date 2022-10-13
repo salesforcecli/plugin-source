@@ -108,9 +108,7 @@ describe('force:source:open', () => {
       );
       stubMethod(sandbox, cmd, 'openBrowser').callsFake((url: string, options: OpenCommandResult) => options);
       stubMethod(sandbox, AuthInfo, 'create').resolves({
-        getOrgFrontDoorUrl: () => {
-          return frontDoorUrl;
-        },
+        getOrgFrontDoorUrl: () => frontDoorUrl,
       });
       stubMethod(sandbox, fs, 'existsSync').returns(true);
       getComponentsFromPathStub = stubMethod(sandbox, MetadataResolver.prototype, 'getComponentsFromPath').callsFake(

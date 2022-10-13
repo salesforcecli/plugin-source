@@ -121,9 +121,7 @@ describe('force:source:deploy', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       deploy: deployStub,
       getPackageXml: () => packageXml,
-      toArray: () => {
-        return [exampleSourceComponent];
-      },
+      toArray: () => [exampleSourceComponent],
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
   });
