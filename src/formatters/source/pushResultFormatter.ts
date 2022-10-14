@@ -49,7 +49,7 @@ export class PushResultFormatter extends ResultFormatter {
   public getJson(): PushResponse {
     // throws a particular json structure.  commandName property will be appended by sfdxCommand when this throws
     if (process.exitCode !== 0) {
-      const error = new SfError(messages.getMessage('sourcepushFailed'), 'DeployFailed', [], process.exitCode);
+      const error = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
       const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
       error.setData(errorData);
       error['result'] = errorData;
@@ -85,7 +85,14 @@ export class PushResultFormatter extends ResultFormatter {
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
-      throw new SfError(messages.getMessage('sourcepushFailed'), 'PushFailed');
+      // Add error message directly on the DeployResult (e.g., a GACK)
+      let errMsg = '';
+      this.results?.forEach((res) => {
+        if (res.response?.errorMessage) {
+          errMsg += `${res.response?.errorMessage}\n`;
+        }
+      });
+      throw new SfError(messages.getMessage('sourcepushFailed', [errMsg]), 'PushFailed');
     }
   }
 

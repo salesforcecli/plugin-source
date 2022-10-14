@@ -12,6 +12,6 @@
     "ignorewarningsLong": "Completes the deployment even if warnings are generated.",
     "quiet": "minimize json and sdtout output on success"
   },
-  "sourcepushFailed": "Push failed.",
+  "sourcepushFailed": "Push failed. %s",
   "sequentialFail": "Check the order of your dependencies and ensure all metadata is included."
 }

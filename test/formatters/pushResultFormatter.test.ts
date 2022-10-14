@@ -67,7 +67,7 @@ describe('PushResultFormatter', () => {
         formatter.getJson();
         throw new Error('should have thrown');
       } catch (error) {
-        expect(error).to.have.property('message', 'Push failed.');
+        expect(error).to.have.property('message', 'Push failed. ');
         expect(error).to.have.property('name', 'DeployFailed');
         expect(error).to.have.property('stack').includes('DeployFailed:');
         expect(error).to.have.property('actions').deep.equal([]);
@@ -87,7 +87,7 @@ describe('PushResultFormatter', () => {
           formatter.getJson();
           throw new Error('should have thrown');
         } catch (error) {
-          expect(error).to.have.property('message', 'Push failed.');
+          expect(error).to.have.property('message', 'Push failed. ');
           expect(error).to.have.property('result').deep.equal([expectedFail]);
         }
       });
@@ -101,6 +101,26 @@ describe('PushResultFormatter', () => {
       formatter.display();
       expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(1);
       expect(tableStub.callCount, JSON.stringify(tableStub.args)).to.equal(1);
+    });
+    it('should output as expected for a deploy failure (GACK)', async () => {
+      const errorMessage =
+        'UNKNOWN_EXCEPTION: An unexpected error occurred. Please include this ErrorId if you contact support: 1730955361-49792 (-1117026034)';
+      const deployFailure = getDeployResult('failed', { errorMessage });
+      deployFailure.response.details.componentFailures = [];
+      deployFailure.response.details.componentSuccesses = [];
+      delete deployFailure.response.details.runTestResult;
+      const formatter = new PushResultFormatter(logger, uxMock as UX, {}, [deployFailure]);
+      sandbox.stub(formatter, 'isSuccess').returns(false);
+
+      try {
+        formatter.display();
+        expect(false, 'should have thrown a PushFailed error').to.be.true;
+      } catch (err) {
+        const error = err as Error;
+        expect(error.message).to.equal(`Push failed. ${errorMessage}\n`);
+        expect(headerStub.called).to.equal(false);
+        expect(tableStub.called).to.equal(false);
+      }
     });
     describe('quiet', () => {
       it('does not display successes for quiet', () => {
