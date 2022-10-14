@@ -185,7 +185,7 @@ export abstract class DeployCommand extends SourceCommand {
     // only generate reports if test results are present
     if (this.deployResult.response?.numberTestsTotal) {
       if (this.flags.coverageformatters) {
-        createCoverageReport(this.deployResult, this.flags.coverageformatters, 'no-map', this.resultsDir);
+        createCoverageReport(this.deployResult, this.flags.coverageformatters as string[], 'no-map', this.resultsDir);
       }
       if (this.flags.junit) {
         this.createJunitResults(this.deployResult);

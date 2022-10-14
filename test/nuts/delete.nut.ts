@@ -100,14 +100,12 @@ describe('source:delete NUTs', () => {
 
   it('should source:delete a remote-only ApexClass from the org', async () => {
     const { apexName, pathToClass } = createApexClass();
-    const query = () => {
-      return JSON.parse(
+    const query = () => JSON.parse(
         exec(
           `sfdx force:data:soql:query -q "SELECT IsNameObsolete FROM SourceMember WHERE MemberType='ApexClass' AND MemberName='${apexName}' LIMIT 1" -t --json`,
           { silent: true }
         )
       ) as { result: { records: Array<{ IsNameObsolete: boolean }> } };
-    };
 
     let soql = query();
     // the ApexClass is present in the org

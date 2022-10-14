@@ -175,14 +175,12 @@ export default class Push extends DeployCommand {
       return this.setExitCode(69);
     }
 
-    const isSuccessLike = (result: DeployResult): boolean => {
-      return (
+    const isSuccessLike = (result: DeployResult): boolean => (
         result.response.status === RequestStatus.Succeeded ||
         // successful-ish  (only warnings about deleted things that are already deleted)
         (result.response.status === RequestStatus.Failed &&
           result.getFileResponses().every((fr) => fr.state !== 'Failed'))
       );
-    };
     // all successes
     if (this.deployResults.every((result) => isSuccessLike(result))) {
       return this.setExitCode(0);

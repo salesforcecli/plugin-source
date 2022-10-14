@@ -106,12 +106,8 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      toArray: () => {
-        return [exampleSourceComponent];
-      },
-      has: () => {
-        return false;
-      },
+      toArray: () => [exampleSourceComponent],
+      has: () => false,
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
     warnStub = stubMethod(sandbox, UX.prototype, 'warn');
@@ -293,9 +289,7 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      toArray: () => {
-        return [exampleSourceComponent];
-      },
+      toArray: () => [exampleSourceComponent],
       add: (component: ComponentLike) => {
         expect(component)
           .to.be.a('object')
@@ -326,9 +320,7 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      toArray: () => {
-        return [exampleSourceComponent];
-      },
+      toArray: () => [exampleSourceComponent],
       add: (component: ComponentLike) => {
         expect(component)
           .to.be.a('object')
@@ -358,9 +350,7 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      toArray: () => {
-        return [exampleSourceComponent];
-      },
+      toArray: () => [exampleSourceComponent],
       add: (component: ComponentLike) => {
         expect(component)
           .to.be.a('object')
@@ -391,9 +381,7 @@ describe('force:source:retrieve', () => {
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       retrieve: retrieveStub,
       getPackageXml: () => packageXml,
-      toArray: () => {
-        return [exampleSourceComponent];
-      },
+      toArray: () => [exampleSourceComponent],
       add: (component: ComponentLike) => {
         expect(component)
           .to.be.a('object')
