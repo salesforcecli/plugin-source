@@ -1097,6 +1097,29 @@
     jsonwebtoken "8.5.1"
     ts-retry-promise "^0.6.0"
 
+"@salesforce/core@^3.31.9":
+  version "3.31.10"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.31.10.tgz#8ad004c0e3559a50d5dee3aa71e03bb57686c190"
+  integrity sha512-ie05IaLVcM8jhRjCh3sVUBcEtTb2dC0FWUTIXaGKHRSqdJPRuTKE+Uwbp7RYb4Wywjiunf8+721msYOwAO4QbA==
+  dependencies:
+    "@salesforce/bunyan" "^2.0.0"
+    "@salesforce/kit" "^1.7.0"
+    "@salesforce/schemas" "^1.1.0"
+    "@salesforce/ts-types" "^1.5.21"
+    "@types/graceful-fs" "^4.1.5"
+    "@types/semver" "^7.3.9"
+    ajv "^8.11.0"
+    archiver "^5.3.0"
+    change-case "^4.1.2"
+    debug "^3.2.7"
+    faye "^1.4.0"
+    form-data "^4.0.0"
+    graceful-fs "^4.2.9"
+    js2xmlparser "^4.0.1"
+    jsforce "^2.0.0-beta.19"
+    jsonwebtoken "8.5.1"
+    ts-retry-promise "^0.7.0"
+
 "@salesforce/dev-config@^3.0.0", "@salesforce/dev-config@^3.0.1":
   version "3.0.1"
   resolved "https://registry.npmjs.org/@salesforce/dev-config/-/dev-config-3.0.1.tgz"
@@ -1219,7 +1242,7 @@
     chalk "^4"
     inquirer "^8.2.0"
 
-"@salesforce/source-deploy-retrieve@^6.8.2", "@salesforce/source-deploy-retrieve@^6.9.0", "@salesforce/source-deploy-retrieve@^6.9.1":
+"@salesforce/source-deploy-retrieve@^6.8.2", "@salesforce/source-deploy-retrieve@^6.9.0":
   version "6.9.1"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-6.9.1.tgz#8ab5747887efdb28ad00906350268b6e298ff5d7"
   integrity sha512-QQMyFk/dJiE0UwAc0YhAOd2TE34SzmvBpGoLqzB8Z6X4wpHYtO0NL/xOL8ksoQ+wUAz6RBDzUB8tnNHYhQj1Dg==
@@ -1228,6 +1251,24 @@
     "@salesforce/kit" "^1.7.0"
     "@salesforce/ts-types" "^1.5.20"
     "@xmldom/xmldom" "^0.8.2"
+    archiver "^5.3.1"
+    fast-xml-parser "^3.21.1"
+    got "^11.8.5"
+    graceful-fs "^4.2.10"
+    ignore "^5.2.0"
+    mime "2.6.0"
+    proxy-agent "^5.0.0"
+    proxy-from-env "^1.1.0"
+    unzipper "0.10.11"
+
+"@salesforce/source-deploy-retrieve@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.0.1.tgz#e2b7341ae46eb013c19da70fd7f51c8f7f947789"
+  integrity sha512-gvgq/ymdfz+CnHWVcs6p9h+GT9MKUI12Kdis8MxZ500mcuKzoCysIrWeZhaHAobroXNO9uxYf3hPOxBaXKQ6UQ==
+  dependencies:
+    "@salesforce/core" "^3.31.9"
+    "@salesforce/kit" "^1.7.0"
+    "@salesforce/ts-types" "^1.5.20"
     archiver "^5.3.1"
     fast-xml-parser "^3.21.1"
     got "^11.8.5"
