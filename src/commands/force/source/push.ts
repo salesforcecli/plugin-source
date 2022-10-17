@@ -179,7 +179,8 @@ export default class Push extends DeployCommand {
         result.response.status === RequestStatus.Succeeded ||
         // successful-ish  (only warnings about deleted things that are already deleted)
         (result.response.status === RequestStatus.Failed &&
-          result.getFileResponses().every((fr) => fr.state !== 'Failed'))
+          result.getFileResponses().every((fr) => fr.state !== 'Failed') &&
+          !result.response.errorMessage)
       );
     // all successes
     if (this.deployResults.every((result) => isSuccessLike(result))) {

@@ -101,7 +101,9 @@ export class MdDeployResultFormatter extends ResultFormatter {
     }
     // TODO: the toolbelt version of this is returning an SfError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
-      const error = new SfError(messages.getMessage('deployFailed'), 'mdapiDeployFailed');
+      // Add error message directly on the DeployResult (e.g., a GACK)
+      const errMsg = this.getResponse()?.errorMessage ?? '';
+      const error = new SfError(messages.getMessage('deployFailed', [errMsg]), 'mdapiDeployFailed');
       error.setData(this.result);
       throw error;
     }
