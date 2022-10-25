@@ -246,7 +246,7 @@ export class Retrieve extends SourceCommand {
           const dest = join(src.replace(join('main', 'default'), ''), file);
           const destDir = dirname(dest);
           await fs.promises.mkdir(destDir, { recursive: true });
-          await fs.promises.cp(join(src, file), dest);
+          await fs.promises.rename(join(src, file), dest);
         })
       );
       return directories;
