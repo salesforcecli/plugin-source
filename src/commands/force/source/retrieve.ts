@@ -20,6 +20,7 @@ import {
   RetrieveResultFormatter,
 } from '../../../formatters/retrieveResultFormatter';
 import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
+import { promisesQueue } from '../../../promiseQueue';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -236,18 +237,21 @@ export class Retrieve extends SourceCommand {
       const srcStat = await fs.promises.stat(src);
       if (srcStat.isDirectory()) {
         const contents = await fs.promises.readdir(src);
-        directories = contents.filter((c) => fs.statSync(join(src, c)).isDirectory());
+        directories = contents.filter((c) => fs.statSync(join(src, c)).isDirectory()).map((c) => join(src, c));
         files = contents.filter((c) => !fs.statSync(join(src, c)).isDirectory());
       } else {
         files.push(src);
       }
-      await Promise.all(
-        files.map(async (file): Promise<void> => {
+      await promisesQueue(
+        files,
+        async (file: string): Promise<string> => {
           const dest = join(src.replace(join('main', 'default'), ''), file);
           const destDir = dirname(dest);
           await fs.promises.mkdir(destDir, { recursive: true });
           await fs.promises.rename(join(src, file), dest);
-        })
+          return dest;
+        },
+        50
       );
       return directories;
     }
@@ -270,14 +274,7 @@ export class Retrieve extends SourceCommand {
     const moveQueue: string[] = [];
     // move contents of 'main/default' to 'retrievetargetdir'
     moveQueue.push(join(resolvedTargetDir, 'main', 'default'));
-    while (moveQueue.length) {
-      const src = moveQueue.shift();
-      if (src) {
-        // eslint-disable-next-line no-await-in-loop
-        const dirs = await mv(src);
-        moveQueue.push(...dirs.map((dir) => join(src, dir)));
-      }
-    }
+    await promisesQueue(moveQueue, mv, 5, true);
     // remove 'main/default'
     await fs.promises.rmdir(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
     this.retrieveResult.getFileResponses().forEach((fileResponse) => {
