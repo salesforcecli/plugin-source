@@ -6,7 +6,7 @@ on:
 
 jobs:
   unit-tests:
-    uses: salesforcecli/github-workflows/.github/workflows/unitTest.yml@main
+    uses: salesforcecli/github-workflows/.github/workflows/unitTest.yml@yarn-global-install
   nuts:
     needs: unit-tests
     uses: salesforcecli/github-workflows/.github/workflows/nut.yml@yarn-global-install
