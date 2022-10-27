@@ -5,10 +5,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  unit-tests:
-    uses: salesforcecli/github-workflows/.github/workflows/unitTest.yml@main
+  yarn-lockfile-check:
+    uses: salesforcecli/github-workflows/.github/workflows/lockFileCheck.yml@yarn-global-install
+  unit-tests-linux:
+    needs: yarn-lockfile-check
+    uses: salesforcecli/github-workflows/.github/workflows/unitTest.yml@yarn-global-install
+    with:
+      windows: false
+  unit-tests-windows:
+    needs: unit-tests-linux
+    uses: salesforcecli/github-workflows/.github/workflows/unitTest.yml@yarn-global-install
+    with:
+      linux: false
   nuts:
-    needs: unit-tests
+    needs: unit-tests-linux
     uses: salesforcecli/github-workflows/.github/workflows/nut.yml@main
     secrets: inherit
     strategy:
