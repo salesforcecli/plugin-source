@@ -271,10 +271,8 @@ export class Retrieve extends SourceCommand {
       return;
     }
 
-    const moveQueue: string[] = [];
     // move contents of 'main/default' to 'retrievetargetdir'
-    moveQueue.push(join(resolvedTargetDir, 'main', 'default'));
-    await promisesQueue(moveQueue, mv, 5, true);
+    await promisesQueue([join(resolvedTargetDir, 'main', 'default')], mv, 5, true);
     // remove 'main/default'
     await fs.promises.rmdir(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
     this.retrieveResult.getFileResponses().forEach((fileResponse) => {
