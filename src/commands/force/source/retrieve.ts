@@ -259,9 +259,8 @@ export class Retrieve extends SourceCommand {
     if (!this.flags.retrievetargetdir) {
       return;
     }
-    let overlapsProject = true;
     const resolvedTargetDir = resolve(this.flags.retrievetargetdir as string);
-    overlapsProject = !!this.project.getPackageDirectories().find((pkgDir) => {
+    const overlapsProject = !!this.project.getPackageDirectories().find((pkgDir) => {
       if (pkgDir.fullPath) {
         return pkgDir.fullPath.includes(resolvedTargetDir);
       }
