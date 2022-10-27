@@ -88,6 +88,7 @@ export class Retrieve extends SourceCommand {
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected retrieveResult: RetrieveResult;
   protected tracking: SourceTracking;
+  private resolvedTargetDir: string;
 
   public async run(): Promise<RetrieveCommandResult> {
     await this.preChecks();
@@ -99,6 +100,12 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async preChecks(): Promise<void> {
+    if (this.flags.retrievetargetdir) {
+      this.resolvedTargetDir = resolve(this.flags.retrievetargetdir as string);
+      if (this.overlapsPackage()) {
+        throw messages.createError('retrieveTargetDirOverlapsPackage', [this.flags.retrievetargetdir as string]);
+      }
+    }
     // we need something to retrieve
     const retrieveInputs = [this.flags.manifest, this.flags.metadata, this.flags.sourcepath, this.flags.packagenames];
     if (!retrieveInputs.some((x) => x)) {
@@ -236,9 +243,20 @@ export class Retrieve extends SourceCommand {
       let files: string[] = [];
       const srcStat = await fs.promises.stat(src);
       if (srcStat.isDirectory()) {
-        const contents = await fs.promises.readdir(src);
-        directories = contents.filter((c) => fs.statSync(join(src, c)).isDirectory()).map((c) => join(src, c));
-        files = contents.filter((c) => !fs.statSync(join(src, c)).isDirectory());
+        const contents = await fs.promises.readdir(src, { withFileTypes: true });
+        [directories, files] = contents.reduce<[string[], string[]]>(
+          (acc, dirent) => {
+            if (dirent.isDirectory()) {
+              acc[0].push(dirent.name);
+            } else {
+              acc[1].push(dirent.name);
+            }
+            return acc;
+          },
+          [[], []]
+        );
+
+        directories = directories.map((dir) => join(src, dir));
       } else {
         files.push(src);
       }
@@ -259,23 +277,22 @@ export class Retrieve extends SourceCommand {
     if (!this.flags.retrievetargetdir) {
       return;
     }
-    const resolvedTargetDir = resolve(this.flags.retrievetargetdir as string);
-    const overlapsProject = !!this.project.getPackageDirectories().find((pkgDir) => {
-      if (pkgDir.fullPath) {
-        return pkgDir.fullPath.includes(resolvedTargetDir);
-      }
-      return false;
-    });
-    if (overlapsProject) {
-      return;
-    }
 
     // move contents of 'main/default' to 'retrievetargetdir'
-    await promisesQueue([join(resolvedTargetDir, 'main', 'default')], mv, 5, true);
+    await promisesQueue([join(this.resolvedTargetDir, 'main', 'default')], mv, 5, true);
     // remove 'main/default'
     await fs.promises.rmdir(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
     this.retrieveResult.getFileResponses().forEach((fileResponse) => {
       fileResponse.filePath = fileResponse.filePath.replace(join('main', 'default'), '');
+    });
+  }
+
+  private overlapsPackage(): boolean {
+    return !!this.project.getPackageDirectories().find((pkgDir) => {
+      if (pkgDir.fullPath) {
+        return pkgDir.fullPath.includes(this.resolvedTargetDir);
+      }
+      return false;
     });
   }
 }

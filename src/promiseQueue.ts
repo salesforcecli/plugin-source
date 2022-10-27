@@ -4,6 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { ensureArray } from '@salesforce/kit';
+
 /**
  * Function to throttle a list of promises.
  *
@@ -24,16 +26,9 @@ export async function promisesQueue<T>(
     const next = queue.slice(0, concurrency);
     queue = queue.slice(concurrency);
     // eslint-disable-next-line no-await-in-loop
-    const nextResults = (await Promise.all(next.map(producer)))
-      .reduce<T[]>((acc, val) => {
-        if (Array.isArray(val)) {
-          acc.push(...val);
-        } else {
-          acc.push(val);
-        }
-        return acc;
-      }, [])
-      .filter((val) => val !== undefined);
+    const nextResults = (await Promise.all(ensureArray(next.map(producer))))
+      .flat(1)
+      .filter((val) => val !== undefined) as T[];
     if (queueResults) {
       queue.push(...nextResults);
     }
