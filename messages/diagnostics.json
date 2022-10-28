@@ -1,0 +1,7 @@
+{
+  "apiVersionMismatch": "The sourceApiVersion in sfdx-project.json does not match the apiVersion. This means deploying and retrieving source will use sourceApiVersion. This may or may not be desired.",
+  "apiVersionUnset": "Both sourceApiVersion and apiVersion are not defined. This means deploying and retrieving source will use the max apiVersion of the target org. This may or may not be desired.",
+  "maxApiVersionMismatch": "The max apiVersion for the default DevHub org does not match the max apiVersion for the default target org. This means the default target orgs are running different versions and without explicitly setting an apiVersion there may be deploy/retrieve issues.",
+  "sourceApiVersionMaxMismatch": "The sourceApiVersion in sfdx-project.json does not match the max apiVersion for the default target org. This means you are not using the latest features available from API version %s. This may or may not be desired.",
+  "apiVersionMaxMismatch": "The apiVersion in the configuration does not match the max apiVersion for the default target org. This means you are not using the latest features available from API version %s. This may or may not be desired."
+}
