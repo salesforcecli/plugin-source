@@ -9,13 +9,21 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, StubbedType, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { SfDoctor } from '@salesforce/plugin-info';
-import { ConfigAggregator, Lifecycle, Org, SfProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { hook } from '../../src/hooks/diagnostics';
+
+const pluginName = '@salesforce/plugin-source';
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.load(pluginName, 'diagnostics', [
+  'apiVersionMismatch',
+  'apiVersionUnset',
+  'maxApiVersionMismatch',
+  'sourceApiVersionMaxMismatch',
+  'apiVersionMaxMismatch',
+]);
 
 describe('Doctor diagnostics', () => {
   const sandbox = sinon.createSandbox();
-
-  const pluginName = '@salesforce/plugin-source';
 
   // Stubs for:
   //  1. the Doctor class needed by the hook
@@ -78,9 +86,7 @@ describe('Doctor diagnostics', () => {
       targetOrgApiVersion: undefined,
     });
     expect(addSuggestionStub.callCount, 'Expected doctor.addSuggestion() to be called once').to.equal(1);
-    expect(addSuggestionStub.args[0][0]).to.equal(
-      'The sourceApiVersion in sfdx-project.json does not match the apiVersion. This means deploying and retrieving source will use sourceApiVersion. This may or may not be desired.'
-    );
+    expect(addSuggestionStub.args[0][0]).to.equal(messages.getMessage('apiVersionMismatch'));
     expect(lifecycleEmitStub.called).to.be.true;
     expect(lifecycleEmitStub.args[0][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitStub.args[0][1]).to.deep.equal({
@@ -124,9 +130,7 @@ describe('Doctor diagnostics', () => {
       targetOrgApiVersion: undefined,
     });
     expect(addSuggestionStub.callCount, 'Expected doctor.addSuggestion() to be called once').to.equal(1);
-    expect(addSuggestionStub.args[0][0]).to.equal(
-      'Both sourceApiVersion and apiVersion are not defined. This means deploying and retrieving source will use the max apiVersion of the target org. This may or may not be desired.'
-    );
+    expect(addSuggestionStub.args[0][0]).to.equal(messages.getMessage('apiVersionUnset'));
     expect(lifecycleEmitStub.called).to.be.true;
     expect(lifecycleEmitStub.args[0][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitStub.args[0][1]).to.deep.equal({
@@ -150,9 +154,7 @@ describe('Doctor diagnostics', () => {
       targetOrgApiVersion: '56.0',
     });
     expect(addSuggestionStub.callCount, 'Expected doctor.addSuggestion() to be called twice').to.equal(2);
-    expect(addSuggestionStub.args[1][0]).to.equal(
-      'The max apiVersion for the default DevHub org does not match the max apiVersion for the default target org. This means the default target orgs are running different versions and without explicitly setting an apiVersion there may be deploy/retrieve issues.'
-    );
+    expect(addSuggestionStub.args[1][0]).to.equal(messages.getMessage('maxApiVersionMismatch'));
     expect(lifecycleEmitStub.called).to.be.true;
     expect(lifecycleEmitStub.args[1][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitStub.args[1][1]).to.deep.equal({
@@ -162,9 +164,10 @@ describe('Doctor diagnostics', () => {
   });
 
   it('should warn when sourceApiVersion and default target org max apiVersion does not match', async () => {
+    const targetOrgApiVersion = '56.0';
     resolveProjectConfigStub.resolves({ sourceApiVersion: '55.0' });
     getPropertyValueStub.onThirdCall().returns('scratchOrg');
-    maxApiVersionStub.onFirstCall().resolves('56.0');
+    maxApiVersionStub.onFirstCall().resolves(targetOrgApiVersion);
 
     await hook({ doctor: doctorMock });
 
@@ -174,11 +177,11 @@ describe('Doctor diagnostics', () => {
       apiVersion: undefined,
       sourceApiVersion: '55.0',
       targetDevHubApiVersion: undefined,
-      targetOrgApiVersion: '56.0',
+      targetOrgApiVersion,
     });
     expect(addSuggestionStub.callCount, 'Expected doctor.addSuggestion() to be called once').to.equal(1);
     expect(addSuggestionStub.args[0][0]).to.equal(
-      'The sourceApiVersion in sfdx-project.json does not match the max apiVersion for the default target org. This means you are not using the latest features available from API version 56.0. This may or may not be desired.'
+      messages.getMessage('sourceApiVersionMaxMismatch', [targetOrgApiVersion])
     );
     expect(lifecycleEmitStub.called).to.be.true;
     expect(lifecycleEmitStub.args[1][0]).to.equal('Doctor:diagnostic');
@@ -189,9 +192,10 @@ describe('Doctor diagnostics', () => {
   });
 
   it('should warn when apiVersion and default target org max apiVersion does not match', async () => {
+    const targetOrgApiVersion = '56.0';
     getPropertyValueStub.onFirstCall().returns('55.0');
     getPropertyValueStub.onThirdCall().returns('scratchOrg');
-    maxApiVersionStub.onFirstCall().resolves('56.0');
+    maxApiVersionStub.onFirstCall().resolves(targetOrgApiVersion);
 
     await hook({ doctor: doctorMock });
 
@@ -201,12 +205,10 @@ describe('Doctor diagnostics', () => {
       apiVersion: '55.0',
       sourceApiVersion: undefined,
       targetDevHubApiVersion: undefined,
-      targetOrgApiVersion: '56.0',
+      targetOrgApiVersion,
     });
     expect(addSuggestionStub.callCount, 'Expected doctor.addSuggestion() to be called once').to.equal(1);
-    expect(addSuggestionStub.args[0][0]).to.equal(
-      'The apiVersion in the configuration does not match the max apiVersion for the default target org. This means you are not using the latest features available from API version 56.0. This may or may not be desired.'
-    );
+    expect(addSuggestionStub.args[0][0]).to.equal(messages.getMessage('apiVersionMaxMismatch', [targetOrgApiVersion]));
     expect(lifecycleEmitStub.called).to.be.true;
     expect(lifecycleEmitStub.args[1][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitStub.args[1][1]).to.deep.equal({
