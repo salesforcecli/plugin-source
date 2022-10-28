@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
-import { FileResponse } from '@salesforce/source-deploy-retrieve';
+import { DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter';
@@ -53,6 +53,7 @@ describe('DeployResultFormatter', () => {
 
   afterEach(() => {
     sandbox.restore();
+    process.exitCode = undefined;
   });
 
   describe('getJson', () => {
@@ -86,6 +87,36 @@ describe('DeployResultFormatter', () => {
       expectedPartialSuccessResponse.deploys = [deployResponse];
       const formatter = new DeployResultFormatter(logger, ux as UX, {}, deployResultPartialSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
+    });
+
+    describe('replacements', () => {
+      it('includes expected json property when there are replacements', () => {
+        const resultWithReplacements = {
+          ...(JSON.parse(JSON.stringify(deployResultSuccess)) as DeployResult),
+          replacements: new Map<string, string[]>([['MyApexClass.cls', ['foo', 'bar']]]),
+        };
+        const formatter = new DeployResultFormatter(logger, ux as UX, {}, resultWithReplacements as DeployResult);
+        const json = formatter.getJson();
+
+        expect(json.replacements).to.deep.equal({ 'MyApexClass.cls': ['foo', 'bar'] });
+      });
+      it('omits json property when there are no replacements', () => {
+        const resultWithoutReplacements = {
+          ...(JSON.parse(JSON.stringify(deployResultSuccess)) as DeployResult),
+        };
+        const formatter = new DeployResultFormatter(logger, ux as UX, {}, resultWithoutReplacements as DeployResult);
+        const json = formatter.getJson();
+        expect(json.replacements).to.be.undefined;
+      });
+      it('omits json property when replacements exists but is empty', () => {
+        const resultWithEmptyReplacements = {
+          ...(JSON.parse(JSON.stringify(deployResultSuccess)) as DeployResult),
+          replacements: new Map<string, string[]>(),
+        };
+        const formatter = new DeployResultFormatter(logger, ux as UX, {}, resultWithEmptyReplacements as DeployResult);
+        const json = formatter.getJson();
+        expect(json.replacements).to.be.undefined;
+      });
     });
   });
 
@@ -182,6 +213,51 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.callCount, 'tableStub.callCount').to.equal(2);
       expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
       expect(styledHeaderStub.args[1][0]).to.include('Component Failures');
+    });
+
+    describe('replacements', () => {
+      it('omits replacements when there are none', async () => {
+        process.exitCode = 0;
+        const resultWithoutReplacements = {
+          ...deployResultSuccess,
+        } as DeployResult;
+        const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, resultWithoutReplacements);
+
+        formatter.display();
+
+        expect(logStub.callCount, 'logStub.callCount').to.equal(2);
+        expect(tableStub.callCount, 'tableStub.callCount').to.equal(1);
+        expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
+      });
+      it('displays replacements on verbose', async () => {
+        process.exitCode = 0;
+
+        const resultWithReplacements = {
+          ...deployResultSuccess,
+          replacements: new Map<string, string[]>([['MyApexClass.cls', ['foo', 'bar']]]),
+        } as DeployResult;
+        const formatter = new DeployResultFormatter(logger, ux as UX, { verbose: true }, resultWithReplacements);
+        formatter.display();
+
+        expect(logStub.callCount, 'logStub.callCount').to.equal(3);
+        // expect(tableStub.callCount, 'tableStub.callCount').to.equal(2);
+        expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
+        expect(styledHeaderStub.args[1][0]).to.include('Metadata Replacements');
+      });
+      it('omits replacements unless verbose', async () => {
+        process.exitCode = 0;
+
+        const resultWithReplacements = {
+          ...deployResultSuccess,
+          replacements: new Map<string, string[]>([['MyApexClass.cls', ['foo', 'bar']]]),
+        } as DeployResult;
+        const formatter = new DeployResultFormatter(logger, ux as UX, {}, resultWithReplacements);
+        formatter.display();
+
+        expect(logStub.callCount, 'logStub.callCount').to.equal(2);
+        expect(tableStub.callCount, 'tableStub.callCount').to.equal(1);
+        expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
+      });
     });
   });
 });
