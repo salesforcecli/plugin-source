@@ -12,7 +12,7 @@
     "@salesforce/command": "^5.2.13",
     "@salesforce/core": "^3.26.2",
     "@salesforce/kit": "^1.7.1",
-    "@salesforce/source-deploy-retrieve": "^7.0.1",
+    "@salesforce/source-deploy-retrieve": "^7.4.0",
     "@salesforce/source-tracking": "^2.2.10",
     "chalk": "^4.1.2",
     "got": "^11.8.3",
