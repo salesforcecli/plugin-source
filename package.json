@@ -29,6 +29,7 @@
     "@salesforce/dev-scripts": "^3.1.0",
     "@salesforce/plugin-command-reference": "^1.4.7",
     "@salesforce/plugin-config": "^2.3.2",
+    "@salesforce/plugin-info": "^2.2.1",
     "@salesforce/plugin-templates": "^55.1.0",
     "@salesforce/plugin-user": "^2.1.14",
     "@salesforce/prettier-config": "^0.0.2",
@@ -127,6 +128,9 @@
           }
         }
       }
+    },
+    "hooks": {
+      "sf-doctor-@salesforce/plugin-source": "./lib/hooks/diagnostics"
     }
   },
   "repository": "salesforcecli/plugin-source",
