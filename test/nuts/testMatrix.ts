@@ -83,6 +83,9 @@ const testRepos: RepoConfig[] = [
           toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
         },
       ],
+      retrievetargetdir: [
+        { toRetrieve: 'ApexClass', toVerify: ['targetdir/**/*.cls'] },
+      ],
     },
     convert: {
       sourcepath: [
@@ -193,6 +196,10 @@ const testRepos: RepoConfig[] = [
           ],
         },
       ],
+      retrievetargetdir: [
+        { toRetrieve: 'ApexClass', toVerify: ['targetdir/classes/*'] },
+      ],
+
     },
     convert: {
       sourcepath: [
@@ -264,6 +271,7 @@ export type RepoConfig = {
     metadata: RetrieveTestCase[];
     sourcepath: RetrieveTestCase[];
     manifest: RetrieveTestCase[];
+    retrievetargetdir: RetrieveTestCase[];
   };
   convert: {
     metadata: ConvertTestCase[];

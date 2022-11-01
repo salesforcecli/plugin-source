@@ -6,7 +6,8 @@
  */
 
 import * as os from 'os';
-import { join } from 'path';
+import { dirname, join, resolve } from 'path';
+import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
@@ -19,6 +20,7 @@ import {
   RetrieveResultFormatter,
 } from '../../../formatters/retrieveResultFormatter';
 import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
+import { promisesQueue } from '../../../promiseQueue';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -30,6 +32,12 @@ export class Retrieve extends SourceCommand {
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
   public static readonly flagsConfig: FlagsConfig = {
+    retrievetargetdir: flags.directory({
+      char: 'r',
+      description: messages.getMessage('flags.retrievetargetdir'),
+      longDescription: messages.getMessage('flagsLong.retrievetargetdir'),
+      exclusive: ['packagenames', 'sourcepath'],
+    }),
     apiversion: flags.builtin({
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore force char override for backward compat
@@ -80,16 +88,24 @@ export class Retrieve extends SourceCommand {
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
   protected retrieveResult: RetrieveResult;
   protected tracking: SourceTracking;
+  private resolvedTargetDir: string;
 
   public async run(): Promise<RetrieveCommandResult> {
     await this.preChecks();
     await this.retrieve();
     this.resolveSuccess();
     await this.maybeUpdateTracking();
+    await this.moveResultsForRetrieveTargetDir();
     return this.formatResult();
   }
 
   protected async preChecks(): Promise<void> {
+    if (this.flags.retrievetargetdir) {
+      this.resolvedTargetDir = resolve(this.flags.retrievetargetdir as string);
+      if (this.overlapsPackage()) {
+        throw messages.createError('retrieveTargetDirOverlapsPackage', [this.flags.retrievetargetdir as string]);
+      }
+    }
     // we need something to retrieve
     const retrieveInputs = [this.flags.manifest, this.flags.metadata, this.flags.sourcepath, this.flags.packagenames];
     if (!retrieveInputs.some((x) => x)) {
@@ -115,11 +131,11 @@ export class Retrieve extends SourceCommand {
       sourcepath: this.getFlag<string[]>('sourcepath'),
       manifest: this.flags.manifest && {
         manifestPath: this.getFlag<string>('manifest'),
-        directoryPaths: this.getPackageDirs(),
+        directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
       metadata: this.flags.metadata && {
         metadataEntries: this.getFlag<string[]>('metadata'),
-        directoryPaths: this.getPackageDirs(),
+        directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
     });
 
@@ -155,7 +171,7 @@ export class Retrieve extends SourceCommand {
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
-      output: this.project.getDefaultPackage().fullPath,
+      output: this.getFlag<string>('retrievetargetdir') || this.project.getDefaultPackage().fullPath,
       packageOptions: this.getFlag<string[]>('packagenames'),
     });
 
@@ -219,5 +235,59 @@ export class Retrieve extends SourceCommand {
       fullName: ComponentSet.WILDCARD,
     });
     return hasCustomField && !hasCustomObject;
+  }
+
+  private async moveResultsForRetrieveTargetDir(): Promise<void> {
+    async function mv(src: string): Promise<string[]> {
+      let directories: string[] = [];
+      let files: string[] = [];
+      const srcStat = await fs.promises.stat(src);
+      if (srcStat.isDirectory()) {
+        const contents = await fs.promises.readdir(src, { withFileTypes: true });
+        [directories, files] = contents.reduce<[string[], string[]]>(
+          (acc, dirent) => {
+            if (dirent.isDirectory()) {
+              acc[0].push(dirent.name);
+            } else {
+              acc[1].push(dirent.name);
+            }
+            return acc;
+          },
+          [[], []]
+        );
+
+        directories = directories.map((dir) => join(src, dir));
+      } else {
+        files.push(src);
+      }
+      await promisesQueue(
+        files,
+        async (file: string): Promise<string> => {
+          const dest = join(src.replace(join('main', 'default'), ''), file);
+          const destDir = dirname(dest);
+          await fs.promises.mkdir(destDir, { recursive: true });
+          await fs.promises.rename(join(src, file), dest);
+          return dest;
+        },
+        50
+      );
+      return directories;
+    }
+
+    if (!this.flags.retrievetargetdir) {
+      return;
+    }
+
+    // move contents of 'main/default' to 'retrievetargetdir'
+    await promisesQueue([join(this.resolvedTargetDir, 'main', 'default')], mv, 5, true);
+    // remove 'main/default'
+    await fs.promises.rmdir(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
+    this.retrieveResult.getFileResponses().forEach((fileResponse) => {
+      fileResponse.filePath = fileResponse.filePath.replace(join('main', 'default'), '');
+    });
+  }
+
+  private overlapsPackage(): boolean {
+    return !!this.project.getPackageNameFromPath(this.resolvedTargetDir);
   }
 }
