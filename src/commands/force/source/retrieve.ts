@@ -288,11 +288,6 @@ export class Retrieve extends SourceCommand {
   }
 
   private overlapsPackage(): boolean {
-    return !!this.project.getPackageDirectories().find((pkgDir) => {
-      if (pkgDir.fullPath) {
-        return pkgDir.fullPath.includes(this.resolvedTargetDir);
-      }
-      return false;
-    });
+    return !!this.project.getPackageNameFromPath(this.resolvedTargetDir);
   }
 }
