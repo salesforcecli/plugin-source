@@ -57,9 +57,11 @@ describe('force:source:retrieve', () => {
       await this.init();
       return this.run();
     }
+
     public setOrg(org: Org) {
       this.org = org;
     }
+
     public setProject(project: SfProject) {
       this.project = project;
     }
@@ -73,6 +75,7 @@ describe('force:source:retrieve', () => {
         stubInterface<SfProject>(sandbox, {
           getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
           getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
+          getPackageDirectories: () => [{ fullPath: defaultPackagePath }],
           resolveProjectConfig: resolveProjectConfigStub,
         })
       );
@@ -93,6 +96,7 @@ describe('force:source:retrieve', () => {
     stubMethod(sandbox, UX.prototype, 'stopSpinner');
     stubMethod(sandbox, UX.prototype, 'styledHeader');
     stubMethod(sandbox, UX.prototype, 'table');
+    stubMethod(sandbox, Retrieve.prototype, 'moveResultsForRetrieveTargetDir');
     return cmd.runIt();
   };
 
@@ -163,6 +167,21 @@ describe('force:source:retrieve', () => {
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({ sourcepath });
     ensureRetrieveArgs();
+    ensureHookArgs();
+  });
+  it('should pass along retrievetargetdir', async () => {
+    const sourcepath = ['somepath'];
+    const metadata = ['ApexClass:MyClass'];
+    const result = await runRetrieveCmd(['--retrievetargetdir', sourcepath[0], '--metadata', metadata[0], '--json']);
+    expect(result).to.deep.equal(expectedResults);
+    ensureCreateComponentSetArgs({
+      sourcepath: undefined,
+      metadata: {
+        directoryPaths: [],
+        metadataEntries: ['ApexClass:MyClass'],
+      },
+    });
+    ensureRetrieveArgs({ output: sourcepath[0] });
     ensureHookArgs();
   });
 
