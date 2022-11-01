@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { resolve as pathResolve } from 'path';
+import { relative, resolve as pathResolve } from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfError } from '@salesforce/core';
@@ -24,11 +24,14 @@ import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
-export type PushResponse = { pushedSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
+export type PushResponse = {
+  pushedSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>>;
+  replacements?: Record<string, string[]>;
+};
 
 export class PushResultFormatter extends ResultFormatter {
   protected fileResponses: FileResponse[];
-
+  protected replacements: Map<string, string[]>;
   public constructor(
     logger: Logger,
     ux: UX,
@@ -39,6 +42,7 @@ export class PushResultFormatter extends ResultFormatter {
   ) {
     super(logger, ux, options);
     this.fileResponses = this.correctFileResponses();
+    this.replacements = mergeReplacements(results);
   }
 
   /**
@@ -65,9 +69,9 @@ export class PushResultFormatter extends ResultFormatter {
     const toReturn = this.isQuiet()
       ? this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed)
       : this.fileResponses;
-
     return {
       pushedSource: toReturn.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
+      ...(!this.isQuiet() && this.replacements.size ? { replacements: Object.fromEntries(this.replacements) } : {}),
     };
   }
 
@@ -82,7 +86,7 @@ export class PushResultFormatter extends ResultFormatter {
   public display(): void {
     this.displaySuccesses();
     this.displayFailures();
-
+    this.displayReplacements();
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
       // Add error message directly on the DeployResult (e.g., a GACK)
@@ -163,6 +167,23 @@ export class PushResultFormatter extends ResultFormatter {
     }
   }
 
+  protected displayReplacements(): void {
+    if (!this.isQuiet() && this.replacements.size) {
+      this.ux.log('');
+      this.ux.styledHeader(chalk.blue('Metadata Replacements'));
+      const replacements = Array.from(this.replacements.entries()).flatMap(([filepath, stringsReplaced]) =>
+        stringsReplaced.map((replaced) => ({
+          filePath: relative(process.cwd(), filepath),
+          replaced,
+        }))
+      );
+      this.ux.table(replacements, {
+        filePath: { header: 'PROJECT PATH' },
+        replaced: { header: 'TEXT REPLACED' },
+      });
+    }
+  }
+
   protected displayFailures(): void {
     const failures: Array<FileResponse | DeployMessage> = [];
     const fileResponseFailures: Map<string, string> = new Map<string, string>();
@@ -219,3 +240,18 @@ export class PushResultFormatter extends ResultFormatter {
     }
   }
 }
+
+export const mergeReplacements = (results: DeployResult[]): DeployResult['replacements'] => {
+  const merged = new Map<string, string[]>();
+  const replacements = results.filter((result) => result.replacements?.size).map((result) => result.replacements);
+  replacements.forEach((replacement) => {
+    replacement.forEach((value, key) => {
+      if (!merged.has(key)) {
+        merged.set(key, value);
+      } else {
+        merged.set(key, Array.from(new Set([...merged.get(key), ...value])));
+      }
+    });
+  });
+  return merged;
+};

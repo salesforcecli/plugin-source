@@ -1260,10 +1260,10 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.0.1", "@salesforce/source-deploy-retrieve@^7.4.0":
-  version "7.4.2"
-  resolved "https://registry.npmjs.org/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.4.2.tgz#1a3edab87bf3a985291e4bbf56200d3eca87b406"
-  integrity sha512-4HGAk0C827gKdPr9wl4G+xHLhhyfeRCezaO6yfD8mxhj2PdGfvatKQtQin1dLzL74jBv37RPsgdeH4e9sT/W4w==
+"@salesforce/source-deploy-retrieve@^7.0.1", "@salesforce/source-deploy-retrieve@^7.4.0", "@salesforce/source-deploy-retrieve@^7.5.0":
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.5.0.tgz#ff83df9699925bd832f43f07816f30ca424258e3"
+  integrity sha512-sMvWt9TqMHtCKAgBmoOkueye3oWwsRahO1BVqIJVIZJeibARXi7JXEHQp9q7cEQKQt2qsV532wITyfHUePntDg==
   dependencies:
     "@salesforce/core" "^3.31.17"
     "@salesforce/kit" "^1.7.0"
@@ -1274,6 +1274,7 @@
     graceful-fs "^4.2.10"
     ignore "^5.2.0"
     mime "2.6.0"
+    minimatch "^5.1.0"
     proxy-agent "^5.0.0"
     proxy-from-env "^1.1.0"
     unzipper "0.10.11"

@@ -9,12 +9,16 @@ import { Logger } from '@salesforce/core';
 import { UX } from '@salesforce/command';
 import * as sinon from 'sinon';
 import { stubInterface } from '@salesforce/ts-sinon';
+import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { getDeployResult } from '../commands/source/deployResponses';
-import { PushResultFormatter } from '../../src/formatters/source/pushResultFormatter';
+import { PushResultFormatter, mergeReplacements } from '../../src/formatters/source/pushResultFormatter';
 
 describe('PushResultFormatter', () => {
   const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
   const deployResultSuccess = [getDeployResult('successSync')];
+  const deployResultSuccessWithReplacements = [
+    { ...getDeployResult('successSync'), replacements: new Map<string, string[]>([['foo', ['bar', 'baz']]]) },
+  ] as DeployResult[];
   const deployResultFailure = [getDeployResult('failed')];
 
   const sandbox = sinon.createSandbox();
@@ -59,6 +63,22 @@ describe('PushResultFormatter', () => {
         },
       ]);
     });
+    it('returns expected json for success with replaements', () => {
+      process.exitCode = 0;
+      const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultSuccessWithReplacements);
+      const result = formatter.getJson();
+      expect(result.pushedSource).to.deep.equal([
+        {
+          filePath: 'classes/ProductController.cls',
+          fullName: 'ProductController',
+          state: 'Changed',
+          type: 'ApexClass',
+        },
+      ]);
+      expect(result.replacements).to.deep.equal({
+        foo: ['bar', 'baz'],
+      });
+    });
     it('returns expected json for failure', () => {
       const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultFailure);
       process.exitCode = 1;
@@ -80,6 +100,18 @@ describe('PushResultFormatter', () => {
         process.exitCode = 0;
         const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultSuccess);
         expect(formatter.getJson().pushedSource).to.deep.equal([]);
+        expect(formatter.getJson().replacements).to.be.undefined;
+      });
+      it('omits replacements', () => {
+        process.exitCode = 0;
+        const formatter = new PushResultFormatter(
+          logger,
+          new UX(logger),
+          { quiet: true },
+          deployResultSuccessWithReplacements
+        );
+        expect(formatter.getJson().pushedSource).to.deep.equal([]);
+        expect(formatter.getJson().replacements).to.be.undefined;
       });
       it('honors quiet flag for json failure', () => {
         const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultFailure);
@@ -101,6 +133,15 @@ describe('PushResultFormatter', () => {
       formatter.display();
       expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(1);
       expect(tableStub.callCount, JSON.stringify(tableStub.args)).to.equal(1);
+    });
+    it('returns expected output for success with replacements', () => {
+      process.exitCode = 0;
+      const formatter = new PushResultFormatter(logger, uxMock as UX, {}, deployResultSuccessWithReplacements);
+      formatter.display();
+      expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(2);
+      expect(headerStub.args[0][0]).to.include('Pushed Source');
+      expect(headerStub.args[1][0]).to.include('Metadata Replacements');
+      expect(tableStub.callCount, JSON.stringify(tableStub.args)).to.equal(2);
     });
     it('should output as expected for a deploy failure (GACK)', async () => {
       const errorMessage =
@@ -140,6 +181,29 @@ describe('PushResultFormatter', () => {
         } catch (err) {
           expect(tableStub.callCount).to.equal(1);
         }
+      });
+    });
+
+    describe('replacement merging when multiple pushes', () => {
+      it('merges the replacements from 2 pushes', () => {
+        const deployResultSuccessWithReplacements1 = {
+          ...getDeployResult('successSync'),
+          replacements: new Map<string, string[]>([
+            ['foo', ['bar']],
+            ['quux', ['baz']],
+          ]),
+        } as DeployResult;
+        const deployResultSuccessWithReplacements2 = {
+          ...getDeployResult('successSync'),
+          replacements: new Map<string, string[]>([['foo', ['baz']]]),
+        } as DeployResult;
+        const result = mergeReplacements([deployResultSuccessWithReplacements1, deployResultSuccessWithReplacements2]);
+        expect(result).to.deep.equal(
+          new Map<string, string[]>([
+            ['foo', ['bar', 'baz']],
+            ['quux', ['baz']],
+          ])
+        );
       });
     });
   });

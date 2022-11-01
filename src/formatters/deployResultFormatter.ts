@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as path from 'path';
 import * as chalk from 'chalk';
 import { UX } from '@salesforce/command';
 import { Logger, Messages, SfError } from '@salesforce/core';
@@ -30,6 +31,7 @@ export interface DeployCommandResult extends MdDeployResult {
   outboundFiles: string[];
   deploys: MetadataApiDeployStatus[];
   deletes?: MetadataApiDeployStatus[];
+  replacements?: Record<string, string[]>;
 }
 
 export class DeployResultFormatter extends ResultFormatter {
@@ -56,7 +58,9 @@ export class DeployResultFormatter extends ResultFormatter {
       json.coverage = this.getCoverageFileInfo();
       json.junit = this.getJunitFileInfo();
     }
-
+    if (this.result.replacements?.size) {
+      json.replacements = Object.fromEntries(this.result.replacements);
+    }
     return json;
   }
 
@@ -86,6 +90,7 @@ export class DeployResultFormatter extends ResultFormatter {
     this.displayFailures();
     this.displayTestResults();
     this.displayOutputFileLocations();
+    this.displayReplacements();
 
     // Throw a DeployFailed error unless the deployment was successful.
     if (!this.isSuccess()) {
@@ -117,6 +122,22 @@ export class DeployResultFormatter extends ResultFormatter {
     return get(this.result, 'response', {}) as MetadataApiDeployStatus;
   }
 
+  protected displayReplacements(): void {
+    if (this.isVerbose() && this.result.replacements?.size) {
+      this.ux.log('');
+      this.ux.styledHeader(chalk.blue('Metadata Replacements'));
+      const replacements = Array.from(this.result.replacements.entries()).flatMap(([filepath, stringsReplaced]) =>
+        stringsReplaced.map((replaced) => ({
+          filePath: path.relative(process.cwd(), filepath),
+          replaced,
+        }))
+      );
+      this.ux.table(replacements, {
+        filePath: { header: 'PROJECT PATH' },
+        replaced: { header: 'TEXT REPLACED' },
+      });
+    }
+  }
   protected displaySuccesses(): void {
     if (this.isSuccess() && this.fileResponses?.length) {
       const successes = this.fileResponses.filter((f) => !['Failed', 'Deleted'].includes(f.state));
