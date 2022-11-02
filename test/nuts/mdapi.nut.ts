@@ -332,6 +332,13 @@ describe('mdapi NUTs', () => {
         expect(result.zipFilePath).to.equal(zipFileLocation);
       });
 
+      it('retrieves content from manifest using manifest api version', () => {
+        const retrieveTargetDir = 'mdRetrieveFromManifest';
+        const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath}`;
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 }).shellOutput.stdout;
+        expect(rv).to.include('54.0');
+      });
+
       it('retrieves single package', () => {
         const retrieveTargetDir = 'mdRetrieveSinglePackage';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
