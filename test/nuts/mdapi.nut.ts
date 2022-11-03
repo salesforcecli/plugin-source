@@ -332,11 +332,20 @@ describe('mdapi NUTs', () => {
         expect(result.zipFilePath).to.equal(zipFileLocation);
       });
 
-      it('retrieves content from manifest using manifest api version', () => {
+      it('retrieves content from manifest using manifest api version', async () => {
+        // modify the manifest to use a different api version
+        const targetApiVersion = '54.0';
+        const manifestRelativePath = path.join(session.project.dir, manifestPath);
+
+        const original = await fs.promises.readFile(manifestRelativePath, 'utf8');
+        await fs.promises.writeFile(
+          manifestRelativePath,
+          original.replace(/<version>.*<\/version>/g, `<version>${targetApiVersion}</version>`)
+        );
         const retrieveTargetDir = 'mdRetrieveFromManifest';
         const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath}`;
-        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 }).shellOutput.stdout;
-        expect(rv).to.include('54.0');
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 }).shellOutput;
+        expect(rv.stderr).to.include(targetApiVersion);
       });
 
       it('retrieves single package', () => {
