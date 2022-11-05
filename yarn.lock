@@ -1171,10 +1171,10 @@
     shx "^0.3.3"
     tslib "^2.2.0"
 
-"@salesforce/plugin-command-reference@^1.4.7":
-  version "1.4.7"
-  resolved "https://registry.npmjs.org/@salesforce/plugin-command-reference/-/plugin-command-reference-1.4.7.tgz#727f2c0e250aa7db188f6a00d99d93b3a910abab"
-  integrity sha512-LekKhtgrlbN/1kjJXHX9iYBjTr3wbHRK3EjDiQjydBp75FzpG54eYdwHpmnRpT+Z1xMhl2iCft0Rgb4oxcb0UQ==
+"@salesforce/plugin-command-reference@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-1.5.0.tgz#eb2a78957a0cae65a42fa06df93db440f8362c05"
+  integrity sha512-NIT6F4XGLzL0vs/hxXGyBJUR2pglFMVG1sV8HsHlLg8fxbaCH1Z31rtSAKakx4flq4CpKF086rxLKrqq5V3ZbA==
   dependencies:
     "@salesforce/command" "^5.2.15"
     "@salesforce/core" "^3.31.10"
