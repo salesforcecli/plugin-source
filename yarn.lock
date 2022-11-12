@@ -1095,10 +1095,10 @@
     "@salesforce/ts-types" "^1.5.21"
     chalk "^2.4.2"
 
-"@salesforce/core@^3.23.3", "@salesforce/core@^3.23.9", "@salesforce/core@^3.24.0", "@salesforce/core@^3.25.1", "@salesforce/core@^3.30.12", "@salesforce/core@^3.31.10", "@salesforce/core@^3.31.16", "@salesforce/core@^3.31.17", "@salesforce/core@^3.31.18":
-  version "3.31.18"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.31.18.tgz#ceaf2333c98bacd59b8666b5b69b659268165d61"
-  integrity sha512-t2T7BzuNXdLGyAXMBHm9PtGbRvqCZQga+c3ceKKufJXW+ahQ2X8SXrOnXRzoZOt8DgTjWO3hLJmTCzC4AVgl7w==
+"@salesforce/core@^3.23.3", "@salesforce/core@^3.23.9", "@salesforce/core@^3.24.0", "@salesforce/core@^3.25.1", "@salesforce/core@^3.30.12", "@salesforce/core@^3.31.10", "@salesforce/core@^3.31.16", "@salesforce/core@^3.31.17", "@salesforce/core@^3.31.19":
+  version "3.31.19"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.31.19.tgz#29366aee1e9e271d3bef6d0a5e60204f3885daf7"
+  integrity sha512-Qx4F7n+1eENICD9yvTrSI5+HVbjZ/B3vzNjdjZ4aNHO5MvEgg93vs1KeGujfGU4lzaEj5Wuy7delp5wJC0a1aA==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.7.0"
@@ -1260,10 +1260,10 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.0.1", "@salesforce/source-deploy-retrieve@^7.4.0", "@salesforce/source-deploy-retrieve@^7.5.6":
-  version "7.5.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.5.6.tgz#f946bc1e4c16a0e05ad065b8d9cdbbf75ba2ebc8"
-  integrity sha512-Sg3O+CDaJ6oSTgX3FUBbWaJWl+DSZLeyQbV51QQBl7K0Q+KN5vovbRti8haTGg+foMEGzk59B+WZFUCAUuR+CA==
+"@salesforce/source-deploy-retrieve@^7.0.1", "@salesforce/source-deploy-retrieve@^7.4.0", "@salesforce/source-deploy-retrieve@^7.5.7":
+  version "7.5.7"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.5.7.tgz#28536ec94a4cb7ca4d214229d3c242d08ec0125b"
+  integrity sha512-eitZujYGv+TdGcbzMbO/UK3X0tD/l4Liv0JRtubWICV/xzR/rFRYbzM3ONV95OGxVjo6VL61tutDFHiERmdVog==
   dependencies:
     "@salesforce/core" "^3.31.17"
     "@salesforce/kit" "^1.7.2"
