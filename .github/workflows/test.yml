@@ -20,21 +20,7 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        os: [ubuntu-20-8core, windows-2022-16core]
-        command:
-          - 'yarn test:nuts:convert'
-          - 'yarn test:nuts:commands:other'
-          - 'yarn test:nuts:delete'
-          - 'yarn test:nuts:deploy'
-          - 'yarn test:nuts:deploy:async'
-          - 'yarn test:nuts:deploy:rest'
-          - 'yarn test:nuts:manifest:create'
-          - 'yarn test:nuts:retrieve'
-          - 'yarn test:nuts:specialTypes'
-          - 'yarn test:nuts:deploy:destructive'
-          - 'yarn test:nuts:tracking'
-          - 'yarn test:nuts:mdapi'
+        os: [ubuntu-latest, windows-latest]
       fail-fast: false
     with:
       os: ${{ matrix.os }}
-      command: ${{ matrix.command }}
