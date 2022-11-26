@@ -1070,12 +1070,12 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^3.2.4", "@salesforce/cli-plugins-testkit@^3.2.6":
-  version "3.2.8"
-  resolved "https://registry.npmjs.org/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.2.8.tgz#0ebbc1391ad4d06ae6eab5755f886a3c04b9bd89"
-  integrity sha512-iZ/HPSlMainyokCxwYt6Np+8R9mddOunA7ACWhdTKy0CbMfm6ImjW06RcekXym2d0NU0d/OH+8hqYJSOj1IsTA==
+"@salesforce/cli-plugins-testkit@^3.2.4", "@salesforce/cli-plugins-testkit@^3.2.8":
+  version "3.2.9"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.2.9.tgz#9bbfca80e9c95258b364b2e1d56173419da69ce8"
+  integrity sha512-GpJQ+toqDVOizyYnemtE11oWkNS6hMUxV7ht6nambzWCArIcK4aUVW7VIMxO6WnSLb66GZ9CbIHA1NEvWluydw==
   dependencies:
-    "@salesforce/core" "^3.31.19"
+    "@salesforce/core" "^3.32.1"
     "@salesforce/kit" "^1.8.0"
     "@salesforce/ts-types" "^1.5.21"
     "@types/shelljs" "^0.8.11"
@@ -1281,12 +1281,12 @@
     proxy-from-env "^1.1.0"
     unzipper "0.10.11"
 
-"@salesforce/source-testkit@^2.0.9":
-  version "2.0.17"
-  resolved "https://registry.npmjs.org/@salesforce/source-testkit/-/source-testkit-2.0.17.tgz#2e1445943499bba1d4880356f57b546095f72001"
-  integrity sha512-nRrjE6T0bVuUkRXcVFW7qkdFXJfDOcK3GJomDM75pchJZ/eImvhjKPFckDtJoK9stqYGhijITv/LJlJeBS8dYg==
+"@salesforce/source-testkit@^2.0.18":
+  version "2.0.18"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.0.18.tgz#c36670dee56b37688b71b9cc26dcaa7bb602eaeb"
+  integrity sha512-Q2RG8bfTT/TbFdzs86qEuw86Zg7NBouS5N+PHZgkfn7xdn5GyHRcS3yR87czsXxsbaUz2idaMxkiKUyqrfOaHQ==
   dependencies:
-    "@salesforce/cli-plugins-testkit" "^3.2.6"
+    "@salesforce/cli-plugins-testkit" "^3.2.8"
     "@salesforce/core" "^3.31.17"
     "@salesforce/kit" "^1.7.1"
     "@salesforce/source-deploy-retrieve" "^7.5.2"
