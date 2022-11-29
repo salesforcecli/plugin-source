@@ -171,7 +171,7 @@ export class Retrieve extends SourceCommand {
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
-      output: this.getFlag<string>('retrievetargetdir') || this.project.getDefaultPackage().fullPath,
+      output: this.resolvedTargetDir || this.project.getDefaultPackage().fullPath,
       packageOptions: this.getFlag<string[]>('packagenames'),
     });
 

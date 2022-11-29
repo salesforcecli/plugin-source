@@ -6,6 +6,7 @@
  */
 
 import { join } from 'path';
+import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import {
@@ -181,7 +182,7 @@ describe('force:source:retrieve', () => {
         metadataEntries: ['ApexClass:MyClass'],
       },
     });
-    ensureRetrieveArgs({ output: sourcepath[0] });
+    ensureRetrieveArgs({ output: path.resolve(sourcepath[0]) });
     ensureHookArgs();
   });
 
