@@ -283,7 +283,7 @@ export class Retrieve extends SourceCommand {
     // remove 'main/default'
     await fs.promises.rmdir(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
     this.retrieveResult.getFileResponses().forEach((fileResponse) => {
-      fileResponse.filePath = fileResponse.filePath.replace(join('main', 'default'), '');
+      fileResponse.filePath = fileResponse.filePath?.replace(join('main', 'default'), '');
     });
   }
 
