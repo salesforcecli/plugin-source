@@ -60,7 +60,7 @@ describe('territories', () => {
 
     it('retrieve without local metadata', async () => {
       // delete and recreate an empty dir
-      await fs.promises.rmdir(path.join(session.project.dir, 'force-app'), { recursive: true });
+      await fs.promises.rm(path.join(session.project.dir, 'force-app'), { recursive: true });
       await fs.promises.mkdir(path.join(session.project.dir, 'force-app'));
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
