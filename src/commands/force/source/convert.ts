@@ -110,14 +110,7 @@ export class Convert extends SourceCommand {
       // SDR will build an output path like /output/directory/packageName/package.xml
       // this was breaking from toolbelt, so to revert it we copy the directory up a level and delete the original
       this.copyDir(this.convertResult.packagePath, outputDirectory);
-      try {
-        fs.rmSync(this.convertResult.packagePath, { recursive: true });
-      } catch (e) {
-        // rmdirSync is being deprecated and emits a warning
-        // but rmSync is introduced in node 14 so fall back to rmdirSync
-        fs.rmdirSync(this.convertResult.packagePath, { recursive: true });
-      }
-
+      fs.rmSync(this.convertResult.packagePath, { recursive: true });
       this.convertResult.packagePath = outputDirectory;
     }
   }
