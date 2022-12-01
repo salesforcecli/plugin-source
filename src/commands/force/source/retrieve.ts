@@ -171,7 +171,7 @@ export class Retrieve extends SourceCommand {
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: this.org.getUsername(),
       merge: true,
-      output: this.getFlag<string>('retrievetargetdir') || this.project.getDefaultPackage().fullPath,
+      output: this.resolvedTargetDir || this.project.getDefaultPackage().fullPath,
       packageOptions: this.getFlag<string[]>('packagenames'),
     });
 
@@ -281,9 +281,9 @@ export class Retrieve extends SourceCommand {
     // move contents of 'main/default' to 'retrievetargetdir'
     await promisesQueue([join(this.resolvedTargetDir, 'main', 'default')], mv, 5, true);
     // remove 'main/default'
-    await fs.promises.rmdir(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
+    await fs.promises.rm(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
     this.retrieveResult.getFileResponses().forEach((fileResponse) => {
-      fileResponse.filePath = fileResponse.filePath.replace(join('main', 'default'), '');
+      fileResponse.filePath = fileResponse.filePath?.replace(join('main', 'default'), '');
     });
   }
 
