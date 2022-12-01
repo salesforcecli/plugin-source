@@ -1097,10 +1097,10 @@
     "@salesforce/ts-types" "^1.7.1"
     chalk "^2.4.2"
 
-"@salesforce/core@^3.23.9", "@salesforce/core@^3.24.0", "@salesforce/core@^3.25.1", "@salesforce/core@^3.30.12", "@salesforce/core@^3.31.10", "@salesforce/core@^3.31.17", "@salesforce/core@^3.31.18", "@salesforce/core@^3.31.19", "@salesforce/core@^3.32.1", "@salesforce/core@^3.32.4":
-  version "3.32.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.4.tgz#a0da998f2d2d19728071fdb2d3fa3e99df9f3072"
-  integrity sha512-owESbxDJUQX6mN8dYfSBug08C0t3RitlB9Y9Ev4AABDYoo7KyJj3XE8uPk6ffEI6OoyiMQFjuR5Z1yQDBfnV2A==
+"@salesforce/core@^3.23.9", "@salesforce/core@^3.24.0", "@salesforce/core@^3.25.1", "@salesforce/core@^3.30.12", "@salesforce/core@^3.31.10", "@salesforce/core@^3.31.17", "@salesforce/core@^3.31.18", "@salesforce/core@^3.31.19", "@salesforce/core@^3.32.1", "@salesforce/core@^3.32.5":
+  version "3.32.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.5.tgz#45d3d0558907b5f1730ee3ee651247e723e3a2b3"
+  integrity sha512-nVw5fyfMLVQZEHs92Ld5l1EC6zuWmHIqUjLK6uoi/e26d3hOYDt/MWoz0sF2AinwVyqIp5kEFR0mmPqDKXNppg==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.8.0"
