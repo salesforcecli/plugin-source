@@ -1070,7 +1070,22 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^3.2.4", "@salesforce/cli-plugins-testkit@^3.2.6":
+"@salesforce/cli-plugins-testkit@^3.2.12":
+  version "3.2.12"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.2.12.tgz#427e5d5f5aeda08b4e23248b323ae52b30e47b7e"
+  integrity sha512-66Jm7Kww6ay82+8nmooiyQtgGm45CHv/fptp64IIu8TTGSirhZbz251yM6qj+Y4yBb2ZpaUwY+mDnaQodgyNuQ==
+  dependencies:
+    "@salesforce/core" "^3.32.6"
+    "@salesforce/kit" "^1.8.0"
+    "@salesforce/ts-types" "^1.5.21"
+    "@types/shelljs" "^0.8.11"
+    archiver "^5.2.0"
+    debug "^4.3.1"
+    shelljs "^0.8.4"
+    strip-ansi "6.0.1"
+    ts-retry-promise "^0.7.0"
+
+"@salesforce/cli-plugins-testkit@^3.2.6":
   version "3.2.8"
   resolved "https://registry.npmjs.org/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.2.8.tgz#0ebbc1391ad4d06ae6eab5755f886a3c04b9bd89"
   integrity sha512-iZ/HPSlMainyokCxwYt6Np+8R9mddOunA7ACWhdTKy0CbMfm6ImjW06RcekXym2d0NU0d/OH+8hqYJSOj1IsTA==
@@ -1109,6 +1124,29 @@
     "@types/graceful-fs" "^4.1.5"
     "@types/semver" "^7.3.13"
     ajv "^8.11.0"
+    archiver "^5.3.0"
+    change-case "^4.1.2"
+    debug "^3.2.7"
+    faye "^1.4.0"
+    form-data "^4.0.0"
+    graceful-fs "^4.2.9"
+    js2xmlparser "^4.0.1"
+    jsforce "^2.0.0-beta.19"
+    jsonwebtoken "8.5.1"
+    ts-retry-promise "^0.7.0"
+
+"@salesforce/core@^3.32.6":
+  version "3.32.9"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.9.tgz#bb655f7cdfc5b97538421147add20e8b84a364ff"
+  integrity sha512-dpvatNXEtxuT0/8dW/iO6KHTVGO38rUVfZ5HgPRoOOfKt0bq0KSi3PrVj1LyA7iyE7wCzliXY4vTdLhqYtZY6g==
+  dependencies:
+    "@salesforce/bunyan" "^2.0.0"
+    "@salesforce/kit" "^1.8.0"
+    "@salesforce/schemas" "^1.4.0"
+    "@salesforce/ts-types" "^1.5.21"
+    "@types/graceful-fs" "^4.1.5"
+    "@types/semver" "^7.3.13"
+    ajv "^8.11.2"
     archiver "^5.3.0"
     change-case "^4.1.2"
     debug "^3.2.7"
@@ -1905,7 +1943,7 @@ ajv@^6.10.0, ajv@^6.12.4:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^8.0.1, ajv@^8.11.0:
+ajv@^8.0.1, ajv@^8.11.0, ajv@^8.11.2:
   version "8.11.2"
   resolved "https://registry.npmjs.org/ajv/-/ajv-8.11.2.tgz#aecb20b50607acf2569b6382167b65a96008bb78"
   integrity sha512-E4bfmKAhGiSTvMfL1Myyycaub+cUEU2/IvpylXkUu7CHBkBj1f/ikdzbD7YQ6FKUbixDxeYvB/xY4fvyroDlQg==

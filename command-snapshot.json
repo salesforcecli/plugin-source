@@ -113,6 +113,12 @@
     "alias": ["force:mdapi:beta:retrieve:report"]
   },
   {
+    "command": "force:source:beta:profile:retrieve",
+    "plugin": "@salesforce/plugin-source",
+    "flags": ["apiversion", "json", "loglevel", "profiles", "targetusername"],
+    "alias": []
+  },
+  {
     "command": "force:source:convert",
     "plugin": "@salesforce/plugin-source",
     "flags": ["json", "loglevel", "manifest", "metadata", "outputdir", "packagename", "rootdir", "sourcepath"],
