@@ -1085,7 +1085,7 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.7.0"
 
-"@salesforce/command@^5.2.1", "@salesforce/command@^5.2.15", "@salesforce/command@^5.2.16", "@salesforce/command@^5.2.23", "@salesforce/command@^5.2.27":
+"@salesforce/command@^5.2.1", "@salesforce/command@^5.2.15", "@salesforce/command@^5.2.16", "@salesforce/command@^5.2.27":
   version "5.2.27"
   resolved "https://registry.yarnpkg.com/@salesforce/command/-/command-5.2.27.tgz#6440102fb5213a456a3722b8f8ad6bc4ce890efa"
   integrity sha512-Mjp+8YfKRcQEf2DpBa1AXuyNkW9eUwiwd37eNdxR/tyksc71EiJ1Ex3hWcN4rHHLecjoAIyjhm4juCn/vXw+Bg==
@@ -1198,17 +1198,17 @@
     chalk "^4.1.1"
     tslib "^2"
 
-"@salesforce/plugin-info@^2.2.1":
-  version "2.2.8"
-  resolved "https://registry.npmjs.org/@salesforce/plugin-info/-/plugin-info-2.2.8.tgz#74c8f256a1593858f0896b7feeb353dad8919c88"
-  integrity sha512-jsLRUZePbjTWo5y7YmDoDzTCTP3hr6jK5+93/IA3ZjoCJgeNJXgMQf2zdX7E+YTQBXbTRCXqaaN0VdqNbtpOMg==
+"@salesforce/plugin-info@^2.2.11":
+  version "2.2.11"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.2.11.tgz#9dcf8885eff19c992faae5115742d42b5d91ae21"
+  integrity sha512-l7cTUN3963ho5UOtFV0BVpzymxVUqUJwDQvRSc9+M3Kj49Rn70xFMwQs9HWHioQyj8F+CVjVf9i5un+z3eXLIg==
   dependencies:
     "@oclif/core" "^1.20.0"
-    "@salesforce/command" "^5.2.23"
+    "@salesforce/command" "^5.2.27"
     "@salesforce/core" "^3.30.12"
     "@salesforce/kit" "^1.6.1"
     got "^11.8.2"
-    marked "^4.2.2"
+    marked "^4.2.3"
     marked-terminal "^4.2.0"
     open "^8.4.0"
     proxy-agent "^5.0.0"
@@ -5591,10 +5591,10 @@ marked-terminal@^4.2.0:
     node-emoji "^1.10.0"
     supports-hyperlinks "^2.1.0"
 
-marked@^4.0.16, marked@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.npmjs.org/marked/-/marked-4.2.2.tgz#1d2075ad6cdfe42e651ac221c32d949a26c0672a"
-  integrity sha512-JjBTFTAvuTgANXx82a5vzK9JLSMoV6V3LBVn4Uhdso6t7vXrGx7g1Cd2r6NYSsxrYbQGFCMqBDhFHyK5q2UvcQ==
+marked@^4.0.16, marked@^4.2.3:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-4.2.4.tgz#5a4ce6c7a1ae0c952601fce46376ee4cf1797e1c"
+  integrity sha512-Wcc9ikX7Q5E4BYDPvh1C6QNSxrjC9tBgz+A/vAhp59KXUgachw++uMvMKiSW8oA85nopmPZcEvBoex/YLMsiyA==
 
 "mem-fs-editor@^8.1.2 || ^9.0.0":
   version "9.5.0"

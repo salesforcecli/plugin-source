@@ -29,7 +29,7 @@
     "@salesforce/dev-scripts": "^3.1.0",
     "@salesforce/plugin-command-reference": "^1.5.0",
     "@salesforce/plugin-config": "^2.3.2",
-    "@salesforce/plugin-info": "^2.2.1",
+    "@salesforce/plugin-info": "^2.2.11",
     "@salesforce/plugin-templates": "^55.1.0",
     "@salesforce/plugin-user": "^2.1.14",
     "@salesforce/prettier-config": "^0.0.2",
