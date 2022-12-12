@@ -8,7 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'shelljs';
-import { expect } from 'chai';
+import { expect, config } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
 import { DescribeMetadataResult } from 'jsforce/api/metadata';
@@ -19,6 +19,7 @@ import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResu
 import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
 let session: TestSession;
+config.truncateThreshold = 0;
 
 const writeManifest = (manifestPath: string, contents?: string) => {
   contents ??= `<?xml version="1.0" encoding="UTF-8"?>
