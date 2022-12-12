@@ -12,7 +12,7 @@
     "@salesforce/command": "^5.2.27",
     "@salesforce/core": "^3.32.5",
     "@salesforce/kit": "^1.8.0",
-    "@salesforce/source-deploy-retrieve": "^7.5.13",
+    "@salesforce/source-deploy-retrieve": "^7.5.15",
     "@salesforce/source-tracking": "^2.2.14",
     "chalk": "^4.1.2",
     "got": "^11.8.3",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^3.2.11",
-    "@salesforce/cli-plugins-testkit": "^3.2.4",
+    "@salesforce/cli-plugins-testkit": "^3.2.13",
     "@salesforce/dev-config": "^3.0.1",
     "@salesforce/dev-scripts": "^3.1.0",
     "@salesforce/plugin-command-reference": "^1.5.0",
