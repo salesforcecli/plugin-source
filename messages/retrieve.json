@@ -60,5 +60,6 @@
   "nothingToRetrieve": "Specify a source path, manifest, metadata, or package names to retrieve.",
   "wantsToRetrieveCustomFields": "Because you're retrieving one or more CustomFields, we're also retrieving the CustomObject to which it's associated.",
   "retrieveWontDelete": "You currently have files deleted in your org.  The retrieve command will NOT delete them from your local project",
-  "retrieveTargetDirOverlapsPackage": "The retrieve target directory [%s] overlaps one of your package directories.  Specify a different retrieve target directory and try again."
+  "retrieveTargetDirOverlapsPackage": "The retrieve target directory [%s] overlaps one of your package directories.  Specify a different retrieve target directory and try again.",
+  "apiVersionMsgDetailed": "%s v%s metadata from %s using the v%s SOAP API"
 }

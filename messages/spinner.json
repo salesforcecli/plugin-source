@@ -2,7 +2,7 @@
   "retrieve": {
     "main": "Retrieving metadata from %s",
     "componentSetBuild": "Preparing retrieve request",
-    "sendingRequest": "Sending request to org (metadata API version %s)",
+    "sendingRequest": "Sending request to org",
     "polling": "Waiting for the org to respond"
   }
 }

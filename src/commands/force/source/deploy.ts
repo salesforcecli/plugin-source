@@ -9,14 +9,8 @@ import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
-import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import {
-  DeployCommand,
-  getCoverageFormattersOptions,
-  getVersionMessage,
-  reportsFormatters,
-  TestLevel,
-} from '../../../deployCommand';
+import { ComponentSetBuilder, DeployVersionData } from '@salesforce/source-deploy-retrieve';
+import { DeployCommand, getCoverageFormattersOptions, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
   DeployAsyncResultFormatter,
@@ -30,6 +24,7 @@ import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
+const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
 // One of these flags must be specified for a valid deploy.
 const xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
@@ -209,10 +204,22 @@ export class Deploy extends DeployCommand {
       }
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', this.componentSet.toArray());
-      this.ux.log(getVersionMessage('Deploying', this.componentSet, this.isRest));
+      const username = this.org.getUsername();
+      // eslint-disable-next-line @typescript-eslint/require-await
+      this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+        this.ux.log(
+          deployMessages.getMessage('apiVersionMsgDetailed', [
+            'Deploying',
+            apiData.manifestVersion,
+            username,
+            apiData.apiVersion,
+            apiData.webService,
+          ])
+        );
+      });
 
       const deploy = await this.componentSet.deploy({
-        usernameOrConnection: this.org.getUsername(),
+        usernameOrConnection: username,
         apiOptions: {
           ...{
             purgeOnDelete: this.getFlag<boolean>('purgeondelete', false),

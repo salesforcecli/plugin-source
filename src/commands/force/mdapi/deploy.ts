@@ -8,14 +8,8 @@ import { EOL } from 'os';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import {
-  DeployCommand,
-  getCoverageFormattersOptions,
-  getVersionMessage,
-  reportsFormatters,
-  TestLevel,
-} from '../../../deployCommand';
+import { DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { DeployCommand, getCoverageFormattersOptions, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
@@ -26,6 +20,7 @@ import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
+const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
 const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
 
@@ -140,10 +135,11 @@ export class Deploy extends DeployCommand {
     const deploymentOptions = this.flags.zipfile
       ? { zipPath: this.flags.zipfile as string }
       : { mdapiPath: this.flags.deploydir as string };
+    const username = this.org.getUsername();
 
     // still here?  we need to deploy a zip file then
     const deploy = new MetadataApiDeploy({
-      usernameOrConnection: this.org.getUsername(),
+      usernameOrConnection: username,
       ...deploymentOptions,
       apiOptions: {
         // properties that will always have values
@@ -162,12 +158,13 @@ export class Deploy extends DeployCommand {
         ...(this.getFlag<string[]>('runtests') ? { runTests: this.getFlag<string[]>('runtests') } : {}),
       },
     });
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+      this.ux.log(deployMessages.getMessage('apiVersionMsgBasic', [username, apiData.apiVersion, apiData.webService]));
+    });
     await deploy.start();
     this.asyncDeployResult = { id: deploy.id };
     this.updateDeployId(deploy.id);
-
-    // we might not know the source api version without unzipping a zip file, so we don't use componentSet
-    this.ux.log(getVersionMessage('Deploying', undefined, this.isRest));
 
     if (!this.isAsync) {
       if (!this.isJsonOutput()) {

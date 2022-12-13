@@ -8,7 +8,13 @@
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { FileResponse, RequestStatus, RetrieveResult, SourceComponent } from '@salesforce/source-deploy-retrieve';
+import {
+  FileResponse,
+  RequestStatus,
+  RetrieveVersionData,
+  RetrieveResult,
+  SourceComponent,
+} from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter';
@@ -21,6 +27,7 @@ const messages = Messages.load('@salesforce/plugin-source', 'pull', [
   'help',
   'flags.waitLong',
 ]);
+const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
 
 export default class Pull extends SourceCommand {
   public static aliases = ['force:source:beta:pull'];
@@ -94,9 +101,21 @@ export default class Pull extends SourceCommand {
     if (this.getFlag<string>('apiversion')) {
       componentSet.apiVersion = this.getFlag<string>('apiversion');
     }
+    const username = this.org.getUsername();
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.lifecycle.on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
+      this.ux.log(
+        retrieveMessages.getMessage('apiVersionMsgDetailed', [
+          'Pulling',
+          apiData.manifestVersion,
+          username,
+          apiData.apiVersion,
+        ])
+      );
+    });
 
     const mdapiRetrieve = await componentSet.retrieve({
-      usernameOrConnection: this.org.getUsername(),
+      usernameOrConnection: username,
       merge: true,
       output: this.project.getDefaultPackage().fullPath,
     });
