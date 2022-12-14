@@ -345,7 +345,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveFromManifest';
         const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath}`;
         const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 }).shellOutput;
-        expect(rv.stderr).to.include(targetApiVersion);
+        expect(rv.stdout).to.include(`Retrieving v${targetApiVersion} metadata from`);
       });
 
       it('retrieves single package', () => {
