@@ -6,8 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@salesforce/kit": ["node_modules/@salesforce/kit"],
-      "@salesforce/core": ["node_modules/@salesforce/core"],
-      "@salesforce/source-deploy-retrieve": ["node_modules/@salesforce/source-deploy-retrieve"]
+      "@salesforce/core": ["node_modules/@salesforce/core"]
     },
     "skipLibCheck": true
   },
