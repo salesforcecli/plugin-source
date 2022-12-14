@@ -11,7 +11,13 @@ import * as fs from 'fs';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
-import { ComponentSet, ComponentSetBuilder, RequestStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import {
+  ComponentSet,
+  ComponentSetBuilder,
+  RequestStatus,
+  RetrieveVersionData,
+  RetrieveResult,
+} from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { SourceCommand } from '../../../sourceCommand';
 import {
@@ -25,6 +31,7 @@ import { promisesQueue } from '../../../promiseQueue';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
+const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
 
 export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
@@ -123,6 +130,18 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
+    const username = this.org.getUsername();
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.lifecycle.on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
+      this.ux.log(
+        retrieveMessages.getMessage('apiVersionMsgDetailed', [
+          'Retrieving',
+          apiData.manifestVersion,
+          username,
+          apiData.apiVersion,
+        ])
+      );
+    });
     this.ux.startSpinner(spinnerMessages.getMessage('retrieve.componentSetBuild'));
     this.componentSet = await ComponentSetBuilder.build({
       apiversion: this.getFlag<string>('apiversion'),
@@ -163,13 +182,9 @@ export class Retrieve extends SourceCommand {
 
     await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
 
-    this.ux.setSpinnerStatus(
-      spinnerMessages.getMessage('retrieve.sendingRequest', [
-        this.componentSet.sourceApiVersion || this.componentSet.apiVersion,
-      ])
-    );
+    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.sendingRequest'));
     const mdapiRetrieve = await this.componentSet.retrieve({
-      usernameOrConnection: this.org.getUsername(),
+      usernameOrConnection: username,
       merge: true,
       output: this.resolvedTargetDir || this.project.getDefaultPackage().fullPath,
       packageOptions: this.getFlag<string[]>('packagenames'),

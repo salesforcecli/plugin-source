@@ -8,10 +8,10 @@
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
 import { Messages } from '@salesforce/core';
-import { DeployResult, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
-import { DeployCommand, getVersionMessage } from '../../../deployCommand';
+import { DeployCommand } from '../../../deployCommand';
 import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
@@ -20,6 +20,7 @@ import { trackingSetup, updateTracking } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
+const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
 export default class Push extends DeployCommand {
   public static aliases = ['force:source:beta:push'];
@@ -105,10 +106,22 @@ export default class Push extends DeployCommand {
       // fire predeploy event for sync and async deploys
       await this.lifecycle.emit('predeploy', componentSet.toArray());
 
-      this.ux.log(getVersionMessage('Pushing', componentSet, isRest));
+      const username = this.org.getUsername();
+      // eslint-disable-next-line @typescript-eslint/require-await
+      this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+        this.ux.log(
+          deployMessages.getMessage('apiVersionMsgDetailed', [
+            'Pushing',
+            apiData.manifestVersion,
+            username,
+            apiData.apiVersion,
+            apiData.webService,
+          ])
+        );
+      });
 
       const deploy = await componentSet.deploy({
-        usernameOrConnection: this.org.getUsername(),
+        usernameOrConnection: username,
         apiOptions: {
           ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
           rest: isRest,
@@ -175,13 +188,12 @@ export default class Push extends DeployCommand {
       return this.setExitCode(69);
     }
 
-    const isSuccessLike = (result: DeployResult): boolean => (
-        result.response.status === RequestStatus.Succeeded ||
-        // successful-ish  (only warnings about deleted things that are already deleted)
-        (result.response.status === RequestStatus.Failed &&
-          result.getFileResponses().every((fr) => fr.state !== 'Failed') &&
-          !result.response.errorMessage)
-      );
+    const isSuccessLike = (result: DeployResult): boolean =>
+      result.response.status === RequestStatus.Succeeded ||
+      // successful-ish  (only warnings about deleted things that are already deleted)
+      (result.response.status === RequestStatus.Failed &&
+        result.getFileResponses().every((fr) => fr.state !== 'Failed') &&
+        !result.response.errorMessage);
     // all successes
     if (this.deployResults.every((result) => isSuccessLike(result))) {
       return this.setExitCode(0);

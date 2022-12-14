@@ -14,6 +14,7 @@ import {
   MetadataApiRetrieve,
   RequestStatus,
   RetrieveResult,
+  RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
 import { resolveZipFileName, SourceCommand } from '../../../sourceCommand';
@@ -27,6 +28,7 @@ import {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
+const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
 
 export class Retrieve extends SourceCommand {
   public static aliases = ['force:mdapi:beta:retrieve'];
@@ -142,11 +144,22 @@ export class Retrieve extends SourceCommand {
     });
 
     await this.lifecycle.emit('preretrieve', { packageXmlPath: manifest });
-
-    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.sendingRequest', [this.componentSet.apiVersion]));
+    const username = this.org.getUsername();
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.lifecycle.on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
+      this.ux.log(
+        retrieveMessages.getMessage('apiVersionMsgDetailed', [
+          'Retrieving',
+          apiData.manifestVersion,
+          username,
+          apiData.apiVersion,
+        ])
+      );
+    });
+    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.sendingRequest'));
 
     this.mdapiRetrieve = await this.componentSet.retrieve({
-      usernameOrConnection: this.org.getUsername(),
+      usernameOrConnection: username,
       output: this.retrieveTargetDir,
       packageOptions: this.getFlag<string[]>('packagenames'),
       format: 'metadata',
