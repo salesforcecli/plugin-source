@@ -1,3 +1,12 @@
+## [2.3.10-dev.1](https://github.com/salesforcecli/plugin-source/compare/2.3.9...2.3.10-dev.1) (2022-12-26)
+
+
+### Bug Fixes
+
+* testing lowering maxFileAdd in source-tracking ([9de4ab6](https://github.com/salesforcecli/plugin-source/commit/9de4ab68200d4b795bd2f8f970ce2bcb99350194))
+
+
+
 ## [2.3.9](https://github.com/salesforcecli/plugin-source/compare/2.3.8...2.3.9) (2022-12-17)
 
 
