@@ -125,18 +125,14 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
   }
 
   await Promise.all([
-    tracking.updateLocalTracking(
-      result instanceof RetrieveResult
-        ? { files: successes.map((fileResponse) => fileResponse.filePath).filter(Boolean) }
-        : {
-            files: successes
-              .filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted)
-              .map((fileResponse) => fileResponse.filePath),
-            deletedFiles: successes
-              .filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted)
-              .map((fileResponse) => fileResponse.filePath),
-          }
-    ),
+    tracking.updateLocalTracking({
+      files: successes
+        .filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted)
+        .map((fileResponse) => fileResponse.filePath),
+      deletedFiles: successes
+        .filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted)
+        .map((fileResponse) => fileResponse.filePath),
+    }),
     tracking.updateRemoteTracking(
       successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
       result instanceof RetrieveResult
