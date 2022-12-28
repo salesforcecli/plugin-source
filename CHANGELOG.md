@@ -1,3 +1,12 @@
+## [2.3.10-dev.2](https://github.com/salesforcecli/plugin-source/compare/2.3.10-dev.1...2.3.10-dev.2) (2022-12-28)
+
+
+### Bug Fixes
+
+* trigger gha ([e920549](https://github.com/salesforcecli/plugin-source/commit/e920549a07e7e67438f9aaada556a43e38cc437f))
+
+
+
 ## [2.3.10-dev.1](https://github.com/salesforcecli/plugin-source/compare/2.3.9...2.3.10-dev.1) (2022-12-26)
 
 
