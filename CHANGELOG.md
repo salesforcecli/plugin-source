@@ -1,3 +1,12 @@
+## [2.3.10-dev.3](https://github.com/salesforcecli/plugin-source/compare/2.3.10-dev.2...2.3.10-dev.3) (2022-12-28)
+
+
+### Bug Fixes
+
+* bump source-tracking ([b18d7f5](https://github.com/salesforcecli/plugin-source/commit/b18d7f5569a9d16d6eb5c58c1401e5ed0c0444a1))
+
+
+
 ## [2.3.10-dev.2](https://github.com/salesforcecli/plugin-source/compare/2.3.10-dev.1...2.3.10-dev.2) (2022-12-28)
 
 
