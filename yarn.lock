@@ -1271,7 +1271,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.5.13", "@salesforce/source-deploy-retrieve@^7.5.17":
+"@salesforce/source-deploy-retrieve@^7.5.13":
   version "7.5.17"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.5.17.tgz#1b0fe063cf20c6f2d572d242e989e8508cb0753e"
   integrity sha512-B4fnaugHv92aCDq8l78awqKMBgWeeYCKDD0OQmKu8LcqC9QgRWqyk68qX4NZoX0pBmwd/Q6sW+aVlE9VXhiP2Q==
