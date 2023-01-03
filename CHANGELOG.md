@@ -1,4 +1,16 @@
+## [2.3.11](https://github.com/salesforcecli/plugin-source/compare/2.3.10...2.3.11) (2022-12-31)
+
 ### Bug Fixes
+
+- **deps:** bump @oclif/core from 1.22.0 to 1.23.0 ([#684](https://github.com/salesforcecli/plugin-source/issues/684)) ([f27da0f](https://github.com/salesforcecli/plugin-source/commit/f27da0f5d61fa6b766840a40ebe0b747e1d14f1a))
+
+## [2.3.10](https://github.com/salesforcecli/plugin-source/compare/2.3.9...2.3.10) (2022-12-31)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/command from 5.2.33 to 5.2.35 ([#686](https://github.com/salesforcecli/plugin-source/issues/686)) ([a994c59](https://github.com/salesforcecli/plugin-source/commit/a994c595162e10b8f8d570d64bdd72d9e14d24f9))
+
+## [2.3.9](https://github.com/salesforcecli/plugin-source/compare/2.3.8...2.3.9) (2022-12-17)
 
 - testing lowering maxFileAdd in source-tracking ([9de4ab6](https://github.com/salesforcecli/plugin-source/commit/9de4ab68200d4b795bd2f8f970ce2bcb99350194))
 
