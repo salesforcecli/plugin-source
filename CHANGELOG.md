@@ -1,3 +1,12 @@
+## [2.3.14](https://github.com/salesforcecli/plugin-source/compare/2.3.13...2.3.14) (2023-01-14)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/source-deploy-retrieve from 7.5.22 to 7.7.0 ([#696](https://github.com/salesforcecli/plugin-source/issues/696)) ([998425c](https://github.com/salesforcecli/plugin-source/commit/998425c8ea3cfcfc0b91b7b6c217948bcc75336a))
+
+
+
 ## [2.3.13](https://github.com/salesforcecli/plugin-source/compare/2.3.12...2.3.13) (2023-01-14)
 
 
