@@ -1,0 +1,81 @@
+{
+  "type": "sfdc_cms__view",
+  "title": "Check Password",
+  "contentBody": {
+    "component": {
+      "children": [
+        {
+          "children": [
+            {
+              "attributes": {
+                "backgroundImageConfig": "",
+                "backgroundImageOverlay": "rgba(0,0,0,0)",
+                "sectionConfig": "{\"UUID\":\"9a310648-054b-4ba6-9b22-186bb6fc4416\",\"columns\":[{\"UUID\":\"3890935c-6dcf-452d-ae69-30c6b5313e8b\",\"columnName\":\"Column 1\",\"columnKey\":\"col1\",\"columnWidth\":\"12\",\"seedComponents\":null}]}"
+              },
+              "children": [
+                {
+                  "children": [
+                    {
+                      "attributes": {
+                        "imageInfo": "",
+                        "logoWidth": 250
+                      },
+                      "definition": "dxp_content_layout:siteLogo",
+                      "id": "1870b69f-e959-4bff-abb5-8e674ba73c8e",
+                      "type": "component"
+                    },
+                    {
+                      "attributes": {
+                        "checkEmailMessage": "Check the email account associated with your username for the link to reset your password. If you didn't get an email, check your Spam folder. Or contact your administrator.",
+                        "returnButtonLabel": "Back to login",
+                        "titleLabel": "Now check your email"
+                      },
+                      "definition": "community_login:checkEmail",
+                      "id": "399cfcd4-d5e8-4047-8403-1e591cf9f69e",
+                      "type": "component"
+                    }
+                  ],
+                  "id": "3890935c-6dcf-452d-ae69-30c6b5313e8b",
+                  "name": "col1",
+                  "title": "Column 1",
+                  "type": "region"
+                }
+              ],
+              "definition": "community_layout:section",
+              "id": "9a310648-054b-4ba6-9b22-186bb6fc4416",
+              "type": "component"
+            }
+          ],
+          "id": "b29e0d4d-6ebd-46a3-8b36-6f80fa32c643",
+          "name": "content",
+          "title": "Content",
+          "type": "region"
+        },
+        {
+          "children": [
+            {
+              "attributes": {
+                "customHeadTags": "",
+                "description": "",
+                "pageTitle": "Check Password",
+                "recordId": "{!recordId}"
+              },
+              "definition": "community_builder:seoAssistant",
+              "id": "75466e89-060a-41fd-8618-efbf921558eb",
+              "type": "component"
+            }
+          ],
+          "id": "adec81bf-3b38-483a-bdd3-f1ac334fafd2",
+          "name": "sfdcHiddenRegion",
+          "title": "sfdcHiddenRegion",
+          "type": "region"
+        }
+      ],
+      "definition": "community_layout:sldsFlexibleLayout",
+      "id": "1c4062f7-2bf3-4105-8875-1d6b47117ea0",
+      "type": "component"
+    },
+    "themeLayoutType": "Inner",
+    "viewType": "check-password"
+  }
+}
