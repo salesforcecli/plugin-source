@@ -1120,6 +1120,29 @@
     jsonwebtoken "9.0.0"
     ts-retry-promise "^0.7.0"
 
+"@salesforce/core@^3.32.12", "@salesforce/core@^3.32.13", "@salesforce/core@^3.32.14":
+  version "3.32.14"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.14.tgz#8746656d72776f27bc2cbfba7344d4f7ddd236ca"
+  integrity sha512-2hpjdYgVFdi9Bgihw8skElhbCi3U0uowrsoCNljtCHrxnm+ORyqwsdDAnNemKUPBL9JGX4ASfWcD4m7F8m9Ysw==
+  dependencies:
+    "@salesforce/bunyan" "^2.0.0"
+    "@salesforce/kit" "^1.8.0"
+    "@salesforce/schemas" "^1.4.0"
+    "@salesforce/ts-types" "^1.7.2"
+    "@types/graceful-fs" "^4.1.5"
+    "@types/semver" "^7.3.13"
+    ajv "^8.11.2"
+    archiver "^5.3.0"
+    change-case "^4.1.2"
+    debug "^3.2.7"
+    faye "^1.4.0"
+    form-data "^4.0.0"
+    graceful-fs "^4.2.9"
+    js2xmlparser "^4.0.1"
+    jsforce "^2.0.0-beta.19"
+    jsonwebtoken "9.0.0"
+    ts-retry-promise "^0.7.0"
+
 "@salesforce/dev-config@^3.0.0", "@salesforce/dev-config@^3.0.1":
   version "3.1.0"
   resolved "https://registry.npmjs.org/@salesforce/dev-config/-/dev-config-3.1.0.tgz#8eb5b35860ff60d1c1dc3fd9329b01a28475d5b9"
@@ -1170,6 +1193,15 @@
   integrity sha512-Pr9CWAIzVYKZRWvM76lyhEtF3CPmVdIfgbqRD7KT/YZdbLstX3KHYBxCyx3TyWZr5qROv96n+jRIBiIFI9LGGw==
   dependencies:
     "@salesforce/ts-types" "^1.7.1"
+    shx "^0.3.3"
+    tslib "^2.2.0"
+
+"@salesforce/kit@^1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.8.3.tgz#b590b78a8618494c51534598a7eb0683ba0da3f2"
+  integrity sha512-p+0tWR2pyCAIjZwDXGhrYFPuLckX9fP3Xa6Jync9POeQBfDGyK9CRd1eaiWj+6BeDS9kwvgm5M6o+OptIEhEjw==
+  dependencies:
+    "@salesforce/ts-types" "^1.7.2"
     shx "^0.3.3"
     tslib "^2.2.0"
 
@@ -1262,7 +1294,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.5.13", "@salesforce/source-deploy-retrieve@^7.5.16", "@salesforce/source-deploy-retrieve@^7.5.17":
+"@salesforce/source-deploy-retrieve@^7.5.13":
   version "7.5.17"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.5.17.tgz#1b0fe063cf20c6f2d572d242e989e8508cb0753e"
   integrity sha512-B4fnaugHv92aCDq8l78awqKMBgWeeYCKDD0OQmKu8LcqC9QgRWqyk68qX4NZoX0pBmwd/Q6sW+aVlE9VXhiP2Q==
@@ -1277,6 +1309,25 @@
     ignore "^5.2.0"
     mime "2.6.0"
     minimatch "^5.1.0"
+    proxy-agent "^5.0.0"
+    proxy-from-env "^1.1.0"
+    unzipper "0.10.11"
+
+"@salesforce/source-deploy-retrieve@^7.7.3":
+  version "7.7.3"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.7.3.tgz#476d4bae3cd74330ca0c65c74f7bf60999b9513d"
+  integrity sha512-CPn5AqsFLz9ZIFgL+4NmOwiizO4xWNelwdLan/aTzUqmxPo+XSZ8MYU+tD/1Pe8/fjmzLh/iYePiAMpXdphGRw==
+  dependencies:
+    "@salesforce/core" "^3.32.13"
+    "@salesforce/kit" "^1.8.0"
+    "@salesforce/ts-types" "^1.7.2"
+    archiver "^5.3.1"
+    fast-xml-parser "^3.21.1"
+    got "^11.8.6"
+    graceful-fs "^4.2.10"
+    ignore "^5.2.4"
+    mime "2.6.0"
+    minimatch "^5.1.2"
     proxy-agent "^5.0.0"
     proxy-from-env "^1.1.0"
     unzipper "0.10.11"
@@ -1298,14 +1349,14 @@
     sinon "^10.0.0"
     strip-ansi "^7.0.1"
 
-"@salesforce/source-tracking@^2.2.15":
-  version "2.2.15"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.15.tgz#fe699b53ae12ddbc968389c8ab56d8a1dc364d2d"
-  integrity sha512-9GnMRe1tlxpN7UwZMfjkh9q49hYPUmMSlCBYhdWD86R0uueOlP9SF7jij9LS8M4zIiHHXPgPGKeHW0o4v4fo6w==
+"@salesforce/source-tracking@^2.2.18":
+  version "2.2.18"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.18.tgz#f58c1da69d802de36eee000b09772b04f2cbb0ad"
+  integrity sha512-xxzudKTaHTrYoOclL+PwOsTHFK8rWB952SFcAW+DmrilddKlq39Qu9SbffKTNFKPpKt9YuX7x+d3sbVQReFCpg==
   dependencies:
-    "@salesforce/core" "^3.32.8"
-    "@salesforce/kit" "^1.8.0"
-    "@salesforce/source-deploy-retrieve" "^7.5.16"
+    "@salesforce/core" "^3.32.12"
+    "@salesforce/kit" "^1.8.3"
+    "@salesforce/source-deploy-retrieve" "^7.7.3"
     graceful-fs "^4.2.10"
     isomorphic-git "1.17.0"
     ts-retry-promise "^0.7.0"
@@ -1338,6 +1389,13 @@
   version "1.7.1"
   resolved "https://registry.npmjs.org/@salesforce/ts-types/-/ts-types-1.7.1.tgz#86b0d0c3bfd5c9b1752662a019a3d2f3bc8ff118"
   integrity sha512-jwZb8fYxbOmEckoJTxG2+5ZEJNJOFxmRJ/FioPnSu4IMFzpK3QbyujfqpHwLfPKHq0xlKRMx+F8QAVVKI/PA4w==
+  dependencies:
+    tslib "^2.4.1"
+
+"@salesforce/ts-types@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.7.2.tgz#ab40399d291c7eca57efc9890daf2fa2632197ec"
+  integrity sha512-eCpWKEb03UCKBJ6Svp0Vwcwt+fG6BQbopO4x5wt6CYeT8Rjt0dbDQicZPmVL59j2qyt3Q4Y4EYsxXUGZmdfvDw==
   dependencies:
     tslib "^2.4.1"
 
@@ -4615,6 +4673,11 @@ ignore@^5.1.1, ignore@^5.1.4, ignore@^5.2.0:
   resolved "https://registry.npmjs.org/ignore/-/ignore-5.2.0.tgz#6d3bac8fa7fe0d45d9f9be7bac2fc279577e345a"
   integrity sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==
 
+ignore@^5.2.4:
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
+  integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
+
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
   resolved "https://registry.npmjs.org/import-fresh/-/import-fresh-3.3.0.tgz#37162c25fcb9ebaa2e6e53d5b4d88ce17d9e0c2b"
@@ -5676,6 +5739,13 @@ minimatch@^5.0.1, minimatch@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/minimatch/-/minimatch-5.1.0.tgz#1717b464f4971b144f6aabe8f2d0b8e4511e09c7"
   integrity sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==
+  dependencies:
+    brace-expansion "^2.0.1"
+
+minimatch@^5.1.2:
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.6.tgz#1cfcb8cf5522ea69952cd2af95ae09477f122a96"
+  integrity sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==
   dependencies:
     brace-expansion "^2.0.1"
 
