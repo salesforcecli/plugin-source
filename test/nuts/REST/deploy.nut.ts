@@ -52,6 +52,7 @@ context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
       repository: repo.gitUrl,
       nut: __filename,
     });
+    await testkit.deploy({ args: '-p force-app' });
   });
 
   after(async () => {
