@@ -88,6 +88,20 @@ export default class Push extends DeployCommand {
       this.getSourceApiVersion(),
       this.isRestDeploy(),
     ]);
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+      this.ux.log(
+        deployMessages.getMessage('apiVersionMsgDetailed', [
+          'Pushing',
+          apiData.manifestVersion,
+          this.org.getUsername(),
+          apiData.apiVersion,
+          apiData.webService,
+        ])
+      );
+    });
+
     for (const componentSet of componentSets) {
       // intentionally to do this sequentially if there are multiple component sets
       /* eslint-disable no-await-in-loop */
@@ -107,18 +121,6 @@ export default class Push extends DeployCommand {
       await this.lifecycle.emit('predeploy', componentSet.toArray());
 
       const username = this.org.getUsername();
-      // eslint-disable-next-line @typescript-eslint/require-await
-      this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
-        this.ux.log(
-          deployMessages.getMessage('apiVersionMsgDetailed', [
-            'Pushing',
-            apiData.manifestVersion,
-            username,
-            apiData.apiVersion,
-            apiData.webService,
-          ])
-        );
-      });
 
       const deploy = await componentSet.deploy({
         usernameOrConnection: username,
