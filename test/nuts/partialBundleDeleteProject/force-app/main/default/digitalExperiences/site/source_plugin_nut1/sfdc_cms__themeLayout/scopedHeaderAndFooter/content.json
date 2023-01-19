@@ -1,0 +1,66 @@
+{
+  "type": "sfdc_cms__themeLayout",
+  "title": "Scoped Header and Footer",
+  "contentBody": {
+    "component": {
+      "attributes": {},
+      "children": [
+        {
+          "children": [
+            {
+              "attributes": {
+                "backgroundImageConfig": "",
+                "backgroundImageOverlay": "rgba(0,0,0,0)",
+                "sectionConfig": "{\"UUID\":\"2f8cc8c9-b8bc-4ddf-9ccc-fa2c49dd472c\",\"columns\":[{\"UUID\":\"87770ea6-d264-44a5-bb7b-d2cf593ade4d\",\"columnName\":\"Column 1\",\"columnKey\":\"headerSection\",\"columnWidth\":\"12\",\"seedComponents\":null}]}"
+              },
+              "children": [
+                {
+                  "id": "87770ea6-d264-44a5-bb7b-d2cf593ade4d",
+                  "name": "headerSection",
+                  "title": "Theme Header",
+                  "type": "region"
+                }
+              ],
+              "definition": "community_layout:section",
+              "id": "2f8cc8c9-b8bc-4ddf-9ccc-fa2c49dd472c",
+              "type": "component"
+            }
+          ],
+          "id": "74a684f7-fbab-4bfa-a1f8-6dc9a62e247b",
+          "name": "header",
+          "title": "Theme Header",
+          "type": "region"
+        },
+        {
+          "children": [
+            {
+              "attributes": {
+                "backgroundImageConfig": "",
+                "backgroundImageOverlay": "rgba(0,0,0,0)",
+                "sectionConfig": "{\"UUID\":\"786346a8-9b13-4afb-9171-f4bd208809ba\",\"columns\":[{\"UUID\":\"626a0cfa-10cd-42ae-855f-6dc9d00926bb\",\"columnName\":\"Column 1\",\"columnKey\":\"footerSection\",\"columnWidth\":\"12\",\"seedComponents\":null}]}"
+              },
+              "children": [
+                {
+                  "id": "626a0cfa-10cd-42ae-855f-6dc9d00926bb",
+                  "name": "footerSection",
+                  "title": "Theme Footer",
+                  "type": "region"
+                }
+              ],
+              "definition": "community_layout:section",
+              "id": "786346a8-9b13-4afb-9171-f4bd208809ba",
+              "type": "component"
+            }
+          ],
+          "id": "538eb533-a169-431d-ac5c-c27676963410",
+          "name": "footer",
+          "title": "Theme Footer",
+          "type": "region"
+        }
+      ],
+      "definition": "community_byo:scopedHeaderAndFooter",
+      "id": "e6517c5b-edca-4a2e-afd5-28f4269edd17",
+      "type": "component"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "sfdc_cms__view",
+  "title": "Forgot Password",
+  "contentBody": {
+    "component": {
+      "children": [
+        {
+          "attributes": {
+            "cancelButtonLabel": "Cancelar",
+            "submitButtonLabel": "Reiniciar"
+          },
+          "id": "8227f960-ab77-4526-8db8-f2b5b7c787c5"
+        }
+      ]
+    }
+  }
+}
