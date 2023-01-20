@@ -1,3 +1,12 @@
+## [2.3.16](https://github.com/salesforcecli/plugin-source/compare/2.3.15...2.3.16) (2023-01-20)
+
+
+### Bug Fixes
+
+* only listen to events once per package ([#698](https://github.com/salesforcecli/plugin-source/issues/698)) ([b53510c](https://github.com/salesforcecli/plugin-source/commit/b53510cc3bf9fe1089c193112be847bb109aa1e2))
+
+
+
 ## [2.3.15](https://github.com/salesforcecli/plugin-source/compare/2.3.14...2.3.15) (2023-01-19)
 
 
