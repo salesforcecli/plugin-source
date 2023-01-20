@@ -1332,6 +1332,25 @@
     proxy-from-env "^1.1.0"
     unzipper "0.10.11"
 
+"@salesforce/source-deploy-retrieve@^7.7.5":
+  version "7.7.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.7.5.tgz#4eb64f02d4759f98e1e64187a081c472ebe8a2ae"
+  integrity sha512-zkGpbvTVr2nBJfbTxShFfaa4DAOvbXiaaWjZg0oVLUDoAQh+uQKX4aPdsXqJR4pKdQR8u1JwEV7TlR1f5gMCrg==
+  dependencies:
+    "@salesforce/core" "^3.32.13"
+    "@salesforce/kit" "^1.8.0"
+    "@salesforce/ts-types" "^1.7.2"
+    archiver "^5.3.1"
+    fast-xml-parser "^3.21.1"
+    got "^11.8.6"
+    graceful-fs "^4.2.10"
+    ignore "^5.2.4"
+    mime "2.6.0"
+    minimatch "^5.1.2"
+    proxy-agent "^5.0.0"
+    proxy-from-env "^1.1.0"
+    unzipper "0.10.11"
+
 "@salesforce/source-testkit@^2.0.29":
   version "2.0.29"
   resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.0.29.tgz#394967e2028be482cae78eb0cf57a8696aee21df"
