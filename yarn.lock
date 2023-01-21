@@ -1070,14 +1070,14 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^3.2.15", "@salesforce/cli-plugins-testkit@^3.2.4":
-  version "3.2.17"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.2.17.tgz#1b35052545121373dd804980d44e19decc3d318c"
-  integrity sha512-sLpwpXJuDRUfum8mH2/k17qNEXOzFVNp4moAvQXfMae4mNOORzrShMkIS+C35o0uD2fIOl4/7RmntA0ZWnb6Aw==
+"@salesforce/cli-plugins-testkit@^3.2.15", "@salesforce/cli-plugins-testkit@^3.2.18":
+  version "3.2.18"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.2.18.tgz#6c2857cef50a0035205a4150c6d609f36e3b0fae"
+  integrity sha512-tfm1lYPYcOsx9+ELUx+b9ZbAD5mOIhtvGjqpG3/NG1jeghLNPjbDDX6bL1ottw/+mYBVymIrj1krhKxOUpqJCw==
   dependencies:
     "@salesforce/core" "^3.32.12"
     "@salesforce/kit" "^1.8.0"
-    "@salesforce/ts-types" "^1.5.21"
+    "@salesforce/ts-types" "^1.7.2"
     "@types/shelljs" "^0.8.11"
     archiver "^5.2.0"
     debug "^4.3.1"
@@ -1334,7 +1334,7 @@
     sinon "^5.1.1"
     tslib "^2.2.0"
 
-"@salesforce/ts-types@^1.5.21", "@salesforce/ts-types@^1.7.0", "@salesforce/ts-types@^1.7.1", "@salesforce/ts-types@^1.7.2":
+"@salesforce/ts-types@^1.7.0", "@salesforce/ts-types@^1.7.1", "@salesforce/ts-types@^1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-1.7.2.tgz#ab40399d291c7eca57efc9890daf2fa2632197ec"
   integrity sha512-eCpWKEb03UCKBJ6Svp0Vwcwt+fG6BQbopO4x5wt6CYeT8Rjt0dbDQicZPmVL59j2qyt3Q4Y4EYsxXUGZmdfvDw==
