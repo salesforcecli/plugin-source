@@ -17,11 +17,10 @@ export interface EnsureFsFlagOptions {
 }
 
 export type ProgressBar = {
-  value: number;
-  total: number;
-  start: (num: number) => void;
-  update: (num: number) => void;
-  updateTotal: (num: number) => void;
+  total?: number;
+  value?: number;
+  start: (total: number, startValue: number, payload?: object) => void;
+  update: (num: number, payload?: object) => void;
   setTotal: (num: number) => void;
   stop: () => void;
 };

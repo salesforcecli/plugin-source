@@ -81,6 +81,7 @@ export class ForceCommand extends SfdxCommand {
 
   // overrides the help so that it shows the help for the `force` topic and not "help" for this command
   protected _help(): void {
+    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const help = new Help(this.config);
     // We need to include force in the args for topics to be shown
     void help.showHelp(process.argv.slice(2));

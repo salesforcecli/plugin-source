@@ -51,6 +51,7 @@ describe('force:mdapi:listmetadata', () => {
   }
 
   const runListMetadataCmd = async (params: string[]) => {
+    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const cmd = new TestListMetadata(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
       const orgStub = fromStub(
