@@ -1,3 +1,12 @@
+# [2.4.0](https://github.com/salesforcecli/plugin-source/compare/2.3.16...2.4.0) (2023-02-01)
+
+
+### Features
+
+* use latest oclif/core ([#714](https://github.com/salesforcecli/plugin-source/issues/714)) ([520f5d6](https://github.com/salesforcecli/plugin-source/commit/520f5d67bdf23e8d4236020b19f0f24c174bb48d))
+
+
+
 ## [2.3.16](https://github.com/salesforcecli/plugin-source/compare/2.3.15...2.3.16) (2023-01-20)
 
 
