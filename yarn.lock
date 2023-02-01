@@ -776,6 +776,40 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
+"@oclif/core@^2.0.3", "@oclif/core@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.0.7.tgz#a17a85dfa105dda120fbc5647432010feaa97a9e"
+  integrity sha512-pj7hIH8SBeH3qha47fmyqdaBdNVEqesRgnKFh8Ytdb4S41/4BYOiQuyQGuvnKgvicH6DMxp4FbM9EQEW46V9xw==
+  dependencies:
+    "@types/cli-progress" "^3.11.0"
+    ansi-escapes "^4.3.2"
+    ansi-styles "^4.3.0"
+    cardinal "^2.1.1"
+    chalk "^4.1.2"
+    clean-stack "^3.0.1"
+    cli-progress "^3.10.0"
+    debug "^4.3.4"
+    ejs "^3.1.6"
+    fs-extra "^9.1.0"
+    get-package-type "^0.1.0"
+    globby "^11.1.0"
+    hyperlinker "^1.0.0"
+    indent-string "^4.0.0"
+    is-wsl "^2.2.0"
+    js-yaml "^3.14.1"
+    natural-orderby "^2.0.3"
+    object-treeify "^1.1.33"
+    password-prompt "^1.1.2"
+    semver "^7.3.7"
+    string-width "^4.2.3"
+    strip-ansi "^6.0.1"
+    supports-color "^8.1.1"
+    supports-hyperlinks "^2.2.0"
+    tslib "^2.4.1"
+    widest-line "^3.1.0"
+    wordwrap "^1.0.0"
+    wrap-ansi "^7.0.0"
+
 "@oclif/dev-cli@^1":
   version "1.26.10"
   resolved "https://registry.npmjs.org/@oclif/dev-cli/-/dev-cli-1.26.10.tgz#d8df3a79009b68552f5e7f249d1d19ca52278382"
@@ -877,29 +911,19 @@
     widest-line "^3.1.0"
     wrap-ansi "^6.2.0"
 
-"@oclif/plugin-help@^3.3.1":
-  version "3.3.1"
-  resolved "https://registry.npmjs.org/@oclif/plugin-help/-/plugin-help-3.3.1.tgz#36adb4e0173f741df409bb4b69036d24a53bfb24"
-  integrity sha512-QuSiseNRJygaqAdABYFWn/H1CwIZCp9zp/PLid6yXvy6VcQV7OenEFF5XuYaCvSARe2Tg9r8Jqls5+fw1A9CbQ==
-  dependencies:
-    "@oclif/command" "^1.8.15"
-    "@oclif/config" "1.18.2"
-    "@oclif/errors" "1.3.5"
-    "@oclif/help" "^1.0.1"
-    chalk "^4.1.2"
-    indent-string "^4.0.0"
-    lodash "^4.17.21"
-    string-width "^4.2.0"
-    strip-ansi "^6.0.0"
-    widest-line "^3.1.0"
-    wrap-ansi "^6.2.0"
-
 "@oclif/plugin-help@^5.1.19":
   version "5.1.20"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-5.1.20.tgz#eba25a93266c271c7bbd08034bf53975f022476e"
   integrity sha512-N8xRxE/isFcdBDI8cobixEZA5toxIK5jbxpwALNTr4s8KNAtBA3ORQrSiY0fWGkcv0sCGMwZw7rJ0Izh18JPsw==
   dependencies:
     "@oclif/core" "^1.21.0"
+
+"@oclif/plugin-help@^5.2.2":
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-5.2.2.tgz#f00e60b1349c4ec62c1d6a98d3a424899373c5ad"
+  integrity sha512-ok8gS2phqA4MiGkjCrZPFvhNIHIp35WsvNNVUn4GL8WZYQ5mk1cZuu+IIqTZxBFZ4QDUZLVkumrhsqx3oNId9A==
+  dependencies:
+    "@oclif/core" "^2.0.7"
 
 "@oclif/plugin-not-found@^2.3.7":
   version "2.3.9"
@@ -1545,6 +1569,13 @@
   version "4.3.4"
   resolved "https://registry.npmjs.org/@types/chai/-/chai-4.3.4.tgz#e913e8175db8307d78b4e8fa690408ba6b65dee4"
   integrity sha512-KnRanxnpfpjUTqTCXslZSEdLfXExwgNxYPdiO2WGUj8+HDjFi8R3k5RVKPeSCzLjCcshCAtVO2QBbVuAV4kTnw==
+
+"@types/cli-progress@^3.11.0":
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/@types/cli-progress/-/cli-progress-3.11.0.tgz#ec79df99b26757c3d1c7170af8422e0fc95eef7e"
+  integrity sha512-XhXhBv1R/q2ahF3BM7qT5HLzJNlIL0wbcGyZVjqOTqAybAnsLisd7gy1UCyIqpL+5Iv6XhlSyzjLCnI2sIdbCg==
+  dependencies:
+    "@types/node" "*"
 
 "@types/debug@^4.1.7":
   version "4.1.7"
@@ -6288,12 +6319,12 @@ object.values@^1.1.5:
     define-properties "^1.1.4"
     es-abstract "^1.20.4"
 
-oclif@^3.4.3:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/oclif/-/oclif-3.4.3.tgz#8db95c7d1f0c8c82fb3037545f78e65fa7769a4a"
-  integrity sha512-Kg8ezSJvDluazG6eyN+TeoryaFn3i9utKVty2hy6I0FUy6QcPnbl8+MCha4Jwc+x5+pA46Tu0n2cnjUcWqp56w==
+oclif@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-3.6.1.tgz#157ac35f1e634af745879a55c3fa39bf724a5e69"
+  integrity sha512-zedbQqxAzC8WlH/T2D/CbGCTWIXHMV7wGs2av+M3KPG4SfB9/lwn1zXGjft/3NNy3X6KCEoGCYWqYYMZOf2Fgg==
   dependencies:
-    "@oclif/core" "^1.20.4"
+    "@oclif/core" "^2.0.3"
     "@oclif/plugin-help" "^5.1.19"
     "@oclif/plugin-not-found" "^2.3.7"
     "@oclif/plugin-warn-if-update-available" "^2.0.14"
@@ -6307,6 +6338,7 @@ oclif@^3.4.3:
     lodash "^4.17.21"
     normalize-package-data "^3.0.3"
     semver "^7.3.8"
+    shelljs "^0.8.5"
     tslib "^2.3.1"
     yeoman-environment "^3.11.1"
     yeoman-generator "^5.6.1"

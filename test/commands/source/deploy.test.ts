@@ -84,6 +84,7 @@ describe('force:source:deploy', () => {
   }
 
   const runDeployCmd = async (params: string[]) => {
+    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const cmd = new TestDeploy(params, oclifConfigStub);
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
       const SfProjectStub = fromStub(
@@ -383,6 +384,7 @@ describe('force:source:deploy', () => {
     it('should use SOAP by default', async () => {
       delete process.env.SFDX_REST_DEPLOY;
       const sourcepath = ['somepath'];
+      // @ts-expect-error type mismatch between oclif/core v1 and v2
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore private method
@@ -393,6 +395,7 @@ describe('force:source:deploy', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'false';
         const sourcepath = ['somepath'];
+        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
@@ -406,6 +409,7 @@ describe('force:source:deploy', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         const sourcepath = ['somepath'];
+        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
@@ -419,6 +423,7 @@ describe('force:source:deploy', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         const sourcepath = ['somepath'];
+        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
@@ -430,6 +435,7 @@ describe('force:source:deploy', () => {
 
     it('should use SOAP from flag', async () => {
       const sourcepath = ['somepath'];
+      // @ts-expect-error type mismatch between oclif/core v1 and v2
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore private method
@@ -440,6 +446,7 @@ describe('force:source:deploy', () => {
       stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
       stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
       const sourcepath = ['somepath'];
+      // @ts-expect-error type mismatch between oclif/core v1 and v2
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore private method
@@ -452,6 +459,7 @@ describe('force:source:deploy', () => {
         stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
         stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
         const sourcepath = ['somepath'];
+        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method

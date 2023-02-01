@@ -6,8 +6,7 @@
   "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
-    "@oclif/core": "^1.23.0",
-    "@oclif/plugin-help": "^3.3.1",
+    "@oclif/core": "^2.0.7",
     "@salesforce/apex-node": "^1.6.0",
     "@salesforce/command": "^5.2.35",
     "@salesforce/core": "^3.32.14",
@@ -24,6 +23,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^3.2.16",
+    "@oclif/plugin-help": "^5.2.2",
     "@salesforce/cli-plugins-testkit": "^3.2.18",
     "@salesforce/dev-config": "^3.0.1",
     "@salesforce/dev-scripts": "^3.1.0",
@@ -59,7 +59,7 @@
     "husky": "^7.0.4",
     "mocha": "^9.1.3",
     "nyc": "^15.1.0",
-    "oclif": "^3.4.3",
+    "oclif": "^3.6.1",
     "prettier": "^2.8.3",
     "pretty-quick": "^3.1.3",
     "shelljs": "^0.8.5",

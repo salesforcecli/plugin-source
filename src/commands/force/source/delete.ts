@@ -7,7 +7,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CliUx } from '@oclif/core';
+import { ux } from '@oclif/core';
 import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import {
@@ -387,7 +387,7 @@ export class Delete extends DeployCommand {
           ? messages.getMessage('areYouSureCheckOnly')
           : messages.getMessage('areYouSure')
       );
-      return CliUx.ux.confirm(message.join(''));
+      return ux.confirm(message.join(''));
     }
     return true;
   }
