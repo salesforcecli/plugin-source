@@ -189,6 +189,25 @@ describe('Partial Bundle Delete Retrieves', () => {
         filePath: testCssFile,
       });
     });
+
+    // This test uses the dreamhouse-lwc repo and retrieves an LWC that has local
+    // jest tests in the __tests__ directory.
+    it('should not replace forceignored files in a local LWC', () => {
+      const propertyTilePath = path.join(lwcSrcDir, 'propertyTile');
+
+      // This dir should NOT be deleted after a retrieve of the component from the org.
+      const testsDir = path.join(propertyTilePath, '__tests__');
+      expect(fs.existsSync(testsDir)).to.be.true;
+
+      const result = execCmd<RetrieveCommandResult>(
+        `force:source:retrieve -p ${propertyTilePath} -u ${scratchOrgUsername} --json`,
+        { ensureExitCode: 0 }
+      );
+
+      expect(fs.existsSync(testsDir)).to.be.true;
+      const inboundFiles = result.jsonOutput?.result?.inboundFiles;
+      expect(inboundFiles).to.be.an('array').and.not.empty;
+    });
   });
 });
 
