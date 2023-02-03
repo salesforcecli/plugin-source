@@ -1,3 +1,12 @@
+## [2.4.1](https://github.com/salesforcecli/plugin-source/compare/2.4.0...2.4.1) (2023-02-03)
+
+
+### Bug Fixes
+
+* nut for handling forceignored files for partial bundle deletes ([#716](https://github.com/salesforcecli/plugin-source/issues/716)) ([f95be35](https://github.com/salesforcecli/plugin-source/commit/f95be35f330e292c6f5a9cafbbac4dd684c2cf2c))
+
+
+
 # [2.4.0](https://github.com/salesforcecli/plugin-source/compare/2.3.16...2.4.0) (2023-02-01)
 
 
