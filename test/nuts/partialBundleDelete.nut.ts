@@ -99,12 +99,18 @@ describe('Partial Bundle Delete Retrieves', () => {
     });
     const logJsonStub = sandbox.stub(UX.prototype, 'logJson');
 
-    await oclif.run([
-      'force:source:retrieve',
-      '-m',
-      'DigitalExperience:site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
-      '--json',
-    ]);
+    const root = path.resolve(__dirname, '..', '..');
+    const config = new oclif.Config({ root });
+    await config.load();
+    await oclif.run(
+      [
+        'force:source:retrieve',
+        '-m',
+        'DigitalExperience:site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        '--json',
+      ],
+      config
+    );
 
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
     expect(logJsonStub.args[0][0]).to.deep.equal(getExpectedCmdJSON(projectPath));
@@ -188,6 +194,25 @@ describe('Partial Bundle Delete Retrieves', () => {
         state: 'Deleted',
         filePath: testCssFile,
       });
+    });
+
+    // This test uses the dreamhouse-lwc repo and retrieves an LWC that has local
+    // jest tests in the __tests__ directory.
+    it('should not replace forceignored files in a local LWC', () => {
+      const brokerCardPath = path.join(lwcSrcDir, 'brokerCard');
+
+      // This dir should NOT be deleted after a retrieve of the component from the org.
+      const testsDir = path.join(brokerCardPath, '__tests__');
+      expect(fs.existsSync(testsDir)).to.be.true;
+
+      const result = execCmd<RetrieveCommandResult>(
+        `force:source:retrieve -p ${brokerCardPath} -u ${scratchOrgUsername} --json`,
+        { ensureExitCode: 0 }
+      );
+
+      expect(fs.existsSync(testsDir)).to.be.true;
+      const inboundFiles = result.jsonOutput?.result?.inboundFiles;
+      expect(inboundFiles).to.be.an('array').and.not.empty;
     });
   });
 });
