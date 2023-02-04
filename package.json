@@ -33,7 +33,7 @@
     "@salesforce/plugin-templates": "^55.1.0",
     "@salesforce/plugin-user": "^2.1.14",
     "@salesforce/prettier-config": "^0.0.2",
-    "@salesforce/source-testkit": "^2.0.33",
+    "@salesforce/source-testkit": "^2.0.37",
     "@salesforce/ts-sinon": "1.4.2",
     "@swc/core": "^1.3.32",
     "@types/archiver": "^5.1.1",
