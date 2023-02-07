@@ -110,7 +110,12 @@ export class PushResultFormatter extends ResultFormatter {
       return withoutUnchanged;
     }
     const bundlesDeployed = withoutUnchanged.filter((fileResponse) =>
-      ['LightningComponentBundle', 'AuraDefinitionBundle', 'WaveTemplateBundle'].includes(fileResponse.type)
+      [
+        'LightningComponentBundle',
+        'AuraDefinitionBundle',
+        'WaveTemplateBundle',
+        'ExperiencePropertyTypeBundle',
+      ].includes(fileResponse.type)
     );
     if (bundlesDeployed.length === 0) {
       return withoutUnchanged;
