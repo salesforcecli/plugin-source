@@ -5,7 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-export const exampleSourceComponent = {
+import { ComponentProperties } from '@salesforce/source-deploy-retrieve/lib/src/resolve/sourceComponent';
+
+export const exampleSourceComponent: ComponentProperties = {
   name: 'GeocodingService',
   type: {
     id: 'apexclass',
