@@ -1,3 +1,12 @@
+# [2.5.0](https://github.com/salesforcecli/plugin-source/compare/2.4.3...2.5.0) (2023-02-08)
+
+
+### Features
+
+* support for ExperiencePropertyType Bundle ([#727](https://github.com/salesforcecli/plugin-source/issues/727)) ([64d7059](https://github.com/salesforcecli/plugin-source/commit/64d70590f96d58d4a1589ecbbadb9bc5ad8848e3))
+
+
+
 ## [2.4.3](https://github.com/salesforcecli/plugin-source/compare/2.4.2...2.4.3) (2023-02-03)
 
 
