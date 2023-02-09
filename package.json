@@ -99,10 +99,10 @@
     ],
     "topics": {
       "force": {
-        "external": true,
         "subtopics": {
           "source": {
             "description": "commands to interact with source formatted metadata",
+            "longDescription": "Use the source commands to push and pull source to and from source-tracked orgs, to deploy and retrieve source to and from orgs, to see synchronization changes between your project and source-tracked orgs, and to convert your source to the metadata format for Metadata API deployments.",
             "subtopics": {
               "deploy": {
                 "description": "interact with an active deploy request"
@@ -116,13 +116,14 @@
             }
           },
           "mdapi": {
-            "description": "retrieve and deploy metadata using Metadata API",
+            "description": "deploy, retrieve and convert Metadata API–formatted metadata using Metadata API",
+            "longDescription": "Use the mdapi commands to retrieve and deploy Metadata API–formatted files that represent components in an org, or to convert Metadata API–formatted metadata into the source format used in Salesforce DX projects.",
             "subtopics": {
               "deploy": {
-                "description": "new versions of deploy report command"
+                "description": "deploy Metadata API–formatted metadata using Metadata API"
               },
               "retrieve": {
-                "description": "new versions of retrieve report command"
+                "description": "retrieve Metadata API–formatted metadata using Metadata API"
               }
             }
           }
