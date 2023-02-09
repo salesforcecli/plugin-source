@@ -1,3 +1,12 @@
+## [2.5.2](https://github.com/salesforcecli/plugin-source/compare/2.5.1...2.5.2) (2023-02-09)
+
+
+### Bug Fixes
+
+* oclif topic description updates ([#706](https://github.com/salesforcecli/plugin-source/issues/706)) ([d925605](https://github.com/salesforcecli/plugin-source/commit/d9256055e7cd72a5ac1ad92f9459e7ec961e1048))
+
+
+
 ## [2.5.1](https://github.com/salesforcecli/plugin-source/compare/2.5.0...2.5.1) (2023-02-09)
 
 
