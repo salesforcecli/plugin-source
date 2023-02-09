@@ -1,3 +1,12 @@
+## [2.5.1](https://github.com/salesforcecli/plugin-source/compare/2.5.0...2.5.1) (2023-02-09)
+
+
+### Bug Fixes
+
+* enhance partial bundle delete tests for forceignored files ([#728](https://github.com/salesforcecli/plugin-source/issues/728)) ([0dc9bd2](https://github.com/salesforcecli/plugin-source/commit/0dc9bd2ce47691184fdca6040c6d3d93152bfe3f))
+
+
+
 # [2.5.0](https://github.com/salesforcecli/plugin-source/compare/2.4.3...2.5.0) (2023-02-08)
 
 
