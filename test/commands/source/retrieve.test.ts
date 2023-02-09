@@ -69,6 +69,7 @@ describe('force:source:retrieve', () => {
   }
 
   const runRetrieveCmd = async (params: string[]) => {
+    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const cmd = new TestRetrieve(params, oclifConfigStub);
     stubMethod(sandbox, SfProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
     stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {

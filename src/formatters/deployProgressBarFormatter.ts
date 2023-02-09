@@ -8,7 +8,7 @@ import { UX } from '@salesforce/command';
 import { Logger } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { once } from '@salesforce/kit';
-import { CliUx } from '@oclif/core';
+import { ux as coreUx } from '@oclif/core';
 import { ProgressBar } from '../types';
 import { ProgressFormatter } from './progressFormatter';
 
@@ -22,7 +22,7 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
   public progress(deploy: MetadataApiDeploy): void {
     this.initProgressBar();
     const startProgressBar = once((componentTotal: number) => {
-      this.progressBar.start(componentTotal);
+      this.progressBar.start(componentTotal, 0);
     });
 
     deploy.onUpdate((data) => {
@@ -69,7 +69,7 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
   // used to initialize the progress bar
   protected initProgressBar(): void {
     this.logger.debug('initializing progress bar');
-    this.progressBar = CliUx.ux.progress({
+    this.progressBar = coreUx.progress({
       format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',

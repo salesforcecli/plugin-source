@@ -1,3 +1,57 @@
+## [2.5.1](https://github.com/salesforcecli/plugin-source/compare/2.5.0...2.5.1) (2023-02-09)
+
+
+### Bug Fixes
+
+* enhance partial bundle delete tests for forceignored files ([#728](https://github.com/salesforcecli/plugin-source/issues/728)) ([0dc9bd2](https://github.com/salesforcecli/plugin-source/commit/0dc9bd2ce47691184fdca6040c6d3d93152bfe3f))
+
+
+
+# [2.5.0](https://github.com/salesforcecli/plugin-source/compare/2.4.3...2.5.0) (2023-02-08)
+
+
+### Features
+
+* support for ExperiencePropertyType Bundle ([#727](https://github.com/salesforcecli/plugin-source/issues/727)) ([64d7059](https://github.com/salesforcecli/plugin-source/commit/64d70590f96d58d4a1589ecbbadb9bc5ad8848e3))
+
+
+
+## [2.4.3](https://github.com/salesforcecli/plugin-source/compare/2.4.2...2.4.3) (2023-02-03)
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/core from 2.0.7 to 2.0.8 ([#715](https://github.com/salesforcecli/plugin-source/issues/715)) ([58da09b](https://github.com/salesforcecli/plugin-source/commit/58da09b14f38041a6e3be5e15a6d8062b4fd93fb))
+
+
+
+## [2.4.2](https://github.com/salesforcecli/plugin-source/compare/2.4.1...2.4.2) (2023-02-03)
+
+
+### Bug Fixes
+
+* **deps:** bump http-cache-semantics from 4.1.0 to 4.1.1 ([#718](https://github.com/salesforcecli/plugin-source/issues/718)) ([78013fd](https://github.com/salesforcecli/plugin-source/commit/78013fd9369c70d7212970c933f2820deb81fd4f))
+
+
+
+## [2.4.1](https://github.com/salesforcecli/plugin-source/compare/2.4.0...2.4.1) (2023-02-03)
+
+
+### Bug Fixes
+
+* nut for handling forceignored files for partial bundle deletes ([#716](https://github.com/salesforcecli/plugin-source/issues/716)) ([f95be35](https://github.com/salesforcecli/plugin-source/commit/f95be35f330e292c6f5a9cafbbac4dd684c2cf2c))
+
+
+
+# [2.4.0](https://github.com/salesforcecli/plugin-source/compare/2.3.16...2.4.0) (2023-02-01)
+
+
+### Features
+
+* use latest oclif/core ([#714](https://github.com/salesforcecli/plugin-source/issues/714)) ([520f5d6](https://github.com/salesforcecli/plugin-source/commit/520f5d67bdf23e8d4236020b19f0f24c174bb48d))
+
+
+
 ## [2.3.16](https://github.com/salesforcecli/plugin-source/compare/2.3.15...2.3.16) (2023-01-20)
 
 
