@@ -170,12 +170,14 @@ describe('Partial Bundle Delete Retrieves', () => {
     // delete the CSS file added to match the component in the org.
     it('should replace and report local LWC content that was deleted for retrieve', () => {
       const propertyTilePath = path.join(lwcSrcDir, 'propertyTile');
+      const testsDir = path.join(propertyTilePath, '__tests__');
 
       // Add another CSS file to the propertyTile component. This file
       // should be deleted after a retrieve of the component from the org.
       const testCssFile = path.join(propertyTilePath, 'testFile.css');
       fs.writeFileSync(testCssFile, '.THIS header { display: none; }');
       expect(fs.existsSync(testCssFile)).to.be.true;
+      expect(fs.existsSync(testsDir)).to.be.true;
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${propertyTilePath} -u ${scratchOrgUsername} --json`,
@@ -194,6 +196,7 @@ describe('Partial Bundle Delete Retrieves', () => {
         state: 'Deleted',
         filePath: testCssFile,
       });
+      expect(fs.existsSync(testsDir)).to.be.true;
     });
 
     // This test uses the dreamhouse-lwc repo and retrieves an LWC that has local
