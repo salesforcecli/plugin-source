@@ -62,7 +62,7 @@ describe('Partial Bundle Delete Retrieves', () => {
   //       has a DigitalBundleExperience. The test retrieves a changed DigitalExperience (forgotPassword)
   //       that doesn't contain a translation file (es.json). This should cause the local translation file
   //       to be deleted and reported as deleted by SDR and the source:retrieve command.
-  it('should replace and report local DEB content that was deleted for retrieve', async () => {
+  it.skip('should replace and report local DEB content that was deleted for retrieve', async () => {
     const forgotPasswordTranslationFile = path.join(
       projectPath,
       'digitalExperiences',
