@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import * as oclif from '@oclif/core';
 import { TestSession, genUniqueString, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { UX } from '@salesforce/command';
@@ -20,6 +19,7 @@ import {
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
 import { RetrieveCommandResult } from 'src/formatters/retrieveResultFormatter';
+import { Retrieve } from '../../src/commands/force/source/retrieve';
 
 describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;
@@ -62,7 +62,7 @@ describe('Partial Bundle Delete Retrieves', () => {
   //       has a DigitalBundleExperience. The test retrieves a changed DigitalExperience (forgotPassword)
   //       that doesn't contain a translation file (es.json). This should cause the local translation file
   //       to be deleted and reported as deleted by SDR and the source:retrieve command.
-  it.skip('should replace and report local DEB content that was deleted for retrieve', async () => {
+  it('should replace and report local DEB content that was deleted for retrieve', async () => {
     const forgotPasswordTranslationFile = path.join(
       projectPath,
       'digitalExperiences',
@@ -99,19 +99,17 @@ describe('Partial Bundle Delete Retrieves', () => {
     });
     const logJsonStub = sandbox.stub(UX.prototype, 'logJson');
 
-    const root = path.resolve(__dirname, '..', '..');
-    const config = new oclif.Config({ root });
-    await config.load();
-    await oclif.run(
-      [
-        'force:source:retrieve',
-        '-m',
-        'DigitalExperience:site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
-        '--json',
-      ],
-      config
-    );
+    const result = (await Retrieve.run([
+      '-m',
+      'DigitalExperience:site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+      '--json',
+    ])) as RetrieveCommandResult;
 
+    // ensure stubbing works
+    expect(result.response.success).to.be.true;
+    expect(result.response.id).to.equal(checkRetrieveStatusResponse.id);
+
+    // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
     expect(logJsonStub.args[0][0]).to.deep.equal(getExpectedCmdJSON(projectPath));
   });
