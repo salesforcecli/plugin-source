@@ -1,3 +1,12 @@
+## [2.5.3](https://github.com/salesforcecli/plugin-source/compare/2.5.2...2.5.3) (2023-02-11)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/command from 5.2.35 to 5.3.0 ([#732](https://github.com/salesforcecli/plugin-source/issues/732)) ([657dbbb](https://github.com/salesforcecli/plugin-source/commit/657dbbb0afdb32a498694d8f0b112fb26206f7f7))
+
+
+
 ## [2.5.2](https://github.com/salesforcecli/plugin-source/compare/2.5.1...2.5.2) (2023-02-09)
 
 
