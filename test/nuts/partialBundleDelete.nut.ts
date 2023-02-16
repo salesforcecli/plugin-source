@@ -10,7 +10,6 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { TestSession, genUniqueString, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
-import { UX } from '@salesforce/command';
 import {
   ComponentSet,
   ComponentSetBuilder,
@@ -97,17 +96,18 @@ describe('Partial Bundle Delete Retrieves', () => {
       );
       return compSet;
     });
-    const logJsonStub = sandbox.stub(UX.prototype, 'logJson');
 
     const result = (await Retrieve.run(['-p', forgotPasswordDE, '--json'])) as RetrieveCommandResult;
 
-    // ensure stubbing works
-    expect(result.response.success).to.be.true;
-    expect(result.response.id).to.equal(checkRetrieveStatusResponse.id);
-
     // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
-    expect(logJsonStub.args[0][0]).to.deep.equal(getExpectedCmdJSON(projectPath));
+
+    // ensure command response
+    const expectedResponse = getExpectedCmdJSON(projectPath);
+    expect(result.response.success).to.equal(expectedResponse.result.response.success);
+    expect(result.response.id).to.equal(expectedResponse.result.response.id);
+    expect(result.response.fileProperties).to.deep.equal(expectedResponse.result.response.fileProperties);
+    expect(result.inboundFiles).to.deep.equal(expectedResponse.result.inboundFiles);
   });
 
   describe('Aura and LWC', () => {
@@ -328,45 +328,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
     warnings: [],
     response: {
       done: true,
-      fileProperties: [
-        {
-          createdById: '0059A000005ekRSQAY',
-          createdByName: 'User User',
-          createdDate: '2023-01-06T21:06:57.000Z',
-          fileName: 'unpackaged/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/_meta.json',
-          fullName: 'site/source_plugin_nut1/sfdc_cms__view/forgotPassword/_meta',
-          id: '0jd9A000000000BQAQ',
-          lastModifiedById: '0059A000005ekRSQAY',
-          lastModifiedByName: 'User User',
-          lastModifiedDate: '2023-01-06T21:06:57.000Z',
-          type: 'DigitalExperienceBundle',
-        },
-        {
-          createdById: '0059A000005ekRSQAY',
-          createdByName: 'User User',
-          createdDate: '2023-01-06T21:06:57.000Z',
-          fileName: 'unpackaged/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/content.json',
-          fullName: 'site/source_plugin_nut1/sfdc_cms__view/forgotPassword/content',
-          id: '0jd9A000000000BQAQ',
-          lastModifiedById: '0059A000005ekRSQAY',
-          lastModifiedByName: 'User User',
-          lastModifiedDate: '2023-01-06T21:06:57.000Z',
-          type: 'DigitalExperienceBundle',
-        },
-        {
-          createdById: '0059A000005ekRSQAY',
-          createdByName: 'User User',
-          createdDate: '2023-01-07T18:58:58.034Z',
-          fileName: 'unpackaged/package.xml',
-          fullName: 'unpackaged/package.xml',
-          id: '',
-          lastModifiedById: '0059A000005ekRSQAY',
-          lastModifiedByName: 'User User',
-          lastModifiedDate: '2023-01-07T18:58:58.034Z',
-          manageableState: 'unmanaged',
-          type: 'Package',
-        },
-      ],
+      fileProperties: checkRetrieveStatusResponse.fileProperties,
       id: '09S9A000000Ysa2UAC',
       status: 'Succeeded',
       success: true,
