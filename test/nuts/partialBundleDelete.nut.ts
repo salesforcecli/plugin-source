@@ -63,15 +63,15 @@ describe('Partial Bundle Delete Retrieves', () => {
   //       that doesn't contain a translation file (es.json). This should cause the local translation file
   //       to be deleted and reported as deleted by SDR and the source:retrieve command.
   it('should replace and report local DEB content that was deleted for retrieve', async () => {
-    const forgotPasswordTranslationFile = path.join(
+    const forgotPasswordDE = path.join(
       projectPath,
       'digitalExperiences',
       'site',
       'source_plugin_nut1',
       'sfdc_cms__view',
-      'forgotPassword',
-      'es.json'
+      'forgotPassword'
     );
+    const forgotPasswordTranslationFile = path.join(forgotPasswordDE, 'es.json');
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.true;
 
     // Create an actual connection to the org we created for the TestSession, then stub
@@ -99,11 +99,7 @@ describe('Partial Bundle Delete Retrieves', () => {
     });
     const logJsonStub = sandbox.stub(UX.prototype, 'logJson');
 
-    const result = (await Retrieve.run([
-      '-m',
-      'DigitalExperience:site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
-      '--json',
-    ])) as RetrieveCommandResult;
+    const result = (await Retrieve.run(['-p', forgotPasswordDE, '--json'])) as RetrieveCommandResult;
 
     // ensure stubbing works
     expect(result.response.success).to.be.true;
@@ -286,22 +282,46 @@ const getExpectedCmdJSON = (projectPath: string) => ({
   result: {
     inboundFiles: [
       {
-        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
         type: 'DigitalExperience',
         state: 'Changed',
-        filePath: `${projectPath}/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/_meta.json`,
+        filePath: path.join(
+          projectPath,
+          'digitalExperiences',
+          'site',
+          'source_plugin_nut1',
+          'sfdc_cms__view',
+          'forgotPassword',
+          '_meta.json'
+        ),
       },
       {
-        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
         type: 'DigitalExperience',
         state: 'Changed',
-        filePath: `${projectPath}/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/content.json`,
+        filePath: path.join(
+          projectPath,
+          'digitalExperiences',
+          'site',
+          'source_plugin_nut1',
+          'sfdc_cms__view',
+          'forgotPassword',
+          'content.json'
+        ),
       },
       {
-        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
         type: 'DigitalExperience',
         state: 'Deleted',
-        filePath: `${projectPath}/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/es.json`,
+        filePath: path.join(
+          projectPath,
+          'digitalExperiences',
+          'site',
+          'source_plugin_nut1',
+          'sfdc_cms__view',
+          'forgotPassword',
+          'es.json'
+        ),
       },
     ],
     packages: [],
