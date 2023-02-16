@@ -8,10 +8,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import * as oclif from '@oclif/core';
 import { TestSession, genUniqueString, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
-import { UX } from '@salesforce/command';
 import {
   ComponentSet,
   ComponentSetBuilder,
@@ -20,6 +18,7 @@ import {
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
 import { RetrieveCommandResult } from 'src/formatters/retrieveResultFormatter';
+import { Retrieve } from '../../src/commands/force/source/retrieve';
 
 describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;
@@ -62,16 +61,16 @@ describe('Partial Bundle Delete Retrieves', () => {
   //       has a DigitalBundleExperience. The test retrieves a changed DigitalExperience (forgotPassword)
   //       that doesn't contain a translation file (es.json). This should cause the local translation file
   //       to be deleted and reported as deleted by SDR and the source:retrieve command.
-  it.skip('should replace and report local DEB content that was deleted for retrieve', async () => {
-    const forgotPasswordTranslationFile = path.join(
+  it('should replace and report local DEB content that was deleted for retrieve', async () => {
+    const forgotPasswordDE = path.join(
       projectPath,
       'digitalExperiences',
       'site',
       'source_plugin_nut1',
       'sfdc_cms__view',
-      'forgotPassword',
-      'es.json'
+      'forgotPassword'
     );
+    const forgotPasswordTranslationFile = path.join(forgotPasswordDE, 'es.json');
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.true;
 
     // Create an actual connection to the org we created for the TestSession, then stub
@@ -97,23 +96,18 @@ describe('Partial Bundle Delete Retrieves', () => {
       );
       return compSet;
     });
-    const logJsonStub = sandbox.stub(UX.prototype, 'logJson');
 
-    const root = path.resolve(__dirname, '..', '..');
-    const config = new oclif.Config({ root });
-    await config.load();
-    await oclif.run(
-      [
-        'force:source:retrieve',
-        '-m',
-        'DigitalExperience:site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
-        '--json',
-      ],
-      config
-    );
+    const result = (await Retrieve.run(['-p', forgotPasswordDE, '--json'])) as RetrieveCommandResult;
 
+    // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
-    expect(logJsonStub.args[0][0]).to.deep.equal(getExpectedCmdJSON(projectPath));
+
+    // ensure command response
+    const expectedResponse = getExpectedCmdJSON(projectPath);
+    expect(result.response.success).to.equal(expectedResponse.result.response.success);
+    expect(result.response.id).to.equal(expectedResponse.result.response.id);
+    expect(result.response.fileProperties).to.deep.equal(expectedResponse.result.response.fileProperties);
+    expect(result.inboundFiles).to.have.deep.members(expectedResponse.result.inboundFiles);
   });
 
   describe('Aura and LWC', () => {
@@ -288,67 +282,53 @@ const getExpectedCmdJSON = (projectPath: string) => ({
   result: {
     inboundFiles: [
       {
-        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
         type: 'DigitalExperience',
         state: 'Changed',
-        filePath: `${projectPath}/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/_meta.json`,
+        filePath: path.join(
+          projectPath,
+          'digitalExperiences',
+          'site',
+          'source_plugin_nut1',
+          'sfdc_cms__view',
+          'forgotPassword',
+          '_meta.json'
+        ),
       },
       {
-        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
         type: 'DigitalExperience',
         state: 'Changed',
-        filePath: `${projectPath}/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/content.json`,
+        filePath: path.join(
+          projectPath,
+          'digitalExperiences',
+          'site',
+          'source_plugin_nut1',
+          'sfdc_cms__view',
+          'forgotPassword',
+          'content.json'
+        ),
       },
       {
-        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
+        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
         type: 'DigitalExperience',
         state: 'Deleted',
-        filePath: `${projectPath}/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/es.json`,
+        filePath: path.join(
+          projectPath,
+          'digitalExperiences',
+          'site',
+          'source_plugin_nut1',
+          'sfdc_cms__view',
+          'forgotPassword',
+          'es.json'
+        ),
       },
     ],
     packages: [],
     warnings: [],
     response: {
       done: true,
-      fileProperties: [
-        {
-          createdById: '0059A000005ekRSQAY',
-          createdByName: 'User User',
-          createdDate: '2023-01-06T21:06:57.000Z',
-          fileName: 'unpackaged/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/_meta.json',
-          fullName: 'site/source_plugin_nut1/sfdc_cms__view/forgotPassword/_meta',
-          id: '0jd9A000000000BQAQ',
-          lastModifiedById: '0059A000005ekRSQAY',
-          lastModifiedByName: 'User User',
-          lastModifiedDate: '2023-01-06T21:06:57.000Z',
-          type: 'DigitalExperienceBundle',
-        },
-        {
-          createdById: '0059A000005ekRSQAY',
-          createdByName: 'User User',
-          createdDate: '2023-01-06T21:06:57.000Z',
-          fileName: 'unpackaged/digitalExperiences/site/source_plugin_nut1/sfdc_cms__view/forgotPassword/content.json',
-          fullName: 'site/source_plugin_nut1/sfdc_cms__view/forgotPassword/content',
-          id: '0jd9A000000000BQAQ',
-          lastModifiedById: '0059A000005ekRSQAY',
-          lastModifiedByName: 'User User',
-          lastModifiedDate: '2023-01-06T21:06:57.000Z',
-          type: 'DigitalExperienceBundle',
-        },
-        {
-          createdById: '0059A000005ekRSQAY',
-          createdByName: 'User User',
-          createdDate: '2023-01-07T18:58:58.034Z',
-          fileName: 'unpackaged/package.xml',
-          fullName: 'unpackaged/package.xml',
-          id: '',
-          lastModifiedById: '0059A000005ekRSQAY',
-          lastModifiedByName: 'User User',
-          lastModifiedDate: '2023-01-07T18:58:58.034Z',
-          manageableState: 'unmanaged',
-          type: 'Package',
-        },
-      ],
+      fileProperties: checkRetrieveStatusResponse.fileProperties,
       id: '09S9A000000Ysa2UAC',
       status: 'Succeeded',
       success: true,
