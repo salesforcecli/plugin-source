@@ -16,7 +16,6 @@
     "chalk": "^4.1.2",
     "got": "^11.8.3",
     "jsforce": "^2.0.0-beta.19",
-    "open": "^8.4.1",
     "proxy-agent": "^5.0.0",
     "proxy-from-env": "^1.1.0",
     "tslib": "^2"
@@ -153,7 +152,7 @@
     "test:command-reference": "./bin/dev commandreference:generate --erroronwarnings",
     "test:deprecation-policy": "./bin/dev snapshot:compare",
     "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 1200000 --parallel --retries 0",
-    "test:nuts:commands:other": "mocha \"test/nuts/open.nut.ts\" \"test/nuts/ignored_list.nut.ts\" --slow 4500 --timeout 1200000 --retries 0 --parallel",
+    "test:nuts:commands:other": "mocha  \"test/nuts/ignored_list.nut.ts\" --slow 4500 --timeout 1200000 --retries 0 --parallel",
     "test:nuts:convert": "cross-env PLUGIN_SOURCE_SEED_FILTER=convert ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0",
     "test:nuts:delete": "mocha \"test/nuts/delete.nut.ts\" --slow 4500 --timeout 1200000 --retries 0",
     "test:nuts:deploy": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy PLUGIN_SOURCE_SEED_EXCLUDE=async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0",

@@ -216,12 +216,6 @@
     "alias": []
   },
   {
-    "command": "force:source:open",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["apiversion", "json", "loglevel", "sourcefile", "targetusername", "urlonly"],
-    "alias": []
-  },
-  {
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["apiversion", "forceoverwrite", "json", "loglevel", "targetusername", "wait"],

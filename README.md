@@ -113,7 +113,6 @@ USAGE
 - [`sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeployreport--w-minutes--i-id---resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceignoredlist--p-filepath---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array> --fromorg <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcemanifestcreate--m-array--p-array--n-string---t-prepostdestroypackage--c-array---fromorg-string--o-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceopen--f-filepath--r--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepull--f--w-minutes--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepush--f--w-minutes--g--u-string---apiversion-string---quiet---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 - [`sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceretrieve--p-array---x-filepath---m-array--w-minutes--n-array--f--t--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -1625,50 +1624,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/manifest/create.ts)_
-
-## `sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-edit a Lightning Page with Lightning App Builder
-
-```
-USAGE
-  $ sfdx force:source:open -f <filepath> [-r] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -f, --sourcefile=<value>                                                          (required) file to edit
-  -r, --urlonly                                                                     generate a navigation URL; don’t
-                                                                                    launch the editor
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  edit a Lightning Page with Lightning App Builder
-
-  Opens the specified Lightning Page in Lightning App Builder. Lightning Page files have the suffix .flexipage-meta.xml,
-  and are stored in the flexipages directory.
-
-  If you specify a Visualforce page, which has a .page suffix, the page opens in your browser so you can preview it. If
-  you specify a different type of file, this command opens your org’s home page.
-
-  The file opens in your default browser.
-
-  If no browser-based editor is available for the selected file, this command opens your org's home page.
-
-  To generate a URL for the browser-based editor but not open the editor, use --urlonly.
-
-EXAMPLES
-  $ sfdx force:source:open -f path/to/source
-
-  $ sfdx force:source:open -r -f path/to/source
-
-  $ sfdx force:source:open -f path/to/source -u my-user@my-org.com
-```
 
 _See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/open.ts)_
 
