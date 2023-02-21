@@ -7,11 +7,11 @@
 
 import { dirname, resolve, extname } from 'path';
 import * as fs from 'fs';
-import { SfdxCommand } from '@salesforce/command';
-import { Messages, Lifecycle, SfError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
-import { get, getBoolean, getString, Optional } from '@salesforce/ts-types';
+import { getString, Optional } from '@salesforce/ts-types';
 import { ux } from '@oclif/core';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types';
 
 Messages.importMessagesDirectory(__dirname);
@@ -26,23 +26,14 @@ const messages = Messages.load('@salesforce/plugin-source', 'flags.validation', 
 // Messages.importMessagesDirectory(__dirname);
 // const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export abstract class SourceCommand extends SfdxCommand {
+export abstract class SourceCommand extends SfCommand<any> {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
 
   protected progressBar?: ProgressBar;
-  protected lifecycle = Lifecycle.getInstance();
   protected componentSet?: ComponentSet;
 
-  protected isJsonOutput(): boolean {
-    return getBoolean(this.flags, 'json', false);
-  }
-
-  protected getFlag<T>(flagName: string, defaultVal?: unknown): T {
-    return get(this.flags, flagName, defaultVal) as T;
-  }
-
   protected initProgressBar(): void {
-    this.logger.debug('initializing progress bar');
+    this.debug('initializing progress bar');
     this.progressBar = ux.progress({
       format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',

@@ -4,12 +4,12 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as os from 'os';
 import { join } from 'path';
 import * as fs from 'fs';
-import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
+import { Flags, loglevel, orgApiVersionFlagWithDeprecations } from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { SourceCommand } from '../../../../sourceCommand';
 
 Messages.importMessagesDirectory(__dirname);
@@ -33,43 +33,47 @@ interface CreateCommandResult {
 }
 
 const xorFlags = ['metadata', 'sourcepath', 'fromorg'];
-export class create extends SourceCommand {
+export class Create extends SourceCommand {
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    apiversion: flags.builtin({}),
-    metadata: flags.array({
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    metadata: Flags.string({
+      multiple: true,
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: flags.array({
+    sourcepath: Flags.string({
+      multiple: true,
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
       exactlyOne: xorFlags,
     }),
-    manifestname: flags.string({
+    manifestname: Flags.string({
       char: 'n',
       description: messages.getMessage('flags.manifestname'),
       exclusive: ['manifesttype'],
     }),
-    manifesttype: flags.enum({
+    manifesttype: Flags.string({
       description: messages.getMessage('flags.manifesttype'),
       options: Object.keys(manifestTypes),
       char: 't',
     }),
-    includepackages: flags.array({
+    includepackages: Flags.string({
+      multiple: true,
       description: messages.getMessage('flags.includepackages'),
       options: Object.keys(packageTypes),
       char: 'c',
       dependsOn: ['fromorg'],
     }),
-    fromorg: flags.string({
+    fromorg: Flags.string({
       description: messages.getMessage('flags.fromorg'),
       exactlyOne: xorFlags,
     }),
-    outputdir: flags.string({
+    outputdir: Flags.string({
       char: 'o',
       description: messages.getMessage('flags.outputdir'),
     }),
@@ -78,8 +82,10 @@ export class create extends SourceCommand {
   private outputDir: string;
   private outputPath: string;
   private includepackages: string[];
+  private flags: Interfaces.InferredFlags<typeof Create.flags>;
 
   public async run(): Promise<CreateCommandResult> {
+    this.flags = (await this.parse(Create)).flags;
     await this.createManifest();
     this.resolveSuccess();
     return this.formatResult();
@@ -89,10 +95,9 @@ export class create extends SourceCommand {
     // convert the manifesttype into one of the "official" manifest names
     // if no manifesttype flag passed, use the manifestname flag
     // if no manifestname flag, default to 'package.xml'
-    this.manifestName =
-      manifestTypes[this.getFlag<string>('manifesttype')] || this.getFlag<string>('manifestname') || 'package.xml';
-    this.outputDir = this.getFlag<string>('outputdir');
-    this.includepackages = this.getFlag<string[]>('includepackages');
+    this.manifestName = manifestTypes[this.flags.manifesttype] || this.flags.manifestname || 'package.xml';
+    this.outputDir = this.flags.outputdir;
+    this.includepackages = this.flags.includepackages;
 
     let exclude: string[] = [];
     if (this.includepackages) {
@@ -104,14 +109,14 @@ export class create extends SourceCommand {
     }
 
     const componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag('apiversion') ?? (await this.getSourceApiVersion()),
-      sourcepath: this.getFlag<string[]>('sourcepath'),
+      apiversion: this.flags['api-version'] ?? (await this.getSourceApiVersion()),
+      sourcepath: this.flags.sourcepath,
       metadata: this.flags.metadata && {
-        metadataEntries: this.getFlag<string[]>('metadata'),
+        metadataEntries: this.flags.metadata,
         directoryPaths: this.getPackageDirs(),
       },
       org: this.flags.fromorg && {
-        username: this.getFlag<string>('fromorg'),
+        username: this.flags.fromorg,
         exclude,
       },
     });
@@ -134,11 +139,11 @@ export class create extends SourceCommand {
   protected resolveSuccess(): void {}
 
   protected formatResult(): CreateCommandResult {
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       if (this.outputDir) {
-        this.ux.log(messages.getMessage('successOutputDir', [this.manifestName, this.outputDir]));
+        this.log(messages.getMessage('successOutputDir', [this.manifestName, this.outputDir]));
       } else {
-        this.ux.log(messages.getMessage('success', [this.manifestName]));
+        this.log(messages.getMessage('success', [this.manifestName]));
       }
     }
     return { path: this.outputPath, name: this.manifestName };

@@ -6,9 +6,10 @@
  */
 
 import { resolve } from 'path';
-import { UX } from '@salesforce/command';
-import { Logger, Messages, SfError } from '@salesforce/core';
+
+import { Messages, SfError } from '@salesforce/core';
 import { ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -21,8 +22,8 @@ export interface ConvertCommandResult {
 export class ConvertResultFormatter extends ResultFormatter {
   protected result: ConvertResult;
 
-  public constructor(logger: Logger, ux: UX, result: ConvertResult) {
-    super(logger, ux);
+  public constructor(ux: Ux, result: ConvertResult) {
+    super(ux);
     this.result = result;
   }
 

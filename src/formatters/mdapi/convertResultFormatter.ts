@@ -6,9 +6,8 @@
  */
 
 import * as path from 'path';
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import { ConvertResult } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter } from '../resultFormatter';
 
 interface ConvertEntry {
@@ -24,8 +23,8 @@ export class ConvertResultFormatter extends ResultFormatter {
   protected result: ConvertResult;
   private convertResults: ConvertCommandResult;
 
-  public constructor(logger: Logger, ux: UX, result: ConvertResult) {
-    super(logger, ux);
+  public constructor(ux: Ux, result: ConvertResult) {
+    super(ux);
     this.result = result;
   }
 

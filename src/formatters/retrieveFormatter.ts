@@ -6,7 +6,7 @@
  */
 
 import { yellow } from 'chalk';
-import { Logger, Messages, SfError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { get } from '@salesforce/ts-types';
 import {
   MetadataApiRetrieveStatus,
@@ -14,8 +14,9 @@ import {
   RetrieveMessage,
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
-import { UX } from '@salesforce/command';
+
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -25,8 +26,8 @@ export abstract class RetrieveFormatter extends ResultFormatter {
   protected result: MetadataApiRetrieveStatus;
   protected messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-  public constructor(logger: Logger, ux: UX, public options: ResultFormatterOptions, result: RetrieveResult) {
-    super(logger, ux, options);
+  public constructor(ux: Ux, public options: ResultFormatterOptions, result: RetrieveResult) {
+    super(ux, options);
     // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
     delete result.response.zipFile;
     this.result = result.response;

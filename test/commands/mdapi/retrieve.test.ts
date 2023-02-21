@@ -12,7 +12,7 @@ import { expect } from 'chai';
 import { Lifecycle, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+
 import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { Retrieve } from '../../../src/commands/force/mdapi/retrieve';

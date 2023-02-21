@@ -5,10 +5,16 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import * as chalk from 'chalk';
 import { SourceTracking, throwIfInvalid } from '@salesforce/source-tracking';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  SfCommand,
+} from '@salesforce/sf-plugins-core';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
@@ -18,46 +24,49 @@ export type SourceTrackingResetResult = {
   localPathsSynced: number;
 };
 
-export class Reset extends SfdxCommand {
+export class Reset extends SfCommand<SourceTrackingResetResult> {
+  public static readonly deprecateAliases = true;
   public static aliases = ['force:source:beta:tracking:reset'];
+  public static readonly summary = messages.getMessage('resetDescription');
   public static readonly description = messages.getMessage('resetDescription');
   public static readonly requiresProject = true;
-  public static readonly requiresUsername = true;
 
-  public static readonly flagsConfig: FlagsConfig = {
-    revision: flags.integer({
+  public static readonly flags = {
+    'target-org': requiredOrgFlagWithDeprecations,
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    revision: Flags.integer({
       char: 'r',
-      description: messages.getMessage('revisionDescription'),
+      summary: messages.getMessage('revisionDescription'),
       min: 0,
     }),
-    noprompt: flags.boolean({
+    noprompt: Flags.boolean({
       char: 'p',
-      description: messages.getMessage('nopromptDescription'),
+      summary: messages.getMessage('nopromptDescription'),
     }),
   };
 
   public async run(): Promise<SourceTrackingResetResult> {
+    const { flags } = await this.parse(Reset);
     throwIfInvalid({
-      org: this.org,
+      org: flags['target-org'],
       projectPath: this.project.getPath(),
       toValidate: 'plugin-source',
       command: 'force:source:tracking:clear',
     });
 
-    if (this.flags.noprompt || (await this.ux.confirm(chalk.dim(messages.getMessage('promptMessage'))))) {
+    if (flags.noprompt || (await this.confirm(chalk.dim(messages.getMessage('promptMessage'))))) {
       const sourceTracking = await SourceTracking.create({
         project: this.project,
-        org: this.org,
+        org: flags['target-org'],
       });
 
       const [remoteResets, localResets] = await Promise.all([
-        sourceTracking.resetRemoteTracking(this.flags.revision as number),
+        sourceTracking.resetRemoteTracking(flags.revision),
         sourceTracking.resetLocalTracking(),
       ]);
 
-      this.ux.log(
-        `Reset local tracking files${this.flags.revision ? ` to revision ${this.flags.revision as number}` : ''}.`
-      );
+      this.log(`Reset local tracking files${flags.revision ? ` to revision ${flags.revision}` : ''}.`);
 
       return {
         sourceMembersSynced: remoteResets,

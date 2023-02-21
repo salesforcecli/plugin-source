@@ -5,17 +5,16 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as chalk from 'chalk';
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import { getNumber } from '@salesforce/ts-types';
 import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ProgressFormatter } from './progressFormatter';
 export class DeployProgressStatusFormatter extends ProgressFormatter {
   private previousComponents = -1;
   private previousTests = -1;
-  public constructor(logger: Logger, ux: UX) {
-    super(logger, ux);
+  public constructor(ux: Ux) {
+    super(ux);
   }
 
   // This can be used to print the progress of the deployment.

@@ -97,7 +97,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       return compSet;
     });
 
-    const result = (await Retrieve.run(['-p', forgotPasswordDE, '--json'])) as RetrieveCommandResult;
+    const result = (await Retrieve.run(['-p', forgotPasswordDE, '--json']));
 
     // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;

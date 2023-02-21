@@ -5,16 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { DeployMessage, DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import * as chalk from 'chalk';
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { DeployCommandResult, DeployResultFormatter } from '../deployResultFormatter';
 import { ResultFormatterOptions } from '../resultFormatter';
 
 export class DeleteResultFormatter extends DeployResultFormatter {
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result?: DeployResult) {
-    super(logger, ux, options, result);
+  public constructor(ux: Ux, options: ResultFormatterOptions, result?: DeployResult) {
+    super(ux, options, result);
   }
 
   /**

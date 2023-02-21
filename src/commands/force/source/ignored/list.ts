@@ -6,9 +6,10 @@
  */
 import * as path from 'path';
 import * as fs from 'fs';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
+
 import { Messages, SfError } from '@salesforce/core';
 import { ForceIgnore } from '@salesforce/source-deploy-retrieve';
+import { Flags, SfCommand } from '@salesforce/sf-plugins-core';
 import { FsError } from '../../../../types';
 
 Messages.importMessagesDirectory(__dirname);
@@ -18,14 +19,15 @@ export type SourceIgnoredResults = {
   ignoredFiles: string[];
 };
 
-export class SourceIgnoredCommand extends SfdxCommand {
+export class SourceIgnoredCommand extends SfCommand<SourceIgnoredResults> {
+  public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly requiresProject = true;
 
-  public static readonly flagsConfig: FlagsConfig = {
-    sourcepath: flags.filepath({
+  public static readonly flags = {
+    sourcepath: Flags.file({
       char: 'p',
-      description: messages.getMessage('flags.sourcepath'),
+      summary: messages.getMessage('flags.sourcepath'),
     }),
   };
 
@@ -36,31 +38,29 @@ export class SourceIgnoredCommand extends SfdxCommand {
    */
   // eslint-disable-next-line @typescript-eslint/require-await
   public async run(): Promise<SourceIgnoredResults> {
+    const { flags } = await this.parse(SourceIgnoredCommand);
     try {
       this.forceIgnore = ForceIgnore.findAndCreate(this.project.getPath());
-      const sourcepaths = this.flags.sourcepath
-        ? [this.flags.sourcepath as string]
+      const sourcepaths = flags.sourcepath
+        ? [flags.sourcepath]
         : this.project.getUniquePackageDirectories().map((pDir) => pDir.path);
 
       const ignoredFiles = (await Promise.all(sourcepaths.map((sp) => this.statIgnored(sp.trim())))).flat();
 
       // Command output
       if (ignoredFiles.length) {
-        this.ux.log('Found the following ignored files:');
-        ignoredFiles.forEach((filepath) => this.ux.log(filepath));
+        this.log('Found the following ignored files:');
+        ignoredFiles.forEach((filepath) => this.log(filepath));
       } else {
-        this.ux.log('No ignored files found in paths:');
-        sourcepaths.forEach((sp) => this.ux.log(sp));
+        this.log('No ignored files found in paths:');
+        sourcepaths.forEach((sp) => this.log(sp));
       }
 
       return { ignoredFiles };
     } catch (err) {
       const error = err as FsError;
       if (error.code === 'ENOENT') {
-        throw new SfError(
-          messages.getMessage('invalidSourcePath', [this.flags.sourcepath as string]),
-          'invalidSourcePath'
-        );
+        throw new SfError(messages.getMessage('invalidSourcePath', [flags.sourcepath]), 'invalidSourcePath');
       }
       throw SfError.wrap(error);
     }
@@ -78,7 +78,7 @@ export class SourceIgnoredCommand extends SfdxCommand {
 
   // Recursively search a directory for source files to test.
   private async findIgnored(dir: string): Promise<Array<Promise<string[]>>> {
-    this.logger.debug(`Searching dir: ${dir}`);
+    this.debug(`Searching dir: ${dir}`);
     return (await fs.promises.readdir(dir)).map((filename) => this.statIgnored(path.join(dir, filename)));
   }
 
@@ -86,10 +86,10 @@ export class SourceIgnoredCommand extends SfdxCommand {
   // the ignoredFiles array for output.
   private isIgnored(filepath: string): boolean {
     if (this.forceIgnore.denies(filepath)) {
-      this.logger.debug(`[DENIED]: ${filepath}`);
+      this.debug(`[DENIED]: ${filepath}`);
       return true;
     }
-    this.logger.debug(`[ACCEPTED]: ${filepath}`);
+    this.debug(`[ACCEPTED]: ${filepath}`);
     return false;
   }
 }

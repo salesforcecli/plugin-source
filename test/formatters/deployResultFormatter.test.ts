@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+
 import { DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';

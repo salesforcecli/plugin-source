@@ -8,7 +8,7 @@
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+
 import { stubInterface } from '@salesforce/ts-sinon';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { MdDeployResultFormatter } from '../../src/formatters/mdapi/mdDeployResultFormatter';

@@ -8,12 +8,12 @@
 // This is a doc command
 /* istanbul ignore file */
 
-import { SfdxCommand } from '@salesforce/command';
 import got from 'got';
 import { Help } from '@oclif/core';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { ConfigAggregator } from '@salesforce/core';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 
 const getAsciiSignature = (apiVersion: string): string => `
                  DX DX DX
@@ -70,18 +70,18 @@ const getCurrentApiVersion = async (): Promise<string> => {
   ).versions.selected.toString()}.0`;
 };
 
-export class ForceCommand extends SfdxCommand {
+// eslint-disable-next-line sf-plugin/command-summary
+export class ForceCommand extends SfCommand<{ apiVersion: string }> {
   public static readonly hidden = true;
 
   public async run(): Promise<{ apiVersion: string }> {
     const apiVersion = await getCurrentApiVersion();
-    this.ux.log(getAsciiSignature(apiVersion));
+    this.log(getAsciiSignature(apiVersion));
     return { apiVersion };
   }
 
   // overrides the help so that it shows the help for the `force` topic and not "help" for this command
   protected _help(): void {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const help = new Help(this.config);
     // We need to include force in the args for topics to be shown
     void help.showHelp(process.argv.slice(2));

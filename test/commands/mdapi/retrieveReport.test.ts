@@ -12,7 +12,7 @@ import { expect } from 'chai';
 import { Org } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { Report } from '../../../src/commands/force/mdapi/retrieve/report';
 import { Stash } from '../../../src/stash';

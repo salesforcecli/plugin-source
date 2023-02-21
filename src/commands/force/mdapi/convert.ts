@@ -5,11 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-import { flags, FlagsConfig } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ComponentSetBuilder, ConvertResult, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { SourceCommand } from '../../../sourceCommand';
 import { ConvertCommandResult, ConvertResultFormatter } from '../../../formatters/mdapi/convertResultFormatter';
 
@@ -19,35 +25,40 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.convert'
 export class Convert extends SourceCommand {
   public static aliases = ['force:mdapi:beta:convert'];
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    rootdir: flags.directory({
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    rootdir: Flags.directory({
       char: 'r',
       description: messages.getMessage('flags.rootdir'),
-      longDescription: messages.getMessage('flagsLong.rootdir'),
+      summary: messages.getMessage('flagsLong.rootdir'),
       required: true,
     }),
-    outputdir: flags.directory({
+    outputdir: Flags.directory({
       char: 'd',
       description: messages.getMessage('flags.outputdir'),
-      longDescription: messages.getMessage('flagsLong.outputdir'),
+      summary: messages.getMessage('flagsLong.outputdir'),
     }),
-    manifest: flags.string({
+    manifest: Flags.string({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
-      longDescription: messages.getMessage('flagsLong.manifest'),
+      summary: messages.getMessage('flagsLong.manifest'),
     }),
-    metadatapath: flags.array({
+    metadatapath: Flags.string({
       char: 'p',
+      multiple: true,
       description: messages.getMessage('flags.metadatapath'),
-      longDescription: messages.getMessage('flagsLong.metadatapath'),
+      summary: messages.getMessage('flagsLong.metadatapath'),
       exclusive: ['manifest', 'metadata'],
     }),
-    metadata: flags.array({
+    metadata: Flags.string({
       char: 'm',
+      multiple: true,
       description: messages.getMessage('flags.metadata'),
-      longDescription: messages.getMessage('flagsLong.metadata'),
+      summary: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'metadatapath'],
     }),
   };
@@ -55,19 +66,21 @@ export class Convert extends SourceCommand {
   private rootDir: string;
   private outputDir: string;
   private convertResult: ConvertResult;
+  private flags: Interfaces.InferredFlags<typeof Convert.flags>;
 
   public async run(): Promise<ConvertCommandResult> {
+    this.flags = (await this.parse(Convert)).flags;
     await this.convert();
     this.resolveSuccess();
     return this.formatResult();
   }
 
   protected async convert(): Promise<void> {
-    this.rootDir = this.resolveRootDir(this.getFlag<string>('rootdir'));
-    this.outputDir = this.resolveOutputDir(this.getFlag<string>('outputdir'));
-    const metadatapath = this.resolveMetadataPaths(this.getFlag<string[]>('metadatapath'));
-    const manifest = this.resolveManifest(this.getFlag<string>('manifest'));
-    const metadata = this.getFlag<string[]>('metadata');
+    this.rootDir = this.resolveRootDir(this.flags.rootdir);
+    this.outputDir = this.resolveOutputDir(this.flags.outputdir);
+    const metadatapath = this.resolveMetadataPaths(this.flags.metadatapath);
+    const manifest = this.resolveManifest(this.flags.manifest);
+    const metadata = this.flags.metadata;
 
     let paths: string[];
     if (metadatapath) {
@@ -90,7 +103,7 @@ export class Convert extends SourceCommand {
 
     const numOfComponents = this.componentSet.getSourceComponents().toArray().length;
     if (numOfComponents > 0) {
-      this.ux.startSpinner(`Converting ${numOfComponents} metadata components`);
+      this.spinner.start(`Converting ${numOfComponents} metadata components`);
 
       const converter = new MetadataConverter();
       this.convertResult = await converter.convert(this.componentSet, 'source', {
@@ -98,7 +111,7 @@ export class Convert extends SourceCommand {
         outputDirectory: this.outputDir,
         genUniqueDir: false,
       });
-      this.ux.stopSpinner();
+      this.spinner.stop();
     }
   }
 
@@ -108,9 +121,9 @@ export class Convert extends SourceCommand {
   protected resolveSuccess(): void {}
 
   protected formatResult(): ConvertCommandResult {
-    const formatter = new ConvertResultFormatter(this.logger, this.ux, this.convertResult);
+    const formatter = new ConvertResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), this.convertResult);
 
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
     return formatter.getJson();

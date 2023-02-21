@@ -6,7 +6,7 @@
  */
 import { EventEmitter } from 'events';
 import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
@@ -29,12 +29,10 @@ describe('Progress Bar Events', () => {
     deploy.event = event;
   };
 
-  const getProgressbar = () => 
+  const getProgressbar = () =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore protected member access
-     progressBarFormatter.progressBar
-  ;
-
+    progressBarFormatter.progressBar;
   afterEach(() => {
     sandbox.restore();
   });

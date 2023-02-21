@@ -6,7 +6,7 @@
  */
 
 import { blue, yellow } from 'chalk';
-import { UX } from '@salesforce/command';
+
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { get, getNumber, getString } from '@salesforce/ts-types';
@@ -17,6 +17,7 @@ import {
   RetrieveMessage,
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -35,13 +36,12 @@ export class PullResultFormatter extends ResultFormatter {
   protected warnings: RetrieveMessage[];
 
   public constructor(
-    logger: Logger,
-    ux: UX,
+    ux: Ux,
     options: ResultFormatterOptions,
     retrieveResult: RetrieveResult,
     deleteResult: FileResponse[] = []
   ) {
-    super(logger, ux, options);
+    super(ux, options);
     this.result = retrieveResult;
     this.fileResponses = (retrieveResult?.getFileResponses ? retrieveResult.getFileResponses() : []).concat(
       deleteResult

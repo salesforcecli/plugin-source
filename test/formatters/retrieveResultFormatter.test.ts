@@ -9,7 +9,7 @@ import { join, relative } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { cloneJson, ensureArray } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';

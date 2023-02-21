@@ -89,6 +89,6 @@
   "asyncDeployCancel": "Run sfdx force:source:deploy:cancel -i %s -u %s to cancel the deploy.",
   "asyncDeployReport": "Run sfdx force:source:deploy:report -i %s -u %s to get the latest status.",
   "invalidDeployId": "The provided ID is invalid, deploy IDs must start with '0Af'.",
-  "deployWontDelete": "You currently have files deleted locally.  The deploy command will NOT delete them from your org unless you use one of the destructivechanges flags.",
+  "deployWontDelete": "You currently have files deleted locally.  The deploy command will NOT delete them from your org unless you use one of the destructivechanges Flags.",
   "asyncCoverageJunitWarning": "You requested an async deploy with code coverage or JUnit results. The reports will be available when the deploy completes."
 }

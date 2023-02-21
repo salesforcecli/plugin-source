@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+
 import { Config } from '@oclif/core';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';

@@ -5,12 +5,19 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
-import { Messages } from '@salesforce/core';
+import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { DeployCommand } from '../../../deployCommand';
 import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
@@ -26,37 +33,42 @@ export default class Push extends DeployCommand {
   public static aliases = ['force:source:beta:push'];
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');
-  protected static readonly flagsConfig: FlagsConfig = {
-    forceoverwrite: flags.boolean({
+  public static requiresProject = true;
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    forceoverwrite: Flags.boolean({
       char: 'f',
       description: messages.getMessage('flags.forceoverwrite'),
-      longDescription: messages.getMessage('flags.forceoverwriteLong'),
+      summary: messages.getMessage('flags.forceoverwriteLong'),
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
+      unit: 'minutes',
       char: 'w',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
-      min: Duration.minutes(1),
+      min: 1,
       description: messages.getMessage('flags.waitLong'),
-      longDescription: messages.getMessage('flags.waitLong'),
+      summary: messages.getMessage('flags.waitLong'),
     }),
-    ignorewarnings: flags.boolean({
+    ignorewarnings: Flags.boolean({
       char: 'g',
       description: messages.getMessage('flags.ignorewarnings'),
-      longDescription: messages.getMessage('flags.ignorewarningsLong'),
+      summary: messages.getMessage('flags.ignorewarningsLong'),
     }),
-    quiet: flags.builtin({
+    quiet: Flags.boolean({
       description: messages.getMessage('flags.quiet'),
     }),
   };
-  protected static requiresUsername = true;
-  protected static requiresProject = true;
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private deployResults: DeployResult[] = [];
   private tracking: SourceTracking;
   private deletes: string[];
+  private flags: Interfaces.InferredFlags<typeof Push.flags>;
 
   public async run(): Promise<PushResponse> {
+    this.flags = (await this.parse(Push)).flags;
     await this.prechecks();
     await this.deploy();
     this.resolveSuccess();
@@ -67,10 +79,10 @@ export default class Push extends DeployCommand {
   protected async prechecks(): Promise<void> {
     this.tracking = await trackingSetup({
       commandName: 'force:source:push',
-      ignoreConflicts: this.getFlag<boolean>('forceoverwrite', false),
-      org: this.org,
+      ignoreConflicts: this.flags.forceoverwrite ?? false,
+      org: this.flags['target-org'],
       project: this.project,
-      ux: this.ux,
+      ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
     });
 
     // we need these later to show deletes in results
@@ -78,6 +90,7 @@ export default class Push extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
+    const username = this.flags['target-org'].getUsername();
     const isSequentialDeploy = getBoolean(
       await this.project.resolveProjectConfig(),
       'pushPackageDirectoriesSequentially',
@@ -90,12 +103,12 @@ export default class Push extends DeployCommand {
     ]);
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
-      this.ux.log(
+    Lifecycle.getInstance().on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+      this.log(
         deployMessages.getMessage('apiVersionMsgDetailed', [
           'Pushing',
           apiData.manifestVersion,
-          this.org.getUsername(),
+          username,
           apiData.apiVersion,
           apiData.webService,
         ])
@@ -113,43 +126,41 @@ export default class Push extends DeployCommand {
       // there might have been components in local tracking, but they might be ignored by SDR or unresolvable.
       // SDR will throw when you try to resolve them, so don't
       if (componentSet.size === 0) {
-        this.logger.warn('There are no changes to deploy');
+        this.warn('There are no changes to deploy');
         continue;
       }
 
       // fire predeploy event for sync and async deploys
-      await this.lifecycle.emit('predeploy', componentSet.toArray());
-
-      const username = this.org.getUsername();
+      await Lifecycle.getInstance().emit('predeploy', componentSet.toArray());
 
       const deploy = await componentSet.deploy({
         usernameOrConnection: username,
         apiOptions: {
-          ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
+          ignoreWarnings: this.flags.ignorewarnings ?? false,
           rest: isRest,
           testLevel: 'NoTestRun',
         },
       });
 
       // we're not print JSON output
-      if (!this.isJsonOutput()) {
+      if (!this.jsonEnabled()) {
         const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
-          ? new DeployProgressBarFormatter(this.logger, this.ux)
-          : new DeployProgressStatusFormatter(this.logger, this.ux);
+          ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+          : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
         progressFormatter.progress(deploy);
       }
-      const result = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
+      const result = await deploy.pollStatus({ timeout: this.flags.wait });
 
       if (result) {
         // Only fire the postdeploy event when we have results. I.e., not async.
-        await this.lifecycle.emit('postdeploy', result);
+        await Lifecycle.getInstance().emit('postdeploy', result);
         this.deployResults.push(result);
         if (
           result.response.status !== RequestStatus.Succeeded &&
           isSequentialDeploy &&
           this.project.hasMultiplePackages()
         ) {
-          this.ux.log(messages.getMessage('sequentialFail'));
+          this.log(messages.getMessage('sequentialFail'));
           break;
         }
       }
@@ -163,7 +174,7 @@ export default class Push extends DeployCommand {
       return;
     }
     await updateTracking({
-      ux: this.ux,
+      ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
       result: this.deployResults[0], // it doesn't matter which one--it's just used to determine if it's deploy or retrieve
       tracking: this.tracking,
       // since we're going to poll source members, we want them all in one transaction
@@ -214,25 +225,27 @@ export default class Push extends DeployCommand {
       return this.setExitCode(1);
     }
 
-    this.logger.warn(
-      'Unexpected exit code',
-      this.deployResults.map((result) => result.response)
-    );
+    this.warn(` Unexpected exit code ${this.deployResults.map((result) => result.response)}`);
     this.setExitCode(1);
   }
 
   protected formatResult(): PushResponse {
     if (!this.deployResults.length) {
-      this.ux.log('No results found');
+      this.log('No results found');
     }
     const formatterOptions = {
-      quiet: this.getFlag<boolean>('quiet', false),
+      quiet: this.flags.quiet ?? false,
     };
 
-    const formatter = new PushResultFormatter(this.logger, this.ux, formatterOptions, this.deployResults, this.deletes);
+    const formatter = new PushResultFormatter(
+      new Ux({ jsonEnabled: this.jsonEnabled() }),
+      formatterOptions,
+      this.deployResults,
+      this.deletes
+    );
 
     // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
 

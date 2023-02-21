@@ -7,7 +7,7 @@
 
 import * as path from 'path';
 import * as chalk from 'chalk';
-import { UX } from '@salesforce/command';
+
 import { Logger, Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
@@ -18,6 +18,7 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { prepCoverageForDisplay } from '../coverageUtils';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
@@ -38,8 +39,8 @@ export class DeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
   protected fileResponses: FileResponse[];
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: DeployResult) {
-    super(logger, ux, options);
+  public constructor(ux: Ux, options: ResultFormatterOptions, result: DeployResult) {
+    super(ux, options);
     this.result = result;
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
   }

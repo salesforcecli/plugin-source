@@ -7,8 +7,7 @@
 
 import * as chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
-import { UX } from '@salesforce/command';
-import { Logger, Messages, SfError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import {
   DeployMessage,
   DeployResult,
@@ -16,6 +15,7 @@ import {
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 import { prepCoverageForDisplay } from '../../coverageUtils';
 
@@ -30,8 +30,8 @@ export type MdDeployResult = MetadataApiDeployStatus & {
 export class MdDeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: DeployResult) {
-    super(logger, ux, options);
+  public constructor(ux: Ux, options: ResultFormatterOptions, result: DeployResult) {
+    super(ux, options);
     this.result = result;
   }
 

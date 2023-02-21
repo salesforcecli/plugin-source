@@ -6,7 +6,7 @@
  */
 import { expect } from 'chai';
 import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+
 import * as sinon from 'sinon';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';

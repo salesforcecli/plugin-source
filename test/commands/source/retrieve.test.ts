@@ -20,7 +20,7 @@ import {
 import { Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
 import { getRetrieveResult } from './retrieveResponses';

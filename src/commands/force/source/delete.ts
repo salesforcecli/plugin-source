@@ -4,12 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as os from 'os';
+
 import * as fs from 'fs';
 import * as path from 'path';
-import { ux } from '@oclif/core';
-import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import * as os from 'os';
+import { Interfaces, ux } from '@oclif/core';
+
+import { Lifecycle, Messages, Org } from '@salesforce/core';
 import {
   ComponentSet,
   ComponentSetBuilder,
@@ -22,6 +23,13 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
 import { DeployCommand, TestLevel } from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import { DeleteResultFormatter } from '../../../formatters/source/deleteResultFormatter';
@@ -37,56 +45,61 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'delete');
 const xorFlags = ['metadata', 'sourcepath'];
 export class Delete extends DeployCommand {
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
-  public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    checkonly: flags.boolean({
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    checkonly: Flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
-      longDescription: messages.getMessage('flagsLong.checkonly'),
+      summary: messages.getMessage('flagsLong.checkonly'),
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
+      unit: 'minutes',
       char: 'w',
       default: Duration.minutes(Delete.DEFAULT_WAIT_MINUTES),
-      min: Duration.minutes(1),
+      min: 1,
       description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      summary: messages.getMessage('flagsLong.wait'),
     }),
-    testlevel: flags.enum({
+    testlevel: Flags.string({
       char: 'l',
       description: messages.getMessage('flags.testLevel'),
-      longDescription: messages.getMessage('flagsLong.testLevel'),
+      summary: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunLocalTests', 'RunAllTestsInOrg'],
       default: 'NoTestRun',
     }),
-    noprompt: flags.boolean({
+    noprompt: Flags.boolean({
       char: 'r',
       description: messages.getMessage('flags.noprompt'),
     }),
-    metadata: flags.array({
+    metadata: Flags.string({
+      multiple: true,
       char: 'm',
       description: messages.getMessage('flags.metadata'),
-      longDescription: messages.getMessage('flagsLong.metadata'),
+      summary: messages.getMessage('flagsLong.metadata'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: flags.array({
+    sourcepath: Flags.string({
+      multiple: true,
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
-      longDescription: messages.getMessage('flagsLong.sourcepath'),
+      summary: messages.getMessage('flagsLong.sourcepath'),
       exactlyOne: xorFlags,
     }),
-    tracksource: flags.boolean({
+    tracksource: Flags.boolean({
       char: 't',
       description: messages.getMessage('flags.tracksource'),
       exclusive: ['checkonly'],
     }),
-    forceoverwrite: flags.boolean({
+    forceoverwrite: Flags.boolean({
       char: 'f',
       description: messages.getMessage('flags.forceoverwrite'),
       dependsOn: ['tracksource'],
     }),
-    verbose: flags.builtin({
+    verbose: Flags.boolean({
       description: messages.getMessage('flags.verbose'),
     }),
   };
@@ -101,8 +114,12 @@ export class Delete extends DeployCommand {
   // map of component in project, to where it is stashed
   private stashPath = new Map<string, string>();
   private tempDir = path.join(os.tmpdir(), 'source_delete');
+  private flags: Interfaces.InferredFlags<typeof Delete.flags>;
+  private org: Org;
 
   public async run(): Promise<DeployCommandResult> {
+    this.flags = (await this.parse(Delete)).flags;
+    this.org = this.flags['target-org'];
     await this.preChecks();
     await this.delete();
 
@@ -117,32 +134,36 @@ export class Delete extends DeployCommand {
   }
 
   protected async preChecks(): Promise<void> {
-    if (this.getFlag<boolean>('tracksource')) {
+    if (this.flags.tracksource) {
       this.tracking = await trackingSetup({
         commandName: 'force:source:delete',
         ignoreConflicts: true,
         org: this.org,
         project: this.project,
-        ux: this.ux,
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
       });
     }
   }
 
   protected async delete(): Promise<void> {
-    this.deleteResultFormatter = new DeleteResultFormatter(this.logger, this.ux, {});
-    const sourcepaths = this.getFlag<string[]>('sourcepath');
+    this.deleteResultFormatter = new DeleteResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), {});
+    const sourcepaths = this.flags.sourcepath;
 
     this.componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag<string>('apiversion'),
+      apiversion: this.flags['api-version'],
       sourceapiversion: await this.getSourceApiVersion(),
       sourcepath: sourcepaths,
       metadata: this.flags.metadata && {
-        metadataEntries: this.getFlag<string[]>('metadata'),
+        metadataEntries: this.flags.metadata,
         directoryPaths: this.getPackageDirs(),
       },
     });
-    if (this.getFlag<boolean>('tracksource') && !this.getFlag<boolean>('forceoverwrite')) {
-      await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+    if (this.flags.tracksource && !this.flags.forceoverwrite) {
+      await filterConflictsByComponentSet({
+        tracking: this.tracking,
+        components: this.componentSet,
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+      });
     }
     this.components = this.componentSet.toArray();
 
@@ -154,8 +175,8 @@ export class Delete extends DeployCommand {
 
     // create a new ComponentSet and mark everything for deletion
     const cs = new ComponentSet([]);
-    cs.apiVersion = this.getFlag<string>('apiversion') ?? (await this.org.retrieveMaxApiVersion());
-    cs.sourceApiVersion = this.getFlag<string>('apiversion') ?? (await this.getSourceApiVersion());
+    cs.apiVersion = this.flags['api-version'] ?? (await this.org.retrieveMaxApiVersion());
+    cs.sourceApiVersion = this.flags['api-version'] ?? (await this.getSourceApiVersion());
     this.components.map((component) => {
       if (component instanceof SourceComponent) {
         cs.add(component, DestructiveChangesType.POST);
@@ -185,29 +206,29 @@ export class Delete extends DeployCommand {
     if (this.aborted) return;
 
     // fire predeploy event for the delete
-    await this.lifecycle.emit('predeploy', this.components);
+    await Lifecycle.getInstance().emit('predeploy', this.components);
     this.isRest = this.isRestDeploy();
-    this.ux.log(`*** Deleting with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
+    this.log(`*** Deleting with ${this.isRest ? 'REST' : 'SOAP'} API ***`);
 
     const deploy = await this.componentSet.deploy({
       usernameOrConnection: this.org.getUsername(),
       apiOptions: {
         rest: this.isRest,
-        checkOnly: this.getFlag<boolean>('checkonly', false),
-        testLevel: this.getFlag<TestLevel>('testlevel'),
+        checkOnly: this.flags.checkonly ?? false,
+        testLevel: this.flags.testlevel as TestLevel,
       },
     });
     this.updateDeployId(deploy.id);
 
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
-        ? new DeployProgressBarFormatter(this.logger, this.ux)
-        : new DeployProgressStatusFormatter(this.logger, this.ux);
+        ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+        : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
       progressFormatter.progress(deploy);
     }
 
-    this.deployResult = await deploy.pollStatus({ timeout: this.getFlag<Duration>('wait') });
-    await this.lifecycle.emit('postdeploy', this.deployResult);
+    this.deployResult = await deploy.pollStatus({ timeout: this.flags.wait });
+    await Lifecycle.getInstance().emit('postdeploy', this.deployResult);
 
     // result.getFileResponses() will crawl the tree, but that would throw after the delete occurs.
     // Extract them here for updateTracking to use later
@@ -239,15 +260,15 @@ export class Delete extends DeployCommand {
 
   protected formatResult(): DeployCommandResult {
     const formatterOptions = {
-      verbose: this.getFlag<boolean>('verbose', false),
+      verbose: this.flags.verbose ?? false,
     };
 
     this.deleteResultFormatter = this.mixedDeployDelete.deploy.length
-      ? new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult)
-      : new DeleteResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+      ? new DeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult)
+      : new DeleteResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 
     // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       this.deleteResultFormatter.display();
     }
 
@@ -276,9 +297,9 @@ export class Delete extends DeployCommand {
   }
 
   private async maybeUpdateTracking(): Promise<void> {
-    if (this.getFlag<boolean>('tracksource', false)) {
+    if (this.flags.tracksource ?? false) {
       return updateTracking({
-        ux: this.ux,
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
         result: this.deployResult,
         tracking: this.tracking,
         fileResponses: this.fileResponses,
@@ -287,7 +308,7 @@ export class Delete extends DeployCommand {
   }
 
   private async deleteFilesLocally(): Promise<void> {
-    if (!this.getFlag('checkonly') && this.deployResult?.response?.status === RequestStatus.Succeeded) {
+    if (!this.flags.checkonly && this.deployResult?.response?.status === RequestStatus.Succeeded) {
       const promises = [];
       this.components.map((component: SourceComponent) => {
         // mixed delete/deploy operations have already been deleted and stashed
@@ -348,7 +369,7 @@ export class Delete extends DeployCommand {
   }
 
   private async handlePrompt(): Promise<boolean> {
-    if (!this.getFlag('noprompt')) {
+    if (!this.flags.noprompt) {
       const remote: string[] = [];
       let local: string[] = [];
       const message: string[] = [];
@@ -383,9 +404,7 @@ export class Delete extends DeployCommand {
       }
 
       message.push(
-        this.getFlag<boolean>('checkonly', false)
-          ? messages.getMessage('areYouSureCheckOnly')
-          : messages.getMessage('areYouSure')
+        this.flags.checkonly ?? false ? messages.getMessage('areYouSureCheckOnly') : messages.getMessage('areYouSure')
       );
       return ux.confirm(message.join(''));
     }

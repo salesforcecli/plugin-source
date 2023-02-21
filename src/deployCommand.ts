@@ -41,8 +41,8 @@ export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {
   protected displayDeployId = once((id: string) => {
-    if (!this.isJsonOutput()) {
-      this.ux.log(`Deploy ID: ${id}`);
+    if (!this.jsonEnabled()) {
+      this.log(`Deploy ID: ${id}`);
     }
   });
 
@@ -149,7 +149,7 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected async poll(deployId: string, options?: Partial<PollingClient.Options>): Promise<DeployResult> {
-    const waitFlag = this.getFlag<Duration>('wait');
+    const waitFlag = this.flags.wait;
     const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
     const defaultOptions: PollingClient.Options = {
@@ -184,10 +184,10 @@ export abstract class DeployCommand extends SourceCommand {
   protected maybeCreateRequestedReports(): void {
     // only generate reports if test results are present
     if (this.deployResult.response?.numberTestsTotal) {
-      if (this.flags.coverageformatters) {
-        createCoverageReport(this.deployResult, this.flags.coverageformatters as string[], 'no-map', this.resultsDir);
+      if (this.Flags.coverageformatters) {
+        createCoverageReport(this.deployResult, this.Flags.coverageformatters as string[], 'no-map', this.resultsDir);
       }
-      if (this.flags.junit) {
+      if (this.Flags.junit) {
         this.createJunitResults(this.deployResult);
       }
     }

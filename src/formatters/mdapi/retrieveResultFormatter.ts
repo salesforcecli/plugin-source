@@ -6,8 +6,6 @@
  */
 import { join, parse } from 'path';
 import { blue } from 'chalk';
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
@@ -16,6 +14,7 @@ import {
   FileProperties,
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { RetrieveFormatter } from '../retrieveFormatter';
 import { ResultFormatterOptions } from '../resultFormatter';
 
@@ -38,8 +37,8 @@ export interface RetrieveCommandAsyncResult {
 export class RetrieveResultFormatter extends RetrieveFormatter {
   protected zipFilePath: string;
 
-  public constructor(logger: Logger, ux: UX, public options: RetrieveResultFormatterOptions, result: RetrieveResult) {
-    super(logger, ux, options, result);
+  public constructor(ux: Ux, public options: RetrieveResultFormatterOptions, result: RetrieveResult) {
+    super(ux, options, result);
     this.options.zipFileName ??= 'unpackaged.zip';
     this.zipFilePath = join(options.retrieveTargetDir, options.zipFileName);
   }

@@ -6,7 +6,7 @@
  */
 import { relative, resolve as pathResolve } from 'path';
 import * as chalk from 'chalk';
-import { UX } from '@salesforce/command';
+
 import { Logger, Messages, SfError } from '@salesforce/core';
 import {
   ComponentStatus,
@@ -19,6 +19,7 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { isString } from '@salesforce/ts-types';
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -33,14 +34,13 @@ export class PushResultFormatter extends ResultFormatter {
   protected fileResponses: FileResponse[];
   protected replacements: Map<string, string[]>;
   public constructor(
-    logger: Logger,
-    ux: UX,
+    ux: Ux,
     options: ResultFormatterOptions,
     protected results: DeployResult[],
     // if your push included deletes that are bundle subcomponents, we'll need to add those deletes to the results even though they aren't included in fileResponses
     protected deletes: string[] = []
   ) {
-    super(logger, ux, options);
+    super(ux, options);
     this.fileResponses = this.correctFileResponses();
     this.replacements = mergeReplacements(results);
   }
