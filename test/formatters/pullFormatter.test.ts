@@ -8,11 +8,10 @@
 import { relative } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Logger } from '@salesforce/core';
-
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { getRetrieveResult } from '../commands/source/retrieveResponses';
 import { PullResponse, PullResultFormatter } from '../../src/formatters/source/pullFormatter';
 
@@ -25,7 +24,6 @@ describe('PullFormatter', () => {
   const retrieveResultEmpty = getRetrieveResult('empty');
   const retrieveResultWarnings = getRetrieveResult('warnings');
 
-  const logger = Logger.childFromRoot('retrieveTestLogger').useMemoryLogging();
   let ux;
   let logStub: sinon.SinonStub;
   let styledHeaderStub: sinon.SinonStub;
@@ -43,7 +41,7 @@ describe('PullFormatter', () => {
     logStub = sandbox.stub();
     styledHeaderStub = sandbox.stub();
     tableStub = sandbox.stub();
-    ux = stubInterface<UX>(sandbox, {
+    ux = stubInterface<Ux>(sandbox, {
       log: logStub,
       styledHeader: styledHeaderStub,
       table: tableStub,
@@ -59,14 +57,14 @@ describe('PullFormatter', () => {
     it('should return expected json for a success', async () => {
       process.exitCode = 0;
       const expectedSuccessResults: PullResponse['pulledSource'] = retrieveResultSuccess.getFileResponses();
-      const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultSuccess);
+      const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultSuccess);
       expect(formatter.getJson().pulledSource).to.deep.equal(expectedSuccessResults);
     });
 
     it('should return expected json for a failure', async () => {
       process.exitCode = 1;
       const expectedFailureResults: PullResponse['pulledSource'] = retrieveResultFailure.getFileResponses();
-      const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultFailure);
+      const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultFailure);
       try {
         formatter.getJson().pulledSource;
         throw new Error('should have thrown');
@@ -80,14 +78,14 @@ describe('PullFormatter', () => {
 
     it('should return expected json for an InProgress', async () => {
       const expectedInProgressResults: PullResponse['pulledSource'] = retrieveResultInProgress.getFileResponses();
-      const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultInProgress);
+      const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultInProgress);
       expect(formatter.getJson().pulledSource).to.deep.equal(expectedInProgressResults);
     });
 
     describe('display', () => {
       it('should output as expected for a success', async () => {
         process.exitCode = 0;
-        const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultSuccess);
+        const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultSuccess);
         formatter.display();
         expect(styledHeaderStub.called).to.equal(true);
         expect(logStub.called).to.equal(false);
@@ -101,7 +99,7 @@ describe('PullFormatter', () => {
       it('should output as expected for an InProgress', async () => {
         process.exitCode = 68;
         const options = { waitTime: 33 };
-        const formatter = new PullResultFormatter(logger, ux as UX, options, retrieveResultInProgress);
+        const formatter = new PullResultFormatter(ux as Ux, options, retrieveResultInProgress);
         formatter.display();
         expect(styledHeaderStub.called).to.equal(false);
         expect(logStub.called).to.equal(true);
@@ -113,7 +111,7 @@ describe('PullFormatter', () => {
 
       it('should output as expected for a Failure', async () => {
         process.exitCode = 1;
-        const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultFailure);
+        const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultFailure);
         sandbox.stub(formatter, 'isSuccess').returns(false);
 
         formatter.display();
@@ -124,7 +122,7 @@ describe('PullFormatter', () => {
 
       it('should output as expected for warnings', async () => {
         process.exitCode = 0;
-        const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultWarnings);
+        const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultWarnings);
         formatter.display();
         // Should call styledHeader for warnings and the standard "Retrieved Source" header
         expect(styledHeaderStub.calledTwice).to.equal(true);
@@ -138,7 +136,7 @@ describe('PullFormatter', () => {
 
       it('should output a message when no results were returned', async () => {
         process.exitCode = 0;
-        const formatter = new PullResultFormatter(logger, ux as UX, {}, retrieveResultEmpty);
+        const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultEmpty);
         formatter.display();
         expect(styledHeaderStub.called).to.equal(true);
         expect(logStub.called).to.equal(true);

@@ -7,9 +7,8 @@
 
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Logger } from '@salesforce/core';
-
 import { stubInterface } from '@salesforce/ts-sinon';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { MdDeployResultFormatter } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
@@ -23,7 +22,6 @@ describe('mdDeployResultFormatter', () => {
   const deployResultTestSuccess = getDeployResult('passedTest');
   const deployResultTestSuccessAndFailure = getDeployResult('passedAndFailedTest');
 
-  const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
   let ux;
 
   let logStub: sinon.SinonStub;
@@ -34,7 +32,7 @@ describe('mdDeployResultFormatter', () => {
     logStub = sandbox.stub();
     styledHeaderStub = sandbox.stub();
     tableStub = sandbox.stub();
-    ux = stubInterface<UX>(sandbox, {
+    ux = stubInterface<Ux>(sandbox, {
       log: logStub,
       styledHeader: styledHeaderStub,
       table: tableStub,
@@ -51,7 +49,7 @@ describe('mdDeployResultFormatter', () => {
     it('should return expected json for a success', async () => {
       process.exitCode = 0;
       const expectedSuccessResults = deployResultSuccess.response;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultSuccess);
       const json = formatter.getJson();
 
       expect(json).to.deep.equal(expectedSuccessResults);
@@ -61,14 +59,14 @@ describe('mdDeployResultFormatter', () => {
       process.exitCode = 1;
 
       const expectedFailureResults = deployResultFailure.response;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultFailure);
+      const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultFailure);
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
     });
 
     it('should return expected json for a partial success', () => {
       process.exitCode = 69;
       const expectedPartialSuccessResponse = deployResultPartialSuccess.response;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultPartialSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultPartialSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
     });
 
@@ -76,7 +74,7 @@ describe('mdDeployResultFormatter', () => {
       process.exitCode = 0;
       const expectedSuccessResults = deployResultSuccess.response;
 
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { concise: true }, deployResultSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, { concise: true }, deployResultSuccess);
       const json = formatter.getJson();
 
       // a few checks that it's the rest of the json
@@ -90,7 +88,7 @@ describe('mdDeployResultFormatter', () => {
   describe('display', () => {
     it('should output as expected for a success (no table)', async () => {
       process.exitCode = 0;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultSuccess);
       formatter.display();
       expect(logStub.callCount).to.equal(0);
       expect(tableStub.callCount).to.equal(0);
@@ -99,7 +97,7 @@ describe('mdDeployResultFormatter', () => {
 
     it('should output as expected for a verbose success (has table)', async () => {
       process.exitCode = 0;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(1);
       expect(logStub.callCount).to.equal(1);
@@ -110,7 +108,7 @@ describe('mdDeployResultFormatter', () => {
 
     it('should output as expected for a failure and exclude duplicate information', async () => {
       process.exitCode = 1;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployResultFailure);
+      const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultFailure);
 
       try {
         formatter.display();
@@ -130,7 +128,7 @@ describe('mdDeployResultFormatter', () => {
       deployFailure.response.details.componentFailures = [];
       deployFailure.response.details.componentSuccesses = [];
       delete deployFailure.response.details.runTestResult;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, {}, deployFailure);
+      const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployFailure);
       sandbox.stub(formatter, 'isSuccess').returns(false);
 
       try {
@@ -146,7 +144,7 @@ describe('mdDeployResultFormatter', () => {
 
     it('should output as expected for a test failure with verbose', async () => {
       process.exitCode = 1;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestFailure);
+      const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestFailure);
       try {
         formatter.display();
         throw new Error('should have thrown');
@@ -163,7 +161,7 @@ describe('mdDeployResultFormatter', () => {
 
     it('should output as expected for passing tests with verbose', async () => {
       process.exitCode = 0;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultTestSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccess);
       formatter.display();
       expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
       expect(styledHeaderStub.args[1][0]).to.include('Component Failures [1]');
@@ -173,12 +171,7 @@ describe('mdDeployResultFormatter', () => {
 
     it('should output as expected for passing and failing tests with verbose', async () => {
       process.exitCode = 1;
-      const formatter = new MdDeployResultFormatter(
-        logger,
-        ux as UX,
-        { verbose: true },
-        deployResultTestSuccessAndFailure
-      );
+      const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccessAndFailure);
       try {
         formatter.display();
         throw new Error('should have thrown');
@@ -195,7 +188,7 @@ describe('mdDeployResultFormatter', () => {
 
     it('shows success AND failures for partialSucceeded', async () => {
       process.exitCode = 69;
-      const formatter = new MdDeployResultFormatter(logger, ux as UX, { verbose: true }, deployResultPartialSuccess);
+      const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultPartialSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
       expect(logStub.callCount, 'logStub.callCount').to.equal(3);

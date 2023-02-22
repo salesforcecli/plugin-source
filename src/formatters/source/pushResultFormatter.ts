@@ -7,7 +7,7 @@
 import { relative, resolve as pathResolve } from 'path';
 import * as chalk from 'chalk';
 
-import { Logger, Messages, SfError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import {
   ComponentStatus,
   DeployMessage,
@@ -240,7 +240,7 @@ export class PushResultFormatter extends ResultFormatter {
     try {
       return resolver.getComponentsFromPath(filename);
     } catch (e) {
-      this.logger.warn(`unable to resolve ${filename}`);
+      this.ux.warn(`unable to resolve ${filename}`);
       return [];
     }
   }

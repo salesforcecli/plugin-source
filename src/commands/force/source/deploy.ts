@@ -188,7 +188,10 @@ export class Deploy extends DeployCommand {
     }
 
     if (this.flags.validateddeployrequestid) {
-      this.deployResult = await this.deployRecentValidation();
+      this.deployResult = await this.deployRecentValidation(
+        this.flags.validateddeployrequestid,
+        this.org.getConnection()
+      );
     } else {
       this.componentSet = await ComponentSetBuilder.build({
         apiversion: this.flags['api-version'],
@@ -304,7 +307,11 @@ export class Deploy extends DeployCommand {
       : new DeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 
     if (!this.isAsync) {
-      this.maybeCreateRequestedReports();
+      this.maybeCreateRequestedReports({
+        coverageformatters: this.flags.coverageformatters,
+        junit: this.flags.junit,
+        org: this.org,
+      });
     }
 
     // Only display results to console when JSON flag is unset.

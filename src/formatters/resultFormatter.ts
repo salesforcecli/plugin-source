@@ -29,13 +29,7 @@ export interface ResultFormatterOptions {
 export type CoverageResultsFileInfo = Record<keyof Partial<typeof DefaultReportOptions>, string>;
 
 export abstract class ResultFormatter {
-  public ux: Ux;
-  public options: ResultFormatterOptions;
-
-  public constructor(ux: Ux, options: ResultFormatterOptions = {}) {
-    this.ux = ux;
-    this.options = options;
-  }
+  protected constructor(public ux: Ux, public options: ResultFormatterOptions = {}) {}
 
   // Command success is determined by the command so it can set the
   // exit code on the process, which is done before formatting.

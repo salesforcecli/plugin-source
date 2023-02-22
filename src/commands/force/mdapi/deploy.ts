@@ -145,7 +145,10 @@ export class Deploy extends DeployCommand {
       this.warn(messages.getMessage('asyncCoverageJunitWarning'));
     }
     if (this.flags.validateddeployrequestid) {
-      this.deployResult = await this.deployRecentValidation();
+      this.deployResult = await this.deployRecentValidation(
+        this.flags.validateddeployrequestid,
+        this.org.getConnection()
+      );
       return;
     }
     const deploymentOptions = this.flags.zipfile
@@ -201,21 +204,21 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.getFlag<string[]>('coverageformatters', undefined),
-      this.getFlag<boolean>('junit'),
-      this.getFlag<string>('resultsdir'),
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
       this.deployResult?.response?.id,
       true
     );
 
     const formatterOptions: ResultFormatterOptions = {
-      concise: this.getFlag<boolean>('concise', false),
+      concise: this.flags.concise ?? false,
       verbose: this.flags.verbose ?? false,
       username: this.org.getUsername(),
-      coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
+      coverageOptions: getCoverageFormattersOptions(this.flags.coverageformatters),
       junitTestResults: this.flags.junit,
       resultsDir: this.resultsDir,
-      testsRan: this.getFlag<string>('testlevel', 'NoTestRun') !== 'NoTestRun',
+      testsRan: (this.flags.testlevel ?? 'NoTestRun') !== 'NoTestRun',
     };
     const formatter = this.isAsync
       ? new MdDeployAsyncResultFormatter(
@@ -226,7 +229,11 @@ export class Deploy extends DeployCommand {
       : new MdDeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 
     if (!this.isAsync) {
-      this.maybeCreateRequestedReports();
+      this.maybeCreateRequestedReports({
+        coverageformatters: this.flags.coverageformatters,
+        junit: this.flags.junit,
+        org: this.org,
+      });
     }
 
     // Only display results to console when JSON flag is unset.

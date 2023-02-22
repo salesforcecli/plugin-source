@@ -8,7 +8,7 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import { Logger, Messages, SfError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {

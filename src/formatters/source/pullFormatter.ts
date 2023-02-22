@@ -7,7 +7,7 @@
 
 import { blue, yellow } from 'chalk';
 
-import { Logger, Messages, SfError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { get, getNumber, getString } from '@salesforce/ts-types';
 import {

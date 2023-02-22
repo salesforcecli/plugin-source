@@ -88,22 +88,22 @@ export class Report extends DeployCommand {
 
     this.isAsync = waitDuration.quantity === 0;
 
-    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+    const deployId = this.resolveDeployId(this.flags.jobid);
 
     this.resultsDir = this.resolveOutputDir(
-      this.getFlag<string[]>('coverageformatters', undefined),
-      this.getFlag<boolean>('junit'),
-      this.getFlag<string>('resultsdir'),
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
       deployId,
       false
     );
 
     if (this.isAsync) {
-      this.deployResult = await this.report(deployId);
+      this.deployResult = await this.report(this.org.getConnection(), deployId);
       return;
     }
 
-    const deploy = this.createDeploy(deployId);
+    const deploy = this.createDeploy(this.org.getConnection(), deployId);
     if (!this.jsonEnabled()) {
       const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
         ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
@@ -117,7 +117,7 @@ export class Report extends DeployCommand {
     } catch (error) {
       if (error instanceof Error && error.message.includes('The client has timed out')) {
         this.debug('mdapi:deploy:report polling timed out. Requesting status...');
-        this.deployResult = await this.report(deployId);
+        this.deployResult = await this.report(this.org.getConnection(), deployId);
       } else {
         throw error;
       }
@@ -143,17 +143,21 @@ export class Report extends DeployCommand {
     const formatter = new MdDeployResultFormatter(
       new Ux({ jsonEnabled: this.jsonEnabled() }),
       {
-        concise: this.getFlag<boolean>('concise', false),
+        concise: this.flags.concise ?? false,
         verbose: this.flags.verbose ?? false,
-        coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
-        junitTestResults: this.getFlag<boolean>('junit', false),
+        coverageOptions: getCoverageFormattersOptions(this.flags.coverageformatters),
+        junitTestResults: this.flags.junit ?? false,
         resultsDir: this.resultsDir,
         testsRan: !!this.deployResult?.response?.numberTestsTotal,
       },
       this.deployResult
     );
 
-    this.maybeCreateRequestedReports();
+    this.maybeCreateRequestedReports({
+      coverageformatters: this.flags.coverageformatters,
+      junit: this.flags.junit,
+      org: this.org,
+    });
 
     // Only display results to console when JSON flag is unset.
     if (!this.jsonEnabled()) {

@@ -57,12 +57,13 @@ export class Cancel extends DeployCommand {
   }
 
   protected async cancel(): Promise<void> {
+    const conn = this.flags['target-org'].getConnection(this.flags['api-version']);
     const deployId = this.resolveDeployId(this.flags.jobid);
     try {
-      const deploy = this.createDeploy(deployId);
+      const deploy = this.createDeploy(conn, deployId);
       await deploy.cancel();
 
-      this.deployResult = await this.poll(deployId);
+      this.deployResult = await this.poll(conn, deployId);
     } catch (e) {
       const err = e as Error;
       throw new SfError(messages.getMessage('CancelFailed', [err.message]), 'CancelFailed');

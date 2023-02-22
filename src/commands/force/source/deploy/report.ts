@@ -101,7 +101,7 @@ export class Report extends DeployCommand {
     }
 
     const waitDuration = this.flags.wait;
-    const deploy = this.createDeploy(deployId);
+    const deploy = this.createDeploy(this.flags['target-org'].getConnection(), deployId);
     if (!this.jsonEnabled()) {
       const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
         ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
@@ -117,7 +117,7 @@ export class Report extends DeployCommand {
         throw error;
       }
     } finally {
-      this.deployResult = await this.report(deployId);
+      this.deployResult = await this.report(this.flags['target-org'].getConnection(), deployId);
     }
   }
 
@@ -142,7 +142,11 @@ export class Report extends DeployCommand {
       this.deployResult
     );
 
-    this.maybeCreateRequestedReports();
+    this.maybeCreateRequestedReports({
+      coverageformatters: this.flags.coverageformatters,
+      junit: this.flags.junit,
+      org: this.flags['target-org'],
+    });
 
     if (!this.jsonEnabled()) {
       formatter.display();

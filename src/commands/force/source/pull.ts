@@ -7,13 +7,7 @@
 
 import { Duration } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
-import {
-  FileResponse,
-  RequestStatus,
-  RetrieveVersionData,
-  RetrieveResult,
-  SourceComponent,
-} from '@salesforce/source-deploy-retrieve';
+import { FileResponse, RequestStatus, RetrieveVersionData, RetrieveResult } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { Interfaces } from '@oclif/core';
 import {
@@ -28,13 +22,8 @@ import { PullResponse, PullResultFormatter } from '../../../formatters/source/pu
 import { trackingSetup, updateTracking } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'pull', [
-  'flags.forceoverwrite',
-  'description',
-  'help',
-  'flags.waitLong',
-]);
-const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
+const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 export default class Pull extends SourceCommand {
   public static aliases = ['force:source:beta:pull'];

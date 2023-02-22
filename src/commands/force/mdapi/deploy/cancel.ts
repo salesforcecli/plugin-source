@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { Messages, SfError } from '@salesforce/core';
+import { Connection, Messages, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import {
@@ -54,9 +54,11 @@ export class Cancel extends DeployCommand {
     }),
   };
   private flags: Interfaces.InferredFlags<typeof Cancel.flags>;
+  private conn: Connection;
 
   public async run(): Promise<DeployCancelCommandResult> {
     this.flags = (await this.parse(Cancel)).flags;
+    this.conn = this.flags['target-org'].getConnection(this.flags['api-version']);
     await this.cancel();
     this.resolveSuccess();
     return this.formatResult();
@@ -65,10 +67,10 @@ export class Cancel extends DeployCommand {
   protected async cancel(): Promise<void> {
     const deployId = this.resolveDeployId(this.flags.jobid);
     try {
-      const deploy = this.createDeploy(deployId);
+      const deploy = this.createDeploy(this.conn, deployId);
       await deploy.cancel();
 
-      this.deployResult = await this.poll(deployId);
+      this.deployResult = await this.poll(this.conn, deployId);
     } catch (e) {
       const err = e as Error;
       throw new SfError(messages.getMessage('CancelFailed', [err.message]), 'CancelFailed');
