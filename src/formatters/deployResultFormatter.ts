@@ -14,9 +14,11 @@ import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-
 import {
   DeployMessage,
   DeployResult,
+  Failures,
   FileResponse,
   MetadataApiDeployStatus,
   RequestStatus,
+  Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { prepCoverageForDisplay } from '../coverageUtils';
@@ -150,11 +152,14 @@ export class DeployResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
-      this.ux.table(successes, {
-        fullName: { header: 'FULL NAME' },
-        type: { header: 'TYPE' },
-        filePath: { header: 'PROJECT PATH' },
-      });
+      this.ux.table(
+        successes.map((success) => ({ fullName: success.fullName, type: success.type, filePath: success.filePath })),
+        {
+          fullName: { header: 'FULL NAME' },
+          type: { header: 'TYPE' },
+          filePath: { header: 'PROJECT PATH' },
+        }
+      );
     }
   }
 
@@ -168,11 +173,14 @@ export class DeployResultFormatter extends ResultFormatter {
 
     this.ux.log('');
     this.ux.styledHeader(chalk.blue('Deleted Source'));
-    this.ux.table(deletions, {
-      fullName: { header: 'FULL NAME' },
-      type: { header: 'TYPE' },
-      filePath: { header: 'PROJECT PATH' },
-    });
+    this.ux.table(
+      deletions.map((entry) => ({ fullName: entry.fullName, type: entry.type, filePath: entry.filePath })),
+      {
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
+      }
+    );
   }
 
   protected displayFailures(): void {
@@ -207,11 +215,18 @@ export class DeployResultFormatter extends ResultFormatter {
       if (failures.length) {
         this.ux.log('');
         this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
-        this.ux.table(failures, {
-          problemType: { header: 'Type' },
-          fullName: { header: 'Name' },
-          error: { header: 'Problem' },
-        });
+        this.ux.table(
+          failures.map((entry: DeployMessage) => ({
+            fullName: entry.fullName,
+            probemType: entry.problemType,
+            filePath: entry.fileName,
+          })),
+          {
+            problemType: { header: 'Type' },
+            fullName: { header: 'Name' },
+            error: { header: 'Problem' },
+          }
+        );
         this.ux.log('');
       }
     }
@@ -244,12 +259,20 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.styledHeader(
         chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
       );
-      this.ux.table(tests, {
-        name: { header: 'Name' },
-        methodName: { header: 'Method' },
-        message: { header: 'Message' },
-        stackTrace: { header: 'Stacktrace' },
-      });
+      this.ux.table(
+        tests.map((entry: Failures) => ({
+          name: entry.name,
+          methodName: entry.methodName,
+          message: entry.message,
+          stackTrace: entry.stackTrace,
+        })),
+        {
+          name: { header: 'Name' },
+          methodName: { header: 'Method' },
+          message: { header: 'Message' },
+          stackTrace: { header: 'Stacktrace' },
+        }
+      );
     }
   }
 
@@ -259,10 +282,13 @@ export class DeployResultFormatter extends ResultFormatter {
       const tests = this.sortTestResults(success);
       this.ux.log('');
       this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
-      this.ux.table(tests, {
-        name: { header: 'Name' },
-        methodName: { header: 'Method' },
-      });
+      this.ux.table(
+        tests.map((test: Successes) => ({ name: test.name, methodName: test.methodName })),
+        {
+          name: { header: 'Name' },
+          methodName: { header: 'Method' },
+        }
+      );
     }
     const codeCoverage = ensureArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
@@ -271,11 +297,18 @@ export class DeployResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
-      this.ux.table(coverage, {
-        name: { header: 'Name' },
-        numLocations: { header: '% Covered' },
-        lineNotCovered: { header: 'Uncovered Lines' },
-      });
+      this.ux.table(
+        coverage.map((cov) => ({
+          name: cov.name,
+          numLocations: cov.numLocations,
+          lineNotCovered: cov.locationsNotCovered,
+        })),
+        {
+          name: { header: 'Name' },
+          numLocations: { header: '% Covered' },
+          lineNotCovered: { header: 'Uncovered Lines' },
+        }
+      );
     }
   }
 

@@ -27,7 +27,7 @@ import {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
-const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
+const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 export class Retrieve extends SourceCommand {
   public static aliases = ['force:mdapi:beta:retrieve'];

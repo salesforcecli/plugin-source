@@ -22,14 +22,7 @@ import {
 } from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'md.cancel', [
-  'CancelFailed',
-  'description',
-  'examples',
-  'flags.wait',
-  'flags.waitLong',
-  'flags.jobid',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');
 
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');

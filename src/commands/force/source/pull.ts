@@ -100,7 +100,7 @@ export default class Pull extends SourceCommand {
   protected async retrieve(): Promise<void> {
     const componentSet = await this.tracking.remoteNonDeletesAsComponentSet();
 
-    // if it is't local, add it as a
+    // if it isn't local, add it as a
     if (componentSet.size === 0) {
       return;
     }

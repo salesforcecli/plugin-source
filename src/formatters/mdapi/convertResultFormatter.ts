@@ -57,12 +57,20 @@ export class ConvertResultFormatter extends ResultFormatter {
   public display(): void {
     const convertData = this.getJson();
     if (convertData?.length) {
-      this.ux.table(convertData, {
-        state: { header: 'STATE' },
-        fullName: { header: 'FULL NAME' },
-        type: { header: 'TYPE' },
-        filePath: { header: 'PROJECT PATH' },
-      });
+      this.ux.table(
+        convertData.map((entry) => ({
+          state: entry.state,
+          fullName: entry.fullName,
+          type: entry.type,
+          filePath: entry.filePath,
+        })),
+        {
+          state: { header: 'STATE' },
+          fullName: { header: 'FULL NAME' },
+          type: { header: 'TYPE' },
+          filePath: { header: 'PROJECT PATH' },
+        }
+      );
     } else {
       this.ux.log('No metadata found to convert');
     }

@@ -1286,7 +1286,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/sf-plugins-core@^2.0.1", "@salesforce/sf-plugins-core@^2.0.2", "@salesforce/sf-plugins-core@^2.2.1":
+"@salesforce/sf-plugins-core@^2.0.1", "@salesforce/sf-plugins-core@^2.0.2":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-2.2.1.tgz#845ab6c21f840cb70330006b44fa4230867ee50a"
   integrity sha512-KT5y/HK9Y6FSjEiMy5Sc55RXfjMvwDgqutpMdKpBl2KH8DS1L8rISjuVzoZQv9WrkAHHLNF1Uv5tk4awesbQMQ==

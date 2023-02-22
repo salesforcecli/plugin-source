@@ -32,11 +32,7 @@ import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResul
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'deployCommand', [
-  'invalidDeployId',
-  'MissingDeployId',
-  'resultsDirMissing',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {

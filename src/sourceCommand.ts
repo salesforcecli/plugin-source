@@ -15,12 +15,7 @@ import { SfCommand } from '@salesforce/sf-plugins-core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'flags.validation', [
-  'InvalidFlagPath',
-  'expectedDirectory',
-  'expectedFile',
-  'notFound',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
 
 // TODO: use messages for tracking version compatibility errors
 // Messages.importMessagesDirectory(__dirname);

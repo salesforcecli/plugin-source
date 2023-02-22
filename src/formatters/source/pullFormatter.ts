@@ -21,12 +21,7 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'pull', [
-  'retrievedSourceWarningsHeader',
-  'retrievedSourceHeader',
-  'retrieveTimeout',
-  'NoResultsFound',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export type PullResponse = { pulledSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
 
@@ -120,12 +115,20 @@ export class PullResultFormatter extends ResultFormatter {
   private displaySuccesses(retrievedFiles: FileResponse[]): void {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
-    this.ux.table(retrievedFiles, {
-      state: { header: 'STATE' },
-      fullName: { header: 'FULL NAME' },
-      type: { header: 'TYPE' },
-      filePath: { header: 'PROJECT PATH' },
-    });
+    this.ux.table(
+      retrievedFiles.map((entry) => ({
+        state: entry.state,
+        fullName: entry.fullName,
+        type: entry.type,
+        filePath: entry.filePath,
+      })),
+      {
+        state: { header: 'STATE' },
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
+      }
+    );
   }
 
   private displayErrors(): void {

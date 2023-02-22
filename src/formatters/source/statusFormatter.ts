@@ -10,12 +10,12 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'status', ['humanSuccess', 'noResults']);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 type StatusActualState = 'Deleted' | 'Add' | 'Changed' | 'Unchanged';
 type StatusOrigin = 'Local' | 'Remote';
 type StatusStateString = `${StatusOrigin} ${StatusActualState}` | `${StatusOrigin} ${StatusActualState} (Conflict)`;
-export interface StatusResult {
+export type StatusResult = {
   state: StatusStateString;
   fullName: string;
   type: string;
@@ -24,7 +24,7 @@ export interface StatusResult {
   conflict?: boolean;
   actualState?: StatusActualState;
   origin: StatusOrigin;
-}
+};
 
 // sort order is state, type, fullname
 const rowSortFunction = (a: StatusResult, b: StatusResult): number => {

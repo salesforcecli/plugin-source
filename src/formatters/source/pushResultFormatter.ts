@@ -10,7 +10,6 @@ import * as chalk from 'chalk';
 import { Messages, SfError } from '@salesforce/core';
 import {
   ComponentStatus,
-  DeployMessage,
   DeployResult,
   FileResponse,
   MetadataResolver,
@@ -163,12 +162,20 @@ export class PushResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Pushed Source'));
-      this.ux.table(successes, {
-        state: { header: 'STATE' },
-        fullName: { header: 'FULL NAME' },
-        type: { header: 'TYPE' },
-        filePath: { header: 'PROJECT PATH' },
-      });
+      this.ux.table(
+        successes.map((entry) => ({
+          state: entry.state,
+          fullName: entry.fullName,
+          type: entry.type,
+          filePath: entry.filePath,
+        })),
+        {
+          state: { header: 'STATE' },
+          fullName: { header: 'FULL NAME' },
+          type: { header: 'TYPE' },
+          filePath: { header: 'PROJECT PATH' },
+        }
+      );
     }
   }
 
@@ -190,7 +197,7 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    const failures: Array<FileResponse | DeployMessage> = [];
+    const failures = [];
     const fileResponseFailures: Map<string, string> = new Map<string, string>();
 
     if (this.fileResponses?.length) {

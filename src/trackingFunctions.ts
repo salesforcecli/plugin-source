@@ -42,12 +42,12 @@ interface TrackingUpdateRequest {
   fileResponses?: FileResponse[];
 }
 
-interface ConflictResponse {
+type ConflictResponse = {
   state: 'Conflict';
   fullName: string;
   type: string;
   filePath: string;
-}
+};
 /**
  * Check if any conflicts exist in a specific component set.
  * If conflicts exist, this will output the table and throw

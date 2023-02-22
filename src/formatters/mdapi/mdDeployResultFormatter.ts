@@ -11,8 +11,10 @@ import { Messages, SfError } from '@salesforce/core';
 import {
   DeployMessage,
   DeployResult,
+  Failures,
   MetadataApiDeployStatus,
   RequestStatus,
+  Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
@@ -179,12 +181,20 @@ export class MdDeployResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Test Failures [${this.result.response.details.runTestResult?.numFailures}]`));
-      this.ux.table(tests, {
-        name: { header: 'Name' },
-        methodName: { header: 'Method' },
-        message: { header: 'Message' },
-        stackTrace: { header: 'Stacktrace' },
-      });
+      this.ux.table(
+        tests.map((test: Failures) => ({
+          name: test.name,
+          methodName: test.methodName,
+          message: test.message,
+          stackTrace: test.stackTrace,
+        })),
+        {
+          name: { header: 'Name' },
+          methodName: { header: 'Method' },
+          message: { header: 'Message' },
+          stackTrace: { header: 'Stacktrace' },
+        }
+      );
     }
   }
 
@@ -194,10 +204,13 @@ export class MdDeployResultFormatter extends ResultFormatter {
       const tests = this.sortTestResults(success);
       this.ux.log('');
       this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
-      this.ux.table(tests, {
-        name: { header: 'Name' },
-        methodName: { header: 'Method' },
-      });
+      this.ux.table(
+        tests.map((test: Successes) => ({ name: test.name, methodName: test.methodName })),
+        {
+          name: { header: 'Name' },
+          methodName: { header: 'Method' },
+        }
+      );
     }
     const codeCoverage = ensureArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
@@ -207,11 +220,19 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
 
-      this.ux.table(coverage, {
-        name: { header: 'Name' },
-        numLocations: { header: '% Covered' },
-        lineNotCovered: { header: 'Uncovered Lines' },
-      });
+      // TODO: unsure about locationsNotCovered vs lineNotCovered
+      this.ux.table(
+        coverage.map((entry) => ({
+          name: entry.name,
+          numLocations: entry.numLocations,
+          lineNotCovered: entry.locationsNotCovered,
+        })),
+        {
+          name: { header: 'Name' },
+          numLocations: { header: '% Covered' },
+          lineNotCovered: { header: 'Uncovered Lines' },
+        }
+      );
     }
   }
 

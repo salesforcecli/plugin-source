@@ -52,5 +52,6 @@
   "asyncDeployQueued": "Deploy has been queued.",
   "asyncDeployCancel": "Run sfdx force:mdapi:deploy:cancel -i %s -u %s to cancel the deploy.",
   "asyncDeployReport": "Run sfdx force:mdapi:deploy:report -i %s -u %s to get the latest status.",
+  "deployCanceled": "The deployment has been canceled by %s.",
   "asyncCoverageJunitWarning": "You requested an async deploy with code coverage or JUnit results. The reports will be available when the deploy completes."
 }
