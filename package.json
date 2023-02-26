@@ -26,7 +26,7 @@
     "@oclif/plugin-help": "^5.2.2",
     "@salesforce/cli-plugins-testkit": "^3.2.20",
     "@salesforce/dev-config": "^3.0.1",
-    "@salesforce/dev-scripts": "^3.1.1",
+    "@salesforce/dev-scripts": "^4.1.1",
     "@salesforce/plugin-command-reference": "^1.5.8",
     "@salesforce/plugin-config": "^2.3.2",
     "@salesforce/plugin-info": "^2.4.2",
@@ -66,7 +66,8 @@
     "shx": "0.3.4",
     "sinon": "10.0.0",
     "ts-node": "^10.4.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "wireit": "^0.9.5"
   },
   "config": {},
   "engines": {
@@ -136,22 +137,18 @@
   },
   "repository": "salesforcecli/plugin-source",
   "scripts": {
-    "build": "sf-build",
+    "build": "wireit",
     "clean": "sf-clean",
     "clean-all": "sf-clean all",
     "clean:lib": "shx rm -rf lib && shx rm -rf coverage && shx rm -rf .nyc_output && shx rm -f oclif.manifest.json",
-    "compile": "sf-compile",
+    "compile": "wireit",
     "docs": "sf-docs",
-    "format": "sf-format",
-    "lint": "sf-lint",
+    "format": "wireit",
+    "lint": "wireit",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:command-reference",
     "prepack": "sf-prepack",
     "prepare": "sf-install",
-    "pretest": "sf-compile-test",
-    "test": "sf-test",
-    "test:command-reference": "./bin/dev commandreference:generate --erroronwarnings",
-    "test:deprecation-policy": "./bin/dev snapshot:compare",
+    "test": "wireit",
     "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 1200000 --parallel --retries 0",
     "test:nuts:commands:other": "mocha \"test/nuts/open.nut.ts\" \"test/nuts/ignored_list.nut.ts\" --slow 4500 --timeout 1200000 --retries 0 --parallel",
     "test:nuts:convert": "cross-env PLUGIN_SOURCE_SEED_FILTER=convert ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0",
@@ -183,10 +180,114 @@
     "test:nuts:tracking:mpd": "mocha \"test/nuts/trackingCommands/mpd*\" --slow 3000 --timeout 1200000 --retries 0 -parallel",
     "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 1200000 --retries 0",
     "test:nuts:tracking:resetClear": "mocha \"test/nuts/trackingCommands/resetClear.nut.ts\" --slow 3000 --timeout 1200000 --retries 0",
+    "test:only": "wireit",
     "test:watch": "mocha --watch \"./test/**/*.test.ts\"",
     "version": "oclif readme"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "compile",
+        "lint"
+      ]
+    },
+    "compile": {
+      "command": "tsc -p . --pretty --incremental",
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json",
+        "messages/**"
+      ],
+      "output": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "clean": "if-file-deleted"
+    },
+    "format": {
+      "command": "prettier --write \"+(src|test|schemas)/**/*.+(ts|js|json)|command-snapshot.json\"",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "schemas/**/*.json",
+        "command-snapshot.json",
+        ".prettier*"
+      ],
+      "output": []
+    },
+    "lint": {
+      "command": "eslint src test --color --cache --cache-location .eslintcache",
+      "files": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "messages/**",
+        ".eslint*"
+      ],
+      "output": []
+    },
+    "test:compile": {
+      "command": "tsc -p \"./test\" --pretty",
+      "files": [
+        "test/**/*.ts",
+        "tsconfig.json",
+        "test/tsconfig.json"
+      ],
+      "output": []
+    },
+    "test": {
+      "dependencies": [
+        "test:compile",
+        "test:only",
+        "test:command-reference",
+        "test:deprecation-policy",
+        "lint",
+        "test:json-schema"
+      ]
+    },
+    "test:only": {
+      "command": "nyc mocha \"test/**/*.test.ts\"",
+      "files": [
+        "test/**/*.ts",
+        "src/**/*.ts",
+        "tsconfig.json",
+        ".mocha*",
+        "test/tsconfig.json",
+        "!*.nut.ts",
+        ".nycrc"
+      ],
+      "output": []
+    },
+    "test:command-reference": {
+      "command": "\"./bin/dev\" commandreference:generate --erroronwarnings",
+      "files": [
+        "src/**/*.ts",
+        "messages/**",
+        "package.json"
+      ],
+      "output": [
+        "tmp/root"
+      ]
+    },
+    "test:deprecation-policy": {
+      "command": "\"./bin/dev\" snapshot:compare",
+      "files": [
+        "src/**/*.ts"
+      ],
+      "output": [],
+      "dependencies": [
+        "compile"
+      ]
+    },
+    "test:json-schema": {
+      "command": "\"./bin/dev\" schema:compare",
+      "files": [
+        "src/**/*.ts",
+        "schemas"
+      ],
+      "output": []
+    }
   }
 }
