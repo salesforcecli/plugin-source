@@ -10,12 +10,12 @@ import { ConvertResult } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter } from '../resultFormatter';
 
-interface ConvertEntry {
+type ConvertEntry = {
   fullName: string;
   type: string;
   filePath: string;
   state: 'Add';
-}
+};
 
 export type ConvertCommandResult = ConvertEntry[];
 

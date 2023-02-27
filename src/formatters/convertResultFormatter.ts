@@ -15,9 +15,9 @@ import { ResultFormatter } from './resultFormatter';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'convert');
 
-export interface ConvertCommandResult {
+export type ConvertCommandResult = {
   location: string;
-}
+};
 
 export class ConvertResultFormatter extends ResultFormatter {
   protected result: ConvertResult;

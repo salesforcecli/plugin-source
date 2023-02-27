@@ -21,7 +21,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.valid
 // Messages.importMessagesDirectory(__dirname);
 // const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-export abstract class SourceCommand extends SfCommand<any> {
+export abstract class SourceCommand extends SfCommand<unknown> {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
 
   protected progressBar?: ProgressBar;

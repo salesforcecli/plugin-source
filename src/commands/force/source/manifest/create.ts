@@ -8,7 +8,7 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { Messages } from '@salesforce/core';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
-import { Flags, loglevel, orgApiVersionFlagWithDeprecations } from '@salesforce/sf-plugins-core';
+import { arrayWithDeprecation, Flags, loglevel, orgApiVersionFlagWithDeprecations } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
 import { SourceCommand } from '../../../../sourceCommand';
 
@@ -27,10 +27,10 @@ const packageTypes: Record<string, string[]> = {
   unlocked: ['deprecatedEditable', 'installedEditable'],
 };
 
-interface CreateCommandResult {
+export type CreateCommandResult = {
   name: string;
   path: string;
-}
+};
 
 const xorFlags = ['metadata', 'sourcepath', 'fromorg'];
 export class Create extends SourceCommand {
@@ -40,14 +40,12 @@ export class Create extends SourceCommand {
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
-    metadata: Flags.string({
-      multiple: true,
+    metadata: arrayWithDeprecation({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: Flags.string({
-      multiple: true,
+    sourcepath: arrayWithDeprecation({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
       exactlyOne: xorFlags,
@@ -62,8 +60,7 @@ export class Create extends SourceCommand {
       options: Object.keys(manifestTypes),
       char: 't',
     }),
-    includepackages: Flags.string({
-      multiple: true,
+    includepackages: arrayWithDeprecation({
       description: messages.getMessage('flags.includepackages'),
       options: Object.keys(packageTypes),
       char: 'c',

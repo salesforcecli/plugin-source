@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile, Org, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
-
+import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';

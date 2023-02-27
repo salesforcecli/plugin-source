@@ -28,14 +28,14 @@ import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
-export interface DeployCommandResult extends MdDeployResult {
+export type DeployCommandResult = {
   deletedSource?: FileResponse[];
   deployedSource: FileResponse[];
   outboundFiles: string[];
   deploys: MetadataApiDeployStatus[];
   deletes?: MetadataApiDeployStatus[];
   replacements?: Record<string, string[]>;
-}
+} & MdDeployResult;
 
 export class DeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
@@ -216,10 +216,10 @@ export class DeployResultFormatter extends ResultFormatter {
         this.ux.log('');
         this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
         this.ux.table(
-          failures.map((entry: DeployMessage) => ({
+          failures.map((entry: FileResponse & DeployMessage) => ({
             fullName: entry.fullName,
-            probemType: entry.problemType,
-            filePath: entry.fileName,
+            problemType: entry.problemType,
+            filePath: entry.filePath,
           })),
           {
             problemType: { header: 'Type' },

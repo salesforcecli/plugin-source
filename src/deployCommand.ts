@@ -139,9 +139,9 @@ export abstract class DeployCommand extends SourceCommand {
   protected async poll(
     connection: Connection,
     deployId: string,
-    options?: Partial<PollingClient.Options> & { wait: Duration }
+    options: Partial<PollingClient.Options> & { wait: Duration } = { wait: Duration.days(7) }
   ): Promise<DeployResult> {
-    const waitDuration = options.wait.minutes === -1 ? Duration.days(7) : options.wait;
+    const waitDuration = options.wait;
 
     const defaultOptions: PollingClient.Options = {
       frequency: options?.frequency ?? Duration.seconds(1),

@@ -32,8 +32,7 @@ export default class Pull extends SourceCommand {
   public static help = messages.getMessage('help');
   public static readonly flags = {
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
-      summary: messages.getMessage('flagsLong.verbose'),
+      summary: messages.getMessage('flags.verbose'),
     }),
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

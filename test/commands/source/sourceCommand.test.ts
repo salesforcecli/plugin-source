@@ -35,7 +35,7 @@ describe('SourceCommand', () => {
       this.flags = flags;
     }
     public callIsJsonOutput() {
-      return this.jsonEnabled();
+      return this.isJsonOutput();
     }
     public resolveSuccess() {}
     public formatResult() {}

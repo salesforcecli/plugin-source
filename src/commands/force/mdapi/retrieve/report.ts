@@ -26,7 +26,7 @@ import {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
-
+export type ReportCommandResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
 export class Report extends SourceCommand {
   public static aliases = ['force:mdapi:beta:retrieve:report'];
   public static readonly description = messages.getMessage('reportCmd.description');
@@ -82,7 +82,7 @@ export class Report extends SourceCommand {
   private flags: Interfaces.InferredFlags<typeof Report.flags>;
   private org: Org;
 
-  public async run(): Promise<RetrieveCommandResult | RetrieveCommandAsyncResult> {
+  public async run(): Promise<ReportCommandResult> {
     this.flags = (await this.parse(Report)).flags;
     this.org = this.flags['target-org'];
 

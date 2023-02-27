@@ -10,6 +10,7 @@ import { Messages, SfProject } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import {
+  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
@@ -58,8 +59,7 @@ export class Report extends DeployCommand {
     resultsdir: Flags.directory({
       description: messages.getMessage('flags.resultsDir'),
     }),
-    coverageformatters: Flags.string({
-      multiple: true,
+    coverageformatters: arrayWithDeprecation({
       description: messages.getMessage('flags.coverageFormatters'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),

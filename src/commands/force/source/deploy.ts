@@ -10,6 +10,7 @@ import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSetBuilder, DeployVersionData } from '@salesforce/source-deploy-retrieve';
 import {
+  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
@@ -35,6 +36,8 @@ const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deplo
 
 // One of these flags must be specified for a valid deploy.
 const xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
+
+export type DeployCommandCombinedResult = DeployCommandResult | DeployCommandAsyncResult;
 
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
@@ -67,8 +70,7 @@ export class Deploy extends DeployCommand {
       summary: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
-    runtests: Flags.string({
-      multiple: true,
+    runtests: arrayWithDeprecation({
       char: 'r',
       description: messages.getMessage('flags.runTests'),
       summary: messages.getMessage('flagsLong.runTests'),
@@ -98,15 +100,13 @@ export class Deploy extends DeployCommand {
     verbose: Flags.boolean({
       description: messages.getMessage('flags.verbose'),
     }),
-    metadata: Flags.string({
-      multiple: true,
+    metadata: arrayWithDeprecation({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       summary: messages.getMessage('flagsLong.metadata'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: Flags.string({
-      multiple: true,
+    sourcepath: arrayWithDeprecation({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
       summary: messages.getMessage('flagsLong.sourcePath'),
@@ -139,8 +139,7 @@ export class Deploy extends DeployCommand {
     resultsdir: Flags.directory({
       description: messages.getMessage('flags.resultsDir'),
     }),
-    coverageformatters: Flags.string({
-      multiple: true,
+    coverageformatters: arrayWithDeprecation({
       description: messages.getMessage('flags.coverageFormatters'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
@@ -151,7 +150,7 @@ export class Deploy extends DeployCommand {
   protected tracking: SourceTracking;
   private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
   private org: Org;
-  public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
+  public async run(): Promise<DeployCommandCombinedResult> {
     this.flags = (await this.parse(Deploy)).flags;
     this.org = this.flags['target-org'];
     await this.preChecks();

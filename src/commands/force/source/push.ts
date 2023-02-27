@@ -6,7 +6,7 @@
  */
 
 import { Duration, env } from '@salesforce/kit';
-import { Lifecycle, Messages } from '@salesforce/core';
+import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import { DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
@@ -15,6 +15,7 @@ import {
   loglevel,
   orgApiVersionFlagWithDeprecations,
   requiredOrgFlagWithDeprecations,
+  SfCommand,
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
@@ -225,8 +226,26 @@ export default class Push extends DeployCommand {
       return this.setExitCode(1);
     }
 
-    this.warn(` Unexpected exit code ${this.deployResults.map((result) => result.response)}`);
+    this.warn(` Unexpected exit code ${this.deployResults.map((result) => result.response.errorMessage).join(', ')}`);
     this.setExitCode(1);
+  }
+
+  protected catch(error: Error | SfError | SfCommand.Error): Promise<SfCommand.Error> {
+    const formatter = new PushResultFormatter(
+      new Ux({ jsonEnabled: this.jsonEnabled() }),
+      {
+        quiet: this.flags.quiet ?? false,
+      },
+      this.deployResults,
+      this.deletes
+    );
+    try {
+      formatter.getJson();
+    } catch (e) {
+      this.logJson(this.toErrorJson(e as SfCommand.Error));
+    }
+
+    throw error;
   }
 
   protected formatResult(): PushResponse {

@@ -29,6 +29,7 @@ export class Clear extends SfCommand<SourceTrackingClearResult> {
   public static readonly summary = messages.getMessage('clearDescription');
   public static readonly description = messages.getMessage('clearDescription');
   public static readonly requiresProject = true;
+  public static readonly examples = [];
 
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,

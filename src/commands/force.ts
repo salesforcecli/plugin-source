@@ -70,11 +70,15 @@ const getCurrentApiVersion = async (): Promise<string> => {
   ).versions.selected.toString()}.0`;
 };
 
-// eslint-disable-next-line sf-plugin/command-summary
-export class ForceCommand extends SfCommand<{ apiVersion: string }> {
-  public static readonly hidden = true;
+export type ForceCommandResult = { apiVersion: string };
 
-  public async run(): Promise<{ apiVersion: string }> {
+export class ForceCommand extends SfCommand<ForceCommandResult> {
+  public static readonly hidden = true;
+  public static readonly examples = [];
+  // eslint-disable-next-line sf-plugin/no-hardcoded-messages-commands
+  public static readonly summary = 'Display the ASCII art logo for the Salesforce CLI';
+
+  public async run(): Promise<ForceCommandResult> {
     const apiVersion = await getCurrentApiVersion();
     this.log(getAsciiSignature(apiVersion));
     return { apiVersion };

@@ -8,6 +8,7 @@ import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import {
+  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
@@ -29,6 +30,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy')
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
 const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
+export type DeployResult = MdDeployResult | DeployCommandAsyncResult;
 
 export class Deploy extends DeployCommand {
   public static aliases = ['force:mdapi:beta:deploy'];
@@ -63,9 +65,8 @@ export class Deploy extends DeployCommand {
       summary: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
-    runtests: Flags.string({
+    runtests: arrayWithDeprecation({
       char: 'r',
-      multiple: true,
       description: messages.getMessage('flags.runTests'),
       summary: messages.getMessage('flagsLong.runTests'),
     }),
@@ -116,8 +117,7 @@ export class Deploy extends DeployCommand {
     resultsdir: Flags.directory({
       description: messages.getMessage('flags.resultsDir'),
     }),
-    coverageformatters: Flags.string({
-      multiple: true,
+    coverageformatters: arrayWithDeprecation({
       description: messages.getMessage('flags.coverageFormatters'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
@@ -128,8 +128,9 @@ export class Deploy extends DeployCommand {
   private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
   private org: Org;
 
-  public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
+  public async run(): Promise<DeployResult> {
     this.flags = (await this.parse(Deploy)).flags;
+    this.org = this.flags['target-org'];
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();

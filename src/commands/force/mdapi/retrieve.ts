@@ -14,7 +14,13 @@ import {
   RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
-import { Flags, loglevel, requiredOrgFlagWithDeprecations, Ux } from '@salesforce/sf-plugins-core';
+import {
+  arrayWithDeprecation,
+  Flags,
+  loglevel,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
 import { resolveZipFileName, SourceCommand } from '../../../sourceCommand';
 import { Stash } from '../../../stash';
@@ -28,7 +34,7 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
-
+export type RetrieveCommandCombinedResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
 export class Retrieve extends SourceCommand {
   public static aliases = ['force:mdapi:beta:retrieve'];
   public static readonly description = messages.getMessage('retrieveCmd.description');
@@ -54,9 +60,8 @@ export class Retrieve extends SourceCommand {
       summary: messages.getMessage('flagsLong.sourcedir'),
       exclusive: ['unpackaged', 'packagenames'],
     }),
-    packagenames: Flags.string({
+    packagenames: arrayWithDeprecation({
       char: 'p',
-      multiple: true,
       description: messages.getMessage('flags.packagenames'),
       summary: messages.getMessage('flagsLong.packagenames'),
       exclusive: ['sourcedir', 'unpackaged'],
@@ -106,7 +111,7 @@ export class Retrieve extends SourceCommand {
   private mdapiRetrieve: MetadataApiRetrieve;
   private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
   private org: Org;
-  public async run(): Promise<RetrieveCommandResult | RetrieveCommandAsyncResult> {
+  public async run(): Promise<RetrieveCommandCombinedResult> {
     this.flags = (await this.parse(Retrieve)).flags;
     this.org = this.flags['target-org'];
     await this.retrieve();

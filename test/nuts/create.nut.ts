@@ -7,10 +7,11 @@
 
 import * as fs from 'fs';
 import { join } from 'path';
-import { expect } from '@salesforce/command/lib/test';
+
 import { TestSession } from '@salesforce/cli-plugins-testkit';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { Dictionary } from '@salesforce/ts-types';
+import { expect } from 'chai';
 
 describe('force:source:manifest:create', () => {
   let session: TestSession;

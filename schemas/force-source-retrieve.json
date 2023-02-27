@@ -1,0 +1,241 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/RetrieveCommandResult",
+  "definitions": {
+    "RetrieveCommandResult": {
+      "type": "object",
+      "properties": {
+        "inboundFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FileResponse"
+          }
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PackageRetrieval"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RetrieveMessage"
+          }
+        },
+        "response": {
+          "$ref": "#/definitions/MetadataApiRetrieveStatus"
+        }
+      },
+      "required": ["inboundFiles", "packages", "warnings", "response"],
+      "additionalProperties": false
+    },
+    "FileResponse": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/FileResponseSuccess"
+        },
+        {
+          "$ref": "#/definitions/FileResponseFailure"
+        }
+      ]
+    },
+    "FileResponseSuccess": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "filePath": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["Created", "Changed", "Unchanged", "Deleted"]
+        }
+      },
+      "required": ["fullName", "state", "type"],
+      "additionalProperties": false
+    },
+    "FileResponseFailure": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "filePath": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "const": "Failed"
+        },
+        "lineNumber": {
+          "type": "number"
+        },
+        "columnNumber": {
+          "type": "number"
+        },
+        "error": {
+          "type": "string"
+        },
+        "problemType": {
+          "type": "string",
+          "enum": ["Warning", "Error"]
+        }
+      },
+      "required": ["error", "fullName", "problemType", "state", "type"],
+      "additionalProperties": false
+    },
+    "PackageRetrieval": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "path"],
+      "additionalProperties": false
+    },
+    "RetrieveMessage": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "problem": {
+          "type": "string"
+        }
+      },
+      "required": ["fileName", "problem"],
+      "additionalProperties": false
+    },
+    "MetadataApiRetrieveStatus": {
+      "type": "object",
+      "properties": {
+        "done": {
+          "type": "boolean"
+        },
+        "fileProperties": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/FileProperties"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/FileProperties"
+              }
+            }
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/RequestStatus"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "messages": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RetrieveMessage"
+              }
+            },
+            {
+              "$ref": "#/definitions/RetrieveMessage"
+            }
+          ]
+        },
+        "zipFile": {
+          "type": "string",
+          "description": "`base64` encoded string"
+        }
+      },
+      "required": ["done", "fileProperties", "id", "status", "success", "zipFile"],
+      "additionalProperties": false,
+      "description": "Raw response returned from a checkRetrieveStatus call to the Metadata API"
+    },
+    "FileProperties": {
+      "type": "object",
+      "properties": {
+        "createdById": {
+          "type": "string"
+        },
+        "createdByName": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "string"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "lastModifiedById": {
+          "type": "string"
+        },
+        "lastModifiedByName": {
+          "type": "string"
+        },
+        "lastModifiedDate": {
+          "type": "string"
+        },
+        "manageableState": {
+          "type": "string",
+          "enum": [
+            "beta",
+            "deleted",
+            "deprecated",
+            "deprecatedEditable",
+            "installed",
+            "installedEditable",
+            "released",
+            "unmanaged"
+          ]
+        },
+        "namespacePrefix": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "createdById",
+        "createdByName",
+        "createdDate",
+        "fileName",
+        "fullName",
+        "id",
+        "lastModifiedById",
+        "lastModifiedByName",
+        "lastModifiedDate",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "RequestStatus": {
+      "type": "string",
+      "enum": ["Pending", "InProgress", "Succeeded", "SucceededPartial", "Failed", "Canceling", "Canceled"]
+    }
+  }
+}

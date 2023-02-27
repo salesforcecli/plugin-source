@@ -22,7 +22,9 @@ import { trackingSetup } from '../../../trackingFunctions';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
-export default class Status extends SfCommand<StatusResult[]> {
+export type StatusCommandResult = StatusResult[];
+
+export default class Status extends SfCommand<StatusCommandResult> {
   public static readonly deprecateAliases = true;
   public static aliases = ['force:source:beta:status'];
   public static readonly summary = messages.getMessage('description');
@@ -53,7 +55,7 @@ export default class Status extends SfCommand<StatusResult[]> {
   protected localAdds: ChangeResult[] = [];
   private flags: Interfaces.InferredFlags<typeof Status.flags>;
 
-  public async run(): Promise<StatusResult[]> {
+  public async run(): Promise<StatusCommandResult> {
     this.flags = (await this.parse(Status)).flags;
     const tracking = await trackingSetup({
       commandName: 'force:source:status',

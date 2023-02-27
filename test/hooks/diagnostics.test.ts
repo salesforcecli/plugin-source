@@ -14,7 +14,13 @@ import { hook } from '../../src/hooks/diagnostics';
 
 const pluginName = '@salesforce/plugin-source';
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages(pluginName, 'diagnostics');
+const messages = Messages.load(pluginName, 'diagnostics', [
+  'apiVersionMismatch',
+  'apiVersionUnset',
+  'maxApiVersionMismatch',
+  'sourceApiVersionMaxMismatch',
+  'apiVersionMaxMismatch',
+]);
 
 describe('Doctor diagnostics', () => {
   const sandbox = sinon.createSandbox();

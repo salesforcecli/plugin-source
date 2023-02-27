@@ -9,10 +9,10 @@ import { Messages } from '@salesforce/core';
 import { ComponentSetBuilder, ConvertResult, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
 import {
+  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
-  requiredOrgFlagWithDeprecations,
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
@@ -30,7 +30,6 @@ export class Convert extends SourceCommand {
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
-    'target-org': requiredOrgFlagWithDeprecations,
     rootdir: Flags.directory({
       char: 'r',
       description: messages.getMessage('flags.rootdir'),
@@ -47,16 +46,14 @@ export class Convert extends SourceCommand {
       description: messages.getMessage('flags.manifest'),
       summary: messages.getMessage('flagsLong.manifest'),
     }),
-    metadatapath: Flags.string({
+    metadatapath: arrayWithDeprecation({
       char: 'p',
-      multiple: true,
       description: messages.getMessage('flags.metadatapath'),
       summary: messages.getMessage('flagsLong.metadatapath'),
       exclusive: ['manifest', 'metadata'],
     }),
-    metadata: Flags.string({
+    metadata: arrayWithDeprecation({
       char: 'm',
-      multiple: true,
       description: messages.getMessage('flags.metadata'),
       summary: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'metadatapath'],

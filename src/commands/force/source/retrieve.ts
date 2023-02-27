@@ -20,6 +20,7 @@ import {
 import { SourceTracking } from '@salesforce/source-tracking';
 import { Interfaces } from '@oclif/core';
 import {
+  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
@@ -60,8 +61,7 @@ export class Retrieve extends SourceCommand {
       // @ts-ignore force char override for backward compat
       char: 'a',
     }),
-    sourcepath: Flags.string({
-      multiple: true,
+    sourcepath: arrayWithDeprecation({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
       summary: messages.getMessage('flagsLong.sourcePath'),
@@ -81,15 +81,13 @@ export class Retrieve extends SourceCommand {
       summary: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
-    metadata: Flags.string({
-      multiple: true,
+    metadata: arrayWithDeprecation({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       summary: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
-    packagenames: Flags.string({
-      multiple: true,
+    packagenames: arrayWithDeprecation({
       char: 'n',
       description: messages.getMessage('flags.packagename'),
     }),

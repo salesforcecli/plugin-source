@@ -28,12 +28,12 @@ export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
   packages?: PackageRetrieval[];
 }
 
-export interface RetrieveCommandResult {
+export type RetrieveCommandResult = {
   inboundFiles: FileResponse[];
   packages: PackageRetrieval[];
   warnings: RetrieveMessage[];
   response: MetadataApiRetrieveStatus;
-}
+};
 
 export class RetrieveResultFormatter extends RetrieveFormatter {
   protected packages: PackageRetrieval[] = [];

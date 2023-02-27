@@ -24,10 +24,10 @@ import { prepCoverageForDisplay } from '../../coverageUtils';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
-export type MdDeployResult = MetadataApiDeployStatus & {
+export type MdDeployResult = {
   coverage?: CoverageResultsFileInfo;
   junit?: string;
-};
+} & MetadataApiDeployStatus;
 
 export class MdDeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;

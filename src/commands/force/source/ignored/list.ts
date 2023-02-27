@@ -23,6 +23,7 @@ export class SourceIgnoredCommand extends SfCommand<SourceIgnoredResults> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly requiresProject = true;
+  public static readonly examples = [];
 
   public static readonly flags = {
     sourcepath: Flags.file({

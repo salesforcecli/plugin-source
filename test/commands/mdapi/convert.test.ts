@@ -11,7 +11,7 @@ import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-
+import { UX } from '@salesforce/command';
 import { SfProject } from '@salesforce/core';
 import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Convert } from '../../../src/commands/force/mdapi/convert';

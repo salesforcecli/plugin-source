@@ -24,6 +24,7 @@ import {
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import {
+  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
@@ -75,15 +76,13 @@ export class Delete extends DeployCommand {
       char: 'r',
       description: messages.getMessage('flags.noprompt'),
     }),
-    metadata: Flags.string({
-      multiple: true,
+    metadata: arrayWithDeprecation({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
       summary: messages.getMessage('flagsLong.metadata'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: Flags.string({
-      multiple: true,
+    sourcepath: arrayWithDeprecation({
       char: 'p',
       description: messages.getMessage('flags.sourcepath'),
       summary: messages.getMessage('flagsLong.sourcepath'),

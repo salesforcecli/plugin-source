@@ -30,6 +30,7 @@ export class Reset extends SfCommand<SourceTrackingResetResult> {
   public static readonly summary = messages.getMessage('resetDescription');
   public static readonly description = messages.getMessage('resetDescription');
   public static readonly requiresProject = true;
+  public static readonly examples = [];
 
   public static readonly flags = {
     'target-org': requiredOrgFlagWithDeprecations,
