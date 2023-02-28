@@ -1,3 +1,12 @@
+## [2.5.5](https://github.com/salesforcecli/plugin-source/compare/2.5.4...2.5.5) (2023-02-28)
+
+
+### Bug Fixes
+
+* **deps:** bump jsforce from 2.0.0-beta.19 to 2.0.0-beta.20 ([#745](https://github.com/salesforcecli/plugin-source/issues/745)) ([b637f68](https://github.com/salesforcecli/plugin-source/commit/b637f68cb3092ceae4f1bb65ddfc1fe67471ee31))
+
+
+
 ## [2.5.4](https://github.com/salesforcecli/plugin-source/compare/2.5.3...2.5.4) (2023-02-18)
 
 
