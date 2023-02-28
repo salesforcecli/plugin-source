@@ -76,6 +76,7 @@ describe('force:source:deploy:cancel', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

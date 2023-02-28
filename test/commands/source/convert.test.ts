@@ -72,6 +72,7 @@ describe('force:source:convert', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

@@ -116,6 +116,7 @@ describe('force:source:deploy', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

@@ -83,6 +83,7 @@ describe('force:mdapi:retrieve:report', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

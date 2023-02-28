@@ -81,6 +81,7 @@ describe('force:source:report', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

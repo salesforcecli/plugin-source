@@ -100,6 +100,7 @@ describe('force:source:retrieve', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

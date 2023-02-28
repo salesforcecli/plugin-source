@@ -21,12 +21,10 @@ import { DeployCommandResult } from '../../../src/formatters/deployResultFormatt
 import { getDeployResult } from '../source/deployResponses';
 import { Stash } from '../../../src/stash';
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:mdapi:deploy:cancel', () => {
-  const sandbox = sinon.createSandbox();
-  testOrg.username = 'cancel-test@org.com';
+  const $$ = new TestContext();
+  let testOrg: MockTestOrgData;
+
   const defaultDir = join('my', 'default', 'package');
   const stashedDeployId = 'IMA000STASHID';
 
@@ -37,7 +35,7 @@ describe('force:mdapi:deploy:cancel', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  const oclifConfigStub = fromStub(stubInterface<Config>($$.SANDBOX));
   let pollStub: sinon.SinonStub;
   let cancelStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
@@ -51,7 +49,7 @@ describe('force:mdapi:deploy:cancel', () => {
     }
     // eslint-disable-next-line class-methods-use-this
     public createDeploy(): MetadataApiDeploy {
-      cancelStub = sandbox.stub(MetadataApiDeploy.prototype, 'cancel');
+      cancelStub = $$.SANDBOX.stub(MetadataApiDeploy.prototype, 'cancel');
       return MetadataApiDeploy.prototype;
     }
   }
@@ -60,29 +58,32 @@ describe('force:mdapi:deploy:cancel', () => {
     params.push('-o', testOrg.username);
     const cmd = new TestCancel(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
-    sandbox
-      .stub(cmd.project, 'getUniquePackageDirectories')
-      .returns([{ fullPath: defaultDir, path: defaultDir, name: 'default' }]);
+    $$.SANDBOX.stub(cmd.project, 'getUniquePackageDirectories').returns([
+      { fullPath: defaultDir, path: defaultDir, name: 'default' },
+    ]);
 
-    uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
-    stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
+    uxLogStub = stubMethod($$.SANDBOX, Ux.prototype, 'log');
+    stubMethod($$.SANDBOX, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    pollStub = sandbox.stub(cmd, 'poll').resolves({ response: expectedResults });
+    pollStub = $$.SANDBOX.stub(cmd, 'poll').resolves({ response: expectedResults });
     return cmd.runIt();
   };
 
   beforeEach(async () => {
+    testOrg = new MockTestOrgData();
     await $$.stubAuths(testOrg);
+    $$.stubAliases({});
+    await $$.stubConfig({ 'target-org': testOrg.username });
+    testOrg.username = 'cancel-test@org.com';
   });
 
   afterEach(() => {
-    sandbox.restore();
     $$.restore();
   });
 
   it('should use stashed deploy ID', async () => {
-    const getStashSpy = spyMethod(sandbox, Stash, 'get');
+    const getStashSpy = spyMethod($$.SANDBOX, Stash, 'get');
     const result = await runCancelCmd(['--json']);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(true);
@@ -96,7 +97,7 @@ describe('force:mdapi:deploy:cancel', () => {
   });
 
   it('should use the jobid flag', async () => {
-    const getStashSpy = spyMethod(sandbox, Stash, 'get');
+    const getStashSpy = spyMethod($$.SANDBOX, Stash, 'get');
     const result = await runCancelCmd(['--json', '--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(false);
@@ -111,16 +112,16 @@ describe('force:mdapi:deploy:cancel', () => {
   });
 
   it('should display output with no --json', async () => {
-    const displayStub = sandbox.stub(DeployCancelResultFormatter.prototype, 'display');
-    const getJsonStub = sandbox.stub(DeployCancelResultFormatter.prototype, 'getJson');
+    const displayStub = $$.SANDBOX.stub(DeployCancelResultFormatter.prototype, 'display');
+    const getJsonStub = $$.SANDBOX.stub(DeployCancelResultFormatter.prototype, 'getJson');
     await runCancelCmd([]);
     expect(displayStub.calledOnce).to.equal(true);
     expect(getJsonStub.calledOnce).to.equal(true);
   });
 
   it('should NOT display output with --json', async () => {
-    const displayStub = sandbox.stub(DeployCancelResultFormatter.prototype, 'display');
-    const getJsonStub = sandbox.stub(DeployCancelResultFormatter.prototype, 'getJson');
+    const displayStub = $$.SANDBOX.stub(DeployCancelResultFormatter.prototype, 'display');
+    const getJsonStub = $$.SANDBOX.stub(DeployCancelResultFormatter.prototype, 'getJson');
     await runCancelCmd(['--json']);
     expect(displayStub.calledOnce).to.equal(false);
     expect(getJsonStub.calledOnce).to.equal(true);

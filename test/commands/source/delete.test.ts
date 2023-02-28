@@ -89,6 +89,7 @@ describe('force:source:delete', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 

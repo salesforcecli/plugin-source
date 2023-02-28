@@ -97,6 +97,7 @@ describe('force:mdapi:retrieve', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 
