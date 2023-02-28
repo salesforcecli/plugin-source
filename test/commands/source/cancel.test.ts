@@ -9,19 +9,23 @@ import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigFile, Org, SfProject } from '@salesforce/core';
+import { ConfigFile, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { Stash } from '../../../src/stash';
 import { getDeployResult } from './deployResponses';
 
+const $$ = new TestContext();
+const testOrg = new MockTestOrgData();
+
 describe('force:source:deploy:cancel', () => {
   const sandbox = sinon.createSandbox();
-  const username = 'cancel-test@org.com';
+  testOrg.username = 'cancel-test@org.com';
   const defaultDir = join('my', 'default', 'package');
   const stashedDeployId = 'IMA000STASHID';
 
@@ -44,12 +48,6 @@ describe('force:source:deploy:cancel', () => {
       this.id ??= 'force:source:deploy:cancel';
       return this.run();
     }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
 
     // eslint-disable-next-line class-methods-use-this
     public createDeploy(): MetadataApiDeploy {
@@ -58,37 +56,25 @@ describe('force:source:deploy:cancel', () => {
     }
   }
 
-  const runCancelCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+  const runCancelCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
+    params.push('-o', testOrg.username);
     const cmd = new TestCancel(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-          getConnection: () => ({
-            metadata: {
-              checkDeployStatus: checkDeployStatusStub,
-            },
-          }),
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, ConfigFile.prototype, 'readSync');
+    cmd.project = SfProject.getInstance();
+    sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
+    sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'resolveProjectConfig').resolves({ sourceApiVersion: options?.sourceApiVersion });
+
+    uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
     stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
     checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
 
     return cmd.runIt();
   };
+
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
+  });
 
   afterEach(() => {
     sandbox.restore();

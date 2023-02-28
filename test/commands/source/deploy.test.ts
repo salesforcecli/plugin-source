@@ -10,9 +10,10 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
+import { SfCommand } from '@salesforce/sf-plugins-core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
 import {
@@ -26,9 +27,12 @@ import { exampleSourceComponent } from './testConsts';
 
 Messages.importMessagesDirectory(__dirname);
 
+const $$ = new TestContext();
+const testOrg = new MockTestOrgData();
+
 describe('force:source:deploy', () => {
   const sandbox = sinon.createSandbox();
-  const username = 'deploy-test@org.com';
+  testOrg.username = 'deploy-test@org.com';
   const packageXml = 'package.xml';
   const defaultDir = join('my', 'default', 'package');
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
@@ -75,44 +79,28 @@ describe('force:source:deploy', () => {
       this.id ??= 'force:source:deploy';
       return this.run();
     }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
   }
 
-  const runDeployCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+  const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
+    params.push('-o', testOrg.username);
     const cmd = new TestDeploy(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
-          resolveProjectConfig: resolveProjectConfigStub,
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
+    cmd.project = SfProject.getInstance();
+    sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
+    sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'resolveProjectConfig').resolves({ sourceApiVersion: options?.sourceApiVersion });
+
     initProgressBarStub = stubMethod(sandbox, cmd, 'initProgressBar');
     progressBarStub = stubMethod(sandbox, DeployProgressBarFormatter.prototype, 'progress');
     progressStatusStub = stubMethod(sandbox, DeployProgressStatusFormatter.prototype, 'progress');
-    stubMethod(sandbox, UX.prototype, 'log');
+    stubMethod(sandbox, SfCommand.prototype, 'log');
     stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
     formatterDisplayStub = stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
     return cmd.runIt();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
     resolveProjectConfigStub = sandbox.stub();
     pollStub = sandbox.stub().resolves(deployResult);
     deployStub = sandbox.stub().resolves({
@@ -149,7 +137,7 @@ describe('force:source:deploy', () => {
   // Ensure ComponentSet.deploy() args
   const ensureDeployArgs = (overrides?: Partial<MetadataApiDeployOptions>) => {
     const expectedDeployArgs = {
-      usernameOrConnection: username,
+      usernameOrConnection: testOrg.username,
       apiOptions: {
         ignoreWarnings: false,
         rollbackOnError: true,
@@ -245,7 +233,7 @@ describe('force:source:deploy', () => {
     const sourceApiVersion = '50.0';
     resolveProjectConfigStub.resolves({ sourceApiVersion });
     const manifest = 'package.xml';
-    const result = await runDeployCmd(['--manifest', manifest, '--json']);
+    const result = await runDeployCmd(['--manifest', manifest, '--json'], { sourceApiVersion });
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       sourceapiversion: sourceApiVersion,
@@ -384,7 +372,6 @@ describe('force:source:deploy', () => {
     it('should use SOAP by default', async () => {
       delete process.env.SFDX_REST_DEPLOY;
       const sourcepath = ['somepath'];
-      // @ts-expect-error type mismatch between oclif/core v1 and v2
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore private method
@@ -395,7 +382,6 @@ describe('force:source:deploy', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'false';
         const sourcepath = ['somepath'];
-        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
@@ -409,7 +395,6 @@ describe('force:source:deploy', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         const sourcepath = ['somepath'];
-        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
@@ -423,7 +408,6 @@ describe('force:source:deploy', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         const sourcepath = ['somepath'];
-        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
@@ -435,7 +419,6 @@ describe('force:source:deploy', () => {
 
     it('should use SOAP from flag', async () => {
       const sourcepath = ['somepath'];
-      // @ts-expect-error type mismatch between oclif/core v1 and v2
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore private method
@@ -446,7 +429,6 @@ describe('force:source:deploy', () => {
       stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
       stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
       const sourcepath = ['somepath'];
-      // @ts-expect-error type mismatch between oclif/core v1 and v2
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore private method
@@ -459,7 +441,6 @@ describe('force:source:deploy', () => {
         stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
         stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
         const sourcepath = ['somepath'];
-        // @ts-expect-error type mismatch between oclif/core v1 and v2
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method

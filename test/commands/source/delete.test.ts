@@ -15,18 +15,22 @@ import {
   ComponentSetOptions,
   SourceComponent,
 } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Org, SfProject } from '@salesforce/core';
+import { Lifecycle, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import { Delete } from '../../../src/commands/force/source/delete';
 import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
 
 const fsPromises = fs.promises;
 
+const $$ = new TestContext();
+const testOrg = new MockTestOrgData();
+
 describe('force:source:delete', () => {
   const sandbox = sinon.createSandbox();
-  const username = 'delete-test@org.com';
+  testOrg.username = 'delete-test@org.com';
   const defaultPackagePath = 'defaultPackagePath';
   let confirm = true;
 
@@ -48,37 +52,20 @@ describe('force:source:delete', () => {
       this.id ??= 'force:source:delete';
       return this.run();
     }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
   }
 
-  const runDeleteCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+  const runDeleteCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
+    params.push('-o', testOrg.username);
     const cmd = new TestDelete(params, oclifConfigStub);
-    stubMethod(sandbox, SfProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
-          getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
-          resolveProjectConfig: resolveProjectConfigStub,
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
-    stubMethod(sandbox, UX.prototype, 'log');
+    cmd.project = SfProject.getInstance();
+    sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultPackagePath });
+    sandbox
+      .stub(cmd.project, 'getUniquePackageDirectories')
+      .returns([{ fullPath: defaultPackagePath, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultPackagePath, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'resolveProjectConfig').resolves({ sourceApiVersion: options?.sourceApiVersion });
+
+    stubMethod(sandbox, SfCommand.prototype, 'log');
     stubMethod(sandbox, ComponentSet.prototype, 'deploy').resolves({
       id: '123',
       pollStatus: () => exampleDeleteResponse,
@@ -92,7 +79,8 @@ describe('force:source:delete', () => {
     return cmd.runIt();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
     resolveProjectConfigStub = sandbox.stub();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       toArray: () => [new SourceComponent(exampleSourceComponent)],
@@ -171,7 +159,7 @@ describe('force:source:delete', () => {
     resolveProjectConfigStub.resolves({ sourceApiVersion });
     stubMethod(sandbox, fs, 'statSync').returns({ isDirectory: () => false });
 
-    await runDeleteCmd(['--metadata', metadata[0], '--json', '-r']);
+    await runDeleteCmd(['--metadata', metadata[0], '--json', '-r'], { sourceApiVersion });
     ensureCreateComponentSetArgs({
       sourceapiversion: sourceApiVersion,
       metadata: {

@@ -12,7 +12,11 @@ import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
 import { SfProject } from '@salesforce/core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Convert } from '../../../src/commands/force/source/convert';
+
+const $$ = new TestContext();
+const testOrg = new MockTestOrgData();
 
 describe('force:source:convert', () => {
   const sandbox = sinon.createSandbox();
@@ -30,25 +34,16 @@ describe('force:source:convert', () => {
       await this.init();
       return this.run();
     }
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
   }
 
-  const runConvertCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+  const runConvertCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestConvert(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getDefaultPackage: () => ({ path: defaultDir }),
-          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
-          resolveProjectConfig: resolveProjectConfigStub,
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg');
+    cmd.project = SfProject.getInstance();
+    sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: defaultDir, fullPath: defaultDir });
+    sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'resolveProjectConfig').resolves({ sourceApiVersion: options?.sourceApiVersion });
+
     return cmd.runIt();
   };
 
@@ -66,7 +61,8 @@ describe('force:source:convert', () => {
     expect(buildComponentSetStub.firstCall.args[0]).to.deep.equal(expectedArgs);
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
     resolveProjectConfigStub = sandbox.stub();
     sandbox.stub(MetadataConverter.prototype, 'convert').resolves({ packagePath: 'temp' });
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
@@ -89,7 +85,7 @@ describe('force:source:convert', () => {
   it('should pass along sourceApiVersion', async () => {
     const sourceApiVersion = '50.0';
     resolveProjectConfigStub.resolves({ sourceApiVersion });
-    const result = await runConvertCmd(['--json']);
+    const result = await runConvertCmd(['--json'], { sourceApiVersion });
     expect(result).to.deep.equal({ location: resolve('temp') });
     ensureCreateComponentSetArgs({
       sourcepath: [defaultDir],

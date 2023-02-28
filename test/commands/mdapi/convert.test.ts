@@ -11,9 +11,9 @@ import * as sinon from 'sinon';
 import { assert, expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
 import { SfProject } from '@salesforce/core';
 import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { Convert } from '../../../src/commands/force/mdapi/convert';
 import { FsError } from '../../../src/types';
 
@@ -61,8 +61,6 @@ describe(`force:${commandName}`, () => {
   const defaultDir = join('my', 'default', 'package');
   let uxLogStub: sinon.SinonStub;
   let uxTableStub: sinon.SinonStub;
-  let uxStartSpinnerStub: sinon.SinonStub;
-  let uxStopSpinnerStub: sinon.SinonStub;
   let fsStatStub: sinon.SinonStub;
   let fsMkdirStub: sinon.SinonStub;
   let convertStub: sinon.SinonStub;
@@ -73,24 +71,12 @@ describe(`force:${commandName}`, () => {
       await this.init();
       return this.run();
     }
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
   }
 
   const runConvertCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const cmd = new TestConvert(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getDefaultPackage: () => ({ path: defaultDir }),
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg');
-
+    cmd.project = SfProject.getInstance();
+    sandbox.stub(cmd.project, 'getDefaultPackage').returns({ fullPath: '', name: '', path: defaultDir, default: true });
     return cmd.runIt();
   };
 
@@ -98,10 +84,8 @@ describe(`force:${commandName}`, () => {
     fsMkdirStub = sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
 
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    uxTableStub = stubMethod(sandbox, UX.prototype, 'table');
-    uxStartSpinnerStub = stubMethod(sandbox, UX.prototype, 'startSpinner');
-    uxStopSpinnerStub = stubMethod(sandbox, UX.prototype, 'stopSpinner');
+    uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
+    uxTableStub = stubMethod(sandbox, Ux.prototype, 'table');
 
     convertStub = sandbox.stub(MetadataConverter.prototype, 'convert');
     csBuilderStub = sandbox.stub(ComponentSetBuilder, 'build');
@@ -216,8 +200,6 @@ describe(`force:${commandName}`, () => {
     const result = await runConvertCmd(['--rootdir', 'rootdir', '--json']);
     expect(result).to.deep.equal([]);
     expect(convertStub.called).to.be.false;
-    expect(uxStartSpinnerStub.called).to.be.false;
-    expect(uxStopSpinnerStub.called).to.be.false;
     expect(uxLogStub.called).to.be.false;
     expect(uxTableStub.called).to.be.false;
   });
@@ -230,8 +212,6 @@ describe(`force:${commandName}`, () => {
     const result = await runConvertCmd(['--rootdir', 'rootdir']);
     expect(result).to.deep.equal([]);
     expect(convertStub.called).to.be.false;
-    expect(uxStartSpinnerStub.called).to.be.false;
-    expect(uxStopSpinnerStub.called).to.be.false;
     expect(uxLogStub.calledWith('No metadata found to convert')).to.be.true;
     expect(uxTableStub.called).to.be.false;
   });
@@ -248,8 +228,6 @@ describe(`force:${commandName}`, () => {
     expect(convertStub.called).to.be.true;
     expect(convertStub.firstCall.args[0]).to.equal(mockCompSet);
     expect(convertStub.firstCall.args[1]).to.equal('source');
-    expect(uxStartSpinnerStub.called).to.be.true;
-    expect(uxStopSpinnerStub.called).to.be.true;
     expect(uxLogStub.called).to.be.false;
     expect(uxTableStub.called).to.be.false;
   });
@@ -266,9 +244,6 @@ describe(`force:${commandName}`, () => {
     expect(convertStub.called).to.be.true;
     expect(convertStub.firstCall.args[0]).to.equal(mockCompSet);
     expect(convertStub.firstCall.args[1]).to.equal('source');
-    expect(uxStartSpinnerStub.called).to.be.true;
-    expect(uxStartSpinnerStub.firstCall.args[0]).to.equal('Converting 2 metadata components');
-    expect(uxStopSpinnerStub.called).to.be.true;
     expect(uxLogStub.called).to.be.false;
     expect(uxTableStub.called).to.be.true;
   });
