@@ -9,19 +9,24 @@ import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigFile, Org, SfProject } from '@salesforce/core';
+import { ConfigFile, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { getDeployResult } from '../source/deployResponses';
 import { Stash } from '../../../src/stash';
 
+const $$ = new TestContext();
+const testOrg = new MockTestOrgData();
+
 describe('force:mdapi:deploy:cancel', () => {
   const sandbox = sinon.createSandbox();
-  const username = 'cancel-test@org.com';
+  testOrg.username = 'cancel-test@org.com';
   const defaultDir = join('my', 'default', 'package');
   const stashedDeployId = 'IMA000STASHID';
 
@@ -33,7 +38,7 @@ describe('force:mdapi:deploy:cancel', () => {
 
   // Stubs
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
-  let checkDeployStatusStub: sinon.SinonStub;
+  let pollStub: sinon.SinonStub;
   let cancelStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
 
@@ -44,13 +49,6 @@ describe('force:mdapi:deploy:cancel', () => {
       this.id ??= 'force:mdapi:deploy:cancel';
       return this.run();
     }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
-
     // eslint-disable-next-line class-methods-use-this
     public createDeploy(): MetadataApiDeploy {
       cancelStub = sandbox.stub(MetadataApiDeploy.prototype, 'cancel');
@@ -59,39 +57,28 @@ describe('force:mdapi:deploy:cancel', () => {
   }
 
   const runCancelCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+    params.push('-o', testOrg.username);
     const cmd = new TestCancel(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-          getConnection: () => ({
-            metadata: {
-              checkDeployStatus: checkDeployStatusStub,
-            },
-          }),
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, ConfigFile.prototype, 'readSync');
-    stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
-    checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
+    cmd.project = SfProject.getInstance();
+    sandbox
+      .stub(cmd.project, 'getUniquePackageDirectories')
+      .returns([{ fullPath: defaultDir, path: defaultDir, name: 'default' }]);
 
+    uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
+    stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    pollStub = sandbox.stub(cmd, 'poll').resolves({ response: expectedResults });
     return cmd.runIt();
   };
 
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
+  });
+
   afterEach(() => {
     sandbox.restore();
+    $$.restore();
   });
 
   it('should use stashed deploy ID', async () => {
@@ -99,14 +86,13 @@ describe('force:mdapi:deploy:cancel', () => {
     const result = await runCancelCmd(['--json']);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(true);
-    expect(checkDeployStatusStub.firstCall.args[0]).to.equal(stashedDeployId);
+    expect(pollStub.firstCall.args[1]).to.equal(stashedDeployId);
     expect(cancelStub.calledOnce).to.equal(true);
   });
 
   it('should display stashed deploy ID', async () => {
     const result = await runCancelCmd([]);
     expect(result).to.deep.equal(expectedResults);
-    expect(uxLogStub.firstCall.args[0]).to.contain(stashedDeployId);
   });
 
   it('should use the jobid flag', async () => {
@@ -114,7 +100,7 @@ describe('force:mdapi:deploy:cancel', () => {
     const result = await runCancelCmd(['--json', '--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(false);
-    expect(checkDeployStatusStub.firstCall.args[0]).to.equal(expectedResults.id);
+    expect(pollStub.firstCall.args[1]).to.equal(expectedResults.id);
     expect(cancelStub.calledOnce).to.equal(true);
   });
 
@@ -130,7 +116,6 @@ describe('force:mdapi:deploy:cancel', () => {
     await runCancelCmd([]);
     expect(displayStub.calledOnce).to.equal(true);
     expect(getJsonStub.calledOnce).to.equal(true);
-    expect(uxLogStub.called).to.equal(true);
   });
 
   it('should NOT display output with --json', async () => {

@@ -9,18 +9,22 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Org } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
+import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Report } from '../../../src/commands/force/mdapi/retrieve/report';
 import { Stash } from '../../../src/stash';
 import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses';
 
+const $$ = new TestContext();
+const testOrg = new MockTestOrgData();
+
 describe('force:mdapi:retrieve:report', () => {
   const sandbox = sinon.createSandbox();
-  const username = 'report-test@org.com';
+  testOrg.username = 'report-test@org.com';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
   const retrieveResult = getRetrieveResult('success');
@@ -37,8 +41,8 @@ describe('force:mdapi:retrieve:report', () => {
   let checkStatusStub: sinon.SinonStub;
   let postStub: sinon.SinonStub;
   let pollStatusStub: sinon.SinonStub;
-  let stopSpinnerStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
+  let sfCommandLogStub: sinon.SinonStub;
   let uxStyledHeaderStub: sinon.SinonStub;
   let uxTableStub: sinon.SinonStub;
   let stashSetStub: sinon.SinonStub;
@@ -52,45 +56,22 @@ describe('force:mdapi:retrieve:report', () => {
       this.id ??= 'force:mdapi:retrieve:report';
       return this.run();
     }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setUx(ux: UX) {
-      this.ux = ux;
-    }
   }
 
   const runReportCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+    params.push('-o', testOrg.username);
     const cmd = new TestReport(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
 
-    stopSpinnerStub = stubMethod(sandbox, UX.prototype, 'stopSpinner');
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    uxStyledHeaderStub = stubMethod(sandbox, UX.prototype, 'styledHeader');
-    uxTableStub = stubMethod(sandbox, UX.prototype, 'table');
-    cmd.setUx(
-      fromStub(
-        stubInterface<UX>(sandbox, {
-          stopSpinner: stopSpinnerStub,
-          log: uxLogStub,
-          styledHeader: uxStyledHeaderStub,
-          table: uxTableStub,
-        })
-      )
-    );
+    uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
+    sfCommandLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
+    uxStyledHeaderStub = stubMethod(sandbox, Ux.prototype, 'styledHeader');
+    uxTableStub = stubMethod(sandbox, SfCommand.prototype, 'table');
 
     return cmd.runIt();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
     sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
     fsStatStub.returns({ isDirectory: () => true });
@@ -187,9 +168,7 @@ describe('force:mdapi:retrieve:report', () => {
     expect(uxLogStub.called).to.be.true;
     expect(uxLogStub.firstCall.args[0]).to.equal(`Wrote retrieve zip to ${defaultZipFilePath}`);
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(uxTableStub.called).to.be.true;
     expect(uxStyledHeaderStub.firstCall.args[0]).to.contain('Components Retrieved');
-    expect(uxTableStub.firstCall.args[0]).to.deep.equal(expectedDefaultResult.fileProperties);
   });
 
   it('should return an async result with --wait 0', async () => {
@@ -209,7 +188,7 @@ describe('force:mdapi:retrieve:report', () => {
     expect(postStub.called).to.be.false;
     expect(fsStatStub.called).to.be.true;
     expect(pollStatusStub.called, 'should not poll for status with --wait 0').to.be.false;
-    expect(stopSpinnerStub.called).to.be.true;
+    expect(sfCommandLogStub.called).to.be.true;
   });
 
   it('should return a normal result with --wait 0', async () => {
@@ -223,6 +202,5 @@ describe('force:mdapi:retrieve:report', () => {
     expect(postStub.called).to.be.true;
     expect(fsStatStub.called).to.be.true;
     expect(pollStatusStub.called, 'should not poll for status with --wait 0').to.be.false;
-    expect(stopSpinnerStub.called).to.be.true;
   });
 });

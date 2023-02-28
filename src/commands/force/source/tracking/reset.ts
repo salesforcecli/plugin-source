@@ -36,6 +36,7 @@ export class Reset extends SfCommand<SourceTrackingResetResult> {
     'target-org': requiredOrgFlagWithDeprecations,
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
+    // eslint-disable-next-line sf-plugin/flag-min-max-default
     revision: Flags.integer({
       char: 'r',
       summary: messages.getMessage('revisionDescription'),
