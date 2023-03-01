@@ -26,7 +26,7 @@ import { getDeployResult, getDeployResponse } from './deployResponses';
 describe('force:source:report', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
-  const sandbox = sinon.createSandbox();
+  const sandbox = $$.SANDBOX;
   testOrg.username = 'report-test@org.com';
   const defaultDir = join('my', 'default', 'package');
   const stashedDeployId = 'IMA000STASHID';

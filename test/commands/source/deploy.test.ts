@@ -30,7 +30,7 @@ Messages.importMessagesDirectory(__dirname);
 describe('force:source:deploy', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
-  const sandbox = sinon.createSandbox();
+  const sandbox = $$.SANDBOX;
   testOrg.username = 'deploy-test@org.com';
   const packageXml = 'package.xml';
   const defaultDir = join('my', 'default', 'package');

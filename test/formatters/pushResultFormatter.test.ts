@@ -9,6 +9,7 @@ import * as sinon from 'sinon';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { PushResultFormatter, mergeReplacements } from '../../src/formatters/source/pushResultFormatter';
 
@@ -19,7 +20,7 @@ describe('PushResultFormatter', () => {
   ] as DeployResult[];
   const deployResultFailure = [getDeployResult('failed')];
 
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   let uxMock;
   let tableStub: sinon.SinonStub;

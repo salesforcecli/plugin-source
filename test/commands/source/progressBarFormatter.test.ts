@@ -8,13 +8,13 @@ import { EventEmitter } from 'events';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
-import * as sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
 import { ProgressBar } from '../../../src/types';
 
 describe('Progress Bar Events', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
   const username = 'me@my.org';
   const deploy = new MetadataApiDeploy({ usernameOrConnection: username, id: '123' });
   const progressBarFormatter = new DeployProgressBarFormatter(Ux.prototype);

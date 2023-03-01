@@ -24,7 +24,7 @@ import { getRetrieveResult } from '../source/retrieveResponses';
 describe('force:mdapi:retrieve', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
-  const sandbox = sinon.createSandbox();
+  const sandbox = $$.SANDBOX;
   testOrg.username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';
   const retrievetargetdir = path.resolve('retrieve-target-dir');

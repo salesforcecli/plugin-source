@@ -12,11 +12,12 @@ import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { cloneJson, ensureArray } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { getRetrieveResult } from '../commands/source/retrieveResponses';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../src/formatters/retrieveResultFormatter';
 
 describe('RetrieveResultFormatter', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   const retrieveResultSuccess = getRetrieveResult('success');
   const retrieveResultFailure = getRetrieveResult('failed');

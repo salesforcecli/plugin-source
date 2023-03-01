@@ -22,7 +22,7 @@ import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveRespon
 describe('force:mdapi:retrieve:report', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
-  const sandbox = sinon.createSandbox();
+  const sandbox = $$.SANDBOX;
   testOrg.username = 'report-test@org.com';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));

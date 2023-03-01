@@ -11,11 +11,12 @@ import { expect } from 'chai';
 import { DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter';
 
 describe('DeployResultFormatter', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   const deployResultSuccess = getDeployResult('successSync');
   const deployResultFailure = getDeployResult('failed');

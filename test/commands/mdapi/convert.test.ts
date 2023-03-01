@@ -14,6 +14,7 @@ import { Config } from '@oclif/core';
 import { SfProject } from '@salesforce/core';
 import { ComponentSetBuilder, MetadataConverter } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { Convert } from '../../../src/commands/force/mdapi/convert';
 import { FsError } from '../../../src/types';
 
@@ -54,7 +55,7 @@ const expectedConvertResult = [
 const commandName = 'mdapi:convert';
 
 describe(`force:${commandName}`, () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
 

@@ -8,11 +8,12 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { MdDeployResultFormatter } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
 describe('mdDeployResultFormatter', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   const deployResultSuccess = getDeployResult('successSync');
   const deployResultFailure = getDeployResult('failed');

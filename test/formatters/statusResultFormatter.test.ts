@@ -8,6 +8,7 @@ import { stubInterface } from '@salesforce/ts-sinon';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { StatusFormatter, StatusResult } from '../../src/formatters/source/statusFormatter';
 
 const fakeResult: StatusResult[] = [
@@ -38,7 +39,7 @@ const fakeResult: StatusResult[] = [
 ];
 
 describe('status results', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
   let ux;
   let logStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;

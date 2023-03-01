@@ -18,7 +18,7 @@ import { Convert } from '../../../src/commands/force/source/convert';
 describe('force:source:convert', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
-  const sandbox = sinon.createSandbox();
+  const sandbox = $$.SANDBOX;
 
   let buildComponentSetStub: sinon.SinonStub;
 
