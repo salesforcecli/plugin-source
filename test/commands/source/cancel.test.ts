@@ -56,7 +56,6 @@ describe('force:source:deploy:cancel', () => {
   }
 
   const runCancelCmd = async (params: string[]) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestCancel(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
@@ -72,6 +71,7 @@ describe('force:source:deploy:cancel', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
   });
 
   afterEach(() => {

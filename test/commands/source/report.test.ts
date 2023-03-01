@@ -58,7 +58,6 @@ describe('force:source:report', () => {
   }
 
   const runReportCmd = async (params: string[], result?: MetadataApiDeployStatus) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestReport(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     sandbox
@@ -76,6 +75,8 @@ describe('force:source:report', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
+
     pollStatusStub = sandbox.stub(MetadataApiDeploy.prototype, 'pollStatus');
   });
 

@@ -81,7 +81,6 @@ describe('force:source:deploy', () => {
   }
 
   const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
@@ -100,6 +99,8 @@ describe('force:source:deploy', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
+
     resolveProjectConfigStub = sandbox.stub();
     pollStub = sandbox.stub().resolves(deployResult);
     deployStub = sandbox.stub().resolves({

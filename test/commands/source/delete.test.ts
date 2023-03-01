@@ -54,7 +54,6 @@ describe('force:source:delete', () => {
   }
 
   const runDeleteCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestDelete(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultPackagePath });
@@ -80,6 +79,8 @@ describe('force:source:delete', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
+
     resolveProjectConfigStub = sandbox.stub();
     buildComponentSetStub = stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       toArray: () => [new SourceComponent(exampleSourceComponent)],

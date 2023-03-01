@@ -57,7 +57,6 @@ describe('force:mdapi:retrieve', () => {
   }
 
   const runRetrieveCmd = async (params: string[]) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestRetrieve(params, oclifConfigStub);
 
     uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
@@ -70,6 +69,7 @@ describe('force:mdapi:retrieve', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
     sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
     fsStatStub.withArgs(retrievetargetdir).returns({ isDirectory: () => true });

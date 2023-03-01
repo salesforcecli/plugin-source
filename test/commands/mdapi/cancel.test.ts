@@ -55,7 +55,6 @@ describe('force:mdapi:deploy:cancel', () => {
   }
 
   const runCancelCmd = async (params: string[]) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestCancel(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     $$.SANDBOX.stub(cmd.project, 'getUniquePackageDirectories').returns([

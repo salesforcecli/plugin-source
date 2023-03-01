@@ -63,7 +63,6 @@ describe('force:source:retrieve', () => {
   }
 
   const runRetrieveCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
-    params.push('-o', testOrg.username);
     const cmd = new TestRetrieve(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultPackagePath });
@@ -83,6 +82,8 @@ describe('force:source:retrieve', () => {
 
   beforeEach(async () => {
     await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
+
     pollStub = sandbox.stub().resolves(retrieveResult);
     retrieveStub = sandbox.stub().resolves({
       pollStatus: pollStub,
