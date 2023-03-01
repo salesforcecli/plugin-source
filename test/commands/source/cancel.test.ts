@@ -20,10 +20,9 @@ import { DeployCommandResult } from '../../../src/formatters/deployResultFormatt
 import { Stash } from '../../../src/stash';
 import { getDeployResult } from './deployResponses';
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:source:deploy:cancel', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'cancel-test@org.com';
   const defaultDir = join('my', 'default', 'package');

@@ -21,10 +21,9 @@ import { Retrieve } from '../../../src/commands/force/mdapi/retrieve';
 import { Stash, StashData } from '../../../src/stash';
 import { getRetrieveResult } from '../source/retrieveResponses';
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:mdapi:retrieve', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';

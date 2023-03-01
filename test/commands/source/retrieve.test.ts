@@ -30,10 +30,9 @@ import { exampleSourceComponent } from './testConsts';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:source:retrieve', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';

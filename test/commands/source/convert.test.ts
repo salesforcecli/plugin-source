@@ -15,10 +15,9 @@ import { SfProject } from '@salesforce/core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Convert } from '../../../src/commands/force/source/convert';
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:source:convert', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
 
   let buildComponentSetStub: sinon.SinonStub;

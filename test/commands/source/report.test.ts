@@ -23,10 +23,9 @@ import { DeployProgressStatusFormatter } from '../../../src/formatters/deployPro
 import { Stash } from '../../../src/stash';
 import { getDeployResult, getDeployResponse } from './deployResponses';
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:source:report', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'report-test@org.com';
   const defaultDir = join('my', 'default', 'package');

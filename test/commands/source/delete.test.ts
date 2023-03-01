@@ -25,10 +25,9 @@ import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
 
 const fsPromises = fs.promises;
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:source:delete', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'delete-test@org.com';
   const defaultPackagePath = 'defaultPackagePath';

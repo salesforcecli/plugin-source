@@ -27,10 +27,9 @@ import { exampleSourceComponent } from './testConsts';
 
 Messages.importMessagesDirectory(__dirname);
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:source:deploy', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'deploy-test@org.com';
   const packageXml = 'package.xml';

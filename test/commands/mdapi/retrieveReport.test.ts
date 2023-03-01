@@ -19,10 +19,9 @@ import { Report } from '../../../src/commands/force/mdapi/retrieve/report';
 import { Stash } from '../../../src/stash';
 import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses';
 
-const $$ = new TestContext();
-const testOrg = new MockTestOrgData();
-
 describe('force:mdapi:retrieve:report', () => {
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
   const sandbox = sinon.createSandbox();
   testOrg.username = 'report-test@org.com';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
