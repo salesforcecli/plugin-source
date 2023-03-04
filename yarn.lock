@@ -715,10 +715,10 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^2.0.7", "@oclif/core@^2.0.8", "@oclif/core@^2.1.1", "@oclif/core@^2.3.0", "@oclif/core@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.3.1.tgz#82d977338c68b3faeda84f780c2f97a3dd322cb2"
-  integrity sha512-18CkjjF16hwhBd/42z+0CHAwvZlBfpyCmdZxpasN/od8c/hdm0oDEJvVB33/xD0LDYg8glKoQ5zVNVvPM/uJ/Q==
+"@oclif/core@^2.0.7", "@oclif/core@^2.0.8", "@oclif/core@^2.1.1", "@oclif/core@^2.3.0", "@oclif/core@^2.3.1", "@oclif/core@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.4.0.tgz#8e5983dd0d50a3c0c170a844fe8925cb639f0a9f"
+  integrity sha512-wWUnOOfQQty0k1Cstm/iWW6pbG0mHzU7rcUtab2Sni9kjBPCcy6ENTgpsWbb/WdITopqtXmvpYII2fgcjKdzUA==
   dependencies:
     "@types/cli-progress" "^3.11.0"
     ansi-escapes "^4.3.2"
@@ -965,10 +965,10 @@
     "@salesforce/ts-types" "^1.7.1"
     chalk "^2.4.2"
 
-"@salesforce/core@^3.23.9", "@salesforce/core@^3.24.0", "@salesforce/core@^3.25.1", "@salesforce/core@^3.32.11", "@salesforce/core@^3.32.12", "@salesforce/core@^3.33.0", "@salesforce/core@^3.33.1", "@salesforce/core@^3.33.5":
-  version "3.33.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.33.5.tgz#7b3ee60860abc5cb7098b9388d01f7ed47d58c0a"
-  integrity sha512-4Gb6LzjbhyvdykdclSUTxIlAVqIQZ5dsRhR7XifndvbviAX4s11f3TweOVZl1WEthTBKPF3i34K3QP/MPwbxrQ==
+"@salesforce/core@^3.23.9", "@salesforce/core@^3.24.0", "@salesforce/core@^3.25.1", "@salesforce/core@^3.32.11", "@salesforce/core@^3.32.12", "@salesforce/core@^3.33.0", "@salesforce/core@^3.33.1", "@salesforce/core@^3.33.6":
+  version "3.33.6"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.33.6.tgz#48a3e8c708f4a0ed153e5e2d43c343fd5bf2c923"
+  integrity sha512-HxA0OIt6NSMdZwu2X7wIru8OJN8x8XxNiazXpLNW5MUi9rBupBAWYNROjDMPilxBgnoiBcJ5I84xdl+jWD3vqA==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.9.0"
@@ -993,10 +993,10 @@
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-3.1.0.tgz#8eb5b35860ff60d1c1dc3fd9329b01a28475d5b9"
   integrity sha512-cPph7ibj3DeSzWDFLcLtxOh5fmUlDUY2Ezq43n0V6auVP+l8orxRHjCExHS86SB3QKVgXkC8yYhryXiS8KF7Zw==
 
-"@salesforce/dev-scripts@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-4.1.1.tgz#f88deda82c78ccb059f04a6532edd9a5399cc25e"
-  integrity sha512-+TP0j5dhjWlYJnDvR0QhTNq7igEniXlLGoqudZI79JQAnXZ5h/m/pPEi8wzG/gSx+NNRNGixuYEXHCYbWU2rYA==
+"@salesforce/dev-scripts@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-4.1.2.tgz#d9d4b403ac06934c069ca16d849ff7c2e12ee773"
+  integrity sha512-mxpwOb818k4H04DM/GV0/ZTzK5EDovcnROI+0CnR71Fqc4gwrWBmK+jlcRtICGypC48W+myOXKXet0oySQphyA==
   dependencies:
     "@commitlint/cli" "^17.1.2"
     "@commitlint/config-conventional" "^17.1.0"
@@ -1144,10 +1144,10 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.10.1", "@salesforce/source-deploy-retrieve@^7.9.1":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.10.1.tgz#9e35a444c56237d10021cd4f4f53f5ddb5503c65"
-  integrity sha512-stptCD5sUUNvlIvjSQrpOBy5D8QtDUfdyYQZdPueHA4M3oOZAxKEHbdajyHZ/RE+xpYUfyXzQyNtVfSLp5wywA==
+"@salesforce/source-deploy-retrieve@^7.10.1", "@salesforce/source-deploy-retrieve@^7.11.0", "@salesforce/source-deploy-retrieve@^7.9.1":
+  version "7.11.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.11.0.tgz#f7c272b8c62e8fc7e41ffc2984a95835b25b5757"
+  integrity sha512-19wmIT3KfvoWfL12wdyZSFF+o9JfYx7Fe7o0EV6yg2szOXbaKAdH0dHUJEXhTPNIloOAcYwVjG8VLwJTsI+RxQ==
   dependencies:
     "@salesforce/core" "^3.33.1"
     "@salesforce/kit" "^1.8.5"
@@ -3507,9 +3507,9 @@ esprima@^4.0.0, esprima@^4.0.1, esprima@~4.0.0:
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
 
 esquery@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/esquery/-/esquery-1.4.0.tgz#2148ffc38b82e8c7057dfed48425b3e61f0f24a5"
-  integrity sha512-cCDispWt5vHHtwMY2YrAQ4ibFkAL8RbH5YGBnZBc90MolvvfkkQcJro/aZiAQUlQ3qgrYS6D6v8Gc5G5CQsc9w==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.5.0.tgz#6ce17738de8577694edd7361c57182ac8cb0db0b"
+  integrity sha512-YQLXUplAwJgCydQ78IMJywZCceoqk1oH01OERdSAJc/7U2AylwjhSCLDEtqwg811idIS/9fIU5GjG73IgjKMVg==
   dependencies:
     estraverse "^5.1.0"
 

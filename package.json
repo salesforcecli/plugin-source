@@ -6,12 +6,12 @@
   "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
-    "@oclif/core": "^2.3.1",
+    "@oclif/core": "^2.4.0",
     "@salesforce/apex-node": "^1.6.0",
     "@salesforce/command": "^5.3.0",
-    "@salesforce/core": "^3.33.5",
+    "@salesforce/core": "^3.33.6",
     "@salesforce/kit": "^1.9.0",
-    "@salesforce/source-deploy-retrieve": "^7.10.1",
+    "@salesforce/source-deploy-retrieve": "^7.11.0",
     "@salesforce/source-tracking": "^2.2.22",
     "chalk": "^4.1.2",
     "got": "^11.8.6",
@@ -26,7 +26,7 @@
     "@oclif/plugin-help": "^5.2.6",
     "@salesforce/cli-plugins-testkit": "^3.2.23",
     "@salesforce/dev-config": "^3.1.0",
-    "@salesforce/dev-scripts": "^4.1.1",
+    "@salesforce/dev-scripts": "^4.1.2",
     "@salesforce/plugin-command-reference": "^1.5.8",
     "@salesforce/plugin-config": "^2.3.2",
     "@salesforce/plugin-info": "^2.4.2",
@@ -249,6 +249,9 @@
     },
     "test:only": {
       "command": "nyc mocha \"test/**/*.test.ts\"",
+      "env": {
+        "FORCE_COLOR": "2"
+      },
       "files": [
         "test/**/*.ts",
         "src/**/*.ts",
