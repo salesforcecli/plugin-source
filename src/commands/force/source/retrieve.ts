@@ -46,6 +46,11 @@ export class Retrieve extends SourceCommand {
   public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project retrieve start',
+    message: `The 'force:source:retrieve' command will be deprecated, try the 'project retrieve start' command instead`,
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

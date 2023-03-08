@@ -42,9 +42,11 @@ describe('force:source:deploy:cancel', () => {
 
   class TestCancel extends Cancel {
     public async runIt() {
-      await this.init();
       // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:source:deploy:cancel';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:source:deploy:cancel';
+      await this.init();
       return this.run();
     }
 

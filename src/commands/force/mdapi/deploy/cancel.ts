@@ -27,6 +27,11 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel')
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project deploy cancel',
+    message: `The 'force:mdapi:deploy:cancel' command will be deprecated, try the 'project deploy cancel' command instead`,
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

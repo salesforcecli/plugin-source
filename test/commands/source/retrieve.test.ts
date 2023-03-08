@@ -57,6 +57,10 @@ describe('force:source:retrieve', () => {
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:source:retrieve';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:source:retrieve';
       await this.init();
       return this.run();
     }
@@ -324,7 +328,7 @@ describe('force:source:retrieve', () => {
     });
     await runRetrieveCmd(['--metadata', metadata]);
     expect(warnStub.calledOnce);
-    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+    expect(warnStub.secondCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
   });
 
   it('should not warn users when retrieving CustomField,CustomObject with --metadata', async () => {
@@ -354,7 +358,7 @@ describe('force:source:retrieve', () => {
       },
     });
     await runRetrieveCmd(['--metadata', metadata]);
-    expect(warnStub.callCount).to.be.equal(0);
+    expect(warnStub.callCount).to.be.equal(1);
   });
 
   it('should warn users when retrieving CustomField with --manifest', async () => {
@@ -385,7 +389,7 @@ describe('force:source:retrieve', () => {
     });
     await runRetrieveCmd(['--manifest', manifest]);
     expect(warnStub.calledOnce);
-    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+    expect(warnStub.secondCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
   });
 
   it('should not be warn users when retrieving CustomField,CustomObject with --manifest', async () => {
@@ -415,6 +419,6 @@ describe('force:source:retrieve', () => {
       },
     });
     await runRetrieveCmd(['--manifest', manifest]);
-    expect(warnStub.callCount).to.be.equal(0);
+    expect(warnStub.callCount).to.be.equal(1);
   });
 });

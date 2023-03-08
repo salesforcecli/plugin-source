@@ -42,9 +42,11 @@ describe('force:mdapi:deploy:cancel', () => {
 
   class TestCancel extends Cancel {
     public async runIt() {
-      await this.init();
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:source:deploy:cancel';
       // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:mdapi:deploy:cancel';
+      await this.init();
       return this.run();
     }
     // eslint-disable-next-line class-methods-use-this

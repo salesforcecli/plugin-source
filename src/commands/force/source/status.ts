@@ -30,6 +30,11 @@ export default class Status extends SfCommand<StatusCommandResult> {
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project retrieve/deploy preview',
+    message: `The 'force:source:status' command will be deprecated, try the 'project retrieve/deploy preview' command instead`,
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

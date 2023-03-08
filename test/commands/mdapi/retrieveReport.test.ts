@@ -50,9 +50,11 @@ describe('force:mdapi:retrieve:report', () => {
 
   class TestReport extends Report {
     public async runIt() {
-      await this.init();
-      // set a Command.id for use with Stash
+      // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:mdapi:retrieve:report';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:mdapi:retrieve:report';
+      await this.init();
       return this.run();
     }
   }

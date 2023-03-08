@@ -24,7 +24,11 @@ export class SourceIgnoredCommand extends SfCommand<SourceIgnoredResults> {
   public static readonly description = messages.getMessage('description');
   public static readonly requiresProject = true;
   public static readonly examples = [];
-
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project deploy preview --only-ignored',
+    message: `The 'force:source:ignored:list' command will be deprecated, try the 'project deploy preview --only-ignored' command instead`,
+  };
   public static readonly flags = {
     sourcepath: Flags.file({
       char: 'p',

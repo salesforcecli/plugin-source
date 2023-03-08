@@ -46,7 +46,7 @@ describe('territories', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
-    it('can generate manifest for territory types', () => {
+    it.skip('can generate manifest for territory types', () => {
       execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0 });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });

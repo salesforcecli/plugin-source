@@ -155,23 +155,6 @@
     "alias": []
   },
   {
-    "command": "force:source:manifest:create",
-    "plugin": "@salesforce/plugin-source",
-    "flags": [
-      "api-version",
-      "fromorg",
-      "includepackages",
-      "json",
-      "loglevel",
-      "manifestname",
-      "manifesttype",
-      "metadata",
-      "outputdir",
-      "sourcepath"
-    ],
-    "alias": []
-  },
-  {
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "json", "loglevel", "target-org", "verbose", "wait"],

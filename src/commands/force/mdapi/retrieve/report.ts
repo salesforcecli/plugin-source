@@ -29,8 +29,10 @@ const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spin
 export type ReportCommandResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
 export class Report extends SourceCommand {
   public static aliases = ['force:mdapi:beta:retrieve:report'];
+  public static readonly deprecateAliases = true;
   public static readonly description = messages.getMessage('reportCmd.description');
   public static readonly examples = messages.getMessages('reportCmd.examples');
+  public static readonly state = 'deprecated';
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
