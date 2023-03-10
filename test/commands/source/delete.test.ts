@@ -14,6 +14,7 @@ import {
   ComponentSetBuilder,
   ComponentSetOptions,
   SourceComponent,
+  RegistryAccess,
 } from '@salesforce/source-deploy-retrieve';
 import { Lifecycle, Org, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
@@ -23,6 +24,7 @@ import { Delete } from '../../../src/commands/force/source/delete';
 import { exampleDeleteResponse, exampleSourceComponent } from './testConsts';
 
 const fsPromises = fs.promises;
+const registry = new RegistryAccess();
 
 describe('force:source:delete', () => {
   const sandbox = sinon.createSandbox();
@@ -186,13 +188,7 @@ describe('force:source:delete', () => {
     buildComponentSetStub.restore();
     const comp = new SourceComponent({
       name: 'mylwc',
-      type: {
-        id: 'lightningcomponentbundle',
-        name: 'LightningComponentBundle',
-        strategies: {
-          adapter: 'bundle',
-        },
-      },
+      type: registry.getTypeByName('LightningComponentBundle'),
     });
     stubMethod(sandbox, ComponentSetBuilder, 'build').resolves({
       toArray: () => [comp],
