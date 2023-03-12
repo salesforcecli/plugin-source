@@ -1,3 +1,12 @@
+## [2.6.2](https://github.com/salesforcecli/plugin-source/compare/2.6.1...2.6.2) (2023-03-12)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/source-tracking from 2.2.22 to 2.2.24 ([#764](https://github.com/salesforcecli/plugin-source/issues/764)) ([e493d9d](https://github.com/salesforcecli/plugin-source/commit/e493d9de576619fea9cd442639a707149425b69c))
+
+
+
 ## [2.6.1](https://github.com/salesforcecli/plugin-source/compare/2.6.0...2.6.1) (2023-03-12)
 
 
