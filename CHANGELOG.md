@@ -1,3 +1,12 @@
+## [2.6.1](https://github.com/salesforcecli/plugin-source/compare/2.6.0...2.6.1) (2023-03-12)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/source-deploy-retrieve from 7.11.0 to 7.11.3 ([#759](https://github.com/salesforcecli/plugin-source/issues/759)) ([14bdf84](https://github.com/salesforcecli/plugin-source/commit/14bdf845f36d8dd26de6b86916faad5cc29d1530))
+
+
+
 # [2.6.0](https://github.com/salesforcecli/plugin-source/compare/2.5.5...2.6.0) (2023-03-10)
 
 
