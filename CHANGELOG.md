@@ -1,3 +1,12 @@
+# [2.7.0](https://github.com/salesforcecli/plugin-source/compare/2.6.2...2.7.0) (2023-03-13)
+
+
+### Features
+
+* verbose deploys without progress bar update with each poll ([#757](https://github.com/salesforcecli/plugin-source/issues/757)) ([0826a83](https://github.com/salesforcecli/plugin-source/commit/0826a83546952917de91f4b9a5a650e151d62aca))
+
+
+
 ## [2.6.2](https://github.com/salesforcecli/plugin-source/compare/2.6.1...2.6.2) (2023-03-12)
 
 
