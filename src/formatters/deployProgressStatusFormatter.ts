@@ -11,18 +11,26 @@ import { getNumber } from '@salesforce/ts-types';
 import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { ProgressFormatter } from './progressFormatter';
+import { ResultFormatterOptions } from './resultFormatter';
 export class DeployProgressStatusFormatter extends ProgressFormatter {
   private previousComponents = -1;
   private previousTests = -1;
-  public constructor(logger: Logger, ux: UX) {
+  public constructor(logger: Logger, ux: UX, private options?: Pick<ResultFormatterOptions, 'verbose'>) {
     super(logger, ux);
   }
 
   // This can be used to print the progress of the deployment.
   public progress(deploy: MetadataApiDeploy): void {
     deploy.onUpdate((data) => {
-      // Printing status only when number of components or tests gets changed in progress.
-      if (data.numberComponentsDeployed > this.previousComponents || data.numberTestsCompleted > this.previousTests) {
+      // Print status when:
+      //   1. Number of deployed components increases
+      //   2. Number of tests completed increases
+      //   3. Command is running in verbose mode (for updates on each poll)
+      if (
+        data.numberComponentsDeployed > this.previousComponents ||
+        data.numberTestsCompleted > this.previousTests ||
+        this.options?.verbose
+      ) {
         this.printDeployStatus(data);
         this.previousComponents = data.numberComponentsDeployed;
         this.previousTests = data.numberTestsCompleted;
