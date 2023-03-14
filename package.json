@@ -6,11 +6,11 @@
   "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
-    "@oclif/core": "^2.3.0",
+    "@oclif/core": "^2.6.3",
     "@salesforce/apex-node": "^1.6.0",
     "@salesforce/core": "^3.33.2",
     "@salesforce/kit": "^1.9.0",
-    "@salesforce/sf-plugins-core": "^2.2.1",
+    "@salesforce/sf-plugins-core": "^2.2.4",
     "@salesforce/source-deploy-retrieve": "^7.10.1",
     "@salesforce/source-tracking": "^2.2.21",
     "chalk": "^4.1.2",
