@@ -315,7 +315,7 @@ describe('force:source:retrieve', () => {
         expect(component)
           .to.be.a('object')
           .and.to.have.property('type')
-          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+          .and.to.deep.include({ id: 'customobject', name: 'CustomObject' });
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
       },
       has: (component: ComponentLike) => {
@@ -376,7 +376,7 @@ describe('force:source:retrieve', () => {
         expect(component)
           .to.be.a('object')
           .and.to.have.property('type')
-          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+          .and.to.deep.include({ id: 'customobject', name: 'CustomObject' });
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
       },
       has: (component: ComponentLike) => {

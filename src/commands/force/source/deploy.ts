@@ -243,7 +243,7 @@ export class Deploy extends DeployCommand {
         if (!this.isJsonOutput()) {
           const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
             ? new DeployProgressBarFormatter(this.logger, this.ux)
-            : new DeployProgressStatusFormatter(this.logger, this.ux);
+            : new DeployProgressStatusFormatter(this.logger, this.ux, { verbose: this.getFlag<boolean>('verbose') });
           progressFormatter.progress(deploy);
         }
         this.deployResult = await deploy.pollStatus({ timeout: waitDuration });
