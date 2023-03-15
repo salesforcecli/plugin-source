@@ -11,7 +11,6 @@ import { exec } from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentSet, RequestStatus, SourceComponent } from '@salesforce/source-deploy-retrieve';
-import { DescribeMetadataResult } from 'jsforce/api/metadata';
 import { create as createArchive } from 'archiver';
 import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
 import { ConvertCommandResult } from '../../src/formatters/mdapi/convertResultFormatter';
@@ -119,45 +118,6 @@ describe('mdapi NUTs', () => {
   after(async () => {
     await session?.zip(undefined, 'artifacts');
     await session?.clean();
-  });
-
-  describe('mdapi:listmetadata', () => {
-    it('should successfully execute listmetadata for type CustomObject', () => {
-      const result = execCmd('force:mdapi:listmetadata --json --metadatatype CustomObject');
-      expect(result.jsonOutput.status).to.equal(0);
-      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(100);
-      expect(result.jsonOutput.result[0]).to.have.property('type', 'CustomObject');
-    });
-
-    it('should successfully execute listmetadata for type ListView', () => {
-      // ListView is sensitive to how the connection.metadata.list() call is made.
-      // e.g., if you pass { type: 'ListView', folder: undefined } it will not return
-      // any ListViews but if you pass { type: 'ListView' } it returns all ListViews.
-      const result = execCmd('force:mdapi:listmetadata --json --metadatatype ListView');
-      expect(result.jsonOutput.status).to.equal(0);
-      expect(result.jsonOutput.result).to.be.an('array').with.length.greaterThan(10);
-      expect(result.jsonOutput.result[0]).to.have.property('type', 'ListView');
-    });
-  });
-
-  describe('mdapi:describemetadata', () => {
-    it('should successfully execute describemetadata', () => {
-      const result = execCmd<DescribeMetadataResult>('force:mdapi:describemetadata --json');
-      expect(result.jsonOutput.status).to.equal(0);
-      const json = result.jsonOutput.result;
-      expect(json).to.have.property('metadataObjects');
-      const mdObjects = json.metadataObjects;
-      expect(mdObjects).to.be.an('array').with.length.greaterThan(100);
-      const customLabelsDef = mdObjects.find((md) => md.xmlName === 'CustomLabels');
-      expect(customLabelsDef).to.deep.equal({
-        childXmlNames: ['CustomLabel'],
-        directoryName: 'labels',
-        inFolder: false,
-        metaFile: false,
-        suffix: 'labels',
-        xmlName: 'CustomLabels',
-      });
-    });
   });
 
   describe('mdapi:convert', () => {
