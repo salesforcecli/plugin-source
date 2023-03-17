@@ -12,7 +12,7 @@ import { SourceTestkit } from '@salesforce/source-testkit';
 import { isNameObsolete } from './shared/isNameObsolete';
 import { cliForManifestCreate } from './shared/cliForManifestCreate';
 
-describe.skip('source:deploy --destructive NUTs', () => {
+describe('source:deploy --destructive NUTs', () => {
   let testkit: SourceTestkit;
 
   const createApexClass = (apexName = 'myApexClass') => {
