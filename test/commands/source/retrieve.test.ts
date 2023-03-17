@@ -17,10 +17,11 @@ import {
   MetadataType,
   RetrieveOptions,
 } from '@salesforce/source-deploy-retrieve';
-import { Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
+import { Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Retrieve } from '../../../src/commands/force/source/retrieve';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter';
 import { getRetrieveResult } from './retrieveResponses';
@@ -30,8 +31,10 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 describe('force:source:retrieve', () => {
-  const sandbox = sinon.createSandbox();
-  const username = 'retrieve-test@org.com';
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
+  const sandbox = $$.SANDBOX;
+  testOrg.username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';
   const defaultPackagePath = 'defaultPackagePath';
 
@@ -50,60 +53,41 @@ describe('force:source:retrieve', () => {
   let retrieveStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
-  let resolveProjectConfigStub: sinon.SinonStub;
   let warnStub: sinon.SinonStub;
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
+      // oclif would normally populate this, but UT don't have it
+      this.id ??= 'force:source:retrieve';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:source:retrieve';
       await this.init();
       return this.run();
     }
-
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-
-    public setProject(project: SfProject) {
-      this.project = project;
-    }
   }
 
-  const runRetrieveCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+  const runRetrieveCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestRetrieve(params, oclifConfigStub);
-    stubMethod(sandbox, SfProject, 'resolveProjectPath').resolves(join('path', 'to', 'package'));
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getDefaultPackage: () => ({ fullPath: defaultPackagePath }),
-          getUniquePackageDirectories: () => [{ fullPath: defaultPackagePath }],
-          getPackageDirectories: () => [{ fullPath: defaultPackagePath }],
-          resolveProjectConfig: resolveProjectConfigStub,
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
+    cmd.project = SfProject.getInstance();
+    sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultPackagePath });
+    sandbox
+      .stub(cmd.project, 'getUniquePackageDirectories')
+      .returns([{ fullPath: defaultPackagePath, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultPackagePath, path: '', name: '' }]);
+    sandbox.stub(cmd.project, 'resolveProjectConfig').resolves({ sourceApiVersion: options?.sourceApiVersion });
+
     // keep the stdout from showing up in the test output
-    stubMethod(sandbox, UX.prototype, 'log');
-    stubMethod(sandbox, UX.prototype, 'setSpinnerStatus');
-    stubMethod(sandbox, UX.prototype, 'startSpinner');
-    stubMethod(sandbox, UX.prototype, 'stopSpinner');
-    stubMethod(sandbox, UX.prototype, 'styledHeader');
-    stubMethod(sandbox, UX.prototype, 'table');
+    stubMethod(sandbox, Ux.prototype, 'log');
+    stubMethod(sandbox, Ux.prototype, 'styledHeader');
+    stubMethod(sandbox, Ux.prototype, 'table');
     stubMethod(sandbox, Retrieve.prototype, 'moveResultsForRetrieveTargetDir');
     return cmd.runIt();
   };
 
-  beforeEach(() => {
-    resolveProjectConfigStub = sandbox.stub();
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
+
     pollStub = sandbox.stub().resolves(retrieveResult);
     retrieveStub = sandbox.stub().resolves({
       pollStatus: pollStub,
@@ -116,10 +100,11 @@ describe('force:source:retrieve', () => {
       has: () => false,
     });
     lifecycleEmitStub = sandbox.stub(Lifecycle.prototype, 'emit');
-    warnStub = stubMethod(sandbox, UX.prototype, 'warn');
+    warnStub = stubMethod(sandbox, SfCommand.prototype, 'warn');
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 
@@ -142,7 +127,7 @@ describe('force:source:retrieve', () => {
   // Ensure ComponentSet.retrieve() args
   const ensureRetrieveArgs = (overrides?: Partial<RetrieveOptions>) => {
     const defaultRetrieveArgs = {
-      usernameOrConnection: username,
+      usernameOrConnection: testOrg.username,
       merge: true,
       output: defaultPackagePath,
       packageOptions: undefined,
@@ -233,9 +218,8 @@ describe('force:source:retrieve', () => {
 
   it('should pass along sourceapiversion', async () => {
     const sourceApiVersion = '50.0';
-    resolveProjectConfigStub.resolves({ sourceApiVersion });
     const manifest = 'package.xml';
-    const result = await runRetrieveCmd(['--manifest', manifest, '--json']);
+    const result = await runRetrieveCmd(['--manifest', manifest, '--json'], { sourceApiVersion });
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       sourceapiversion: sourceApiVersion,
@@ -252,7 +236,10 @@ describe('force:source:retrieve', () => {
     const manifest = 'package.xml';
     const packagenames = ['package1'];
     const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames[0], '--json']);
-    expectedResults.packages.push({ name: packagenames[0], path: join('path', 'to', 'package', packagenames[0]) });
+    expectedResults.packages.push({
+      name: packagenames[0],
+      path: join(await SfProject.resolveProjectPath(), packagenames[0]),
+    });
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       packagenames,
@@ -270,10 +257,19 @@ describe('force:source:retrieve', () => {
   it('should pass along multiple packagenames', async () => {
     const manifest = 'package.xml';
     const packagenames = ['package1', 'package2'];
-    const result = await runRetrieveCmd(['--manifest', manifest, '--packagenames', packagenames.join(','), '--json']);
-    packagenames.forEach((pkg) => {
-      expectedResults.packages.push({ name: pkg, path: join('path', 'to', 'package', pkg) });
-    });
+    const result = await runRetrieveCmd([
+      '--manifest',
+      manifest,
+      '--packagenames',
+      'package1',
+      '--packagenames',
+      'package2',
+      '--json',
+    ]);
+    for (const pkg of packagenames) {
+      // eslint-disable-next-line no-await-in-loop
+      expectedResults.packages.push({ name: pkg, path: join(await SfProject.resolveProjectPath(), pkg) });
+    }
     expect(result).to.deep.equal(expectedResults);
     ensureCreateComponentSetArgs({
       packagenames,
@@ -315,7 +311,7 @@ describe('force:source:retrieve', () => {
         expect(component)
           .to.be.a('object')
           .and.to.have.property('type')
-          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+          .and.to.deep.include({ id: 'customobject', name: 'CustomObject' });
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
       },
       has: (component: ComponentLike) => {
@@ -332,7 +328,7 @@ describe('force:source:retrieve', () => {
     });
     await runRetrieveCmd(['--metadata', metadata]);
     expect(warnStub.calledOnce);
-    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+    expect(warnStub.secondCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
   });
 
   it('should not warn users when retrieving CustomField,CustomObject with --metadata', async () => {
@@ -362,7 +358,7 @@ describe('force:source:retrieve', () => {
       },
     });
     await runRetrieveCmd(['--metadata', metadata]);
-    expect(warnStub.callCount).to.be.equal(0);
+    expect(warnStub.callCount).to.be.equal(1);
   });
 
   it('should warn users when retrieving CustomField with --manifest', async () => {
@@ -376,7 +372,7 @@ describe('force:source:retrieve', () => {
         expect(component)
           .to.be.a('object')
           .and.to.have.property('type')
-          .and.to.deep.equal({ id: 'customobject', name: 'CustomObject' });
+          .and.to.deep.include({ id: 'customobject', name: 'CustomObject' });
         expect(component).and.to.have.property('fullName').and.to.be.equal(ComponentSet.WILDCARD);
       },
       has: (component: ComponentLike) => {
@@ -393,7 +389,7 @@ describe('force:source:retrieve', () => {
     });
     await runRetrieveCmd(['--manifest', manifest]);
     expect(warnStub.calledOnce);
-    expect(warnStub.firstCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
+    expect(warnStub.secondCall.firstArg).to.equal(messages.getMessage('wantsToRetrieveCustomFields'));
   });
 
   it('should not be warn users when retrieving CustomField,CustomObject with --manifest', async () => {
@@ -423,6 +419,6 @@ describe('force:source:retrieve', () => {
       },
     });
     await runRetrieveCmd(['--manifest', manifest]);
-    expect(warnStub.callCount).to.be.equal(0);
+    expect(warnStub.callCount).to.be.equal(1);
   });
 });

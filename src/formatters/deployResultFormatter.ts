@@ -16,6 +16,7 @@ import {
   DeployResult,
   Failures,
   FileResponse,
+  FileResponseFailure,
   MetadataApiDeployStatus,
   RequestStatus,
   Successes,
@@ -153,7 +154,12 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
       this.ux.table(
-        successes.map((success) => ({ fullName: success.fullName, type: success.type, filePath: success.filePath })),
+        successes.map((success) => ({
+          state: success.state,
+          fullName: success.fullName,
+          type: success.type,
+          filePath: success.filePath,
+        })),
         {
           fullName: { header: 'FULL NAME' },
           type: { header: 'TYPE' },
@@ -216,10 +222,15 @@ export class DeployResultFormatter extends ResultFormatter {
         this.ux.log('');
         this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
         this.ux.table(
-          failures.map((entry: FileResponse & DeployMessage) => ({
+          failures.map((entry: FileResponseFailure) => ({
             fullName: entry.fullName,
             problemType: entry.problemType,
             filePath: entry.filePath,
+            columnNumber: entry.columnNumber,
+            error: entry.error,
+            lineNumber: entry.lineNumber,
+            state: entry.state,
+            type: entry.type,
           })),
           {
             problemType: { header: 'Type' },

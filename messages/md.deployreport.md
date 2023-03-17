@@ -59,3 +59,7 @@ The number of minutes to wait for the command to complete. The default is –1 (
 # usernameOutput
 
 Using specified username %s
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

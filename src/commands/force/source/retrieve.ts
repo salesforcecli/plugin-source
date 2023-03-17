@@ -16,6 +16,7 @@ import {
   RequestStatus,
   RetrieveVersionData,
   RetrieveResult,
+  RegistryAccess,
 } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { Interfaces } from '@oclif/core';
@@ -41,11 +42,18 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
+const replacement = 'project retrieve start';
+
 export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
@@ -109,6 +117,7 @@ export class Retrieve extends SourceCommand {
   protected tracking: SourceTracking;
   private resolvedTargetDir: string;
   private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  private registry = new RegistryAccess();
 
   public async run(): Promise<RetrieveCommandResult> {
     this.flags = (await this.parse(Retrieve)).flags;
@@ -175,7 +184,10 @@ export class Retrieve extends SourceCommand {
     if (this.flags.manifest || this.flags.metadata) {
       if (this.wantsToRetrieveCustomFields()) {
         this.warn(messages.getMessage('wantsToRetrieveCustomFields'));
-        this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
+        this.componentSet.add({
+          fullName: ComponentSet.WILDCARD,
+          type: this.registry.getTypeByName('CustomObject'),
+        });
       }
     }
     if (this.flags.tracksource) {
@@ -267,12 +279,12 @@ export class Retrieve extends SourceCommand {
 
   private wantsToRetrieveCustomFields(): boolean {
     const hasCustomField = this.componentSet.has({
-      type: { name: 'CustomField', id: 'customfield' },
+      type: this.registry.getTypeByName('CustomField'),
       fullName: ComponentSet.WILDCARD,
     });
 
     const hasCustomObject = this.componentSet.has({
-      type: { name: 'CustomObject', id: 'customobject' },
+      type: this.registry.getTypeByName('CustomObject'),
       fullName: ComponentSet.WILDCARD,
     });
     return hasCustomField && !hasCustomObject;

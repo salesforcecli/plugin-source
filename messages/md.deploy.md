@@ -195,3 +195,7 @@ The deployment has been canceled by %s.
 # asyncCoverageJunitWarning
 
 You requested an async deploy with code coverage or JUnit results. The reports will be available when the deploy completes.
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

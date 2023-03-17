@@ -103,11 +103,13 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
         fullName: retrieved.fullName,
         type: retrieved.type,
         filePath: retrieved.filePath,
+        state: retrieved.state,
       })),
       {
         fullName: { header: 'FULL NAME' },
         type: { header: 'TYPE' },
         filePath: { header: 'PROJECT PATH' },
+        state: { header: 'STATE' },
       }
     );
   }

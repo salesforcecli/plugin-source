@@ -24,9 +24,16 @@ import {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');
 
+const replacement = 'project deploy cancel';
+
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

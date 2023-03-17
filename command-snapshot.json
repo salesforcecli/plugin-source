@@ -6,12 +6,6 @@
     "alias": []
   },
   {
-    "command": "force:mdapi:convert",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "json", "loglevel", "manifest", "metadata", "metadatapath", "outputdir", "rootdir"],
-    "alias": ["force:mdapi:beta:convert"]
-  },
-  {
     "command": "force:mdapi:deploy",
     "plugin": "@salesforce/plugin-source",
     "flags": [
@@ -37,7 +31,7 @@
       "wait",
       "zipfile"
     ],
-    "alias": ["force:mdapi:beta:deploy"]
+    "alias": []
   },
   {
     "command": "force:mdapi:deploy:cancel",
@@ -61,7 +55,7 @@
       "verbose",
       "wait"
     ],
-    "alias": ["force:mdapi:beta:deploy:report"]
+    "alias": []
   },
   {
     "command": "force:mdapi:retrieve",
@@ -81,7 +75,7 @@
       "wait",
       "zipfilename"
     ],
-    "alias": ["force:mdapi:beta:retrieve"]
+    "alias": []
   },
   {
     "command": "force:mdapi:retrieve:report",
@@ -97,42 +91,6 @@
       "verbose",
       "wait",
       "zipfilename"
-    ],
-    "alias": ["force:mdapi:beta:retrieve:report"]
-  },
-  {
-    "command": "force:source:convert",
-    "plugin": "@salesforce/plugin-source",
-    "flags": [
-      "api-version",
-      "json",
-      "loglevel",
-      "manifest",
-      "metadata",
-      "outputdir",
-      "packagename",
-      "rootdir",
-      "sourcepath"
-    ],
-    "alias": []
-  },
-  {
-    "command": "force:source:delete",
-    "plugin": "@salesforce/plugin-source",
-    "flags": [
-      "api-version",
-      "checkonly",
-      "forceoverwrite",
-      "json",
-      "loglevel",
-      "metadata",
-      "noprompt",
-      "sourcepath",
-      "target-org",
-      "testlevel",
-      "tracksource",
-      "verbose",
-      "wait"
     ],
     "alias": []
   },
@@ -197,33 +155,16 @@
     "alias": []
   },
   {
-    "command": "force:source:manifest:create",
-    "plugin": "@salesforce/plugin-source",
-    "flags": [
-      "api-version",
-      "fromorg",
-      "includepackages",
-      "json",
-      "loglevel",
-      "manifestname",
-      "manifesttype",
-      "metadata",
-      "outputdir",
-      "sourcepath"
-    ],
-    "alias": []
-  },
-  {
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "json", "loglevel", "target-org", "verbose", "wait"],
-    "alias": ["force:source:beta:pull"]
+    "alias": []
   },
   {
     "command": "force:source:push",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "target-org", "wait"],
-    "alias": ["force:source:beta:push"]
+    "alias": []
   },
   {
     "command": "force:source:retrieve",
@@ -250,18 +191,6 @@
     "command": "force:source:status",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "concise", "json", "local", "loglevel", "remote", "target-org"],
-    "alias": ["force:source:beta:status"]
-  },
-  {
-    "command": "force:source:tracking:clear",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "json", "loglevel", "noprompt", "target-org"],
-    "alias": ["force:source:beta:tracking:clear"]
-  },
-  {
-    "command": "force:source:tracking:reset",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "json", "loglevel", "noprompt", "revision", "target-org"],
-    "alias": ["force:source:beta:tracking:reset"]
+    "alias": []
   }
 ]

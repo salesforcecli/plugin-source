@@ -5,24 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
-import { SfError } from '@salesforce/core';
-import { assert, expect } from 'chai';
-import { DeployCommand, getCoverageFormattersOptions } from '../../../src/deployCommand';
-
-describe('test static method for valid deploy IDs', () => {
-  it('valid deployId returns true', () => {
-    expect(DeployCommand.isValidDeployId('0Af000000012345')).to.be.true;
-  });
-
-  it('valid deployId throws', () => {
-    try {
-      DeployCommand.isValidDeployId('00D000000012345');
-      assert.fail('should have thrown');
-    } catch (e) {
-      expect((e as SfError).name).to.equal('invalidDeployId');
-    }
-  });
-});
+import { expect } from 'chai';
+import { getCoverageFormattersOptions } from '../../../src/deployCommand';
 
 describe('coverage functions', () => {
   describe('getCoverageFormattersOptions', () => {

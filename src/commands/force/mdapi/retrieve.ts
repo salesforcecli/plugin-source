@@ -35,8 +35,14 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 export type RetrieveCommandCombinedResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
+const replacement = 'project retrieve start';
+
 export class Retrieve extends SourceCommand {
-  public static aliases = ['force:mdapi:beta:retrieve'];
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly description = messages.getMessage('retrieveCmd.description');
   public static readonly examples = messages.getMessages('retrieveCmd.examples');
   public static readonly flags = {

@@ -8,32 +8,29 @@ jobs:
   yarn-lockfile-check:
     uses: salesforcecli/github-workflows/.github/workflows/lockFileCheck.yml@main
   # Since the Windows unit tests take much longer, we run the linux unit tests first and then run the windows unit tests in parallel with NUTs
-  #  linux-unit-tests:
-  #    needs: yarn-lockfile-check
-  #    uses: salesforcecli/github-workflows/.github/workflows/unitTestsLinux.yml@main
-  #  windows-unit-tests:
-  #    needs: linux-unit-tests
-  #    uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@main
+  linux-unit-tests:
+    needs: yarn-lockfile-check
+    uses: salesforcecli/github-workflows/.github/workflows/unitTestsLinux.yml@main
+  windows-unit-tests:
+    needs: linux-unit-tests
+    uses: salesforcecli/github-workflows/.github/workflows/unitTestsWindows.yml@main
   nuts:
-    #    needs: linux-unit-tests
+    needs: linux-unit-tests
     uses: salesforcecli/github-workflows/.github/workflows/nut.yml@main
     secrets: inherit
     strategy:
       matrix:
-        os: [ubuntu-20-8core, windows-2022-16core]
+        os: [ubuntu-latest, windows-latest]
         command:
-          - 'yarn test:nuts:convert'
           - 'yarn test:nuts:commands:other'
-          - 'yarn test:nuts:delete'
           - 'yarn test:nuts:deploy'
           - 'yarn test:nuts:deploy:async'
+          - 'yarn test:nuts:deploy:destructive'
           - 'yarn test:nuts:deploy:rest'
-          - 'yarn test:nuts:manifest:create'
+          - 'yarn test:nuts:mdapi'
           - 'yarn test:nuts:retrieve'
           - 'yarn test:nuts:specialTypes'
-          - 'yarn test:nuts:deploy:destructive'
           - 'yarn test:nuts:tracking'
-          - 'yarn test:nuts:mdapi'
       fail-fast: false
     with:
       os: ${{ matrix.os }}

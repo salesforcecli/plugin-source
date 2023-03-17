@@ -24,12 +24,16 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 export type StatusCommandResult = StatusResult[];
 
+const replacement = 'project retrieve/deploy preview';
 export default class Status extends SfCommand<StatusCommandResult> {
-  public static readonly deprecateAliases = true;
-  public static aliases = ['force:source:beta:status'];
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

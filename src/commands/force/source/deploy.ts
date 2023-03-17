@@ -39,9 +39,15 @@ const xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequesti
 
 export type DeployCommandCombinedResult = DeployCommandResult | DeployCommandAsyncResult;
 
+const replacement = 'project deploy start';
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly requiresProject = true;
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,

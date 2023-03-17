@@ -31,10 +31,16 @@ import { ResultFormatterOptions } from '../../../../formatters/resultFormatter';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
 
+const replacement = 'project deploy report';
+
 export class Report extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
-  public static readonly requiresUsername = true;
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
