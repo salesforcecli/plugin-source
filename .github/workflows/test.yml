@@ -20,7 +20,7 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        os: [ubuntu-20-8core, windows-2022-16core]
+        os: [ubuntu-latest, windows-latest]
         command:
           - 'yarn test:nuts:convert'
           - 'yarn test:nuts:commands:other'

@@ -16,6 +16,7 @@ import {
   RequestStatus,
   RetrieveVersionData,
   RetrieveResult,
+  RegistryAccess,
 } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { Interfaces } from '@oclif/core';
@@ -114,6 +115,7 @@ export class Retrieve extends SourceCommand {
   protected tracking: SourceTracking;
   private resolvedTargetDir: string;
   private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  private registry = new RegistryAccess();
 
   public async run(): Promise<RetrieveCommandResult> {
     this.flags = (await this.parse(Retrieve)).flags;
@@ -180,7 +182,10 @@ export class Retrieve extends SourceCommand {
     if (this.flags.manifest || this.flags.metadata) {
       if (this.wantsToRetrieveCustomFields()) {
         this.warn(messages.getMessage('wantsToRetrieveCustomFields'));
-        this.componentSet.add({ fullName: ComponentSet.WILDCARD, type: { id: 'customobject', name: 'CustomObject' } });
+        this.componentSet.add({
+          fullName: ComponentSet.WILDCARD,
+          type: this.registry.getTypeByName('CustomObject'),
+        });
       }
     }
     if (this.flags.tracksource) {
@@ -272,12 +277,12 @@ export class Retrieve extends SourceCommand {
 
   private wantsToRetrieveCustomFields(): boolean {
     const hasCustomField = this.componentSet.has({
-      type: { name: 'CustomField', id: 'customfield' },
+      type: this.registry.getTypeByName('CustomField'),
       fullName: ComponentSet.WILDCARD,
     });
 
     const hasCustomObject = this.componentSet.has({
-      type: { name: 'CustomObject', id: 'customobject' },
+      type: this.registry.getTypeByName('CustomObject'),
       fullName: ComponentSet.WILDCARD,
     });
     return hasCustomField && !hasCustomObject;
