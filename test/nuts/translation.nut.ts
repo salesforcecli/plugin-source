@@ -12,6 +12,7 @@ import { PushResponse } from 'src/formatters/source/pushResultFormatter';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 import { StatusResult } from '../../src/formatters/source/statusFormatter';
+import { cliForManifestCreate } from './shared/cliForManifestCreate';
 
 describe('translations', () => {
   let session: TestSession;
@@ -79,8 +80,8 @@ describe('translations', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
-    it.skip('can generate manifest for translation types', async () => {
-      execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0 });
+    it('can generate manifest for translation types', async () => {
+      execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0, cli: cliForManifestCreate });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
 

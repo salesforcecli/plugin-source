@@ -10,6 +10,7 @@ import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
+import { cliForManifestCreate } from './shared/cliForManifestCreate';
 
 describe('territories', () => {
   let session: TestSession;
@@ -46,8 +47,8 @@ describe('territories', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
-    it.skip('can generate manifest for territory types', () => {
-      execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0 });
+    it('can generate manifest for territory types', () => {
+      execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0, cli: cliForManifestCreate });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
 

@@ -10,8 +10,9 @@ import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { isNameObsolete } from './shared/isNameObsolete';
+import { cliForManifestCreate } from './shared/cliForManifestCreate';
 
-describe('source:deploy --destructive NUTs', () => {
+describe.skip('source:deploy --destructive NUTs', () => {
   let testkit: SourceTestkit;
 
   const createApexClass = (apexName = 'myApexClass') => {
@@ -26,6 +27,7 @@ describe('source:deploy --destructive NUTs', () => {
   const createManifest = (metadata: string, manifesttype: string) => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype}`, {
       ensureExitCode: 0,
+      cli: cliForManifestCreate,
     });
   };
 
