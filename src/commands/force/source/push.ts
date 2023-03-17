@@ -30,12 +30,14 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
+const replacement = 'project deploy start';
+
 export default class Push extends DeployCommand {
   public static aliases = ['force:source:beta:push'];
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
-    to: 'project deploy start',
-    message: `The 'force:source:push' command will be deprecated, try the 'project deploy start' command instead`,
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
   };
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');

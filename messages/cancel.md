@@ -33,3 +33,7 @@ Number of minutes to wait for the command to complete and display results to the
 # CancelFailed
 
 The cancel command failed due to: %s
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

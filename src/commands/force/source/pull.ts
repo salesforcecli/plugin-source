@@ -25,13 +25,15 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
+const replacement = 'project retrieve start';
+
 export default class Pull extends SourceCommand {
   public static aliases = ['force:source:beta:pull'];
   public static deprecateAliases = true;
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
-    to: 'project retrieve start',
-    message: `The 'force:source:pull' command will be deprecated, try the 'project retrieve start' command instead`,
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
   };
   public static description = messages.getMessage('description');
   public static help = messages.getMessage('help');

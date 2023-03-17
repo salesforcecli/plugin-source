@@ -32,12 +32,13 @@ const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deplo
 const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
 export type DeployResult = MdDeployResult | DeployCommandAsyncResult;
 
+const replacement = 'project deploy start';
 export class Deploy extends DeployCommand {
   public static aliases = ['force:mdapi:beta:deploy'];
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
-    to: 'project deploy start',
-    message: `The 'force:mdapi:deploy' command will be deprecated, try the 'project deploy start' command instead`,
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
   };
   public static readonly deprecateAliases = true;
   public static readonly description = messages.getMessage('description');

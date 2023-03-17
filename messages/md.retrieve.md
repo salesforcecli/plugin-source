@@ -140,3 +140,7 @@ The jobid command parameter was not provided, neither directly nor from a previo
 
 To check the status of this retrieve, run "sfdx force:mdapi:retrieve:report %s".
 If the retrieve request has completed, the retrieved metadata zip file will be written to the retrieve target dir.
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

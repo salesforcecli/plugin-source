@@ -56,3 +56,7 @@ The job ID (asyncId) of the deployment you want to check. If not specified, the 
 # mdapiDeployFailed
 
 The metadata deploy operation failed.
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

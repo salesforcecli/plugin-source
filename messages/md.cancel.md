@@ -40,3 +40,7 @@ job ID of the deployment you want to cancel; defaults to your most recent CLI de
 # CancelFailed
 
 The cancel command failed due to: %s
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

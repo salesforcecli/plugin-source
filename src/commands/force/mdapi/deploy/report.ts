@@ -25,6 +25,8 @@ import { DeployProgressStatusFormatter } from '../../../../formatters/deployProg
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployreport');
 
+const replacement = 'project deploy report';
+
 export class Report extends DeployCommand {
   public static aliases = ['force:mdapi:beta:deploy:report'];
   public static readonly deprecateAliases = true;
@@ -32,8 +34,8 @@ export class Report extends DeployCommand {
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
-    to: 'project deploy report',
-    message: `The 'force:mdapi:deploy:report' command will be deprecated, try the 'project deploy report' command instead`,
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
   };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,

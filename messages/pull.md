@@ -53,3 +53,7 @@ Retrieved Source Warnings
 # retrieveTimeout
 
 Your retrieve request did not complete within the specified wait time [%s minutes]. Try again with a longer wait time.
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

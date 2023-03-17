@@ -42,6 +42,8 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
+const replacement = 'project retrieve start';
+
 export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
@@ -49,8 +51,8 @@ export class Retrieve extends SourceCommand {
   public static readonly requiresUsername = true;
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
-    to: 'project retrieve start',
-    message: `The 'force:source:retrieve' command will be deprecated, try the 'project retrieve start' command instead`,
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
   };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,

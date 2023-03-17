@@ -183,3 +183,7 @@ The retrieve target directory [%s] overlaps one of your package directories. Spe
 # apiVersionMsgDetailed
 
 %s v%s metadata from %s using the v%s SOAP API
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
