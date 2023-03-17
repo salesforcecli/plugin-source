@@ -36,6 +36,42 @@
 
 ## [2.5.4](https://github.com/salesforcecli/plugin-source/compare/2.5.3...2.5.4) (2023-02-18)
 
+### Features
+
+- remove force:source:open command, now in plugin-org ([8c269db](https://github.com/salesforcecli/plugin-source/commit/8c269dbc755870eec4e7ac66b53604a818035f9f))
+
+# [2.7.0](https://github.com/salesforcecli/plugin-source/compare/2.6.2...2.7.0) (2023-03-13)
+
+### Features
+
+- verbose deploys without progress bar update with each poll ([#757](https://github.com/salesforcecli/plugin-source/issues/757)) ([0826a83](https://github.com/salesforcecli/plugin-source/commit/0826a83546952917de91f4b9a5a650e151d62aca))
+
+## [2.6.2](https://github.com/salesforcecli/plugin-source/compare/2.6.1...2.6.2) (2023-03-12)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 2.2.22 to 2.2.24 ([#764](https://github.com/salesforcecli/plugin-source/issues/764)) ([e493d9d](https://github.com/salesforcecli/plugin-source/commit/e493d9de576619fea9cd442639a707149425b69c))
+
+## [2.6.1](https://github.com/salesforcecli/plugin-source/compare/2.6.0...2.6.1) (2023-03-12)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve from 7.11.0 to 7.11.3 ([#759](https://github.com/salesforcecli/plugin-source/issues/759)) ([14bdf84](https://github.com/salesforcecli/plugin-source/commit/14bdf845f36d8dd26de6b86916faad5cc29d1530))
+
+# [2.6.0](https://github.com/salesforcecli/plugin-source/compare/2.5.5...2.6.0) (2023-03-10)
+
+### Features
+
+- get types from sdr registry ([e3df9ce](https://github.com/salesforcecli/plugin-source/commit/e3df9ced569ca6c2d1b4e4710caf7833b2663ea2))
+
+## [2.5.5](https://github.com/salesforcecli/plugin-source/compare/2.5.4...2.5.5) (2023-02-28)
+
+### Bug Fixes
+
+- **deps:** bump jsforce from 2.0.0-beta.19 to 2.0.0-beta.20 ([#745](https://github.com/salesforcecli/plugin-source/issues/745)) ([b637f68](https://github.com/salesforcecli/plugin-source/commit/b637f68cb3092ceae4f1bb65ddfc1fe67471ee31))
+
+## [2.5.4](https://github.com/salesforcecli/plugin-source/compare/2.5.3...2.5.4) (2023-02-18)
+
 ### Bug Fixes
 
 - **deps:** bump open from 8.4.0 to 8.4.1 ([#736](https://github.com/salesforcecli/plugin-source/issues/736)) ([d0e1f35](https://github.com/salesforcecli/plugin-source/commit/d0e1f3504b3b5d4ac51504881e52fec2dbd3fcea))
