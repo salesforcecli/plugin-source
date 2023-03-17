@@ -34,7 +34,11 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
 export class Report extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
-  public static readonly requiresUsername = true;
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project deploy report',
+    message: `The 'force:source:deploy:report' command will be deprecated, try the 'project deploy report' command instead`,
+  };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,

@@ -45,9 +45,11 @@ describe('force:source:report', () => {
 
   class TestReport extends Report {
     public async runIt() {
-      await this.init();
       // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:source:deploy:report';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:source:deploy:report';
+      await this.init();
       return this.run();
     }
 

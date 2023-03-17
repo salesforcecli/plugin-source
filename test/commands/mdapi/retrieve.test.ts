@@ -49,9 +49,11 @@ describe('force:mdapi:retrieve', () => {
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
-      await this.init();
       // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:mdapi:retrieve';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:mdpi:retrive';
+      await this.init();
       return this.run();
     }
   }

@@ -11,6 +11,7 @@ import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
+import { cliForManifestCreate } from './shared/cliForManifestCreate';
 
 describe('metadata types that go in folders', () => {
   let session: TestSession;
@@ -75,7 +76,8 @@ describe('metadata types that go in folders', () => {
       },
     ];
 
-    const getRelativeFileResponses = (resp: FileResponse[]) => resp.map((s) => {
+    const getRelativeFileResponses = (resp: FileResponse[]) =>
+      resp.map((s) => {
         // grab the last 2 directories with the file only
         s.filePath = s.filePath.split(path.sep).slice(-3).join(path.sep);
         return s;
@@ -83,7 +85,10 @@ describe('metadata types that go in folders', () => {
 
     it('can generate manifest for just the emailTemplates', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');
-      execCmd(`force:source:manifest:create -p ${pathToEmails} --json`, { ensureExitCode: 0 });
+      execCmd(`force:source:manifest:create -p ${pathToEmails} --json`, {
+        ensureExitCode: 0,
+        cli: cliForManifestCreate,
+      });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
 
@@ -110,7 +115,10 @@ describe('metadata types that go in folders', () => {
     it('can generate manifest for just the reports', () => {
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.false;
       const pathToReports = path.join('force-app', 'main', 'default', 'reports');
-      execCmd(`force:source:manifest:create -p ${pathToReports} --json`, { ensureExitCode: 0 });
+      execCmd(`force:source:manifest:create -p ${pathToReports} --json`, {
+        ensureExitCode: 0,
+        cli: cliForManifestCreate,
+      });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
 

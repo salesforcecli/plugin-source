@@ -34,6 +34,12 @@ export type DeployResult = MdDeployResult | DeployCommandAsyncResult;
 
 export class Deploy extends DeployCommand {
   public static aliases = ['force:mdapi:beta:deploy'];
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project deploy start',
+    message: `The 'force:mdapi:deploy' command will be deprecated, try the 'project deploy start' command instead`,
+  };
+  public static readonly deprecateAliases = true;
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
