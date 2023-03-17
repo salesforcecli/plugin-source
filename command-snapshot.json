@@ -31,7 +31,7 @@
       "wait",
       "zipfile"
     ],
-    "alias": ["force:mdapi:beta:deploy"]
+    "alias": []
   },
   {
     "command": "force:mdapi:deploy:cancel",
@@ -55,7 +55,7 @@
       "verbose",
       "wait"
     ],
-    "alias": ["force:mdapi:beta:deploy:report"]
+    "alias": []
   },
   {
     "command": "force:mdapi:retrieve",
@@ -75,7 +75,7 @@
       "wait",
       "zipfilename"
     ],
-    "alias": ["force:mdapi:beta:retrieve"]
+    "alias": []
   },
   {
     "command": "force:mdapi:retrieve:report",
@@ -92,7 +92,7 @@
       "wait",
       "zipfilename"
     ],
-    "alias": ["force:mdapi:beta:retrieve:report"]
+    "alias": []
   },
   {
     "command": "force:source:deploy",
@@ -158,13 +158,13 @@
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "json", "loglevel", "target-org", "verbose", "wait"],
-    "alias": ["force:source:beta:pull"]
+    "alias": []
   },
   {
     "command": "force:source:push",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "target-org", "wait"],
-    "alias": ["force:source:beta:push"]
+    "alias": []
   },
   {
     "command": "force:source:retrieve",
@@ -191,6 +191,6 @@
     "command": "force:source:status",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "concise", "json", "local", "loglevel", "remote", "target-org"],
-    "alias": ["force:source:beta:status"]
+    "alias": []
   }
 ]

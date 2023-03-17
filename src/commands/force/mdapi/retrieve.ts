@@ -38,8 +38,6 @@ export type RetrieveCommandCombinedResult = RetrieveCommandResult | RetrieveComm
 const replacement = 'project retrieve start';
 
 export class Retrieve extends SourceCommand {
-  public static aliases = ['force:mdapi:beta:retrieve'];
-  public static readonly deprecateAliases = true;
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
     to: replacement,

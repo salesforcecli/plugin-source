@@ -26,8 +26,6 @@ export type StatusCommandResult = StatusResult[];
 
 const replacement = 'project retrieve/deploy preview';
 export default class Status extends SfCommand<StatusCommandResult> {
-  public static readonly deprecateAliases = true;
-  public static aliases = ['force:source:beta:status'];
   public static readonly summary = messages.getMessage('description');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');

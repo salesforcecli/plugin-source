@@ -28,8 +28,6 @@ const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'ret
 const replacement = 'project retrieve start';
 
 export default class Pull extends SourceCommand {
-  public static aliases = ['force:source:beta:pull'];
-  public static deprecateAliases = true;
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
     to: replacement,
