@@ -23,7 +23,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^3.3.7",
     "@oclif/plugin-help": "^5.2.6",
-    "@salesforce/cli-plugins-testkit": "^3.2.24",
+    "@salesforce/cli-plugins-testkit": "^3.2.25",
     "@salesforce/dev-config": "^3.1.0",
     "@salesforce/dev-scripts": "^4.1.2",
     "@salesforce/plugin-command-reference": "^2.3.2",
@@ -53,7 +53,7 @@
     "eslint-config-salesforce-typescript": "^1.1.1",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^39.8.0",
+    "eslint-plugin-jsdoc": "^39.9.1",
     "eslint-plugin-sf-plugin": "^1.14.0",
     "fast-glob": "^3.2.12",
     "husky": "^7.0.4",
