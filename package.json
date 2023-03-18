@@ -26,7 +26,7 @@
     "@salesforce/cli-plugins-testkit": "^3.2.24",
     "@salesforce/dev-config": "^3.1.0",
     "@salesforce/dev-scripts": "^4.1.2",
-    "@salesforce/plugin-command-reference": "^1.5.8",
+    "@salesforce/plugin-command-reference": "^1.6.6",
     "@salesforce/plugin-config": "^2.3.2",
     "@salesforce/plugin-info": "^2.5.1",
     "@salesforce/plugin-templates": "^55.4.4",
