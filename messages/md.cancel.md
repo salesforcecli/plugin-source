@@ -43,4 +43,4 @@ The cancel command failed due to: %s
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

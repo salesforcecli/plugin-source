@@ -18,4 +18,4 @@ File or directory '%s' doesn't exist in your project. Specify one that exists an
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

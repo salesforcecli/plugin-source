@@ -198,4 +198,4 @@ You requested an async deploy with code coverage or JUnit results. The reports w
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

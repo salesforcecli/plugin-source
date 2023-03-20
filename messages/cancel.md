@@ -1,34 +1,42 @@
+# summary
+
+Cancel a source deployment.
+
 # description
 
-cancel a source deployment
 Use this command to cancel a specified asynchronous source deployment. You can also specify a wait time (in minutes) to check for updates to the canceled deploy status.
 
-To run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI.
-To check the status of the job, use force:source:deploy:report.
+To run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI. To check the status of the job, use "force source deploy report".
 
 # examples
 
-- Deploy a directory of files to the org
-  $ sfdx force:source:deploy -d <directory>
-  Now cancel this deployment and wait two minutes
-  $ sfdx force:source:deploy:cancel -w 2
+- Let's say you deploy a directory of files to the org:
 
-- If you have multiple deployments in progress and want to cancel a specific one, specify the job ID
-  $ sfdx force:source:deploy:cancel -i <jobid>
-  Check the status of the cancel job
-  $ sfdx force:source:deploy:report
+  <%= config.bin %> force source deploy --sourcepath <directory>
 
-# flags.wait
+- Now cancel this deployment and wait two minutes:
 
-wait time for command to finish in minutes
+  <%= config.bin %> <%= command.id %> --wait 2
 
-# flags.jobid
+- If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
-job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if not specified
+  <%= config.bin %> <%= command.id %> --jobid <jobid>
 
-# flagsLong.wait
+- Check the status of the cancel job
 
-Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
+<%= config.bin %> force source deploy report
+
+# flags.wait.summary
+
+Number of minutes to wait for the command to complete and display results.
+
+# flags.jobid.summary
+
+Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if not specified.
+
+# flags.wait.description
+
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 
 # CancelFailed
 
@@ -36,4 +44,4 @@ The cancel command failed due to: %s
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

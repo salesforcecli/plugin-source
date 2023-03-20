@@ -26,6 +26,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
 
 const replacement = 'project deploy cancel';
 export class Cancel extends DeployCommand {
+  public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
@@ -42,12 +43,12 @@ export class Cancel extends DeployCommand {
       char: 'w',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
       min: 1,
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
     jobid: Flags.salesforceId({
       char: 'i',
-      description: messages.getMessage('flags.jobid'),
+      summary: messages.getMessage('flags.jobid.summary'),
       startsWith: '0Af',
     }),
   };
