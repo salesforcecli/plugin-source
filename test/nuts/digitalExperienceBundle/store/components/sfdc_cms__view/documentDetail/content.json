@@ -1,0 +1,60 @@
+{
+  "type": "sfdc_cms__view",
+  "title": "Document Detail",
+  "contentBody": {
+    "component": {
+      "children": [
+        {
+          "children": [
+            {
+              "attributes": {
+                "backgroundImageConfig": "",
+                "backgroundImageOverlay": "rgba(0,0,0,0)",
+                "sectionConfig": "{\"UUID\":\"17eac07d-ff48-4480-82f2-6a9288c5f900\",\"columns\":[{\"UUID\":\"1abcbff2-671f-4557-90ee-ea7d653e0166\",\"columnName\":\"Column 1\",\"columnKey\":\"col1\",\"columnWidth\":\"12\",\"seedComponents\":[]}]}"
+              },
+              "children": [
+                {
+                  "id": "1abcbff2-671f-4557-90ee-ea7d653e0166",
+                  "name": "col1",
+                  "title": "Column 1",
+                  "type": "region"
+                }
+              ],
+              "definition": "community_layout:section",
+              "id": "17eac07d-ff48-4480-82f2-6a9288c5f900",
+              "type": "component"
+            }
+          ],
+          "id": "2be13a58-b7be-49c4-be61-7449cd54b154",
+          "name": "content",
+          "title": "Content",
+          "type": "region"
+        },
+        {
+          "children": [
+            {
+              "attributes": {
+                "customHeadTags": "",
+                "description": "",
+                "pageTitle": "{!Content.contentTypeLabel}.{!Content.title}",
+                "recordId": "{!recordId}"
+              },
+              "definition": "community_builder:seoAssistant",
+              "id": "23caf5c2-87ad-4d99-b5aa-7ec9da9da8d9",
+              "type": "component"
+            }
+          ],
+          "id": "c47d644b-9e1b-4dfb-afc9-873bc935d953",
+          "name": "sfdcHiddenRegion",
+          "title": "sfdcHiddenRegion",
+          "type": "region"
+        }
+      ],
+      "definition": "community_layout:sldsFlexibleLayout",
+      "id": "078ff49d-a524-43c5-9fa4-fa78ae6849e6",
+      "type": "component"
+    },
+    "themeLayoutType": "Inner",
+    "viewType": "managed-content-sfdc_cms__document"
+  }
+}

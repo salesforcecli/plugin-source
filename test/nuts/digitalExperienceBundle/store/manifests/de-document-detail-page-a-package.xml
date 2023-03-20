@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <types>
+    <members>site/Capricorn_Coffee_A1.sfdc_cms__view/documentDetail</members>
+    <members>site/Capricorn_Coffee_A1.sfdc_cms__route/Document_Detail__c</members>
+    <name>DigitalExperience</name>
+  </types>
+  <version>57.0</version>
+</Package>
