@@ -1,45 +1,46 @@
+# summary
+
+Cancel a metadata deployment.
+
 # description
 
-cancel a metadata deployment
 Use this command to cancel a specified asynchronous metadata deployment. You can also specify a wait time (in minutes) to check for updates to the canceled deploy status.
-
-# longDescription
 
 Cancels an asynchronous metadata deployment.
 
-# flags.wait
+# flags.wait.summary
 
-wait time for command to finish in minutes
+Number of minutes for the command to complete and display results to the terminal window.
 
-# flags.waitLong
+# flags.wait.description
 
-Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you. The default is 33 minutes.
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 
-# flags.jobid
+# flags.jobid.summary
 
-job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if not specified
+Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment.
 
 # examples
 
-- Deploy a directory of files to the org
+- Let's say you deploy a directory of files to the org:
 
-- $ sfdx force:mdapi:deploy -d <directory>
+  <%= config.bin %> force mdapi deploy --deploydir <directory>
 
-- Now cancel this deployment and wait two minutes
+- Cancel this deployment and wait two minutes:
 
-- $ sfdx force:mdapi:deploy:cancel -w 2
+  <%= config.bin %> <%= command.id %> --wait 2
 
-- If you have multiple deployments in progress and want to cancel a specific one, specify the job ID
+- If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
-- $ sfdx force:mdapi:deploy:cancel -i <jobid>
+  <%= config.bin %> <%= command.id %> --jobid <jobid>
 
-- Check the status of the cancel job
+- Check the status of the canceled job:
 
-- $ sfdx force:mdapi:deploy:report
+  <%= config.bin %> force mdapi deploy report
 
 # CancelFailed
 
-The cancel command failed due to: %s
+The cancel command failed due to: %s.
 
 # deprecation
 
