@@ -43,67 +43,60 @@ export class Retrieve extends SourceCommand {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),
   };
-  public static readonly description = messages.getMessage('retrieveCmd.description');
-  public static readonly examples = messages.getMessages('retrieveCmd.examples');
+  public static readonly summary = messages.getMessage('retrieve.summary');
+  public static readonly description = messages.getMessage('retrieve.description');
+  public static readonly examples = messages.getMessages('retrieve.examples');
   public static readonly flags = {
     loglevel,
     'target-org': requiredOrgFlagWithDeprecations,
     retrievetargetdir: Flags.directory({
       char: 'r',
-      description: messages.getMessage('flags.retrievetargetdir'),
-      summary: messages.getMessage('flagsLong.retrievetargetdir'),
+      summary: messages.getMessage('flags.retrievetargetdir.summary'),
       required: true,
     }),
     unpackaged: Flags.file({
       char: 'k',
-      description: messages.getMessage('flags.unpackaged'),
-      summary: messages.getMessage('flagsLong.unpackaged'),
+      summary: messages.getMessage('flags.unpackaged.summary'),
       exclusive: ['sourcedir', 'packagenames'],
     }),
     sourcedir: Flags.directory({
       char: 'd',
-      description: messages.getMessage('flags.sourcedir'),
-      summary: messages.getMessage('flagsLong.sourcedir'),
+      summary: messages.getMessage('flags.sourcedir.summary'),
       exclusive: ['unpackaged', 'packagenames'],
     }),
     packagenames: arrayWithDeprecation({
       char: 'p',
-      description: messages.getMessage('flags.packagenames'),
-      summary: messages.getMessage('flagsLong.packagenames'),
+      summary: messages.getMessage('flags.packagenames.summary'),
       exclusive: ['sourcedir', 'unpackaged'],
     }),
     singlepackage: Flags.boolean({
       char: 's',
-      description: messages.getMessage('flags.singlepackage'),
-      summary: messages.getMessage('flagsLong.singlepackage'),
+      description: messages.getMessage('flags.singlepackage.description'),
+      summary: messages.getMessage('flags.singlepackage.summary'),
     }),
     zipfilename: Flags.string({
       char: 'n',
-      description: messages.getMessage('flags.zipfilename'),
-      summary: messages.getMessage('flagsLong.zipfilename'),
+      summary: messages.getMessage('flags.zipfilename.summary'),
     }),
     unzip: Flags.boolean({
       char: 'z',
-      description: messages.getMessage('flags.unzip'),
-      summary: messages.getMessage('flagsLong.unzip'),
+      summary: messages.getMessage('flags.unzip.summary'),
     }),
     wait: Flags.duration({
       char: 'w',
       unit: 'minutes',
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      summary: messages.getMessage('flags.wait.summary'),
       default: Duration.minutes(1440), // 24 hours is a reasonable default versus -1 (no timeout)
     }),
     apiversion: Flags.string({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore force char override for backward compat
       char: 'a',
-      description: messages.getMessage('flags.apiversion'),
-      summary: messages.getMessage('flagsLong.apiversion'),
+      description: messages.getMessage('flags.apiversion.description'),
+      summary: messages.getMessage('flags.apiversion.summary'),
     }),
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
-      summary: messages.getMessage('flagsLong.verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
 

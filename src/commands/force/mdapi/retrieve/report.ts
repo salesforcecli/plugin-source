@@ -28,8 +28,9 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 export type ReportCommandResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
 export class Report extends SourceCommand {
-  public static readonly description = messages.getMessage('reportCmd.description');
-  public static readonly examples = messages.getMessages('reportCmd.examples');
+  public static readonly summary = messages.getMessage('report.summary');
+  public static readonly description = messages.getMessage('report.description');
+  public static readonly examples = messages.getMessages('report.examples');
   public static readonly state = 'deprecated';
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
@@ -39,35 +40,30 @@ export class Report extends SourceCommand {
     // from the force:mdapi:retrieve command.
     retrievetargetdir: Flags.directory({
       char: 'r',
-      description: messages.getMessage('flags.retrievetargetdir'),
-      summary: messages.getMessage('flagsLong.retrievetargetdir'),
+      summary: messages.getMessage('flags.retrievetargetdir.summary'),
     }),
     jobid: Flags.salesforceId({
       char: 'i',
-      description: messages.getMessage('flags.jobid'),
-      summary: messages.getMessage('flagsLong.jobid'),
+      description: messages.getMessage('flags.jobid.description'),
+      summary: messages.getMessage('flags.jobid.summary'),
     }),
     zipfilename: Flags.string({
       char: 'n',
-      description: messages.getMessage('flags.zipfilename'),
-      summary: messages.getMessage('flagsLong.zipfilename'),
+      summary: messages.getMessage('flags.zipfilename.summary'),
     }),
     unzip: Flags.boolean({
       char: 'z',
-      description: messages.getMessage('flags.unzip'),
-      summary: messages.getMessage('flagsLong.unzip'),
+      summary: messages.getMessage('flags.unzip.summary'),
     }),
     wait: Flags.duration({
       char: 'w',
       unit: 'minutes',
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      summary: messages.getMessage('flags.wait.summary'),
       min: -1,
       defaultValue: 1440, // 24 hours is a reasonable default versus -1 (no timeout)
     }),
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
-      summary: messages.getMessage('flagsLong.verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
 
