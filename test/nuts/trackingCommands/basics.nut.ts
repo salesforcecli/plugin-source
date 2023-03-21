@@ -8,7 +8,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
-import * as shelljs from 'shelljs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
