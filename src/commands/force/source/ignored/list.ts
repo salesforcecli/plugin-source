@@ -22,7 +22,7 @@ export type SourceIgnoredResults = {
 const replacement = 'project deploy preview --only-ignored';
 export class SourceIgnoredCommand extends SfCommand<SourceIgnoredResults> {
   public static readonly summary = messages.getMessage('summary');
-  public static readonly examples = messages.getMessage('examples');
+  public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {

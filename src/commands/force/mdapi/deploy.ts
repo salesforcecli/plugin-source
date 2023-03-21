@@ -39,7 +39,7 @@ export class Deploy extends DeployCommand {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),
   };
-  public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
@@ -47,87 +47,86 @@ export class Deploy extends DeployCommand {
     'target-org': requiredOrgFlagWithDeprecations,
     checkonly: Flags.boolean({
       char: 'c',
-      description: messages.getMessage('flags.checkOnly'),
-      summary: messages.getMessage('flagsLong.checkOnly'),
+      description: messages.getMessage('flags.checkOnly.description'),
+      summary: messages.getMessage('flags.checkOnly.summary'),
     }),
     deploydir: Flags.directory({
       char: 'd',
-      description: messages.getMessage('flags.deployDir'),
-      summary: messages.getMessage('flagsLong.deployDir'),
+      description: messages.getMessage('flags.deployDir.description'),
+      summary: messages.getMessage('flags.deployDir.summary'),
       exactlyOne: xorFlags,
     }),
     wait: Flags.duration({
       char: 'w',
       unit: 'minutes',
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
       default: Duration.minutes(0),
       min: -1,
     }),
     testlevel: Flags.string({
       char: 'l',
-      description: messages.getMessage('flags.testLevel'),
-      summary: messages.getMessage('flagsLong.testLevel'),
+      description: messages.getMessage('flags.testLevel.description'),
+      summary: messages.getMessage('flags.testLevel.summary'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
     runtests: arrayWithDeprecation({
       char: 'r',
-      description: messages.getMessage('flags.runTests'),
-      summary: messages.getMessage('flagsLong.runTests'),
+      summary: messages.getMessage('flags.runTests.summary'),
     }),
     ignoreerrors: Flags.boolean({
       char: 'o',
-      description: messages.getMessage('flags.ignoreErrors'),
-      summary: messages.getMessage('flagsLong.ignoreErrors'),
+      description: messages.getMessage('flags.ignoreErrors.description'),
+      summary: messages.getMessage('flags.ignoreErrors.summary'),
     }),
     ignorewarnings: Flags.boolean({
       char: 'g',
-      description: messages.getMessage('flags.ignoreWarnings'),
-      summary: messages.getMessage('flagsLong.ignoreWarnings'),
+      description: messages.getMessage('flags.ignoreWarnings.description'),
+      summary: messages.getMessage('flags.ignoreWarnings.summary'),
     }),
     validateddeployrequestid: Flags.salesforceId({
       char: 'q',
       length: 'both',
       startsWith: '0Af',
-      description: messages.getMessage('flags.validatedDeployRequestId'),
-      summary: messages.getMessage('flagsLong.validatedDeployRequestId'),
+      description: messages.getMessage('flags.validatedDeployRequestId.description'),
+      summary: messages.getMessage('flags.validatedDeployRequestId.summary'),
       exactlyOne: xorFlags,
       exclusive: ['testlevel', 'runtests', 'checkonly'],
     }),
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
-      summary: messages.getMessage('flagsLong.verbose'),
+      description: messages.getMessage('flags.verbose.description'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
     zipfile: Flags.file({
       char: 'f',
-      description: messages.getMessage('flags.zipFile'),
-      summary: messages.getMessage('flagsLong.zipFile'),
+      description: messages.getMessage('flags.zipFile.description'),
+      summary: messages.getMessage('flags.zipFile.summary'),
       exactlyOne: xorFlags,
     }),
     singlepackage: Flags.boolean({
       char: 's',
-      description: messages.getMessage('flags.singlePackage'),
-      summary: messages.getMessage('flagsLong.singlePackage'),
+      description: messages.getMessage('flags.singlePackage.description'),
+      summary: messages.getMessage('flags.singlePackage.summary'),
     }),
     soapdeploy: Flags.boolean({
-      description: messages.getMessage('flags.soapDeploy'),
-      summary: messages.getMessage('flagsLong.soapDeploy'),
+      description: messages.getMessage('flags.soapDeploy.description'),
+      summary: messages.getMessage('flags.soapDeploy.summary'),
     }),
     purgeondelete: Flags.boolean({
-      description: messages.getMessage('flags.purgeOnDelete'),
+      summary: messages.getMessage('flags.purgeOnDelete.summary'),
     }),
     concise: Flags.boolean({
-      description: messages.getMessage('flags.concise'),
+      summary: messages.getMessage('flags.concise.summary'),
     }),
     resultsdir: Flags.directory({
-      description: messages.getMessage('flags.resultsDir'),
+      summary: messages.getMessage('flags.resultsDir.summary'),
     }),
     coverageformatters: arrayWithDeprecation({
-      description: messages.getMessage('flags.coverageFormatters'),
+      summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
     }),
-    junit: Flags.boolean({ description: messages.getMessage('flags.junit') }),
+    junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
   private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
