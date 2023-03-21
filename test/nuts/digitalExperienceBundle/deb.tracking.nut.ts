@@ -17,10 +17,12 @@ import {
   assertAllDEBAndTheirDECounts,
   assertDEB,
   assertDocumentDetailPageA,
+  assertDocumentDetailPageADelete,
   assertNoLocalChanges,
   assertViewHome,
   assertViewHomeStatus,
   createDocumentDetailPageAInLocal,
+  deleteDocumentDetailPageAInLocal,
 } from './helper';
 
 describe('deb -- tracking/push/pull', () => {
@@ -51,7 +53,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result;
 
-    assertDEB(statusResult, 'b', true, session.project.dir);
+    assertDEB(statusResult, 'b');
   });
 
   it('should push local change in deb_b', async () => {
@@ -59,7 +61,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
 
-    assertDEB(pushedSource, 'b', false, session.project.dir);
+    assertDEB(pushedSource, 'b');
     assertNoLocalChanges();
   });
 
@@ -83,7 +85,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
 
-    assertViewHome(pushedSource, 'b', session.project.dir);
+    assertViewHome(pushedSource, 'b');
     assertNoLocalChanges();
   });
 
@@ -106,7 +108,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
 
-    assertViewHome(pushedSource, 'b', session.project.dir);
+    assertViewHome(pushedSource, 'b');
     assertNoLocalChanges();
   });
 
@@ -131,23 +133,44 @@ describe('deb -- tracking/push/pull', () => {
   });
 
   describe('new site page', () => {
-    it('should see newly added page (view and route de components) in deb_a', async () => {
+    it('should see locally added new page (view and route de components) in deb_a', async () => {
       createDocumentDetailPageAInLocal(session.project.dir);
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local  --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
 
-      assertDocumentDetailPageA(statusResult, true, session.project.dir);
+      assertDocumentDetailPageA(statusResult);
     });
 
-    it('should push newly added page (view and route de components) in deb_a', async () => {
+    it('should push locally added new page (view and route de components) in deb_a', async () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
 
-      assertDocumentDetailPageA(pushedSource, false, session.project.dir);
+      assertDocumentDetailPageA(pushedSource);
       assertNoLocalChanges();
+    });
+
+    it('should see locally deleted new page (view and route de components) in deb_a', async () => {
+      await deleteDocumentDetailPageAInLocal(session.project.dir);
+
+      const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result;
+
+      assertDocumentDetailPageA(statusResult);
+    });
+
+    it('should push local delete change in deb_a [locally deleted new page (view and route de components)]', async () => {
+      const pushedSource = execCmd<PushResponse>('force:source:push --json', {
+        ensureExitCode: 0,
+      }).jsonOutput.result.pushedSource;
+
+      assertDocumentDetailPageA(pushedSource);
+      assertNoLocalChanges();
+
+      await assertDocumentDetailPageADelete(session, true);
     });
   });
 });

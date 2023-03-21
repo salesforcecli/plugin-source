@@ -23,8 +23,6 @@
   <redirectToCustomDomain>false</redirectToCustomDomain>
   <referrerPolicyOriginWhenCrossOrigin>true</referrerPolicyOriginWhenCrossOrigin>
   <selfRegPage>CommunitiesSelfReg</selfRegPage>
-  <siteAdmin>santhosh.edeb2@salesforce.com</siteAdmin>
-  <siteGuestRecordDefaultOwner>santhosh.edeb2@salesforce.com</siteGuestRecordDefaultOwner>
   <siteType>ChatterNetwork</siteType>
   <urlPathPrefix>CapricornCoffeeAvforcesite</urlPathPrefix>
 </CustomSite>

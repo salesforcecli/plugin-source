@@ -16,6 +16,7 @@ import {
   assertAllDEBAndTheirDECounts,
   assertAllDECounts,
   assertDocumentDetailPageA,
+  assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
   assertViewHome,
   createDocumentDetailPageAInLocal,
@@ -55,9 +56,12 @@ describe('deb -- manifest option', () => {
 
   describe('deploy', () => {
     before(() => {
-      execCmd<DeployCommandResult>('force:source:deploy --metadata "ApexPage,ApexClass" --json', {
-        ensureExitCode: 0,
-      });
+      execCmd<DeployCommandResult>(
+        `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      );
     });
 
     it('should deploy complete enhanced lwr sites deb_a and deb_b (including de config, network and customsite)', () => {
@@ -128,7 +132,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertViewHome(deployedSource, 'a', session.project.dir);
+        assertViewHome(deployedSource, 'a');
       });
     });
 
@@ -218,7 +222,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertViewHome(inboundFiles, 'a', session.project.dir);
+        assertViewHome(inboundFiles, 'a');
       });
     });
 
@@ -258,7 +262,19 @@ describe('deb -- manifest option', () => {
         }
       ).jsonOutput.result.deployedSource;
 
-      assertDocumentDetailPageA(deployedSource, false, session.project.dir);
+      assertDocumentDetailPageA(deployedSource);
+    });
+
+    it('should delete new page (view and route de components) of deb_a', async () => {
+      const deployedSource = execCmd<DeployCommandResult>(
+        `force:source:deploy --manifest ${STORE.MANIFESTS.EMPTY_PACKAGE_XML} --predestructivechanges ${STORE.MANIFESTS.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      ).jsonOutput.result.deployedSource;
+
+      assertDocumentDetailPageA(deployedSource);
+      await assertDocumentDetailPageADelete(session, false);
     });
   });
 });

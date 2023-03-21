@@ -15,10 +15,12 @@ import {
   DIR_RELATIVE_PATHS,
   FULL_NAMES,
   TEST_SESSION_OPTIONS,
+  TYPES,
 } from './constants';
 import {
   assertAllDEBAndTheirDECounts,
   assertDocumentDetailPageA,
+  assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
   assertViewHome,
   createDocumentDetailPageAInLocal,
@@ -37,9 +39,12 @@ describe('deb -- sourcepath option', () => {
 
   describe('deploy', () => {
     before(() => {
-      execCmd<DeployCommandResult>('force:source:deploy -m "ApexPage,ApexClass" --json', {
-        ensureExitCode: 0,
-      });
+      execCmd<DeployCommandResult>(
+        `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      );
     });
 
     it('should deploy complete enhanced lwr sites deb_a and deb_b (including de config, network and customsite)', () => {
@@ -87,7 +92,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertViewHome(deployedSource, 'a', session.project.dir);
+        assertViewHome(deployedSource, 'a');
       });
     });
   });
@@ -126,7 +131,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertViewHome(inboundFiles, 'a', session.project.dir);
+        assertViewHome(inboundFiles, 'a');
       });
     });
   });
@@ -142,10 +147,10 @@ describe('deb -- sourcepath option', () => {
         }
       ).jsonOutput.result.deployedSource;
 
-      assertDocumentDetailPageA(deployedSource, false, session.project.dir);
+      assertDocumentDetailPageA(deployedSource);
     });
 
-    it('should delete the page (view and route de components) of deb_a', () => {
+    it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --noprompt --json`,
         {
@@ -153,7 +158,8 @@ describe('deb -- sourcepath option', () => {
         }
       ).jsonOutput.result.deletedSource;
 
-      assertDocumentDetailPageA(deletedSource, false, session.project.dir);
+      assertDocumentDetailPageA(deletedSource);
+      await assertDocumentDetailPageADelete(session, true);
     });
   });
 });

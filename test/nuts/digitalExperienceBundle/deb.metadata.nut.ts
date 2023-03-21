@@ -14,6 +14,7 @@ import {
   assertAllDEBAndTheirDECounts,
   assertAllDECounts,
   assertDocumentDetailPageA,
+  assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
   assertViewHome,
   createDocumentDetailPageAInLocal,
@@ -33,9 +34,12 @@ describe('deb -- metadata option', () => {
 
   describe('deploy', () => {
     before(() => {
-      execCmd<DeployCommandResult>('force:source:deploy --metadata "ApexPage,ApexClass" --json', {
-        ensureExitCode: 0,
-      });
+      execCmd<DeployCommandResult>(
+        `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      );
     });
 
     it('should deploy complete enhanced lwr sites deb_a and deb_b (including de config, network and customsite)', () => {
@@ -106,7 +110,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertViewHome(deployedSource, 'b', session.project.dir);
+        assertViewHome(deployedSource, 'b');
       });
     });
   });
@@ -172,7 +176,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertViewHome(inboundFiles, 'b', session.project.dir);
+        assertViewHome(inboundFiles, 'b');
       });
     });
   });
@@ -188,10 +192,10 @@ describe('deb -- metadata option', () => {
         }
       ).jsonOutput.result.deployedSource;
 
-      assertDocumentDetailPageA(deployedSource, false, session.project.dir);
+      assertDocumentDetailPageA(deployedSource);
     });
 
-    it('should delete the page (view and route de components) of deb_a', () => {
+    it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
         {
@@ -199,7 +203,8 @@ describe('deb -- metadata option', () => {
         }
       ).jsonOutput.result.deletedSource;
 
-      assertDocumentDetailPageA(deletedSource, false, session.project.dir);
+      assertDocumentDetailPageA(deletedSource);
+      await assertDocumentDetailPageADelete(session, true);
     });
   });
 });
