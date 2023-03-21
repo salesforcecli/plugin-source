@@ -1,48 +1,28 @@
-# description
+# summary
 
-list local changes and/or changes in a scratch org
-
-# LongDescription
-
-Lists changes that have been made locally, in a scratch org, or both.
+List changes that have been made locally, in an org, or both.
 
 # examples
 
-- $ sfdx force:source:status -l
+- List changes that have been made locally but not in the org with alias "myscratch":
 
-- $ sfdx force:source:status -r
+  <%= config.bin %> <%= command.id %> --local --target-org myscratch
 
-- $ sfdx force:source:status
+- List changes that have been made in your default org but aren't reflected in your local project:
 
-- $ sfdx force:source:status -u me@example.com --json
+  <%= config.bin %> <%= command.id %> --remote
 
-# flags.all
+# flags.local.summary
 
-list all the changes that have been made
+List the changes that have been made locally.
 
-# flags.allLong
+# flags.remote.summary
 
-Lists all the changes that have been made.
+List the changes that have been made in the org.
 
-# flags.local
+# flags.concise.summary
 
-list the changes that have been made locally
-
-# flags.localLong
-
-Lists the changes that have been made locally.
-
-# flags.remote
-
-list the changes that have been made in the scratch org
-
-# flags.remoteLong
-
-Lists the changes that have been made in the scratch org.
-
-# flags.concise
-
-show only the changes that will be pushed or pulled; omits files that are forceignored
+Show only the changes that will be pushed or pulled; omits files that are forceignored.
 
 # humanSuccess
 
