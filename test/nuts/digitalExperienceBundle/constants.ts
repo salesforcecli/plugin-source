@@ -121,7 +121,7 @@ export const STORE = {
     DE_DOCUMENT_DETAIL_PAGE_A: join(STORE_MANIFESTS_PATH, 'de-document-detail-page-a-package.xml'),
     EMPTY_PACKAGE_XML: join(STORE_MANIFESTS_PATH, 'empty-package.xml'),
     ALL_DEBS_SOURCE_PATH_GEN: 'all-debs-sourcepath-gen-package.xml',
-    ALL_DEBS_METADATA_GEN: 'all-debs-sourcepath-gen-package.xml',
+    ALL_DEBS_METADATA_GEN: 'all-debs-metadata-gen-package.xml',
   },
 } as const;
 

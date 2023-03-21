@@ -31,8 +31,6 @@ describe('deb -- manifest option', () => {
   });
 
   after(async () => {
-    // await fs.promises.unlink(join(session.project.dir, STORE.MANIFESTS.allDEBsSourcePathGen));
-    // await fs.promises.unlink(join(session.project.dir, STORE.MANIFESTS.allDEBsMetadataGen));
     await session?.clean();
   });
 
