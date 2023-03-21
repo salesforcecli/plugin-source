@@ -1,9 +1,10 @@
+# summary
+
+Retrieve source from an org.
+
 # description
 
-retrieve source from an org
-Use this command to retrieve source (metadata that’s in source format) from an org.
-To take advantage of change tracking with scratch orgs, use "sfdx force:source:pull".
-To retrieve metadata that’s in metadata format, use "sfdx force:mdapi:retrieve".
+Use this command to retrieve source (metadata that’s in source format) from an org. To take advantage of change tracking with scratch orgs, use "force source pull". To retrieve metadata that’s in metadata format, use "force mdapi retrieve".
 
 The source you retrieve overwrites the corresponding source files in your local project. This command does not attempt to merge the source from your org with your local source files.
 
@@ -11,110 +12,116 @@ If the comma-separated list you’re supplying contains spaces, enclose the enti
 
 # examples
 
-- To retrieve the source files in a directory:
-  $ sfdx force:source:retrieve -p path/to/source
+- Retrieve the source files in a directory from your default org:
 
-- To retrieve a specific Apex class and the objects whose source is in a directory:
-  $ sfdx force:source:retrieve -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+  <%= config.bin %> <%= command.id %> --sourcepath path/to/source
 
-- To retrieve source files in a comma-separated list that contains spaces:
-  $ sfdx force:source:retrieve -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
+- Retrieve a specific Apex class and the objects whose source is in a directory from an org with alias "myscratch":
 
-- To retrieve all Apex classes:
-  $ sfdx force:source:retrieve -m ApexClass
+  <%= config.bin %> <%= command.id %> --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects" --target-org myscratch
 
-- To retrieve a specific Apex class:
-  $ sfdx force:source:retrieve -m ApexClass:MyApexClass
+- Retrieve source files in a comma-separated list that contains spaces:
 
-- To retrieve a specific Apex class and update source tracking files:
-  $ sfdx force:source:retrieve -m ApexClass:MyApexClass -t
+  <%= config.bin %> <%= command.id %> --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
 
-- To retrieve all custom objects and Apex classes:
-  $ sfdx force:source:retrieve -m "CustomObject,ApexClass"
+- Retrieve all Apex classes:
 
-- To retrieve all Apex classes and two specific profiles (one of which has a space in its name):
-  $ sfdx force:source:retrieve -m "ApexClass, Profile:My Profile, Profile: AnotherProfile"
+  <%= config.bin %> <%= command.id %> --metadata ApexClass
 
-- To retrieve all metadata components listed in a manifest:
-  $ sfdx force:source:retrieve -x path/to/package.xml
+- Retrieve a specific Apex class:
 
-- To retrieve metadata from a package or multiple packages:
-  $ sfdx force:source:retrieve -n MyPackageName
-  $ sfdx force:source:retrieve -n "Package1, PackageName With Spaces, Package3"
+  <%= config.bin %> <%= command.id %> --metadata ApexClass:MyApexClass
 
-- To retrieve all metadata from a package and specific components that aren’t in the package, specify both -n | --packagenames and one other scoping parameter:
-  $ sfdx force:source:retrieve -n MyPackageName -p path/to/apex/classes
-  $ sfdx force:source:retrieve -n MyPackageName -m ApexClass:MyApexClass
-  $ sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml
+- Retrieve a specific Apex class and update source tracking files:
 
-- To retrieve source files to a given directory instead of the default package directory specified in sfdx-project.json:
-  $ sfdx force:source:retrieve -m "StandardValueSet:TaskStatus" -r path/to/unpackaged
+  <%= config.bin %> <%= command.id %> --metadata ApexClass:MyApexClass --tracksource
 
-# flags.retrievetargetdir
+- Retrieve all custom objects and Apex classes:
 
-directory root for the retrieved source files
+  <%= config.bin %> <%= command.id %> --metadata "CustomObject,ApexClass"
 
-# flags.sourcePath
+- Retrieve all Apex classes and two specific profiles (one of which has a space in its name):
 
-comma-separated list of source file paths to retrieve
+  <%= config.bin %> <%= command.id %> --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
 
-# flags.wait
+- Retrieve all metadata components listed in a manifest:
 
-wait time for command to finish in minutes
+  <%= config.bin %> <%= command.id %> --manifest path/to/package.xml
 
-# flags.manifest
+- Retrieve metadata from a package or multiple packages:
 
-file path for manifest (package.xml) of components to retrieve
+  <%= config.bin %> <%= command.id %> --packagenames MyPackageName
+  <%= config.bin %> <%= command.id %> --packagenames "Package1, PackageName With Spaces, Package3"
 
-# flags.metadata
+- Retrieve all metadata from a package and specific components that aren’t in the package, specify both -n | --packagenames and one other scoping parameter:
 
-comma-separated list of metadata component names
+  <%= config.bin %> <%= command.id %> --packagenames MyPackageName --sourcepath path/to/apex/classes
+  <%= config.bin %> <%= command.id %> --packagenames MyPackageName --metadata ApexClass:MyApexClass
+  <%= config.bin %> <%= command.id %> --packagenames MyPackageName --manifest path/to/package.xml
 
-# flags.packagename
+- Retrieve source files to a given directory instead of the default package directory specified in sfdx-project.json:
 
-a comma-separated list of packages to retrieve
+  <%= config.bin %> <%= command.id %> --metadata "StandardValueSet:TaskStatus" --retrievetargetdir path/to/unpackaged
 
-# flags.tracksource
+# flags.retrievetargetdir.summary
 
-if the retrieve succeeds, update source tracking information; doesn't delete local files that were deleted in the org
+Root of the directory structure into which the source files are retrieved.
 
-# flags.verbose
+# flags.sourcePath.summary
 
-verbose output of retrieve result
+Comma-separated list of file paths for source to retrieve from the org.
 
-# flags.forceoverwrite
+# flags.wait.summary
 
-ignore conflict warnings and overwrite changes to the project
+Number of minutes to wait for the command to complete and display results to the terminal window.
 
-# flagsLong.retrievetargetdir
+# flags.manifest.summary
 
-- The root of the directory structure into which the source files are retrieved.
+Complete path for the manifest (package.xml) file that specifies the components to retrieve.
 
-- If the target directory matches one of the package directories in your sfdx-project.json file, the command fails.
+# flags.metadata.summary
 
-- Running the command multiple times with the same target adds new files and overwrites existing files.
+Comma-separated list of names of metadata components to retrieve from the org.
 
-# flagsLong.wait
+# flags.packagename.summary
 
-Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
+Comma-separated list of packages to retrieve.
 
-# flagsLong.manifest
+# flags.tracksource.summary
 
-- The complete path for the manifest (package.xml) file that specifies the components to retrieve.
+If the retrieve succeeds, update source tracking information; doesn't delete local files that were deleted in the org.
 
-- If you specify this parameter, don’t specify --metadata or --sourcepath.
+# flags.verbose.summary
 
-# flagsLong.metadata
+Verbose output of retrieve result.
 
-- A comma-separated list of names of metadata components to retrieve from the org.
+# flags.forceoverwrite.summary
 
-- If you specify this parameter, don’t specify --manifest or --sourcepath.
+Ignore conflict warnings and overwrite changes to the project.
 
-# flagsLong.sourcePath
+# flags.retrievetargetdir.description
 
-- A comma-separated list of file paths for source to retrieve from the org. The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all source files in the directory and its sub-directories).
+If the target directory matches one of the package directories in your sfdx-project.json file, the command fails.
 
-- If you specify this parameter, don’t specify --manifest or --metadata.
+Running the command multiple times with the same target adds new files and overwrites existing files.
+
+# flags.wait.description
+
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
+
+# flags.manifest.description
+
+If you specify this parameter, don’t specify --metadata or --sourcepath.
+
+# flags.metadata.description
+
+If you specify this parameter, don’t specify --manifest or --sourcepath.
+
+# flags.sourcePath.description
+
+The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all source files in the directory and its sub-directories).
+
+If you specify this parameter, don’t specify --manifest or --metadata.
 
 # SourceRetrieveError
 

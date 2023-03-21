@@ -1,57 +1,48 @@
+# summary
+
+Check the status of a metadata deployment.
+
 # description
 
-check the status of a metadata deployment
 Specify the job ID for the deploy you want to check. You can also specify a wait time (minutes) to check for updates to the deploy status.
 
 # examples
 
-- Deploy a directory of files to the org
+- Check the status of the most recent deployment on your default org:
 
-- $ sfdx force:source:deploy -d <directory>
+  <%= config.bin %> <%= command.id %>
 
-- Now cancel this deployment and wait two minutes
+- Check the status using the job ID; output JUnit test results and format code coverage results in the specified format:
 
-- $ sfdx force:source:deploy:cancel -w 2
+  <%= config.bin %> <%= command.id %> --jobid <id> --junit --coverageformatters cobertura
 
-- If you have multiple deployments in progress and want to cancel a specific one, specify the job ID
+# flags.jobid.summary
 
-- $ sfdx force:source:deploy:cancel -i <jobid>
+Job ID of the deployment you want to check; defaults to your most recent CLI deployment.
 
-- Check the status of the cancel job
+# flags.wait.summary
 
-- $ sfdx force:source:deploy:report
+Number of minutes to wait for the command to complete and display results to the terminal window.
 
-# flags.jobid
+# flags.verbose.summary
 
-job ID of the deployment you want to check; defaults to your most recent CLI deployment if not specified
+Verbose output of deploy result.
 
-# flags.wait
+# flags.junit.summary
 
-wait time for command to finish in minutes
+Output JUnit test results.
 
-# flags.verbose
+# flags.coverageFormatters.summary
 
-verbose output of deploy result
+Format of the code coverage results.
 
-# flags.junit
+# flags.resultsDir.summary
 
-output JUnit test results
+Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
-# flags.coverageFormatters
+# flags.wait.description
 
-format of the code coverage results
-
-# flags.resultsDir
-
-output directory for code coverage and JUnit results; defaults to the deploy ID
-
-# flagsLong.wait
-
-Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
-
-# flagsLong.jobid
-
-The job ID (asyncId) of the deployment you want to check. If not specified, the default value is the ID of the most recent metadata deployment you ran using Salesforce CLI. Use with -w to resume waiting.
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 
 # mdapiDeployFailed
 

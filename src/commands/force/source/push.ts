@@ -38,7 +38,8 @@ export default class Push extends DeployCommand {
     message: messages.getMessage('deprecation', [replacement]),
   };
   public static description = messages.getMessage('description');
-  public static help = messages.getMessage('help');
+  public static summary = messages.getMessage('summary');
+  public static examples = messages.getMessages('examples');
   public static requiresProject = true;
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
@@ -46,24 +47,22 @@ export default class Push extends DeployCommand {
     'target-org': requiredOrgFlagWithDeprecations,
     forceoverwrite: Flags.boolean({
       char: 'f',
-      description: messages.getMessage('flags.forceoverwrite'),
-      summary: messages.getMessage('flags.forceoverwriteLong'),
+      summary: messages.getMessage('flags.forceoverwrite.summary'),
     }),
     wait: Flags.duration({
       unit: 'minutes',
       char: 'w',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
       min: 1,
-      description: messages.getMessage('flags.waitLong'),
-      summary: messages.getMessage('flags.waitLong'),
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
     ignorewarnings: Flags.boolean({
       char: 'g',
-      description: messages.getMessage('flags.ignorewarnings'),
-      summary: messages.getMessage('flags.ignorewarningsLong'),
+      summary: messages.getMessage('flags.ignorewarnings.summary'),
     }),
     quiet: Flags.boolean({
-      description: messages.getMessage('flags.quiet'),
+      summary: messages.getMessage('flags.quiet.summary'),
     }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
