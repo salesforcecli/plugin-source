@@ -170,7 +170,7 @@ describe('deb -- tracking/push/pull', () => {
       assertDocumentDetailPageA(pushedSource);
       assertNoLocalChanges();
 
-      await assertDocumentDetailPageADelete(session, true);
+      await assertDocumentDetailPageADelete(session, false);
     });
   });
 });
