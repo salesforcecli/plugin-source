@@ -50,8 +50,7 @@ describe('deb -- metadata option', () => {
         }
       ).jsonOutput.result.deployedSource;
 
-      expect(deployedSource).to.have.length(108);
-      assertAllDEBAndTheirDECounts(deployedSource, false);
+      assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
 
     describe('individual metadata type', () => {
@@ -63,7 +62,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertAllDEBAndTheirDECounts(deployedSource, true);
+        assertAllDEBAndTheirDECounts(deployedSource);
       });
 
       it('should deploy de type (all de components of deb_a and deb_b)', () => {
@@ -74,7 +73,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertAllDECounts(deployedSource, true);
+        assertAllDECounts(deployedSource);
       });
     });
 
@@ -87,7 +86,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        expect(deployedSource).to.have.length(50);
+        expect(deployedSource).to.have.length(51);
         expect(deployedSource.every((s) => s.type === TYPES.DE.name)).to.be.true;
       });
 
@@ -99,7 +98,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_B, true);
+        assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_B);
       });
 
       it('should deploy de_view_home of deb_b', () => {
@@ -129,7 +128,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertAllDEBAndTheirDECounts(inboundFiles, true);
+        assertAllDEBAndTheirDECounts(inboundFiles);
       });
 
       it('should retrieve de type (all de components of deb_a and deb_b)', () => {
@@ -140,7 +139,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertAllDECounts(inboundFiles, true);
+        assertAllDECounts(inboundFiles);
       });
     });
 
@@ -153,7 +152,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        expect(inboundFiles).to.have.length(50);
+        expect(inboundFiles).to.have.length(51);
         expect(inboundFiles.every((s) => s.type === TYPES.DE.name)).to.be.true;
       });
 
@@ -165,7 +164,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_B, true);
+        assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_B);
       });
 
       it('should retrieve de_view_home of deb_b', () => {

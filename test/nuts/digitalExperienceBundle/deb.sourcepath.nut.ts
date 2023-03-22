@@ -6,7 +6,6 @@
  */
 // import * as fs from 'fs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { expect } from 'chai';
 import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
 import {
@@ -55,8 +54,7 @@ describe('deb -- sourcepath option', () => {
         }
       ).jsonOutput.result.deployedSource;
 
-      expect(deployedSource).to.have.length(108);
-      assertAllDEBAndTheirDECounts(deployedSource, false);
+      assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
 
     describe('individual metadata type', () => {
@@ -68,7 +66,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertAllDEBAndTheirDECounts(deployedSource, true);
+        assertAllDEBAndTheirDECounts(deployedSource);
       });
     });
 
@@ -81,7 +79,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_A, true);
+        assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_A);
       });
 
       it('should deploy de_view_home of deb_a', () => {
@@ -107,7 +105,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertAllDEBAndTheirDECounts(inboundFiles, true);
+        assertAllDEBAndTheirDECounts(inboundFiles);
       });
     });
 
@@ -120,7 +118,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A, true);
+        assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A);
       });
 
       it('should retrieve de_view_home of deb_a', async () => {

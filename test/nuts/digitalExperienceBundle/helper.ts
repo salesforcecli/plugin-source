@@ -15,8 +15,12 @@ import { DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } fro
 
 type CustomFileResponses = Array<Pick<FileResponse, 'filePath' | 'fullName' | 'type'>>;
 
-export function assertAllDEBAndTheirDECounts(resp: CustomFileResponses, assertTotalCount: boolean) {
-  if (assertTotalCount) expect(resp).to.have.length(102);
+export function assertAllDEBAndTheirDECounts(
+  resp: CustomFileResponses,
+  otherComponentsCount = 0,
+  assertTotalCount = true
+) {
+  if (assertTotalCount) expect(resp).to.have.length(104 + otherComponentsCount);
 
   expect(
     resp.reduce(
@@ -30,16 +34,11 @@ export function assertAllDEBAndTheirDECounts(resp: CustomFileResponses, assertTo
       [0, 0, 0, 0]
     ),
     JSON.stringify(resp)
-  ).to.deep.equal([50, 50, 1, 1]);
+  ).to.deep.equal([51, 51, 1, 1]);
 }
 
-export function assertSingleDEBAndItsDECounts(
-  resp: CustomFileResponses,
-  debFullName: string,
-  assertTotalCount: boolean
-) {
-  if (assertTotalCount) expect(resp).to.have.length(51);
-
+export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFullName: string) {
+  expect(resp).to.have.length(52);
   expect(
     resp.reduce(
       (acc: [number, number], curr: FileResponse) => {
@@ -50,12 +49,11 @@ export function assertSingleDEBAndItsDECounts(
       [0, 0]
     ),
     JSON.stringify(resp)
-  ).to.deep.equal([50, 1]);
+  ).to.deep.equal([51, 1]);
 }
 
-export function assertAllDECounts(resp: CustomFileResponses, assertTotalCount: boolean) {
-  if (assertTotalCount) expect(resp).to.have.length(100);
-
+export function assertAllDECounts(resp: CustomFileResponses) {
+  expect(resp).to.have.length(102);
   expect(
     resp.reduce(
       (acc: [number, number], curr: FileResponse) => {
@@ -66,7 +64,7 @@ export function assertAllDECounts(resp: CustomFileResponses, assertTotalCount: b
       [0, 0]
     ),
     JSON.stringify(resp)
-  ).to.deep.equal([50, 50]);
+  ).to.deep.equal([51, 51]);
 }
 
 export function assertDEB(resp: CustomFileResponses, deb: 'a' | 'b') {
@@ -82,7 +80,7 @@ export function assertDEB(resp: CustomFileResponses, deb: 'a' | 'b') {
 }
 
 export function assertViewHome(resp: CustomFileResponses, deb: 'a' | 'b') {
-  expect(resp).to.have.length(2);
+  expect(resp).to.have.length(3);
   expect(
     resp.map((s) => ({
       type: s.type,
@@ -94,6 +92,12 @@ export function assertViewHome(resp: CustomFileResponses, deb: 'a' | 'b') {
       type: TYPES.DE.name,
       fullName: deb === 'a' ? FULL_NAMES.DE_VIEW_HOME_A : FULL_NAMES.DE_VIEW_HOME_B,
       filePath: deb === 'a' ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_A : FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_B,
+    },
+    {
+      type: TYPES.DE.name,
+      fullName: deb === 'a' ? FULL_NAMES.DE_VIEW_HOME_A : FULL_NAMES.DE_VIEW_HOME_B,
+      filePath:
+        deb === 'a' ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_FR_VARIANT_A : FILE_RELATIVE_PATHS.DE_VIEW_HOME_FR_VARIANT_B,
     },
     {
       type: TYPES.DE.name,

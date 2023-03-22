@@ -41,7 +41,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
 
-    assertAllDEBAndTheirDECounts(pushedSource, false);
+    assertAllDEBAndTheirDECounts(pushedSource, 10);
   });
 
   it('should see local change in deb_b', async () => {
@@ -121,7 +121,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pulledSource;
 
-    assertAllDEBAndTheirDECounts(pulledSource, false);
+    assertAllDEBAndTheirDECounts(pulledSource, 0, false);
   });
 
   it('should not see any local/remote changes in deb/de', () => {
