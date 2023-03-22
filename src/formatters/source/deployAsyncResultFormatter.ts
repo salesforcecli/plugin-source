@@ -6,10 +6,11 @@
  */
 
 import { EOL } from 'os';
-import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
+
+import { Messages } from '@salesforce/core';
 import { cloneJson } from '@salesforce/kit';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -33,8 +34,8 @@ export interface DeployAsyncStatus {
 export class DeployAsyncResultFormatter extends ResultFormatter {
   protected result: AsyncResult;
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: AsyncResult) {
-    super(logger, ux, options);
+  public constructor(ux: Ux, options: ResultFormatterOptions, result: AsyncResult) {
+    super(ux, options);
     this.result = result;
   }
 

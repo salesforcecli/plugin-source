@@ -47,7 +47,7 @@ export class DeployReportResultFormatter extends DeployResultFormatter {
     }
 
     if (status === RequestStatus.Failed) {
-      const messages = Messages.load('@salesforce/plugin-source', 'report', ['mdapiDeployFailed']);
+      const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
       throw new SfError(messages.getMessage('mdapiDeployFailed'), 'mdapiDeployFailed');
     }
 

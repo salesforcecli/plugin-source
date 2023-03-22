@@ -6,8 +6,8 @@
  */
 
 import { blue, yellow } from 'chalk';
-import { UX } from '@salesforce/command';
-import { Logger, Messages, SfError } from '@salesforce/core';
+
+import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { get, getNumber, getString } from '@salesforce/ts-types';
 import {
@@ -17,15 +17,11 @@ import {
   RetrieveMessage,
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'pull', [
-  'retrievedSourceWarningsHeader',
-  'retrievedSourceHeader',
-  'retrieveTimeout',
-  'NoResultsFound',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export type PullResponse = { pulledSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
 
@@ -35,13 +31,12 @@ export class PullResultFormatter extends ResultFormatter {
   protected warnings: RetrieveMessage[];
 
   public constructor(
-    logger: Logger,
-    ux: UX,
+    ux: Ux,
     options: ResultFormatterOptions,
     retrieveResult: RetrieveResult,
     deleteResult: FileResponse[] = []
   ) {
-    super(logger, ux, options);
+    super(ux, options);
     this.result = retrieveResult;
     this.fileResponses = (retrieveResult?.getFileResponses ? retrieveResult.getFileResponses() : []).concat(
       deleteResult
@@ -120,12 +115,20 @@ export class PullResultFormatter extends ResultFormatter {
   private displaySuccesses(retrievedFiles: FileResponse[]): void {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
-    this.ux.table(retrievedFiles, {
-      state: { header: 'STATE' },
-      fullName: { header: 'FULL NAME' },
-      type: { header: 'TYPE' },
-      filePath: { header: 'PROJECT PATH' },
-    });
+    this.ux.table(
+      retrievedFiles.map((entry) => ({
+        state: entry.state,
+        fullName: entry.fullName,
+        type: entry.type,
+        filePath: entry.filePath,
+      })),
+      {
+        state: { header: 'STATE' },
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
+      }
+    );
   }
 
   private displayErrors(): void {

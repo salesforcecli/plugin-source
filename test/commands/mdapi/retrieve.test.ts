@@ -9,19 +9,23 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Lifecycle, Org, SfProject } from '@salesforce/core';
+import { Lifecycle, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
+
 import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
+import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Retrieve } from '../../../src/commands/force/mdapi/retrieve';
 import { Stash, StashData } from '../../../src/stash';
 import { getRetrieveResult } from '../source/retrieveResponses';
 
 describe('force:mdapi:retrieve', () => {
-  const sandbox = sinon.createSandbox();
-  const username = 'retrieve-test@org.com';
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
+  const sandbox = $$.SANDBOX;
+  testOrg.username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
@@ -35,8 +39,8 @@ describe('force:mdapi:retrieve', () => {
   let retrieveStub: sinon.SinonStub;
   let pollStub: sinon.SinonStub;
   let lifecycleEmitStub: sinon.SinonStub;
-  let stopSpinnerStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
+  let sfCommandLogStub: sinon.SinonStub;
   let uxStyledHeaderStub: sinon.SinonStub;
   let uxTableStub: sinon.SinonStub;
   let stashSetStub: sinon.SinonStub;
@@ -45,50 +49,29 @@ describe('force:mdapi:retrieve', () => {
 
   class TestRetrieve extends Retrieve {
     public async runIt() {
-      await this.init();
       // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:mdapi:retrieve';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:mdpi:retrive';
+      await this.init();
       return this.run();
-    }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setUx(ux: UX) {
-      this.ux = ux;
     }
   }
 
   const runRetrieveCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
     const cmd = new TestRetrieve(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
 
-    stopSpinnerStub = stubMethod(sandbox, UX.prototype, 'stopSpinner');
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    uxStyledHeaderStub = stubMethod(sandbox, UX.prototype, 'styledHeader');
-    uxTableStub = stubMethod(sandbox, UX.prototype, 'table');
-    cmd.setUx(
-      fromStub(
-        stubInterface<UX>(sandbox, {
-          stopSpinner: stopSpinnerStub,
-          log: uxLogStub,
-          styledHeader: uxStyledHeaderStub,
-          table: uxTableStub,
-        })
-      )
-    );
+    uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
+    sfCommandLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
+    uxStyledHeaderStub = stubMethod(sandbox, Ux.prototype, 'styledHeader');
+    uxTableStub = stubMethod(sandbox, Ux.prototype, 'table');
 
     return cmd.runIt();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
     sandbox.stub(fs, 'mkdirSync');
     fsStatStub = sandbox.stub(fs, 'statSync');
     fsStatStub.withArgs(retrievetargetdir).returns({ isDirectory: () => true });
@@ -115,6 +98,7 @@ describe('force:mdapi:retrieve', () => {
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 
@@ -135,7 +119,7 @@ describe('force:mdapi:retrieve', () => {
   // Ensure ComponentSet.retrieve() args
   const ensureRetrieveArgs = (overrides?: Partial<RetrieveOptions>) => {
     const defaultRetrieveArgs = {
-      usernameOrConnection: username,
+      usernameOrConnection: testOrg.username,
       output: path.resolve(retrievetargetdir),
       format: 'metadata',
       packageOptions: undefined,
@@ -220,7 +204,7 @@ describe('force:mdapi:retrieve', () => {
 
   it('should pass along packagenames', async () => {
     const packagenames = 'foo,bar';
-    const result = await runRetrieveCmd(['--retrievetargetdir', retrievetargetdir, '-p', packagenames, '--json']);
+    const result = await runRetrieveCmd(['--retrievetargetdir', retrievetargetdir, '-p', 'foo', '-p', 'bar', '--json']);
     expect(result).to.deep.equal(expectedDefaultResult);
     ensureCreateComponentSetArgs({ sourcepath: undefined, packagenames: packagenames.split(',') });
     ensureRetrieveArgs({ packageOptions: packagenames.split(',') });
@@ -288,8 +272,8 @@ describe('force:mdapi:retrieve', () => {
     const result = await runRetrieveCmd(['-r', retrievetargetdir]);
     expect(result).to.deep.equal(expectedDefaultResult);
     expect(uxLogStub.called).to.be.true;
-    expect(uxLogStub.firstCall.args[0]).to.equal(`Retrieve ID: ${expectedDefaultResult.id}`);
-    expect(uxLogStub.secondCall.args[0]).to.contain('Wrote retrieve zip to');
+    expect(sfCommandLogStub.firstCall.args[0]).to.equal(`Retrieve ID: ${expectedDefaultResult.id}`);
+    expect(uxLogStub.firstCall.args[0]).to.contain('Wrote retrieve zip to');
     expect(uxStyledHeaderStub.called).to.be.false;
     expect(uxTableStub.called).to.be.false;
   });
@@ -298,8 +282,8 @@ describe('force:mdapi:retrieve', () => {
     const result = await runRetrieveCmd(['-r', retrievetargetdir, '--verbose']);
     expect(result).to.deep.equal(expectedDefaultResult);
     expect(uxLogStub.called).to.be.true;
-    expect(uxLogStub.firstCall.args[0]).to.equal(`Retrieve ID: ${expectedDefaultResult.id}`);
-    expect(uxLogStub.secondCall.args[0]).to.contain('Wrote retrieve zip to');
+    expect(sfCommandLogStub.firstCall.args[0]).to.equal(`Retrieve ID: ${expectedDefaultResult.id}`);
+    expect(uxLogStub.firstCall.args[0]).to.contain('Wrote retrieve zip to');
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(uxTableStub.called).to.be.true;
     expect(uxStyledHeaderStub.firstCall.args[0]).to.contain('Components Retrieved');
@@ -321,7 +305,5 @@ describe('force:mdapi:retrieve', () => {
     ensureStashSet();
     expect(fsStatStub.called).to.be.true;
     expect(pollStub.called, 'should not poll for status with --wait 0').to.be.false;
-    expect(stopSpinnerStub.called).to.be.true;
-    expect(stopSpinnerStub.firstCall.args[0]).to.equal('queued');
   });
 });

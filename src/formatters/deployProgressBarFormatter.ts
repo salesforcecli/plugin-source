@@ -4,18 +4,18 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
+
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { once } from '@salesforce/kit';
 import { ux as coreUx } from '@oclif/core';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ProgressBar } from '../types';
 import { ProgressFormatter } from './progressFormatter';
 
 export class DeployProgressBarFormatter extends ProgressFormatter {
   protected progressBar?: ProgressBar;
-  public constructor(logger: Logger, ux: UX) {
-    super(logger, ux);
+  public constructor(ux: Ux) {
+    super(ux);
   }
 
   // displays the progress of the Deployment
@@ -68,7 +68,7 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
 
   // used to initialize the progress bar
   protected initProgressBar(): void {
-    this.logger.debug('initializing progress bar');
+    // this.logger.debug('initializing progress bar');
     this.progressBar = coreUx.progress({
       format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',

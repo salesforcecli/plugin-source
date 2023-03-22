@@ -15,7 +15,7 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import { Messages, PollingClient, SfdxPropertyKeys, SfError, StatusResult } from '@salesforce/core';
+import { Connection, Messages, Org, PollingClient, SfdxPropertyKeys, SfError, StatusResult } from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once, ensureArray } from '@salesforce/kit';
 import {
@@ -32,17 +32,13 @@ import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResul
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'deployCommand', [
-  'invalidDeployId',
-  'MissingDeployId',
-  'resultsDirMissing',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {
   protected displayDeployId = once((id: string) => {
-    if (!this.isJsonOutput()) {
-      this.ux.log(`Deploy ID: ${id}`);
+    if (!this.jsonEnabled()) {
+      this.log(`Deploy ID: ${id}`);
     }
   });
 
@@ -57,26 +53,17 @@ export abstract class DeployCommand extends SourceCommand {
     const stashKey = Stash.getKey(this.id);
     Stash.set(stashKey, { jobid: id });
   });
-
-  // the basic sfdx flag is already making sure its of the correct length
-  public static isValidDeployId = (id: string): boolean => {
-    if (id.startsWith('0Af')) {
-      return true;
-    } else {
-      throw new SfError(messages.getMessage('invalidDeployId'), 'invalidDeployId');
-    }
-  };
   /**
    * Request a report of an in-progress or completed deployment.
    *
    * @param id the Deploy ID of a deployment request
    * @returns DeployResult
    */
-  protected async report(id?: string): Promise<DeployResult> {
+  protected async report(conn: Connection, id?: string): Promise<DeployResult> {
     const deployId = this.resolveDeployId(id);
     this.displayDeployId(deployId);
 
-    const res = await this.org.getConnection().metadata.checkDeployStatus(deployId, true);
+    const res = await conn.metadata.checkDeployStatus(deployId, true);
 
     const deployStatus = res as unknown as MetadataApiDeployStatus;
     const componentSet = this.componentSet || new ComponentSet();
@@ -108,8 +95,9 @@ export abstract class DeployCommand extends SourceCommand {
    *
    * @param id
    */
-  protected createDeploy(id?: string): MetadataApiDeploy {
-    return new MetadataApiDeploy({ usernameOrConnection: this.org.getUsername(), id });
+  // eslint-disable-next-line class-methods-use-this
+  protected createDeploy(conn: Connection, id?: string): MetadataApiDeploy {
+    return new MetadataApiDeploy({ usernameOrConnection: conn.getUsername(), id });
   }
 
   protected resolveDeployId(id?: string): string {
@@ -127,36 +115,39 @@ export abstract class DeployCommand extends SourceCommand {
   // SOAP is the default unless:
   //   1. SOAP is specified with the soapdeploy flag on the command
   //   2. The restDeploy SFDX config setting is explicitly true.
-  protected isRestDeploy(): boolean {
-    if (getBoolean(this.flags, 'soapdeploy') === true) {
-      this.logger.debug('soapdeploy flag === true.  Using SOAP');
+  protected isRestDeploy(soapdeploy = true): boolean {
+    if (soapdeploy === true) {
+      this.debug('soapdeploy flag === true.  Using SOAP');
       return false;
     }
 
     const restDeployConfig = this.configAggregator.getInfo(SfdxPropertyKeys.REST_DEPLOY).value;
     // aggregator property values are returned as strings
     if (restDeployConfig === 'false') {
-      this.logger.debug('restDeploy SFDX config === false.  Using SOAP');
+      this.debug('restDeploy SFDX config === false.  Using SOAP');
       return false;
     } else if (restDeployConfig === 'true') {
-      this.logger.debug('restDeploy SFDX config === true.  Using REST');
+      this.debug('restDeploy SFDX config === true.  Using REST');
       return true;
     } else {
-      this.logger.debug('soapdeploy flag unset. restDeploy SFDX config unset.  Defaulting to SOAP');
+      this.debug('soapdeploy flag unset. restDeploy SFDX config unset.  Defaulting to SOAP');
     }
 
     return false;
   }
 
-  protected async poll(deployId: string, options?: Partial<PollingClient.Options>): Promise<DeployResult> {
-    const waitFlag = this.getFlag<Duration>('wait');
-    const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
+  protected async poll(
+    connection: Connection,
+    deployId: string,
+    options: Partial<PollingClient.Options> & { wait: Duration } = { wait: Duration.days(7) }
+  ): Promise<DeployResult> {
+    const waitDuration = options.wait;
 
     const defaultOptions: PollingClient.Options = {
       frequency: options?.frequency ?? Duration.seconds(1),
       timeout: options?.timeout ?? waitDuration,
       poll: async (): Promise<StatusResult> => {
-        const deployResult = await this.report(deployId);
+        const deployResult = await this.report(connection, deployId);
         return {
           completed: getBoolean(deployResult, 'response.done'),
           payload: deployResult as unknown as AnyJson,
@@ -168,9 +159,8 @@ export abstract class DeployCommand extends SourceCommand {
     return pollingClient.subscribe() as unknown as Promise<DeployResult>;
   }
 
-  protected async deployRecentValidation(): Promise<DeployResult> {
-    const id = this.getFlag<string>('validateddeployrequestid');
-    const response = await this.org.getConnection().deployRecentValidation({ id, rest: this.isRest });
+  protected async deployRecentValidation(id: string, conn: Connection): Promise<DeployResult> {
+    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
     // This is the deploy ID of the deployRecentValidation response, not
     // the already validated deploy ID (i.e., validateddeployrequestid).
     // REST returns an object with an ID, SOAP returns the id as a string.
@@ -178,24 +168,24 @@ export abstract class DeployCommand extends SourceCommand {
     this.updateDeployId(validatedDeployId);
     this.asyncDeployResult = { id: validatedDeployId };
 
-    return this.isAsync ? this.report(validatedDeployId) : this.poll(validatedDeployId);
+    return this.isAsync ? this.report(conn, validatedDeployId) : this.poll(conn, validatedDeployId);
   }
 
-  protected maybeCreateRequestedReports(): void {
+  protected maybeCreateRequestedReports(options: { coverageformatters: string[]; junit: boolean; org: Org }): void {
     // only generate reports if test results are present
     if (this.deployResult.response?.numberTestsTotal) {
-      if (this.flags.coverageformatters) {
-        createCoverageReport(this.deployResult, this.flags.coverageformatters as string[], 'no-map', this.resultsDir);
+      if (options.coverageformatters) {
+        createCoverageReport(this.deployResult, options.coverageformatters, 'no-map', this.resultsDir);
       }
-      if (this.flags.junit) {
-        this.createJunitResults(this.deployResult);
+      if (options.junit) {
+        this.createJunitResults(this.deployResult, options.org);
       }
     }
   }
 
-  protected createJunitResults(deployResult: DeployResult): void {
+  protected createJunitResults(deployResult: DeployResult, org: Org): void {
     const testResult = transformDeployTestsResultsToTestResult(
-      this.org.getConnection(),
+      org.getConnection(),
       deployResult.response?.details?.runTestResult
     );
     if (testResult.summary.testsRan > 0) {

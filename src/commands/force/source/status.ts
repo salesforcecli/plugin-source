@@ -5,55 +5,74 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-import { flags, FlagsConfig, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
 import { ChangeResult, StatusOutputRow } from '@salesforce/source-tracking';
+import { Interfaces } from '@oclif/core';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  SfCommand,
+  Ux,
+} from '@salesforce/sf-plugins-core';
 import { StatusFormatter, StatusResult } from '../../../formatters/source/statusFormatter';
 import { trackingSetup } from '../../../trackingFunctions';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
-export default class Status extends SfdxCommand {
-  public static aliases = ['force:source:beta:status'];
-  public static description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  protected static flagsConfig: FlagsConfig = {
-    local: flags.boolean({
+export type StatusCommandResult = StatusResult[];
+
+const replacement = 'project retrieve/deploy preview';
+export default class Status extends SfCommand<StatusCommandResult> {
+  public static readonly summary = messages.getMessage('description');
+  public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    local: Flags.boolean({
       char: 'l',
       description: messages.getMessage('flags.local'),
-      longDescription: messages.getMessage('flags.localLong'),
+      summary: messages.getMessage('flags.localLong'),
       exclusive: ['remote'],
     }),
-    remote: flags.boolean({
+    remote: Flags.boolean({
       char: 'r',
       description: messages.getMessage('flags.remote'),
-      longDescription: messages.getMessage('flags.remoteLong'),
+      summary: messages.getMessage('flags.remoteLong'),
       exclusive: ['local'],
     }),
-    concise: flags.builtin({
-      description: messages.getMessage('flags.concise'),
+    concise: Flags.boolean({
+      summary: messages.getMessage('flags.concise'),
     }),
   };
-  protected static requiresUsername = true;
-  protected static requiresProject = true;
+  public static readonly requiresProject = true;
   protected results = new Array<StatusResult>();
   protected localAdds: ChangeResult[] = [];
+  private flags: Interfaces.InferredFlags<typeof Status.flags>;
 
-  public async run(): Promise<StatusResult[]> {
+  public async run(): Promise<StatusCommandResult> {
+    this.flags = (await this.parse(Status)).flags;
     const tracking = await trackingSetup({
       commandName: 'force:source:status',
       ignoreConflicts: true,
-      org: this.org,
+      org: this.flags['target-org'],
       project: this.project,
-      ux: this.ux,
+      ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
     });
 
-    const wantsLocal = (this.flags.local as boolean) || (!this.flags.remote && !this.flags.local);
-    const wantsRemote = (this.flags.remote as boolean) || (!this.flags.remote && !this.flags.local);
+    const wantsLocal = this.flags.local || (!this.flags.remote && !this.flags.local);
+    const wantsRemote = this.flags.remote || (!this.flags.remote && !this.flags.local);
 
-    this.logger.debug(
+    this.debug(
       `project is ${this.project.getPath()} and pkgDirs are ${this.project
         .getPackageDirectories()
         .map((dir) => dir.path)
@@ -68,9 +87,8 @@ export default class Status extends SfdxCommand {
 
   protected formatResult(): StatusResult[] {
     const formatter = new StatusFormatter(
-      this.logger,
-      this.ux,
-      { concise: this.flags.concise as boolean },
+      new Ux({ jsonEnabled: this.jsonEnabled() }),
+      { concise: this.flags.concise },
       this.results
     );
 

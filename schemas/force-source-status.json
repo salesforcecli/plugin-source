@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/StatusCommandResult",
+  "definitions": {
+    "StatusCommandResult": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/StatusResult"
+      }
+    },
+    "StatusResult": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Local Deleted",
+            "Local Add",
+            "Local Changed",
+            "Local Unchanged",
+            "Remote Deleted",
+            "Remote Add",
+            "Remote Changed",
+            "Remote Unchanged",
+            "Local Deleted (Conflict)",
+            "Local Add (Conflict)",
+            "Local Changed (Conflict)",
+            "Local Unchanged (Conflict)",
+            "Remote Deleted (Conflict)",
+            "Remote Add (Conflict)",
+            "Remote Changed (Conflict)",
+            "Remote Unchanged (Conflict)"
+          ]
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "filePath": {
+          "type": "string"
+        },
+        "ignored": {
+          "type": "boolean"
+        },
+        "conflict": {
+          "type": "boolean"
+        },
+        "actualState": {
+          "type": "string",
+          "enum": ["Deleted", "Add", "Changed", "Unchanged"]
+        },
+        "origin": {
+          "type": "string",
+          "enum": ["Local", "Remote"]
+        }
+      },
+      "required": ["state", "fullName", "type", "origin"],
+      "additionalProperties": false
+    }
+  }
+}

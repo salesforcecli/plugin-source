@@ -7,8 +7,7 @@
 
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { DeployProgressStatusFormatter } from '../../src/formatters/deployProgressStatusFormatter';
@@ -16,7 +15,6 @@ import { DeployProgressStatusFormatter } from '../../src/formatters/deployProgre
 describe('DeployProgressStatusFormatter', () => {
   const sandbox = sinon.createSandbox();
   const deployResultInProgress = getDeployResult('inProgress');
-  const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
   let ux;
   let printStub: sinon.SinonStub;
   let mdApiDeploy: MetadataApiDeploy;
@@ -40,7 +38,7 @@ describe('DeployProgressStatusFormatter', () => {
   };
 
   it('should output with every update when verbose', async () => {
-    const formatter = new DeployProgressStatusFormatter(logger, ux as UX, { verbose: true });
+    const formatter = new DeployProgressStatusFormatter(ux as Ux, { verbose: true });
     formatter.progress(mdApiDeploy);
 
     fireUpdateEvent();
@@ -54,7 +52,7 @@ describe('DeployProgressStatusFormatter', () => {
   });
 
   it('should only output on update when results change without verbose', async () => {
-    const formatter = new DeployProgressStatusFormatter(logger, ux as UX);
+    const formatter = new DeployProgressStatusFormatter(ux as Ux);
     formatter.progress(mdApiDeploy);
 
     fireUpdateEvent();

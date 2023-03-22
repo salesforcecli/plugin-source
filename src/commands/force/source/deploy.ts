@@ -4,12 +4,20 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as os from 'os';
-import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+
+import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { ComponentSetBuilder, DeployVersionData } from '@salesforce/source-deploy-retrieve';
+import {
+  arrayWithDeprecation,
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { DeployCommand, getCoverageFormattersOptions, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
@@ -29,114 +37,128 @@ const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deplo
 // One of these flags must be specified for a valid deploy.
 const xorFlags = ['manifest', 'metadata', 'sourcepath', 'validateddeployrequestid'];
 
+export type DeployCommandCombinedResult = DeployCommandResult | DeployCommandAsyncResult;
+
+const replacement = 'project deploy start';
 export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
   public static readonly requiresProject = true;
-  public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    checkonly: flags.boolean({
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    checkonly: Flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly'),
-      longDescription: messages.getMessage('flagsLong.checkonly'),
+      summary: messages.getMessage('flagsLong.checkonly'),
     }),
-    soapdeploy: flags.boolean({
+    soapdeploy: Flags.boolean({
       default: false,
       description: messages.getMessage('flags.soapDeploy'),
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
+      unit: 'minutes',
       char: 'w',
       default: Duration.minutes(Deploy.DEFAULT_WAIT_MINUTES),
-      min: Duration.minutes(0), // wait=0 means deploy is asynchronous
+      min: 0, // wait=0 means deploy is asynchronous
       description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      summary: messages.getMessage('flagsLong.wait'),
     }),
-    testlevel: flags.enum({
+    testlevel: Flags.string({
       char: 'l',
       description: messages.getMessage('flags.testLevel'),
-      longDescription: messages.getMessage('flagsLong.testLevel'),
+      summary: messages.getMessage('flagsLong.testLevel'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
-    runtests: flags.array({
+    runtests: arrayWithDeprecation({
       char: 'r',
       description: messages.getMessage('flags.runTests'),
-      longDescription: messages.getMessage('flagsLong.runTests'),
+      summary: messages.getMessage('flagsLong.runTests'),
     }),
-    ignoreerrors: flags.boolean({
+    ignoreerrors: Flags.boolean({
       char: 'o',
       description: messages.getMessage('flags.ignoreErrors'),
-      longDescription: messages.getMessage('flagsLong.ignoreErrors'),
+      summary: messages.getMessage('flagsLong.ignoreErrors'),
     }),
-    ignorewarnings: flags.boolean({
+    ignorewarnings: Flags.boolean({
       char: 'g',
       description: messages.getMessage('flags.ignoreWarnings'),
-      longDescription: messages.getMessage('flagsLong.ignoreWarnings'),
+      summary: messages.getMessage('flagsLong.ignoreWarnings'),
     }),
-    purgeondelete: flags.boolean({
+    purgeondelete: Flags.boolean({
       description: messages.getMessage('flags.purgeOnDelete'),
       dependsOn: ['manifest'],
     }),
-    validateddeployrequestid: flags.id({
+    validateddeployrequestid: Flags.salesforceId({
       char: 'q',
       description: messages.getMessage('flags.validateDeployRequestId'),
-      longDescription: messages.getMessage('flagsLong.validateDeployRequestId'),
+      summary: messages.getMessage('flagsLong.validateDeployRequestId'),
       exactlyOne: xorFlags,
       exclusive: ['checkonly', 'testlevel', 'runtests', 'tracksource'],
-      validate: DeployCommand.isValidDeployId,
+      startsWith: '0Af',
     }),
-    verbose: flags.builtin({
+    verbose: Flags.boolean({
       description: messages.getMessage('flags.verbose'),
     }),
-    metadata: flags.array({
+    metadata: arrayWithDeprecation({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
-      longDescription: messages.getMessage('flagsLong.metadata'),
+      summary: messages.getMessage('flagsLong.metadata'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: flags.array({
+    sourcepath: arrayWithDeprecation({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
-      longDescription: messages.getMessage('flagsLong.sourcePath'),
+      summary: messages.getMessage('flagsLong.sourcePath'),
       exactlyOne: xorFlags,
     }),
-    manifest: flags.filepath({
+    manifest: Flags.file({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
-      longDescription: messages.getMessage('flagsLong.manifest'),
+      summary: messages.getMessage('flagsLong.manifest'),
       exactlyOne: xorFlags,
     }),
-    predestructivechanges: flags.filepath({
+    predestructivechanges: Flags.file({
       description: messages.getMessage('flags.predestructivechanges'),
       dependsOn: ['manifest'],
     }),
-    postdestructivechanges: flags.filepath({
+    postdestructivechanges: Flags.file({
       description: messages.getMessage('flags.postdestructivechanges'),
       dependsOn: ['manifest'],
     }),
-    tracksource: flags.boolean({
+    tracksource: Flags.boolean({
       char: 't',
       description: messages.getMessage('flags.tracksource'),
       exclusive: ['checkonly', 'validateddeployrequestid'],
     }),
-    forceoverwrite: flags.boolean({
+    forceoverwrite: Flags.boolean({
       char: 'f',
       description: messages.getMessage('flags.forceoverwrite'),
       dependsOn: ['tracksource'],
     }),
-    resultsdir: flags.directory({
+    resultsdir: Flags.directory({
       description: messages.getMessage('flags.resultsDir'),
     }),
-    coverageformatters: flags.array({
+    coverageformatters: arrayWithDeprecation({
       description: messages.getMessage('flags.coverageFormatters'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
     }),
-    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
+    junit: Flags.boolean({ description: messages.getMessage('flags.junit') }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   protected tracking: SourceTracking;
-
-  public async run(): Promise<DeployCommandResult | DeployCommandAsyncResult> {
+  private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
+  private org: Org;
+  public async run(): Promise<DeployCommandCombinedResult> {
+    this.flags = (await this.parse(Deploy)).flags;
+    this.org = this.flags['target-org'];
     await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
@@ -152,7 +174,7 @@ export class Deploy extends DeployCommand {
         ignoreConflicts: true,
         org: this.org,
         project: this.project,
-        ux: this.ux,
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
       });
     }
   }
@@ -162,7 +184,7 @@ export class Deploy extends DeployCommand {
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
   protected async deploy(): Promise<void> {
-    const waitDuration = this.getFlag<Duration>('wait');
+    const waitDuration = this.flags.wait;
     this.isAsync = waitDuration.quantity === 0;
     this.isRest = this.isRestDeploy();
 
@@ -171,27 +193,34 @@ export class Deploy extends DeployCommand {
     }
 
     if (this.flags.validateddeployrequestid) {
-      this.deployResult = await this.deployRecentValidation();
+      this.deployResult = await this.deployRecentValidation(
+        this.flags.validateddeployrequestid,
+        this.org.getConnection()
+      );
     } else {
       this.componentSet = await ComponentSetBuilder.build({
-        apiversion: this.getFlag<string>('apiversion'),
+        apiversion: this.flags['api-version'],
         sourceapiversion: await this.getSourceApiVersion(),
-        sourcepath: this.getFlag<string[]>('sourcepath'),
+        sourcepath: this.flags.sourcepath,
         manifest: this.flags.manifest && {
-          manifestPath: this.getFlag<string>('manifest'),
+          manifestPath: this.flags.manifest,
           directoryPaths: this.getPackageDirs(),
-          destructiveChangesPre: this.getFlag<string>('predestructivechanges'),
-          destructiveChangesPost: this.getFlag<string>('postdestructivechanges'),
+          destructiveChangesPre: this.flags.predestructivechanges,
+          destructiveChangesPost: this.flags.postdestructivechanges,
         },
         metadata: this.flags.metadata && {
-          metadataEntries: this.getFlag<string[]>('metadata'),
+          metadataEntries: this.flags.metadata,
           directoryPaths: this.getPackageDirs(),
         },
       });
-      if (this.getFlag<boolean>('tracksource')) {
+      if (this.flags.tracksource) {
         // will throw if conflicts exist
-        if (!this.getFlag<boolean>('forceoverwrite')) {
-          await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+        if (!this.flags.forceoverwrite) {
+          await filterConflictsByComponentSet({
+            tracking: this.tracking,
+            components: this.componentSet,
+            ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+          });
         }
         const localDeletes = await this.tracking.getChanges<string>({
           origin: 'local',
@@ -199,15 +228,15 @@ export class Deploy extends DeployCommand {
           format: 'string',
         });
         if (localDeletes.length) {
-          this.ux.warn(messages.getMessage('deployWontDelete'));
+          this.warn(messages.getMessage('deployWontDelete'));
         }
       }
       // fire predeploy event for sync and async deploys
-      await this.lifecycle.emit('predeploy', this.componentSet.toArray());
+      await Lifecycle.getInstance().emit('predeploy', this.componentSet.toArray());
       const username = this.org.getUsername();
       // eslint-disable-next-line @typescript-eslint/require-await
-      this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
-        this.ux.log(
+      Lifecycle.getInstance().on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+        this.log(
           deployMessages.getMessage('apiVersionMsgDetailed', [
             'Deploying',
             apiData.manifestVersion,
@@ -222,17 +251,17 @@ export class Deploy extends DeployCommand {
         usernameOrConnection: username,
         apiOptions: {
           ...{
-            purgeOnDelete: this.getFlag<boolean>('purgeondelete', false),
-            ignoreWarnings: this.getFlag<boolean>('ignorewarnings', false),
-            rollbackOnError: !this.getFlag<boolean>('ignoreerrors', false),
-            checkOnly: this.getFlag<boolean>('checkonly', false),
+            purgeOnDelete: this.flags.purgeondelete ?? false,
+            ignoreWarnings: this.flags.ignorewarnings ?? false,
+            rollbackOnError: !this.flags.ignoreerrors ?? false,
+            checkOnly: this.flags.checkonly ?? false,
             rest: this.isRest,
           },
           // if runTests is defaulted as 'NoTestRun' and deploying to prod, you'll get this error
           // https://github.com/forcedotcom/cli/issues/1542
           // add additional properties conditionally ()
-          ...(this.getFlag<string>('testlevel') ? { testLevel: this.getFlag<TestLevel>('testlevel') } : {}),
-          ...(this.getFlag<string[]>('runtests') ? { runTests: this.getFlag<string[]>('runtests') } : {}),
+          ...(this.flags.testlevel ? { testLevel: this.flags.testlevel as TestLevel } : {}),
+          ...(this.flags.runtests ? { runTests: this.flags.runtests } : {}),
         },
       });
       this.asyncDeployResult = { id: deploy.id };
@@ -240,10 +269,12 @@ export class Deploy extends DeployCommand {
 
       if (!this.isAsync) {
         // we're not print JSON output
-        if (!this.isJsonOutput()) {
+        if (!this.jsonEnabled()) {
           const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
-            ? new DeployProgressBarFormatter(this.logger, this.ux)
-            : new DeployProgressStatusFormatter(this.logger, this.ux, { verbose: this.getFlag<boolean>('verbose') });
+            ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+            : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), {
+                verbose: this.flags.verbose,
+              });
           progressFormatter.progress(deploy);
         }
         this.deployResult = await deploy.pollStatus({ timeout: waitDuration });
@@ -252,38 +283,46 @@ export class Deploy extends DeployCommand {
 
     if (this.deployResult) {
       // Only fire the postdeploy event when we have results. I.e., not async.
-      await this.lifecycle.emit('postdeploy', this.deployResult);
+      await Lifecycle.getInstance().emit('postdeploy', this.deployResult);
     }
   }
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.getFlag<string[]>('coverageformatters', undefined),
-      this.getFlag<boolean>('junit'),
-      this.getFlag<string>('resultsdir'),
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
       this.deployResult?.response?.id,
       false
     );
 
     const formatterOptions: ResultFormatterOptions = {
-      verbose: this.getFlag<boolean>('verbose', false),
+      verbose: this.flags.verbose ?? false,
       username: this.org.getUsername(),
-      coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
-      junitTestResults: this.flags.junit as boolean,
+      coverageOptions: getCoverageFormattersOptions(this.flags.coverageformatters),
+      junitTestResults: this.flags.junit,
       resultsDir: this.resultsDir,
-      testsRan: this.getFlag<string>('testlevel', 'NoTestRun') !== 'NoTestRun',
+      testsRan: (this.flags.testlevel ?? 'NoTestRun') !== 'NoTestRun',
     };
 
     const formatter = this.isAsync
-      ? new DeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
-      : new DeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+      ? new DeployAsyncResultFormatter(
+          new Ux({ jsonEnabled: this.jsonEnabled() }),
+          formatterOptions,
+          this.asyncDeployResult
+        )
+      : new DeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 
     if (!this.isAsync) {
-      this.maybeCreateRequestedReports();
+      this.maybeCreateRequestedReports({
+        coverageformatters: this.flags.coverageformatters,
+        junit: this.flags.junit,
+        org: this.org,
+      });
     }
 
     // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
 
@@ -291,8 +330,12 @@ export class Deploy extends DeployCommand {
   }
 
   private async maybeUpdateTracking(): Promise<void> {
-    if (this.getFlag<boolean>('tracksource', false)) {
-      return updateTracking({ ux: this.ux, result: this.deployResult, tracking: this.tracking });
+    if (this.flags.tracksource ?? false) {
+      return updateTracking({
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+        result: this.deployResult,
+        tracking: this.tracking,
+      });
     }
   }
 }

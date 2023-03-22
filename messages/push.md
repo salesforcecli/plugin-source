@@ -1,0 +1,55 @@
+# description
+
+push source to a scratch org from the project
+
+# descriptionLong
+
+Pushes changed source from your project to a scratch org to keep them in sync.
+
+# help
+
+If the command detects a conflict, it displays the conflicts but does not complete the process. After reviewing the conflict, rerun the command with the --forceoverwrite parameter.
+
+# flags.waitLong
+
+Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you. The default is 33 minutes.
+
+# flags.forceoverwrite
+
+ignore conflict warnings and overwrite changes to scratch org
+
+# flags.forceoverwriteLong
+
+Runs the push command even if conflicts exist. Changes in the project overwrite changes in the scratch org.
+
+# flags.replacetokens
+
+replace tokens in source files prior to deployment
+
+# flags.replacetokensLong
+
+Replaces tokens in source files prior to deployment.
+
+# flags.ignorewarnings
+
+deploy changes even if warnings are generated
+
+# flags.ignorewarningsLong
+
+Completes the deployment even if warnings are generated.
+
+# flags.quiet
+
+minimize json and sdtout output on success
+
+# sourcepushFailed
+
+Push failed. %s
+
+# sequentialFail
+
+Check the order of your dependencies and ensure all metadata is included.
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

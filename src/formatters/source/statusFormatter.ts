@@ -4,17 +4,18 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
+
+import { Messages } from '@salesforce/core';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'status', ['humanSuccess', 'noResults']);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 type StatusActualState = 'Deleted' | 'Add' | 'Changed' | 'Unchanged';
 type StatusOrigin = 'Local' | 'Remote';
 type StatusStateString = `${StatusOrigin} ${StatusActualState}` | `${StatusOrigin} ${StatusActualState} (Conflict)`;
-export interface StatusResult {
+export type StatusResult = {
   state: StatusStateString;
   fullName: string;
   type: string;
@@ -23,7 +24,7 @@ export interface StatusResult {
   conflict?: boolean;
   actualState?: StatusActualState;
   origin: StatusOrigin;
-}
+};
 
 // sort order is state, type, fullname
 const rowSortFunction = (a: StatusResult, b: StatusResult): number => {
@@ -37,8 +38,8 @@ const rowSortFunction = (a: StatusResult, b: StatusResult): number => {
 };
 
 export class StatusFormatter extends ResultFormatter {
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, private statusRows: StatusResult[]) {
-    super(logger, ux, options);
+  public constructor(ux: Ux, options: ResultFormatterOptions, private statusRows: StatusResult[]) {
+    super(ux, options);
   }
 
   public getJson(): StatusResult[] {

@@ -5,23 +5,22 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
 import * as sinon from 'sinon';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { getDeployResult } from '../commands/source/deployResponses';
 import { PushResultFormatter, mergeReplacements } from '../../src/formatters/source/pushResultFormatter';
 
 describe('PushResultFormatter', () => {
-  const logger = Logger.childFromRoot('deployTestLogger').useMemoryLogging();
   const deployResultSuccess = [getDeployResult('successSync')];
   const deployResultSuccessWithReplacements = [
     { ...getDeployResult('successSync'), replacements: new Map<string, string[]>([['foo', ['bar', 'baz']]]) },
   ] as DeployResult[];
   const deployResultFailure = [getDeployResult('failed')];
 
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   let uxMock;
   let tableStub: sinon.SinonStub;
@@ -29,7 +28,7 @@ describe('PushResultFormatter', () => {
   beforeEach(() => {
     tableStub = sandbox.stub();
     headerStub = sandbox.stub();
-    uxMock = stubInterface<UX>(sandbox, {
+    uxMock = stubInterface<Ux>(sandbox, {
       table: tableStub,
       styledHeader: headerStub,
     });
@@ -53,7 +52,7 @@ describe('PushResultFormatter', () => {
     };
     it('returns expected json for success', () => {
       process.exitCode = 0;
-      const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultSuccess);
+      const formatter = new PushResultFormatter(uxMock as Ux, {}, deployResultSuccess);
       expect(formatter.getJson().pushedSource).to.deep.equal([
         {
           filePath: 'classes/ProductController.cls',
@@ -65,7 +64,7 @@ describe('PushResultFormatter', () => {
     });
     it('returns expected json for success with replaements', () => {
       process.exitCode = 0;
-      const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultSuccessWithReplacements);
+      const formatter = new PushResultFormatter(uxMock as Ux, {}, deployResultSuccessWithReplacements);
       const result = formatter.getJson();
       expect(result.pushedSource).to.deep.equal([
         {
@@ -80,7 +79,7 @@ describe('PushResultFormatter', () => {
       });
     });
     it('returns expected json for failure', () => {
-      const formatter = new PushResultFormatter(logger, new UX(logger), {}, deployResultFailure);
+      const formatter = new PushResultFormatter(uxMock as Ux, {}, deployResultFailure);
       process.exitCode = 1;
 
       try {
@@ -98,23 +97,18 @@ describe('PushResultFormatter', () => {
     describe('json with quiet', () => {
       it('honors quiet flag for json successes', () => {
         process.exitCode = 0;
-        const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultSuccess);
+        const formatter = new PushResultFormatter(uxMock as Ux, { quiet: true }, deployResultSuccess);
         expect(formatter.getJson().pushedSource).to.deep.equal([]);
         expect(formatter.getJson().replacements).to.be.undefined;
       });
       it('omits replacements', () => {
         process.exitCode = 0;
-        const formatter = new PushResultFormatter(
-          logger,
-          new UX(logger),
-          { quiet: true },
-          deployResultSuccessWithReplacements
-        );
+        const formatter = new PushResultFormatter(uxMock as Ux, { quiet: true }, deployResultSuccessWithReplacements);
         expect(formatter.getJson().pushedSource).to.deep.equal([]);
         expect(formatter.getJson().replacements).to.be.undefined;
       });
       it('honors quiet flag for json failure', () => {
-        const formatter = new PushResultFormatter(logger, new UX(logger), { quiet: true }, deployResultFailure);
+        const formatter = new PushResultFormatter(uxMock as Ux, { quiet: true }, deployResultFailure);
         try {
           formatter.getJson();
           throw new Error('should have thrown');
@@ -129,14 +123,14 @@ describe('PushResultFormatter', () => {
   describe('human output', () => {
     it('returns expected output for success', () => {
       process.exitCode = 0;
-      const formatter = new PushResultFormatter(logger, uxMock as UX, {}, deployResultSuccess);
+      const formatter = new PushResultFormatter(uxMock as Ux, {}, deployResultSuccess);
       formatter.display();
       expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(1);
       expect(tableStub.callCount, JSON.stringify(tableStub.args)).to.equal(1);
     });
     it('returns expected output for success with replacements', () => {
       process.exitCode = 0;
-      const formatter = new PushResultFormatter(logger, uxMock as UX, {}, deployResultSuccessWithReplacements);
+      const formatter = new PushResultFormatter(uxMock as Ux, {}, deployResultSuccessWithReplacements);
       formatter.display();
       expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(2);
       expect(headerStub.args[0][0]).to.include('Pushed Source');
@@ -150,7 +144,7 @@ describe('PushResultFormatter', () => {
       deployFailure.response.details.componentFailures = [];
       deployFailure.response.details.componentSuccesses = [];
       delete deployFailure.response.details.runTestResult;
-      const formatter = new PushResultFormatter(logger, uxMock as UX, {}, [deployFailure]);
+      const formatter = new PushResultFormatter(uxMock as Ux, {}, [deployFailure]);
       sandbox.stub(formatter, 'isSuccess').returns(false);
 
       try {
@@ -166,7 +160,7 @@ describe('PushResultFormatter', () => {
     describe('quiet', () => {
       it('does not display successes for quiet', () => {
         process.exitCode = 0;
-        const formatter = new PushResultFormatter(logger, uxMock as UX, { quiet: true }, deployResultSuccess);
+        const formatter = new PushResultFormatter(uxMock as Ux, { quiet: true }, deployResultSuccess);
         formatter.display();
         expect(headerStub.callCount, JSON.stringify(headerStub.args)).to.equal(0);
         expect(formatter.getJson().pushedSource).to.deep.equal([]);
@@ -174,7 +168,7 @@ describe('PushResultFormatter', () => {
       });
       it('displays errors and throws for quiet', () => {
         process.exitCode = 1;
-        const formatter = new PushResultFormatter(logger, uxMock as UX, { quiet: true }, deployResultFailure);
+        const formatter = new PushResultFormatter(uxMock as Ux, { quiet: true }, deployResultFailure);
         try {
           formatter.display();
           throw new Error('should have thrown');
