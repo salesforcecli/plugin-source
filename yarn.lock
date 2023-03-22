@@ -1065,6 +1065,17 @@
     semver "^7.3.5"
     tslib "^2"
 
+"@salesforce/plugin-settings@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-settings/-/plugin-settings-1.4.2.tgz#e99be8b141c27431b379ee3f1f878453cc9cad19"
+  integrity sha512-uEgxHlblJOz68ETpnK+aQv9KwNpCN8D3YYOeCtyNC4R1zPa2spz7mz/565F8tuUmZgHePLD1e/vz6vS/9OeI+w==
+  dependencies:
+    "@oclif/core" "^2.3.0"
+    "@salesforce/core" "^3.33.4"
+    "@salesforce/sf-plugins-core" "^2.2.4"
+    fast-levenshtein "^3.0.0"
+    tslib "^2"
+
 "@salesforce/plugin-templates@^55.4.4":
   version "55.4.4"
   resolved "https://registry.yarnpkg.com/@salesforce/plugin-templates/-/plugin-templates-55.4.4.tgz#951526492afa4ff8c07b3efb81ebde41181796ba"

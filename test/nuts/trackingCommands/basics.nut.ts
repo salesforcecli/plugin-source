@@ -8,6 +8,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
+import * as shelljs from 'shelljs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
@@ -154,7 +155,11 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
 
   describe('non-successes', () => {
     it('should throw an err when attempting to pull from a non scratch-org', () => {
-      const hubUsername = session.hubOrg.username;
+      const hubUsername = (
+        JSON.parse(shelljs.exec('sfdx force:config:get defaultdevhubusername --json', { silent: true })) as {
+          result: [{ location: string; value: string }];
+        }
+      ).result.find((config) => config.location === 'Local').value;
       const failure = execCmd(`force:source:status -u ${hubUsername} --remote --json`, {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };
