@@ -10,21 +10,13 @@ To run the command asynchronously, set --wait to 0, which immediately returns th
 
 # examples
 
-- Let's say you deploy a directory of files to the org:
-
-  <%= config.bin %> force source deploy --sourcepath <directory>
-
-- Now cancel this deployment and wait two minutes:
+- Cancel a deployment and wait two minutes:
 
   <%= config.bin %> <%= command.id %> --wait 2
 
 - If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
   <%= config.bin %> <%= command.id %> --jobid <jobid>
-
-- Check the status of the cancel job
-
-<%= config.bin %> force source deploy report
 
 # flags.wait.summary
 

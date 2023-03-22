@@ -22,21 +22,13 @@ Job ID of the deployment you want to cancel; defaults to your most recent CLI de
 
 # examples
 
-- Let's say you deploy a directory of files to the org:
-
-  <%= config.bin %> force mdapi deploy --deploydir <directory>
-
-- Cancel this deployment and wait two minutes:
+- Cancel a deployment and wait two minutes:
 
   <%= config.bin %> <%= command.id %> --wait 2
 
 - If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
   <%= config.bin %> <%= command.id %> --jobid <jobid>
-
-- Check the status of the canceled job:
-
-  <%= config.bin %> force mdapi deploy report
 
 # CancelFailed
 
