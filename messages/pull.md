@@ -56,4 +56,4 @@ Your retrieve request did not complete within the specified wait time [%s minute
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+This command will be deprecated. Try using the '%s' command instead.

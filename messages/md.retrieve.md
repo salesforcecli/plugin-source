@@ -143,4 +143,4 @@ If the retrieve request has completed, the retrieved metadata zip file will be w
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+This command will be deprecated. Try using the '%s' command instead.
