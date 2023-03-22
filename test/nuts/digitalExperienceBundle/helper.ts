@@ -52,7 +52,7 @@ export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFull
   ).to.deep.equal([51, 1]);
 }
 
-export function assertAllDECounts(resp: CustomFileResponses) {
+export function assertDECountsOfAllDEB(resp: CustomFileResponses) {
   expect(resp).to.have.length(102);
   expect(
     resp.reduce(
@@ -65,6 +65,11 @@ export function assertAllDECounts(resp: CustomFileResponses) {
     ),
     JSON.stringify(resp)
   ).to.deep.equal([51, 51]);
+}
+
+export function assertDECountOfSingleDEB(resp: CustomFileResponses) {
+  expect(resp).to.have.length(51);
+  expect(resp.every((s) => s.type === TYPES.DE.name)).to.be.true;
 }
 
 export function assertDEB(resp: CustomFileResponses, deb: 'a' | 'b') {

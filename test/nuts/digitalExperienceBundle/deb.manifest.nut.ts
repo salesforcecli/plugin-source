@@ -14,7 +14,8 @@ import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFor
 import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, STORE, TEST_SESSION_OPTIONS, TYPES } from './constants';
 import {
   assertAllDEBAndTheirDECounts,
-  assertAllDECounts,
+  assertDECountOfSingleDEB,
+  assertDECountsOfAllDEB,
   assertDocumentDetailPageA,
   assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
@@ -93,7 +94,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertAllDECounts(deployedSource);
+        assertDECountsOfAllDEB(deployedSource);
       });
     });
 
@@ -106,8 +107,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        expect(deployedSource).to.have.length(51);
-        expect(deployedSource.every((s) => s.type === TYPES.DE.name)).to.be.true;
+        assertDECountOfSingleDEB(deployedSource);
       });
 
       it('should deploy just deb_a', () => {
@@ -183,7 +183,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertAllDECounts(inboundFiles);
+        assertDECountsOfAllDEB(inboundFiles);
       });
     });
 
@@ -196,8 +196,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        expect(inboundFiles).to.have.length(51);
-        expect(inboundFiles.every((s) => s.type === TYPES.DE.name)).to.be.true;
+        assertDECountOfSingleDEB(inboundFiles);
       });
 
       it('should retrieve just deb_a', async () => {

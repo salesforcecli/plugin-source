@@ -5,14 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { expect } from 'chai';
 import { beforeEach } from 'mocha';
 import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
 import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, TEST_SESSION_OPTIONS, TYPES } from './constants';
 import {
   assertAllDEBAndTheirDECounts,
-  assertAllDECounts,
+  assertDECountOfSingleDEB,
+  assertDECountsOfAllDEB,
   assertDocumentDetailPageA,
   assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
@@ -73,7 +73,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertAllDECounts(deployedSource);
+        assertDECountsOfAllDEB(deployedSource);
       });
     });
 
@@ -86,8 +86,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        expect(deployedSource).to.have.length(51);
-        expect(deployedSource.every((s) => s.type === TYPES.DE.name)).to.be.true;
+        assertDECountOfSingleDEB(deployedSource);
       });
 
       it('should deploy just deb_b', () => {
@@ -139,7 +138,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertAllDECounts(inboundFiles);
+        assertDECountsOfAllDEB(inboundFiles);
       });
     });
 
@@ -152,8 +151,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        expect(inboundFiles).to.have.length(51);
-        expect(inboundFiles.every((s) => s.type === TYPES.DE.name)).to.be.true;
+        assertDECountOfSingleDEB(inboundFiles);
       });
 
       it('should retrieve just deb_b', () => {
