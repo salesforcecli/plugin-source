@@ -15,7 +15,7 @@ import { PullResponse } from '../../../src/formatters/source/pullFormatter';
 import { FILE_RELATIVE_PATHS, TEST_SESSION_OPTIONS, TYPES } from './constants';
 import {
   assertAllDEBAndTheirDECounts,
-  assertDEB,
+  assertDEBMeta,
   assertDocumentDetailPageA,
   assertDocumentDetailPageADelete,
   assertNoLocalChanges,
@@ -53,7 +53,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result;
 
-    assertDEB(statusResult, 'b');
+    assertDEBMeta(statusResult, 'b');
   });
 
   it('should push local change in deb_b', async () => {
@@ -61,7 +61,7 @@ describe('deb -- tracking/push/pull', () => {
       ensureExitCode: 0,
     }).jsonOutput.result.pushedSource;
 
-    assertDEB(pushedSource, 'b');
+    assertDEBMeta(pushedSource, 'b');
     assertNoLocalChanges();
   });
 
@@ -133,7 +133,7 @@ describe('deb -- tracking/push/pull', () => {
   });
 
   describe('new site page', () => {
-    it('should see locally added new page (view and route de components) in deb_a', async () => {
+    it('should see locally added page (view and route de components) in deb_a', async () => {
       createDocumentDetailPageAInLocal(session.project.dir);
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local  --json', {
@@ -143,7 +143,7 @@ describe('deb -- tracking/push/pull', () => {
       assertDocumentDetailPageA(statusResult);
     });
 
-    it('should push locally added new page (view and route de components) in deb_a', async () => {
+    it('should push locally added page (view and route de components) in deb_a', async () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;
@@ -152,7 +152,7 @@ describe('deb -- tracking/push/pull', () => {
       assertNoLocalChanges();
     });
 
-    it('should see locally deleted new page (view and route de components) in deb_a', async () => {
+    it('should see locally deleted page (view and route de components) in deb_a', async () => {
       await deleteDocumentDetailPageAInLocal(session.project.dir);
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
@@ -162,7 +162,7 @@ describe('deb -- tracking/push/pull', () => {
       assertDocumentDetailPageA(statusResult);
     });
 
-    it('should push local delete change in deb_a [locally deleted new page (view and route de components)]', async () => {
+    it('should push local delete change in deb_a [locally deleted page (view and route de components)]', async () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result.pushedSource;

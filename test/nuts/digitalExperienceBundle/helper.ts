@@ -72,7 +72,7 @@ export function assertDECountOfSingleDEB(resp: CustomFileResponses) {
   expect(resp.every((s) => s.type === TYPES.DE.name)).to.be.true;
 }
 
-export function assertDEB(resp: CustomFileResponses, deb: 'a' | 'b') {
+export function assertDEBMeta(resp: CustomFileResponses, deb: 'a' | 'b') {
   expect(resp).to.have.length(1);
 
   resp[0].filePath = relative(process.cwd(), resp[0].filePath);
@@ -185,13 +185,17 @@ export function assertNoLocalChanges() {
 }
 
 export function createDocumentDetailPageAInLocal(projectDir: string) {
-  fs.cpSync(STORE.COMPONENTS.VIEW_DOCUMENT_DETAIL, join(projectDir, DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A), {
+  fs.cpSync(STORE.COMPONENTS.DE_VIEW_DOCUMENT_DETAIL, join(projectDir, DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A), {
     recursive: true,
   });
 
-  fs.cpSync(STORE.COMPONENTS.ROUTE_DOCUMENT_DETAIL, join(projectDir, DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A), {
-    recursive: true,
-  });
+  fs.cpSync(
+    STORE.COMPONENTS.DE_ROUTE_DOCUMENT_DETAIL,
+    join(projectDir, DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A),
+    {
+      recursive: true,
+    }
+  );
 }
 
 export async function deleteDocumentDetailPageAInLocal(projectDir: string) {
