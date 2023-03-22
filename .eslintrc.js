@@ -5,6 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 module.exports = {
-  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'prettier'],
+  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license', 'prettier','plugin:sf-plugin/migration'],
   ignorePatterns: ['test/nuts/ebikes-lwc/**', 'test/nuts/nestedLWCProject/**'],
 };

@@ -6,9 +6,10 @@
  */
 
 import { EOL } from 'os';
-import { UX } from '@salesforce/command';
-import { Logger, Messages } from '@salesforce/core';
+
+import { Messages } from '@salesforce/core';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatterOptions } from '../resultFormatter';
 import { DeployAsyncResultFormatter } from '../source/deployAsyncResultFormatter';
 
@@ -18,8 +19,8 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy')
 export class MdDeployAsyncResultFormatter extends DeployAsyncResultFormatter {
   protected declare result: AsyncResult;
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: AsyncResult) {
-    super(logger, ux, options, result);
+  public constructor(ux: Ux, options: ResultFormatterOptions, result: AsyncResult) {
+    super(ux, options, result);
     this.result = result;
   }
 

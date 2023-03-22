@@ -38,8 +38,8 @@ context('Deploy manifest NUTs [name: %REPO_NAME%]', () => {
       console.log('Clean Failed: ', e);
     }
   });
-
-  describe('--manifest flag', () => {
+  // skipping while convert is in PDR and not published
+  describe.skip('--manifest flag', () => {
     for (const testCase of REPO.deploy.manifest) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {

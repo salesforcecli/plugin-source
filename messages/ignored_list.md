@@ -1,0 +1,21 @@
+# description
+
+check your local project package directories for forceignored files
+
+# examples
+
+- $ sfdx force:source:ignored
+
+- $ sfdx force:source:ignored --sourcepath force-app
+
+# flags.sourcepath
+
+file or directory of files that the command checks for foreceignored files
+
+# invalidSourcePath
+
+File or directory '%s' doesn't exist in your project. Specify one that exists and rerun the command.
+
+# deprecation
+
+The '<%= command.id %>' command will be deprecated. Try using the %s command instead.

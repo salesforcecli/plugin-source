@@ -6,8 +6,6 @@
  */
 
 import { blue } from 'chalk';
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
@@ -17,6 +15,7 @@ import {
   RequestStatus,
   RetrieveMessage,
 } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { RetrieveFormatter } from './retrieveFormatter';
 import { ResultFormatterOptions } from './resultFormatter';
 
@@ -29,19 +28,19 @@ export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
   packages?: PackageRetrieval[];
 }
 
-export interface RetrieveCommandResult {
+export type RetrieveCommandResult = {
   inboundFiles: FileResponse[];
   packages: PackageRetrieval[];
   warnings: RetrieveMessage[];
   response: MetadataApiRetrieveStatus;
-}
+};
 
 export class RetrieveResultFormatter extends RetrieveFormatter {
   protected packages: PackageRetrieval[] = [];
   protected fileResponses: FileResponse[];
 
-  public constructor(logger: Logger, ux: UX, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
-    super(logger, ux, options, result);
+  public constructor(ux: Ux, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
+    super(ux, options, result);
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
     this.packages = options.packages || [];
   }
@@ -99,10 +98,19 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
   private displaySuccesses(retrievedFiles: FileResponse[]): void {
     this.sortFileResponses(retrievedFiles);
     this.asRelativePaths(retrievedFiles);
-    this.ux.table(retrievedFiles, {
-      fullName: { header: 'FULL NAME' },
-      type: { header: 'TYPE' },
-      filePath: { header: 'PROJECT PATH' },
-    });
+    this.ux.table(
+      retrievedFiles.map((retrieved) => ({
+        fullName: retrieved.fullName,
+        type: retrieved.type,
+        filePath: retrieved.filePath,
+        state: retrieved.state,
+      })),
+      {
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
+        state: { header: 'STATE' },
+      }
+    );
   }
 }

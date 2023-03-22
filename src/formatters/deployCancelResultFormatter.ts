@@ -5,10 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import { getString } from '@salesforce/ts-types';
 import { DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter } from './resultFormatter';
 
 export type DeployCancelCommandResult = MetadataApiDeployStatus;
@@ -16,8 +15,8 @@ export type DeployCancelCommandResult = MetadataApiDeployStatus;
 export class DeployCancelResultFormatter extends ResultFormatter {
   protected result: DeployResult;
 
-  public constructor(logger: Logger, ux: UX, result: DeployResult) {
-    super(logger, ux);
+  public constructor(ux: Ux, result: DeployResult) {
+    super(ux);
     this.result = result;
   }
 
@@ -35,7 +34,7 @@ export class DeployCancelResultFormatter extends ResultFormatter {
       if (errMsgDueTo) {
         errMsg = `${errMsg} Due to: ${errMsgDueTo}`;
       }
-      this.ux.error(errMsg);
+      this.ux.warn(errMsg);
     }
   }
 }

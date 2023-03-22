@@ -91,24 +91,4 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       ).to.have.length(0);
     });
   });
-  describe('delete', () => {
-    it('can delete remote and local metadata with tracking', async () => {
-      const result = execCmd<DeployCommandResult>('force:source:delete -m ApexClass:FooBarTest -t --noprompt --json', {
-        ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(result.deletedSource).to.be.an.instanceof(Array).with.length.greaterThan(0);
-      expect(result.deletedSource.every((item) => item.type === 'ApexClass')).to.equal(true);
-    });
-
-    it('sees no local or remote changes', () => {
-      const result = execCmd<StatusResult[]>('force:source:status --json', {
-        ensureExitCode: 0,
-      }).jsonOutput.result;
-      // this delete WILL change the admin profile, so remove that from the status result
-      expect(
-        result.filter((r) => r.type === 'ApexClass'),
-        JSON.stringify(result)
-      ).to.have.length(0);
-    });
-  });
 });

@@ -5,11 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
 import { dirname, join, resolve } from 'path';
 import * as fs from 'fs';
-import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfError, SfProject } from '@salesforce/core';
+
+import { Lifecycle, Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
   ComponentSet,
@@ -20,6 +19,15 @@ import {
   RegistryAccess,
 } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
+import { Interfaces } from '@oclif/core';
+import {
+  arrayWithDeprecation,
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   PackageRetrieval,
@@ -32,64 +40,75 @@ import { promisesQueue } from '../../../promiseQueue';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
-const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
+const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+
+const replacement = 'project retrieve start';
 
 export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
   public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    retrievetargetdir: flags.directory({
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    retrievetargetdir: Flags.directory({
       char: 'r',
       description: messages.getMessage('flags.retrievetargetdir'),
-      longDescription: messages.getMessage('flagsLong.retrievetargetdir'),
+      summary: messages.getMessage('flagsLong.retrievetargetdir'),
       exclusive: ['packagenames', 'sourcepath'],
     }),
-    apiversion: flags.builtin({
+    apiversion: Flags.string({
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore force char override for backward compat
       char: 'a',
     }),
-    sourcepath: flags.array({
+    sourcepath: arrayWithDeprecation({
       char: 'p',
       description: messages.getMessage('flags.sourcePath'),
-      longDescription: messages.getMessage('flagsLong.sourcePath'),
+      summary: messages.getMessage('flagsLong.sourcePath'),
       exclusive: ['manifest', 'metadata'],
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
+      unit: 'minutes',
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_WAIT_MINUTES),
-      min: Duration.minutes(1),
+      min: 1,
       description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      summary: messages.getMessage('flagsLong.wait'),
     }),
-    manifest: flags.filepath({
+    manifest: Flags.file({
       char: 'x',
       description: messages.getMessage('flags.manifest'),
-      longDescription: messages.getMessage('flagsLong.manifest'),
+      summary: messages.getMessage('flagsLong.manifest'),
       exclusive: ['metadata', 'sourcepath'],
     }),
-    metadata: flags.array({
+    metadata: arrayWithDeprecation({
       char: 'm',
       description: messages.getMessage('flags.metadata'),
-      longDescription: messages.getMessage('flagsLong.metadata'),
+      summary: messages.getMessage('flagsLong.metadata'),
       exclusive: ['manifest', 'sourcepath'],
     }),
-    packagenames: flags.array({
+    packagenames: arrayWithDeprecation({
       char: 'n',
       description: messages.getMessage('flags.packagename'),
     }),
-    tracksource: flags.boolean({
+    tracksource: Flags.boolean({
       char: 't',
       description: messages.getMessage('flags.tracksource'),
     }),
-    forceoverwrite: flags.boolean({
+    forceoverwrite: Flags.boolean({
       char: 'f',
       description: messages.getMessage('flags.forceoverwrite'),
       dependsOn: ['tracksource'],
     }),
-    verbose: flags.builtin({
+    verbose: Flags.boolean({
       description: messages.getMessage('flags.verbose'),
     }),
   };
@@ -97,9 +116,11 @@ export class Retrieve extends SourceCommand {
   protected retrieveResult: RetrieveResult;
   protected tracking: SourceTracking;
   private resolvedTargetDir: string;
+  private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
   private registry = new RegistryAccess();
 
   public async run(): Promise<RetrieveCommandResult> {
+    this.flags = (await this.parse(Retrieve)).flags;
     await this.preChecks();
     await this.retrieve();
     this.resolveSuccess();
@@ -110,9 +131,9 @@ export class Retrieve extends SourceCommand {
 
   protected async preChecks(): Promise<void> {
     if (this.flags.retrievetargetdir) {
-      this.resolvedTargetDir = resolve(this.flags.retrievetargetdir as string);
+      this.resolvedTargetDir = resolve(this.flags.retrievetargetdir);
       if (this.overlapsPackage()) {
-        throw messages.createError('retrieveTargetDirOverlapsPackage', [this.flags.retrievetargetdir as string]);
+        throw messages.createError('retrieveTargetDirOverlapsPackage', [this.flags.retrievetargetdir]);
       }
     }
     // we need something to retrieve
@@ -122,8 +143,8 @@ export class Retrieve extends SourceCommand {
     }
     if (this.flags.tracksource) {
       this.tracking = await trackingSetup({
-        ux: this.ux,
-        org: this.org,
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+        org: this.flags['target-org'],
         project: this.project,
         ignoreConflicts: true,
         commandName: 'force:source:retrieve',
@@ -132,10 +153,10 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const username = this.org.getUsername();
+    const username = this.flags['target-org'].getUsername();
     // eslint-disable-next-line @typescript-eslint/require-await
-    this.lifecycle.on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
-      this.ux.log(
+    Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
+      this.log(
         retrieveMessages.getMessage('apiVersionMsgDetailed', [
           'Retrieving',
           apiData.manifestVersion,
@@ -144,35 +165,39 @@ export class Retrieve extends SourceCommand {
         ])
       );
     });
-    this.ux.startSpinner(spinnerMessages.getMessage('retrieve.componentSetBuild'));
+    this.spinner.start(spinnerMessages.getMessage('retrieve.componentSetBuild'));
     this.componentSet = await ComponentSetBuilder.build({
-      apiversion: this.getFlag<string>('apiversion'),
+      apiversion: this.flags.apiversion,
       sourceapiversion: await this.getSourceApiVersion(),
-      packagenames: this.getFlag<string[]>('packagenames'),
-      sourcepath: this.getFlag<string[]>('sourcepath'),
+      packagenames: this.flags.packagenames,
+      sourcepath: this.flags.sourcepath,
       manifest: this.flags.manifest && {
-        manifestPath: this.getFlag<string>('manifest'),
+        manifestPath: this.flags.manifest,
         directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
       metadata: this.flags.metadata && {
-        metadataEntries: this.getFlag<string[]>('metadata'),
+        metadataEntries: this.flags.metadata,
         directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
     });
 
-    if (this.getFlag<string>('manifest') || this.getFlag<string>('metadata')) {
+    if (this.flags.manifest || this.flags.metadata) {
       if (this.wantsToRetrieveCustomFields()) {
-        this.ux.warn(messages.getMessage('wantsToRetrieveCustomFields'));
+        this.warn(messages.getMessage('wantsToRetrieveCustomFields'));
         this.componentSet.add({
           fullName: ComponentSet.WILDCARD,
           type: this.registry.getTypeByName('CustomObject'),
         });
       }
     }
-    if (this.getFlag<boolean>('tracksource')) {
+    if (this.flags.tracksource) {
       // will throw if conflicts exist
-      if (!this.getFlag<boolean>('forceoverwrite')) {
-        await filterConflictsByComponentSet({ tracking: this.tracking, components: this.componentSet, ux: this.ux });
+      if (!this.flags.forceoverwrite) {
+        await filterConflictsByComponentSet({
+          tracking: this.tracking,
+          components: this.componentSet,
+          ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+        });
       }
 
       const remoteDeletes = await this.tracking.getChanges<string>({
@@ -181,25 +206,25 @@ export class Retrieve extends SourceCommand {
         format: 'string',
       });
       if (remoteDeletes.length) {
-        this.ux.warn(messages.getMessage('retrieveWontDelete'));
+        this.warn(messages.getMessage('retrieveWontDelete'));
       }
     }
 
-    await this.lifecycle.emit('preretrieve', this.componentSet.toArray());
+    await Lifecycle.getInstance().emit('preretrieve', this.componentSet.toArray());
 
-    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.sendingRequest'));
+    this.spinner.status = spinnerMessages.getMessage('retrieve.sendingRequest');
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: username,
       merge: true,
       output: this.resolvedTargetDir || this.project.getDefaultPackage().fullPath,
-      packageOptions: this.getFlag<string[]>('packagenames'),
+      packageOptions: this.flags.packagenames,
     });
 
-    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.polling'));
-    this.retrieveResult = await mdapiRetrieve.pollStatus({ timeout: this.getFlag<Duration>('wait') });
+    this.spinner.status = spinnerMessages.getMessage('retrieve.polling');
+    this.retrieveResult = await mdapiRetrieve.pollStatus({ timeout: this.flags.wait });
 
-    await this.lifecycle.emit('postretrieve', this.retrieveResult.getFileResponses());
-    this.ux.stopSpinner();
+    await Lifecycle.getInstance().emit('postretrieve', this.retrieveResult.getFileResponses());
+    this.spinner.stop();
   }
 
   protected resolveSuccess(): void {
@@ -219,19 +244,23 @@ export class Retrieve extends SourceCommand {
     const packages: PackageRetrieval[] = [];
     const projectPath = await SfProject.resolveProjectPath();
 
-    this.getFlag<string[]>('packagenames', []).forEach((name) => {
+    (this.flags.packagenames ?? []).forEach((name) => {
       packages.push({ name, path: join(projectPath, name) });
     });
 
     const formatterOptions = {
-      waitTime: this.getFlag<Duration>('wait').quantity,
-      verbose: this.getFlag<boolean>('verbose', false),
+      waitTime: this.flags.wait.quantity,
+      verbose: this.flags.verbose ?? false,
       packages,
     };
-    const formatter = new RetrieveResultFormatter(this.logger, this.ux, formatterOptions, this.retrieveResult);
+    const formatter = new RetrieveResultFormatter(
+      new Ux({ jsonEnabled: this.jsonEnabled() }),
+      formatterOptions,
+      this.retrieveResult
+    );
 
     // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
 
@@ -239,8 +268,12 @@ export class Retrieve extends SourceCommand {
   }
 
   private async maybeUpdateTracking(): Promise<void> {
-    if (this.getFlag<boolean>('tracksource', false)) {
-      return updateTracking({ tracking: this.tracking, result: this.retrieveResult, ux: this.ux });
+    if (this.flags.tracksource ?? false) {
+      return updateTracking({
+        tracking: this.tracking,
+        result: this.retrieveResult,
+        ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
+      });
     }
   }
 
@@ -301,7 +334,7 @@ export class Retrieve extends SourceCommand {
     // move contents of 'main/default' to 'retrievetargetdir'
     await promisesQueue([join(this.resolvedTargetDir, 'main', 'default')], mv, 5, true);
     // remove 'main/default'
-    await fs.promises.rm(join(this.flags.retrievetargetdir as string, 'main'), { recursive: true });
+    await fs.promises.rm(join(this.flags.retrievetargetdir, 'main'), { recursive: true });
     this.retrieveResult.getFileResponses().forEach((fileResponse) => {
       fileResponse.filePath = fileResponse.filePath?.replace(join('main', 'default'), '');
     });

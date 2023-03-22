@@ -10,6 +10,7 @@ import { expect } from 'chai';
 import { fromStub, StubbedType, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { SfDoctor } from '@salesforce/plugin-info';
 import { ConfigAggregator, Lifecycle, Messages, Org, SfProject } from '@salesforce/core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { hook } from '../../src/hooks/diagnostics';
 
 const pluginName = '@salesforce/plugin-source';
@@ -23,7 +24,7 @@ const messages = Messages.load(pluginName, 'diagnostics', [
 ]);
 
 describe('Doctor diagnostics', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
 
   // Stubs for:
   //  1. the Doctor class needed by the hook

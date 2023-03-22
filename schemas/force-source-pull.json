@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/PullResponse",
+  "definitions": {
+    "PullResponse": {
+      "type": "object",
+      "properties": {
+        "pulledSource": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "filePath": {
+                "type": "string"
+              },
+              "fullName": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string",
+                "enum": ["Created", "Changed", "Unchanged", "Deleted", "Failed"]
+              },
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": ["fullName", "state", "type"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["pulledSource"],
+      "additionalProperties": false
+    }
+  }
+}

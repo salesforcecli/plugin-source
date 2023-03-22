@@ -6,11 +6,10 @@
  */
 import { relative, resolve as pathResolve } from 'path';
 import * as chalk from 'chalk';
-import { UX } from '@salesforce/command';
-import { Logger, Messages, SfError } from '@salesforce/core';
+
+import { Messages, SfError } from '@salesforce/core';
 import {
   ComponentStatus,
-  DeployMessage,
   DeployResult,
   FileResponse,
   MetadataResolver,
@@ -19,6 +18,7 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { isString } from '@salesforce/ts-types';
 import { ensureArray } from '@salesforce/kit';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
@@ -33,14 +33,13 @@ export class PushResultFormatter extends ResultFormatter {
   protected fileResponses: FileResponse[];
   protected replacements: Map<string, string[]>;
   public constructor(
-    logger: Logger,
-    ux: UX,
+    ux: Ux,
     options: ResultFormatterOptions,
     protected results: DeployResult[],
     // if your push included deletes that are bundle subcomponents, we'll need to add those deletes to the results even though they aren't included in fileResponses
     protected deletes: string[] = []
   ) {
-    super(logger, ux, options);
+    super(ux, options);
     this.fileResponses = this.correctFileResponses();
     this.replacements = mergeReplacements(results);
   }
@@ -51,12 +50,13 @@ export class PushResultFormatter extends ResultFormatter {
    * @returns a JSON formatted result matching the provided type.
    */
   public getJson(): PushResponse {
-    // throws a particular json structure.  commandName property will be appended by sfdxCommand when this throws
+    // throws a particular json structure.
     if (process.exitCode !== 0) {
       const error = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
       const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
       error.setData(errorData);
       error['result'] = errorData;
+      error['commandName'] = 'Push';
       // partial success
       if (process.exitCode === 69) {
         error['partialSuccess'] = this.fileResponses.filter(
@@ -72,7 +72,7 @@ export class PushResultFormatter extends ResultFormatter {
     return {
       pushedSource: toReturn.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
       ...(!this.isQuiet() && this.replacements.size ? { replacements: Object.fromEntries(this.replacements) } : {}),
-    };
+    } as PushResponse;
   }
 
   /**
@@ -163,12 +163,20 @@ export class PushResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Pushed Source'));
-      this.ux.table(successes, {
-        state: { header: 'STATE' },
-        fullName: { header: 'FULL NAME' },
-        type: { header: 'TYPE' },
-        filePath: { header: 'PROJECT PATH' },
-      });
+      this.ux.table(
+        successes.map((entry) => ({
+          state: entry.state,
+          fullName: entry.fullName,
+          type: entry.type,
+          filePath: entry.filePath,
+        })),
+        {
+          state: { header: 'STATE' },
+          fullName: { header: 'FULL NAME' },
+          type: { header: 'TYPE' },
+          filePath: { header: 'PROJECT PATH' },
+        }
+      );
     }
   }
 
@@ -190,7 +198,7 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    const failures: Array<FileResponse | DeployMessage> = [];
+    const failures = [];
     const fileResponseFailures: Map<string, string> = new Map<string, string>();
 
     if (this.fileResponses?.length) {
@@ -240,7 +248,7 @@ export class PushResultFormatter extends ResultFormatter {
     try {
       return resolver.getComponentsFromPath(filename);
     } catch (e) {
-      this.logger.warn(`unable to resolve ${filename}`);
+      this.ux.warn(`unable to resolve ${filename}`);
       return [];
     }
   }

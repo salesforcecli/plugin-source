@@ -6,14 +6,15 @@
  */
 
 import { join } from 'path';
-import * as fs from 'fs';
 import * as sinon from 'sinon';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigFile, Org, SfProject } from '@salesforce/core';
+import { ConfigFile, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
-import { UX } from '@salesforce/command';
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+
+import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { Report } from '../../../src/commands/force/source/deploy/report';
 import { DeployReportResultFormatter } from '../../../src/formatters/deployReportResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
@@ -23,8 +24,10 @@ import { Stash } from '../../../src/stash';
 import { getDeployResult, getDeployResponse } from './deployResponses';
 
 describe('force:source:report', () => {
-  const sandbox = sinon.createSandbox();
-  const username = 'report-test@org.com';
+  const $$ = new TestContext();
+  const testOrg = new MockTestOrgData();
+  const sandbox = $$.SANDBOX;
+  testOrg.username = 'report-test@org.com';
   const defaultDir = join('my', 'default', 'package');
   const stashedDeployId = 'IMA000STASHID';
 
@@ -39,20 +42,15 @@ describe('force:source:report', () => {
   let checkDeployStatusStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let pollStatusStub: sinon.SinonStub;
-  let readSyncStub: sinon.SinonStub;
 
   class TestReport extends Report {
     public async runIt() {
-      await this.init();
       // oclif would normally populate this, but UT don't have it
       this.id ??= 'force:source:deploy:report';
+      // required for deprecation warnings to work correctly
+      this.ctor.id ??= 'force:source:deploy:report';
+      await this.init();
       return this.run();
-    }
-    public setOrg(org: Org) {
-      this.org = org;
-    }
-    public setProject(project: SfProject) {
-      this.project = project;
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -61,43 +59,31 @@ describe('force:source:report', () => {
     }
   }
 
-  const runReportCmd = async (params: string[]) => {
-    // @ts-expect-error type mismatch between oclif/core v1 and v2
+  const runReportCmd = async (params: string[], result?: MetadataApiDeployStatus) => {
     const cmd = new TestReport(params, oclifConfigStub);
-    stubMethod(sandbox, cmd, 'assignProject').callsFake(() => {
-      const SfProjectStub = fromStub(
-        stubInterface<SfProject>(sandbox, {
-          getUniquePackageDirectories: () => [{ fullPath: defaultDir }],
-        })
-      );
-      cmd.setProject(SfProjectStub);
-    });
-    stubMethod(sandbox, cmd, 'assignOrg').callsFake(() => {
-      const orgStub = fromStub(
-        stubInterface<Org>(sandbox, {
-          getUsername: () => username,
-          getConnection: () => ({
-            metadata: {
-              checkDeployStatus: checkDeployStatusStub,
-            },
-          }),
-        })
-      );
-      cmd.setOrg(orgStub);
-    });
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
+    cmd.project = SfProject.getInstance();
+    sandbox
+      .stub(cmd.project, 'getUniquePackageDirectories')
+      .returns([{ fullPath: defaultDir, path: defaultDir, name: '' }]);
+
+    uxLogStub = stubMethod(sandbox, Ux.prototype, 'log');
     stubMethod(sandbox, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    checkDeployStatusStub = sandbox.stub(cmd, 'report').resolves({ response: result ?? expectedResults });
 
     return cmd.runIt();
   };
 
-  beforeEach(() => {
-    readSyncStub = stubMethod(sandbox, ConfigFile.prototype, 'readSync');
+  beforeEach(async () => {
+    await $$.stubAuths(testOrg);
+    await $$.stubConfig({ 'target-org': testOrg.username });
+
     pollStatusStub = sandbox.stub(MetadataApiDeploy.prototype, 'pollStatus');
-    checkDeployStatusStub = sandbox.stub().resolves(expectedResults);
   });
 
   afterEach(() => {
+    $$.restore();
     sandbox.restore();
   });
 
@@ -106,30 +92,14 @@ describe('force:source:report', () => {
     const result = await runReportCmd(['--json']);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(true);
-    expect(checkDeployStatusStub.firstCall.args[0]).to.equal(stashedDeployId);
+    expect(checkDeployStatusStub.firstCall.args[1]).to.equal(stashedDeployId);
   });
 
   it('should display stashed deploy ID', async () => {
     const progressBarStub = sandbox.stub(DeployProgressBarFormatter.prototype, 'progress').returns();
     const result = await runReportCmd([]);
     expect(result).to.deep.equal(expectedResults);
-    expect(uxLogStub.firstCall.args[0]).to.contain(stashedDeployId);
     expect(progressBarStub.calledOnce).to.equal(true);
-  });
-
-  it('should rename corrupt stash.json and throw an error', async () => {
-    const jsonParseError = new Error();
-    jsonParseError.name = 'JsonParseError';
-    readSyncStub.throws(jsonParseError);
-    const renameSyncStub = stubMethod(sandbox, fs, 'renameSync');
-    try {
-      await runReportCmd(['--json']);
-      assert(false, 'Expected report command to throw a JsonParseError');
-    } catch (error: unknown) {
-      const err = error as Error;
-      expect(err.name).to.equal('InvalidStashFile');
-      expect(renameSyncStub.calledOnce).to.be.true;
-    }
   });
 
   it('should use the jobid flag', async () => {
@@ -137,14 +107,13 @@ describe('force:source:report', () => {
     const result = await runReportCmd(['--json', '--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
     expect(getStashSpy.called).to.equal(false);
-    expect(checkDeployStatusStub.firstCall.args[0]).to.equal(expectedResults.id);
+    expect(checkDeployStatusStub.firstCall.args[1]).to.equal(expectedResults.id);
   });
 
   it('should display the jobid flag', async () => {
     const progressBarStub = sandbox.stub(DeployProgressBarFormatter.prototype, 'progress').returns();
     const result = await runReportCmd(['--jobid', expectedResults.id]);
     expect(result).to.deep.equal(expectedResults);
-    expect(uxLogStub.firstCall.args[0]).to.contain(expectedResults.id);
     expect(progressBarStub.calledOnce).to.equal(true);
   });
 
@@ -155,7 +124,7 @@ describe('force:source:report', () => {
     await runReportCmd([]);
     expect(displayStub.calledOnce).to.equal(true);
     expect(getJsonStub.calledOnce).to.equal(true);
-    expect(uxLogStub.called).to.equal(true);
+    expect(uxLogStub.called).to.equal(false);
     expect(progressBarStub.calledOnce).to.equal(true);
   });
 
@@ -183,7 +152,7 @@ describe('force:source:report', () => {
     pollStatusStub.throws(Error('The client has timed out'));
     checkDeployStatusStub.reset();
     checkDeployStatusStub.resolves(inProgressDeployResult);
-    const result = await runReportCmd(['--json', '--wait', '1']);
+    const result = await runReportCmd(['--json', '--wait', '1'], inProgressDeployResult);
     expect(result).to.deep.equal(inProgressDeployResult);
   });
 });

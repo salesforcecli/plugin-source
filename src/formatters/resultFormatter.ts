@@ -8,12 +8,11 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { UX } from '@salesforce/command';
-import { Logger } from '@salesforce/core';
 import { Failures, FileProperties, FileResponse, Successes } from '@salesforce/source-deploy-retrieve';
 import { getNumber } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
 import { CoverageReporterOptions, DefaultReportOptions } from '@salesforce/apex-node';
+import { Ux } from '@salesforce/sf-plugins-core';
 
 export interface ResultFormatterOptions {
   verbose?: boolean;
@@ -30,15 +29,7 @@ export interface ResultFormatterOptions {
 export type CoverageResultsFileInfo = Record<keyof Partial<typeof DefaultReportOptions>, string>;
 
 export abstract class ResultFormatter {
-  public logger: Logger;
-  public ux: UX;
-  public options: ResultFormatterOptions;
-
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions = {}) {
-    this.logger = logger;
-    this.ux = ux;
-    this.options = options;
-  }
+  protected constructor(public ux: Ux, public options: ResultFormatterOptions = {}) {}
 
   // Command success is determined by the command so it can set the
   // exit code on the process, which is done before formatting.

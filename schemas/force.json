@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/ForceCommandResult",
+  "definitions": {
+    "ForceCommandResult": {
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "type": "string"
+        }
+      },
+      "required": ["apiVersion"],
+      "additionalProperties": false
+    }
+  }
+}
