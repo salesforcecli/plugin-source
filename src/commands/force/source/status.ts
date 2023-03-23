@@ -26,8 +26,7 @@ export type StatusCommandResult = StatusResult[];
 
 const replacement = 'project retrieve/deploy preview';
 export default class Status extends SfCommand<StatusCommandResult> {
-  public static readonly summary = messages.getMessage('description');
-  public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
@@ -40,18 +39,16 @@ export default class Status extends SfCommand<StatusCommandResult> {
     'target-org': requiredOrgFlagWithDeprecations,
     local: Flags.boolean({
       char: 'l',
-      description: messages.getMessage('flags.local'),
-      summary: messages.getMessage('flags.localLong'),
+      summary: messages.getMessage('flags.local.summary'),
       exclusive: ['remote'],
     }),
     remote: Flags.boolean({
       char: 'r',
-      description: messages.getMessage('flags.remote'),
-      summary: messages.getMessage('flags.remoteLong'),
+      summary: messages.getMessage('flags.remote.summary'),
       exclusive: ['local'],
     }),
     concise: Flags.boolean({
-      summary: messages.getMessage('flags.concise'),
+      summary: messages.getMessage('flags.concise.summary'),
     }),
   };
   public static readonly requiresProject = true;

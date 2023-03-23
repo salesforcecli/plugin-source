@@ -34,17 +34,18 @@ export default class Pull extends SourceCommand {
     message: messages.getMessage('deprecation', [replacement]),
   };
   public static description = messages.getMessage('description');
-  public static help = messages.getMessage('help');
+  public static summary = messages.getMessage('summary');
+  public static examples = messages.getMessages('examples');
   public static readonly flags = {
     verbose: Flags.boolean({
-      summary: messages.getMessage('flags.verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
     'target-org': requiredOrgFlagWithDeprecations,
     forceoverwrite: Flags.boolean({
       char: 'f',
-      description: messages.getMessage('flags.forceoverwrite'),
+      summary: messages.getMessage('flags.forceoverwrite.summary'),
     }),
     // TODO: use shared flags from plugin-source
     wait: Flags.duration({
@@ -52,7 +53,8 @@ export default class Pull extends SourceCommand {
       char: 'w',
       default: Duration.minutes(33),
       min: 0, // wait=0 means deploy is asynchronous
-      description: messages.getMessage('flags.waitLong'),
+      summary: messages.getMessage('flags.wait.summary'),
+      description: messages.getMessage('flags.wait.description'),
     }),
   };
 

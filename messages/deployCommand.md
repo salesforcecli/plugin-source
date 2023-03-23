@@ -12,8 +12,8 @@ The provided ID is invalid, deploy IDs must start with '0Af'.
 
 # apiVersionMsgBasic
 
-Deploying metadata to %s using the v%s %s API
+Deploying metadata to %s using the v%s %s API.
 
 # apiVersionMsgDetailed
 
-%s v%s metadata to %s using the v%s %s API
+%s v%s metadata to %s using the v%s %s API.

@@ -1,34 +1,40 @@
+# summary
+
+Pull changed source from the org to your project to keep them in sync.
+
 # description
-
-pull source from the scratch org to the project
-
-# descriptionLong
-
-Pulls changed source from the scratch org to your project to keep them in sync.
-
-# help
 
 If the command detects a conflict, it displays the conflicts but does not complete the process. After reviewing the conflict, rerun the command with the --forceoverwrite parameter.
 
-# flags.verbose
+# examples
 
-display additional details about the command results
+- Pull source from your default org:
 
-# flags.forceoverwrite
+  <%= config.bin %> <%= command.id %>
 
-ignore conflict warnings and overwrite changes to the project
+- Pull source from the org with alias "myscratch"; ignore any conflicts and overwrite the local project files with org changes; wait for only 5 minutes:
 
-# flags.forceoverwriteLong
+  <%= config.bin %> <%= command.id %> --target-org myscratch --wait 5 --forceoverwrite
 
-Runs the pull command even if conflicts exist. Changes in the scratch org overwrite changes in the project.
+# flags.verbose.summary
 
-# flags.waitLong
+Display additional details about the command results.
 
-The number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you. The default is 33 minutes.
+# flags.forceoverwrite.summary
+
+Ignore conflict warnings; changes in the org overwrite changes in the project.
+
+# flags.wait.summary
+
+Number of minutes to wait for the command to complete and display results to the terminal window.
+
+# flags.wait.description
+
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 
 # NonScratchOrgPull
 
-We can"t retrieve your changes. "force:source:pull" is only available for orgs that have source tracking enabled. Use "force:source:retrieve" or "force:mdapi:retrieve" instead.
+We can"t retrieve your changes. "force source pull" is only available for orgs that have source tracking enabled. Use "force source retrieve" or "force mdapi retrieve" instead.
 
 # sourceConflictDetected
 
@@ -56,4 +62,4 @@ Your retrieve request did not complete within the specified wait time [%s minute
 
 # deprecation
 
-This command will be deprecated. Try using the '%s' command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

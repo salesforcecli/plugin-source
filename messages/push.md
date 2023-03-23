@@ -1,46 +1,44 @@
+# summary
+
+Push changed source from your project to an org to keep them in sync.
+
 # description
-
-push source to a scratch org from the project
-
-# descriptionLong
-
-Pushes changed source from your project to a scratch org to keep them in sync.
-
-# help
 
 If the command detects a conflict, it displays the conflicts but does not complete the process. After reviewing the conflict, rerun the command with the --forceoverwrite parameter.
 
-# flags.waitLong
+# examples
 
-Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you. The default is 33 minutes.
+- Push source to your default org:
 
-# flags.forceoverwrite
+  <%= config.bin %> <%= command.id %>
 
-ignore conflict warnings and overwrite changes to scratch org
+- Push source to the org with alias "myscratch"; ignore any conflicts and overwrite with org with the local project changes; wait for only 5 minutes:
 
-# flags.forceoverwriteLong
+  <%= config.bin %> <%= command.id %> --target-org myscratch --wait 5 --forceoverwrite
 
-Runs the push command even if conflicts exist. Changes in the project overwrite changes in the scratch org.
+# flags.wait.summary
 
-# flags.replacetokens
+Number of minutes to wait for the command to complete and display results to the terminal window.
 
-replace tokens in source files prior to deployment
+# flags.wait.description
 
-# flags.replacetokensLong
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 
-Replaces tokens in source files prior to deployment.
+# flags.forceoverwrite.summary
 
-# flags.ignorewarnings
+Ignore conflict warnings and push source anyway; changes in the project overwrite changes in the org.
 
-deploy changes even if warnings are generated
+# flags.replacetokens.summary
 
-# flags.ignorewarningsLong
+Replace tokens in source files prior to deployment.
 
-Completes the deployment even if warnings are generated.
+# flags.ignorewarnings.summary
 
-# flags.quiet
+Deploy changes even if warnings are generated.
 
-minimize json and sdtout output on success
+# flags.quiet.summary
+
+Minimize JSON and sdtout output on success.
 
 # sourcepushFailed
 
@@ -52,4 +50,4 @@ Check the order of your dependencies and ensure all metadata is included.
 
 # deprecation
 
-This command will be deprecated. Try using the '%s' command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

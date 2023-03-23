@@ -28,6 +28,7 @@ const replacement = 'project deploy cancel';
 
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
@@ -43,14 +44,14 @@ export class Cancel extends DeployCommand {
       unit: 'minutes',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
       min: 1,
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flags.waitLong'),
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
     jobid: Flags.salesforceId({
       char: 'i',
       length: 'both',
       startsWith: '0Af',
-      description: messages.getMessage('flags.jobid'),
+      summary: messages.getMessage('flags.jobid.summary'),
     }),
   };
   private flags: Interfaces.InferredFlags<typeof Cancel.flags>;

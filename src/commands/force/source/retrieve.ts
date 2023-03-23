@@ -45,6 +45,7 @@ const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'ret
 const replacement = 'project retrieve start';
 
 export class Retrieve extends SourceCommand {
+  public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
@@ -60,8 +61,8 @@ export class Retrieve extends SourceCommand {
     'target-org': requiredOrgFlagWithDeprecations,
     retrievetargetdir: Flags.directory({
       char: 'r',
-      description: messages.getMessage('flags.retrievetargetdir'),
-      summary: messages.getMessage('flagsLong.retrievetargetdir'),
+      description: messages.getMessage('flags.retrievetargetdir.description'),
+      summary: messages.getMessage('flags.retrievetargetdir.summary'),
       exclusive: ['packagenames', 'sourcepath'],
     }),
     apiversion: Flags.string({
@@ -71,8 +72,8 @@ export class Retrieve extends SourceCommand {
     }),
     sourcepath: arrayWithDeprecation({
       char: 'p',
-      description: messages.getMessage('flags.sourcePath'),
-      summary: messages.getMessage('flagsLong.sourcePath'),
+      description: messages.getMessage('flags.sourcePath.description'),
+      summary: messages.getMessage('flags.sourcePath.summary'),
       exclusive: ['manifest', 'metadata'],
     }),
     wait: Flags.duration({
@@ -80,36 +81,36 @@ export class Retrieve extends SourceCommand {
       char: 'w',
       default: Duration.minutes(SourceCommand.DEFAULT_WAIT_MINUTES),
       min: 1,
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
     manifest: Flags.file({
       char: 'x',
-      description: messages.getMessage('flags.manifest'),
-      summary: messages.getMessage('flagsLong.manifest'),
+      description: messages.getMessage('flags.manifest.description'),
+      summary: messages.getMessage('flags.manifest.summary'),
       exclusive: ['metadata', 'sourcepath'],
     }),
     metadata: arrayWithDeprecation({
       char: 'm',
-      description: messages.getMessage('flags.metadata'),
-      summary: messages.getMessage('flagsLong.metadata'),
+      description: messages.getMessage('flags.metadata.description'),
+      summary: messages.getMessage('flags.metadata.summary'),
       exclusive: ['manifest', 'sourcepath'],
     }),
     packagenames: arrayWithDeprecation({
       char: 'n',
-      description: messages.getMessage('flags.packagename'),
+      summary: messages.getMessage('flags.packagename.summary'),
     }),
     tracksource: Flags.boolean({
       char: 't',
-      description: messages.getMessage('flags.tracksource'),
+      summary: messages.getMessage('flags.tracksource.summary'),
     }),
     forceoverwrite: Flags.boolean({
       char: 'f',
-      description: messages.getMessage('flags.forceoverwrite'),
+      summary: messages.getMessage('flags.forceoverwrite.summary'),
       dependsOn: ['tracksource'],
     }),
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];

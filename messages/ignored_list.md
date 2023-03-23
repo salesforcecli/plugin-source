@@ -1,16 +1,20 @@
-# description
+# summary
 
-check your local project package directories for forceignored files
+Check your local project package directories for forceignored files.
 
 # examples
 
-- $ sfdx force:source:ignored
+- Check all local project package directories for forceignored files:
 
-- $ sfdx force:source:ignored --sourcepath force-app
+  <%= config.bin %> <%= command.id %>
 
-# flags.sourcepath
+- Check the specified package directory for forceignored files:
 
-file or directory of files that the command checks for foreceignored files
+  <%= config.bin %> <%= command.id %> --sourcepath force-app
+
+# flags.sourcepath.summary
+
+File or directory that the command checks for foreceignored files.
 
 # invalidSourcePath
 
@@ -18,4 +22,4 @@ File or directory '%s' doesn't exist in your project. Specify one that exists an
 
 # deprecation
 
-This command will be deprecated. Try using the '%s' command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.
