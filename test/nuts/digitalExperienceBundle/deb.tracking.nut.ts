@@ -10,8 +10,8 @@ import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { SourceTrackingClearResult } from '../../../src/commands/force/source/tracking/clear';
-import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+// import { SourceTrackingClearResult } from '../../../src/commands/force/source/tracking/clear';
+// import { PullResponse } from '../../../src/formatters/source/pullFormatter';
 import { FILE_RELATIVE_PATHS, TEST_SESSION_OPTIONS, TYPES } from './constants';
 import {
   assertAllDEBAndTheirDECounts,
@@ -112,17 +112,18 @@ describe('deb -- tracking/push/pull', () => {
     assertNoLocalChanges();
   });
 
-  it('should pull all debs after clearing source tracking info', () => {
-    execCmd<SourceTrackingClearResult>('force:source:tracking:clear --noprompt', {
-      ensureExitCode: 0,
-    });
+  // TODO: restore test once it can use tracking:clear from PDR
+  // it('should pull all debs after clearing source tracking info', () => {
+  //   execCmd<SourceTrackingClearResult>('force:source:tracking:clear --noprompt', {
+  //     ensureExitCode: 0,
+  //   });
 
-    const pulledSource = execCmd<PullResponse>('force:source:pull --forceoverwrite --json', {
-      ensureExitCode: 0,
-    }).jsonOutput.result.pulledSource;
+  //   const pulledSource = execCmd<PullResponse>('force:source:pull --forceoverwrite --json', {
+  //     ensureExitCode: 0,
+  //   }).jsonOutput.result.pulledSource;
 
-    assertAllDEBAndTheirDECounts(pulledSource, 0, false);
-  });
+  //   assertAllDEBAndTheirDECounts(pulledSource, 0, false);
+  // });
 
   it('should not see any local/remote changes in deb/de', () => {
     const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
