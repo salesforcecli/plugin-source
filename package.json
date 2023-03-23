@@ -171,6 +171,7 @@
     "test:nuts:tracking:lwc": "mocha \"test/nuts/trackingCommands/lwc.nut.ts\" --slow 3000 --timeout 1200000 --retries 0 --jobs 20",
     "test:nuts:tracking:mpd": "mocha \"test/nuts/trackingCommands/mpd*\" --slow 3000 --timeout 1200000 --retries 0 -parallel --jobs 20",
     "test:nuts:tracking:remote": "mocha \"test/nuts/trackingCommands/remoteChanges.nut.ts\" --slow 3000 --timeout 1200000 --retries 0 --jobs 20",
+    "test:nuts:deb": "mocha \"test/nuts/digitalExperienceBundle/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
     "test:only": "wireit",
     "test:watch": "mocha --watch \"./test/**/*.test.ts\"",
     "version": "oclif readme"
