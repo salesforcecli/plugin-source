@@ -1,172 +1,171 @@
-# description
+# summary
 
-deploy metadata to an org using Metadata API
+Deploy metadata to an org using Metadata API.
 
 # examples
 
 - Return a job ID you can use to check the deploy status:
 
-- $ sfdx force:mdapi:deploy -d some/path
+  <%= config.bin %> <%= command.id %> --deploydir some/path
 
 - Deploy and poll for 1000 minutes:
 
-- $ sfdx force:mdapi:deploy -d some/path -w 1000
+  <%= config.bin %> <%= command.id %> --deploydir some/path --wait 1000
 
 - Deploy a ZIP file:
 
-- $ sfdx force:mdapi:deploy -f stuff.zip
+  <%= config.bin %> <%= command.id %> --zipfile stuff.zip
 
 - Validate a deployment so the ID can be used for a quick deploy:
 
-- $ sfdx force:mdapi:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg
+  <%= config.bin %> <%= command.id %> --deploydir some/path --wait 1000 --checkonly --testlevel RunAllTestsInOrg
 
 - Quick deploy using a previously validated deployment:
 
-- $ sfdx force:mdapi:deploy -q MyValidatedId
+  <%= config.bin %> <%= command.id %> --validateddeployrequestid MyValidatedId
 
-# flags.checkOnly
+# flags.checkOnly.summary
 
-validate deploy but don’t save to the org
+Validates the deployed metadata and runs all Apex tests, but prevents the deployment from being saved to the org.
 
-# flags.deployDir
+# flags.deployDir.summary
 
-root of directory tree of files to deploy
+Root of directory tree that contains the files you want to deploy.
 
-# flags.wait
+# flags.wait.summary
 
-wait time for command to finish in minutes. Use -1 to wait indefinitely
+Number of minutes to wait for the command to finish; specify -1 to wait indefinitely.
 
-# flags.jobId
+# flags.jobId.summary
 
-job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; if not specified, defaults to your most recent CLI deployment
+Job ID of the deployment to check.
 
-# flags.testLevel
+# flags.testLevel.summary
 
-deployment testing level
+Level of deployment tests to run.
 
-# flags.runTests
+# flags.runTests.summary
 
-tests to run if --testlevel RunSpecifiedTests
+Apex test classes to run if --testlevel is RunSpecifiedTests.
 
-# flags.ignoreErrors
+# flags.ignoreErrors.summary
 
-ignore any errors and do not roll back deployment
+Ignore any errors and don't roll back the deployment.
 
-# flags.ignoreWarnings
+# flags.ignoreWarnings.summary
 
-whether a warning will allow a deployment to complete successfully
+Ignore any warnings and don't roll back the deployment.
 
-# flags.zipFile
+# flags.zipFile.summary
 
-path to .zip file of metadata to deploy
+Path to .zip file of metadata to deploy.
 
-# flags.verbose
+# flags.verbose.summary
 
-verbose output of deploy results
+Display verbose output of the deploy results.
 
-# flags.validatedDeployRequestId
+# flags.validatedDeployRequestId.summary
 
-request ID of the validated deployment to run a Quick Deploy
+Request ID of the validated deployment to run a Quick Deploy.
 
-# flags.singlePackage
+# flags.singlePackage.summary
 
-Indicates that the zip file points to a directory structure for a single package
+Indicates that the zip file points to a directory structure for a single package.
 
-# flags.soapDeploy
+# flags.soapDeploy.summary
 
-deploy metadata with SOAP API instead of REST API
+Deploy metadata with SOAP API instead of REST API.
 
-# flags.purgeOnDelete
+# flags.purgeOnDelete.summary
 
-specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin
+Specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin.
 
-# flags.concise
+# flags.concise.summary
 
-omit success messages for smaller JSON output
+Omit success messages for smaller JSON output.
 
-# flags.junit
+# flags.junit.summary
 
-output JUnit test results
+Output JUnit test results.
 
-# flags.coverageFormatters
+# flags.coverageFormatters.summary
 
-format of the code coverage results
+Format of the code coverage results.
 
-# flags.resultsDir
+# flags.resultsDir.summary
 
-output directory for code coverage and JUnit results; defaults to the deploy ID
+Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
-# flagsLong.checkOnly
+# flags.checkOnly.description
 
 IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained certain terms to avoid any effect on customer implementations.
 
-Validates the deployed metadata and runs all Apex tests, but prevents the deployment from being saved to the org.
 If you change a field type from Master-Detail to Lookup or vice versa, that change isn’t supported when using the --checkonly parameter to test a deployment (validation). This kind of change isn’t supported for test deployments to avoid the risk of data loss or corruption. If a change that isn’t supported for test deployments is included in a deployment package, the test deployment fails and issues an error.
+
 If your deployment package changes a field type from Master-Detail to Lookup or vice versa, you can still validate the changes prior to deploying to Production by performing a full deployment to another test Sandbox. A full deployment includes a validation of the changes as part of the deployment process.
+
 Note: A Metadata API deployment that includes Master-Detail relationships deletes all detail records in the Recycle Bin in the following cases.
 
-1. For a deployment with a new Master-Detail field, soft delete (send to the Recycle Bin) all detail records before proceeding to deploy the Master-Detail field, or the deployment fails. During the deployment, detail records are permanently deleted from the Recycle Bin and cannot be recovered.
-2. For a deployment that converts a Lookup field relationship to a Master-Detail relationship, detail records must reference a master record or be soft-deleted (sent to the Recycle Bin) for the deployment to succeed. However, a successful deployment permanently deletes any detail records in the Recycle Bin.
+    1. For a deployment with a new Master-Detail field, soft delete (send to the Recycle Bin) all detail records before proceeding to deploy the Master-Detail field, or the deployment fails. During the deployment, detail records are permanently deleted from the Recycle Bin and cannot be recovered.
+    2. For a deployment that converts a Lookup field relationship to a Master-Detail relationship, detail records must reference a master record or be soft-deleted (sent to the Recycle Bin) for the deployment to succeed. However, a successful deployment permanently deletes any detail records in the Recycle Bin.
 
-# flagsLong.deployDir
+# flags.deployDir.description
 
-The root of the directory tree that contains the files to deploy. The root must contain a valid package.xml file describing the entities in the directory structure. Required to initiate a deployment if you don’t use --zipfile. If you specify both --zipfile and --deploydir, a zip file of the contents of the --deploydir directory is written to the location specified by --zipfile.
+The root must contain a valid package.xml file describing the entities in the directory structure. Required to initiate a deployment if you don’t use --zipfile. If you specify both --zipfile and --deploydir, a zip file of the contents of the --deploydir directory is written to the location specified by --zipfile.
 
-# flagsLong.wait
+# flags.wait.description
 
-The number of minutes to wait for the command to complete. The default is 0 (returns immediately).
+The default is 0 (returns immediately).
 
-# flagsLong.jobId
+# flags.jobId.description
 
-The job ID (id field value for AsyncResult) of the deployment you want to check. The job ID is required if you haven’t previously deployed using Salesforce CLI. If you deploy using Salesforce CLI and don’t specify a job ID, we use the ID of the most recent metadata deployment.
+The job ID is required if you haven’t previously deployed using Salesforce CLI. If you deploy using Salesforce CLI and don’t specify a job ID, we use the ID of the most recent metadata deployment.
 
-# flagsLong.testLevel
+# flags.testLevel.description
 
-Specifies which level of deployment tests to run. Valid values are:
-NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
-RunSpecifiedTests—Runs only the tests that you specify in the --runtests option. Code coverage requirements differ from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75% code coverage for each class and trigger in the deployment package. This coverage is computed for each class and trigger individually and is different than the overall coverage percentage.
-RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked packages. This test level is the default for production deployments that include Apex classes or triggers.
-RunAllTestsInOrg—All tests in your org are run, including tests of managed packages.
+Valid values are:
+
+    * NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
+    * RunSpecifiedTests—Runs only the tests that you specify in the --runtests option. Code coverage requirements differ from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75% code coverage for each class and trigger in the deployment package. This coverage is computed for each class and trigger individually and is different than the overall coverage percentage.
+    * RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked packages. This test level is the default for production deployments that include Apex classes or triggers.
+    * RunAllTestsInOrg—All tests in your org are run, including tests of managed packages.
+
 If you don’t specify a test level, the default behavior depends on the contents of your deployment package. For more information, see “Running Tests in a Deployment” in the Metadata API Developer Guide.
 
-# flagsLong.runTests
+# flags.ignoreErrors.description
 
-Lists the Apex classes containing the deployment tests to run. Use this parameter when you set --testlevel to RunSpecifiedTests.
+The default is false. Keep this parameter set to false when deploying to a production org. If set to true, components without errors are deployed, and components with errors are skipped.
 
-# flagsLong.ignoreErrors
-
-Ignores the deploy errors, and continues with the deploy operation. The default is false. Keep this parameter set to false when deploying to a production org. If set to true, components without errors are deployed, and components with errors are skipped.
-
-# flagsLong.ignoreWarnings
+# flags.ignoreWarnings.description
 
 If a warning occurs and ignoreWarnings is set to true, the success field in DeployMessage is true. When ignoreWarnings is set to false, success is set to false, and the warning is treated like an error.
 This field is available in API version 18.0 and later. Prior to version 18.0, there was no distinction between warnings and errors. All problems were treated as errors and prevented a successful deployment.
 
-# flagsLong.zipFile
+# flags.zipFile.description
 
-The path to the .zip file of metadata files to deploy. You must indicate this option or --deploydir.If you specify both --zipfile and --deploydir, a .zip file of the contents of the deploy directory is created at the path specified for the .zip file.
+You must indicate this option or --deploydir. If you specify both --zipfile and --deploydir, a .zip file of the contents of the deploy directory is created at the path specified for the .zip file.
 
-# flagsLong.verbose
+# flags.verbose.description
 
 Indicates that you want verbose output from the deploy operation.
 
-# flagsLong.validatedDeployRequestId
+# flags.validatedDeployRequestId.description
 
-Specifies the ID of a package with recently validated components to run a Quick Deploy. Deploying a validation helps you shorten your deployment time because tests aren’t rerun. If you have a recent successful validation, you can deploy the validated components without running tests. A validation doesn’t save any components in the org. You use a validation only to check the success or failure messages that you would receive with an actual deployment. To validate your components, add the -c | --checkonly flag when you run 'sfdx force:mdapi:deploy'. This flag sets the checkOnly='true' parameter for your deployment. Before deploying a recent validation, ensure that the following requirements are met:
+Deploying a validation helps you shorten your deployment time because tests aren’t rerun. If you have a recent successful validation, you can deploy the validated components without running tests. A validation doesn’t save any components in the org. You use a validation only to check the success or failure messages that you would receive with an actual deployment. To validate your components, add the -c | --checkonly flag when you run 'force mdapi deploy'. This flag sets the checkOnly='true' parameter for your deployment. Before deploying a recent validation, ensure that the following requirements are met:
 
-1. The components have been validated successfully for the target environment within the last 10 days.
-2. As part of the validation, Apex tests in the target org have passed.
-3. Code coverage requirements are met.
-   - If all tests in the org or all local tests are run, overall code coverage is at least 75%, and Apex triggers have some coverage.
-   - If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is covered by at least 75% individually.
+    1. The components have been validated successfully for the target environment within the last 10 days.
+    2. As part of the validation, Apex tests in the target org have passed.
+    3. Code coverage requirements are met.
+       - If all tests in the org or all local tests are run, overall code coverage is at least 75%, and Apex triggers have some coverage.
+       - If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is covered by at least 75% individually.
 
-# flagsLong.singlePackage
+# flags.singlePackage.description
 
-Indicates that the specified .zip file points to a directory structure for a single package. By default, the CLI assumes the directory is structured for a set of packages.
+By default, the CLI assumes the directory is structured for a set of packages.
 
-# flagsLong.soapDeploy
+# flags.soapDeploy.description
 
-Deploy metadata with SOAP API instead of the default REST API. Because SOAP API has a lower .ZIP file size limit (400 MB uncompressed, 39 MB compressed), Salesforce recommends REST API deployment. This flag provides backwards compatibility with API version 50.0 and earlier when deploy used SOAP API by default.
+Because SOAP API has a lower .ZIP file size limit (400 MB uncompressed, 39 MB compressed), Salesforce recommends REST API deployment. This flag provides backwards compatibility with API version 50.0 and earlier when deploy used SOAP API by default.
 
 # noRestDeploy
 
@@ -198,4 +197,4 @@ You requested an async deploy with code coverage or JUnit results. The reports w
 
 # deprecation
 
-This command will be deprecated. Try using the '%s' command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.

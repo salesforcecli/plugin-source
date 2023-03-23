@@ -35,6 +35,7 @@ const replacement = 'project deploy report';
 
 export class Report extends DeployCommand {
   public static readonly description = messages.getMessage('description');
+  public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
@@ -50,27 +51,26 @@ export class Report extends DeployCommand {
       char: 'w',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
       min: 1,
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
     jobid: Flags.salesforceId({
       char: 'i',
-      description: messages.getMessage('flags.jobid'),
-      summary: messages.getMessage('flagsLong.jobid'),
+      summary: messages.getMessage('flags.jobid.summary'),
       startsWith: '0Af',
     }),
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
     resultsdir: Flags.directory({
-      description: messages.getMessage('flags.resultsDir'),
+      summary: messages.getMessage('flags.resultsDir.summary'),
     }),
     coverageformatters: arrayWithDeprecation({
-      description: messages.getMessage('flags.coverageFormatters'),
+      summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
     }),
-    junit: Flags.boolean({ description: messages.getMessage('flags.junit') }),
+    junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
   private flags: Interfaces.InferredFlags<typeof Report.flags>;
 

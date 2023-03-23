@@ -28,6 +28,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployre
 const replacement = 'project deploy report';
 
 export class Report extends DeployCommand {
+  public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
@@ -44,32 +45,30 @@ export class Report extends DeployCommand {
       defaultValue: 0,
       min: -1,
       unit: 'minutes',
-      description: messages.getMessage('flags.wait'),
-      summary: messages.getMessage('flagsLong.wait'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
     jobid: Flags.salesforceId({
       char: 'i',
       startsWith: '0Af',
       length: 'both',
-      description: messages.getMessage('flags.jobId'),
-      summary: messages.getMessage('flagsLong.jobId'),
+      description: messages.getMessage('flags.jobId.description'),
+      summary: messages.getMessage('flags.jobId.summary'),
     }),
     verbose: Flags.boolean({
-      description: messages.getMessage('flags.verbose'),
-      summary: messages.getMessage('flagsLong.verbose'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
     concise: Flags.boolean({
-      description: messages.getMessage('flags.concise'),
+      summary: messages.getMessage('flags.concise.summary'),
     }),
     resultsdir: Flags.directory({
-      description: messages.getMessage('flags.resultsDir'),
+      summary: messages.getMessage('flags.resultsDir.summary'),
     }),
     coverageformatters: arrayWithDeprecation({
-      description: messages.getMessage('flags.coverageFormatters'),
+      summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
     }),
-    junit: Flags.boolean({ description: messages.getMessage('flags.junit') }),
+    junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
   private flags: Interfaces.InferredFlags<typeof Report.flags>;

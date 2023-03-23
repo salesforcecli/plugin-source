@@ -1,219 +1,230 @@
+# summary
+
+Deploy source to an org.
+
 # description
 
-deploy source to an org
-IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained certain terms to avoid any effect on customer implementations.
-
-Use this command to deploy source (metadata that’s in source format) to an org.
-To take advantage of change tracking with scratch orgs, use "sfdx force:source:push".
-To deploy metadata that’s in metadata format, use "sfdx force:mdapi:deploy".
+Use this command to deploy source (metadata that’s in source format) to an org. To take advantage of change tracking with scratch orgs, use "force source push". To deploy metadata that’s in metadata format, use "force mdapi deploy".
 
 The source you deploy overwrites the corresponding metadata in your org. This command does not attempt to merge your source with the versions in your org.
 
-To run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI.
-To check the status of the job, use force:source:deploy:report.
+To run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue to use the CLI. To check the status of the job, use "force source deploy report".
 
 If the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of double quotes. On Windows, if the list contains commas, also enclose the entire list in one set of double quotes.
-If you use the --manifest, --predestructivechanges, or --postdestructivechanges parameters, run the force:source:manifest:create command to easily generate the different types of manifest files.
+
+If you use the --manifest, --predestructivechanges, or --postdestructivechanges parameters, run the "force source manifest create" command to easily generate the different types of manifest files.
 
 # examples
 
-- To deploy the source files in a directory:
-  $ sfdx force:source:deploy -p path/to/source
+- Deploy the source files in a directory:
 
-- To deploy a specific Apex class and the objects whose source is in a directory:
-  $ sfdx force:source:deploy -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+  <%= config.bin %> <%= command.id %> --sourcepath path/to/source
 
-- To deploy source files in a comma-separated list that contains spaces:
-  $ sfdx force:source:deploy -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
+- Deploy a specific Apex class and the objects whose source is in a directory:
 
-- To deploy all Apex classes:
-  $ sfdx force:source:deploy -m ApexClass
+  <%= config.bin %> <%= command.id %> --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects"
 
-- To deploy a specific Apex class:
-  $ sfdx force:source:deploy -m ApexClass:MyApexClass
+- Deploy source files in a comma-separated list that contains spaces:
 
-- To deploy a specific Apex class and update source tracking files :
-  $ sfdx force:source:deploy -m ApexClass:MyApexClass --tracksource
+  <%= config.bin %> <%= command.id %> --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
 
-- To deploy all custom objects and Apex classes:
-  $ sfdx force:source:deploy -m "CustomObject,ApexClass"
+- Deploy all Apex classes:
 
-- To deploy all Apex classes and two specific profiles (one of which has a space in its name):
-  $ sfdx force:source:deploy -m "ApexClass, Profile:My Profile, Profile: AnotherProfile"
+  <%= config.bin %> <%= command.id %> --metadata ApexClass
 
-- To deploy all components listed in a manifest:
-  $ sfdx force:source:deploy -x path/to/package.xml
+- Deploy a specific Apex class:
 
-- To run the tests that aren’t in any managed packages as part of a deployment:
-  $ sfdx force:source:deploy -m ApexClass -l RunLocalTests
+  <%= config.bin %> <%= command.id %> --metadata ApexClass:MyApexClass
 
-- To check whether a deployment would succeed (to prepare for Quick Deploy):
-  $ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c
+- Deploy a specific Apex class and update source tracking files :
 
-- To deploy an already validated deployment (Quick Deploy):
-  $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`
+  <%= config.bin %> <%= command.id %> --metadata ApexClass:MyApexClass --tracksource
 
-- To run a destructive operation before the deploy occurs:
-  $ sfdx force:source:deploy --manifest package.xml --predestructivechanges destructiveChangesPre.xml
+- Deploy all custom objects and Apex classes:
 
-- To run a destructive operation after the deploy occurs:
-  $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
+  <%= config.bin %> <%= command.id %> --metadata "CustomObject,ApexClass"
 
-# flags.sourcePath
+- Deploy all Apex classes and two specific profiles (one of which has a space in its name):
 
-comma-separated list of source file paths to deploy
+  <%= config.bin %> <%= command.id %> --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
 
-# flags.manifest
+- Deploy all components listed in a manifest:
 
-file path for manifest (package.xml) of components to deploy
+  <%= config.bin %> <%= command.id %> --manifest path/to/package.xml
 
-# flags.metadata
+- Run the tests that aren’t in any managed packages as part of a deployment:
 
-comma-separated list of metadata component names
+  <%= config.bin %> <%= command.id %> --metadata ApexClass --testlevel RunLocalTests
 
-# flags.wait
+- Check whether a deployment would succeed (to prepare for Quick Deploy):
 
-wait time for command to finish in minutes
+  <%= config.bin %> <%= command.id %> --metadata ApexClass --testlevel RunAllTestsInOrg -c
 
-# flags.verbose
+- Deploy an already validated deployment (Quick Deploy):
 
-verbose output of deploy result
+  <%= config.bin %> <%= command.id %> --validateddeployrequestid 0Af9A00000FTM6pSAH`
 
-# flags.checkonly
+- Run a destructive operation before the deploy occurs:
 
-validate deploy but don’t save to the org
+  <%= config.bin %> <%= command.id %> --manifest package.xml --predestructivechanges destructiveChangesPre.xml
 
-# flags.testLevel
+- Run a destructive operation after the deploy occurs:
 
-deployment testing level
+  <%= config.bin %> <%= command.id %> --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
 
-# flags.runTests
+# flags.sourcePath.summary
 
-tests to run if --testlevel RunSpecifiedTests
+Comma-separated list of source file paths to deploy.
 
-# flags.ignoreErrors
+# flags.manifest.summary
 
-ignore any errors and do not roll back deployment
+Complete path for the manifest (package.xml) file that specifies the components to deploy.
 
-# flags.ignoreWarnings
+# flags.metadata.summary
 
-whether a warning will allow a deployment to complete successfully
+Comma-separated list of metadata component names.
 
-# flags.validateDeployRequestId
+# flags.wait.summary
 
-deploy request ID of the validated deployment to run a Quick Deploy
+Wait time for command to finish in minutes.
 
-# flags.soapDeploy
+# flags.verbose.summary
 
-deploy metadata with SOAP API instead of REST API
+Specify verbose output about the deploy result.
 
-# flags.predestructivechanges
+# flags.checkonly.summary
 
-file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy
+Validate the deployed metadata and run all Apex tests, but don't save to the org.
 
-# flags.postdestructivechanges
+# flags.testLevel.summary
 
-file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy
+Deployment testing level.
 
-# flags.tracksource
+# flags.runTests.summary
 
-if the deploy succeeds, update source tracking information; doesn't delete locally deleted files from org unless you also specify --predestructivechanges or --postdestructivechanges
+Apex test classes to run if --testlevel RunSpecifiedTests.
 
-# flags.forceoverwrite
+# flags.ignoreErrors.summary
 
-ignore conflict warnings and overwrite changes to the org
+Ignore any errors and don't roll back deployment.
 
-# flags.purgeOnDelete
+# flags.ignoreWarnings.summary
 
-specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin
+Allow a deployment to complete successfully even if there are warnings.
 
-# flags.junit
+# flags.validateDeployRequestId.summary
 
-output JUnit test results
+Deploy request ID of the validated deployment to run a Quick Deploy.
 
-# flags.coverageFormatters
+# flags.soapDeploy.summary
 
-format of the code coverage results
+Deploy metadata with SOAP API instead of REST API.
 
-# flags.resultsDir
+# flags.predestructivechanges.summary
 
-output directory for code coverage and JUnit results; defaults to the deploy ID
+File path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy.
 
-# flagsLong.sourcePath
+# flags.postdestructivechanges.summary
 
-- A comma-separated list of paths to the local source files to deploy. The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all metadata types in the directory and its sub-directories).
+File path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy.
 
-- If you specify this parameter, don’t specify --manifest or --metadata.
+# flags.tracksource.summary
 
-# flagsLong.manifest
+If the deploy succeeds, update source tracking information.
 
-- The complete path for the manifest (package.xml) file that specifies the components to deploy. All child components are included.
+# flags.tracksource.description
 
-- If you specify this parameter, don’t specify --metadata or --sourcepath.
+Doesn't delete locally deleted files from org unless you also specify --predestructivechanges or --postdestructivechanges.
 
-# flagsLong.metadata
+# flags.forceoverwrite.summary
 
-- A comma-separated list of names of metadata components to deploy to the org.
+Ignore conflict warnings and overwrite changes to the org.
 
-- If you specify this parameter, don’t specify --manifest or --sourcepath.
+# flags.purgeOnDelete.summary
 
-# flagsLong.wait
+Specify that deleted components in the destructive changes manifest file are immediately eligible for deletion rather than being stored in the Recycle Bin.
 
-Number of minutes to wait for the command to complete and display results to the terminal window. If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
+# flags.junit.summary
 
-# flagsLong.checkonly
+Output JUnit test results.
 
-- Validates the deployed metadata and runs all Apex tests, but prevents the deployment from being saved to the org.
+# flags.coverageFormatters.summary
 
-- If you change a field type from Master-Detail to Lookup or vice versa, that change isn’t supported when using the --checkonly parameter to test a deployment (validation). This kind of change isn’t supported for test deployments to avoid the risk of data loss or corruption. If a change that isn’t supported for test deployments is included in a deployment package, the test deployment fails and issues an error.
+Format of the code coverage results.
 
-- If your deployment package changes a field type from Master-Detail to Lookup or vice versa, you can still validate the changes prior to deploying to Production by performing a full deployment to another test Sandbox. A full deployment includes a validation of the changes as part of the deployment process.
+# flags.resultsDir.summary
 
-- Note: A Metadata API deployment that includes Master-Detail relationships deletes all detail records in the Recycle Bin in the following cases.
+Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
-- 1. For a deployment with a new Master-Detail field, soft delete (send to the Recycle Bin) all detail records before proceeding to deploy the Master-Detail field, or the deployment fails. During the deployment, detail records are permanently deleted from the Recycle Bin and cannot be recovered.
+# flags.sourcePath.description
 
-- 2. For a deployment that converts a Lookup field relationship to a Master-Detail relationship, detail records must reference a master record or be soft-deleted (sent to the Recycle Bin) for the deployment to succeed. However, a successful deployment permanently deletes any detail records in the Recycle Bin.
+The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder (in which case the operation is applied to all metadata types in the directory and its sub-directories).
 
-# flagsLong.testLevel
+If you specify this parameter, don’t specify --manifest or --metadata.
 
-- Specifies which level of deployment tests to run. Valid values are:
+# flags.manifest.description
 
-- NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
+All child components are included.
 
-- RunSpecifiedTests—Runs only the tests that you specify in the --runtests option. Code coverage requirements differ from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75% code coverage for each class and trigger in the deployment package. This coverage is computed for each class and trigger individually and is different than the overall coverage percentage.
+If you specify this parameter, don’t specify --metadata or --sourcepath.
 
-- RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked packages. This test level is the default for production deployments that include Apex classes or triggers.
+# flags.metadata.description
 
-- RunAllTestsInOrg—All tests in your org are run, including tests of managed packages.
+If you specify this parameter, don’t specify --manifest or --sourcepath.
 
-- If you don’t specify a test level, the default behavior depends on the contents of your deployment package. For more information, see “Running Tests in a Deployment” in the Metadata API Developer Guide.
+# flags.wait.description
 
-# flagsLong.runTests
+If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 
-Lists the Apex classes containing the deployment tests to run. Use this parameter when you set --testlevel to RunSpecifiedTests.
+# flags.checkonly.description
 
-# flagsLong.ignoreErrors
+IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained certain terms to avoid any effect on customer implementations.
 
-Ignores the deploy errors, and continues with the deploy operation. The default is false. Keep this parameter set to false when deploying to a production org. If set to true, components without errors are deployed, and components with errors are skipped.
+If you change a field type from Master-Detail to Lookup or vice versa, that change isn’t supported when using the --checkonly parameter to test a deployment (validation). This kind of change isn’t supported for test deployments to avoid the risk of data loss or corruption. If a change that isn’t supported for test deployments is included in a deployment package, the test deployment fails and issues an error.
 
-# flagsLong.ignoreWarnings
+If your deployment package changes a field type from Master-Detail to Lookup or vice versa, you can still validate the changes prior to deploying to Production by performing a full deployment to another test Sandbox. A full deployment includes a validation of the changes as part of the deployment process.
+
+Note: A Metadata API deployment that includes Master-Detail relationships deletes all detail records in the Recycle Bin in the following cases.
+
+    1. For a deployment with a new Master-Detail field, soft delete (send to the Recycle Bin) all detail records before proceeding to deploy the Master-Detail field, or the deployment fails. During the deployment, detail records are permanently deleted from the Recycle Bin and cannot be recovered.
+
+    2. For a deployment that converts a Lookup field relationship to a Master-Detail relationship, detail records must reference a master record or be soft-deleted (sent to the Recycle Bin) for the deployment to succeed. However, a successful deployment permanently deletes any detail records in the Recycle Bin.
+
+# flags.testLevel.description
+
+Valid values are:
+
+    - NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
+
+    - RunSpecifiedTests—Runs only the tests that you specify in the --runtests option. Code coverage requirements differ from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75% code coverage for each class and trigger in the deployment package. This coverage is computed for each class and trigger individually and is different than the overall coverage percentage.
+
+    - RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked packages. This test level is the default for production deployments that include Apex classes or triggers.
+
+    - RunAllTestsInOrg—All tests in your org are run, including tests of managed packages.
+
+If you don’t specify a test level, the default behavior depends on the contents of your deployment package. For more information, see “Running Tests in a Deployment” in the Metadata API Developer Guide.
+
+# flags.ignoreErrors.description
+
+Keep this parameter set to false when deploying to a production org. If set to true, components without errors are deployed, and components with errors are skipped.
+
+# flags.ignoreWarnings.description
 
 If a warning occurs and ignoreWarnings is set to true, the success field in DeployMessage is true. When ignoreWarnings is set to false, success is set to false, and the warning is treated like an error.
 
-# flagsLong.validateDeployRequestId
+# flags.validateDeployRequestId.description
 
-- Specifies the ID of a package with recently validated components to run a Quick Deploy. Deploying a validation helps you shorten your deployment time because tests aren’t rerun. If you have a recent successful validation, you can deploy the validated components without running tests. A validation doesn’t save any components in the org. You use a validation only to check the success or failure messages that you would receive with an actual deployment. To validate your components, add the -c | --checkonly flag when you run "sfdx force:mdapi:deploy". This flag sets the checkOnly="true" parameter for your deployment. Before deploying a recent validation, ensure that the following requirements are met:
+Deploying a validation helps you shorten your deployment time because tests aren’t rerun. If you have a recent successful validation, you can deploy the validated components without running tests. A validation doesn’t save any components in the org. You use a validation only to check the success or failure messages that you would receive with an actual deployment. To validate your components, add the -c | --checkonly flag when you run "force mdapi deploy". This flag sets the checkOnly="true" parameter for your deployment. Before deploying a recent validation, ensure that the following requirements are met:
 
-- 1. The components have been validated successfully for the target environment within the last 10 days.
+    1. The components have been validated successfully for the target environment within the last 10 days.
 
-- 2. As part of the validation, Apex tests in the target org have passed.
+    2. As part of the validation, Apex tests in the target org have passed.
 
-- 3. Code coverage requirements are met.
+    3. Code coverage requirements are met.
 
--     - If all tests in the org or all local tests are run, overall code coverage is at least 75%, and Apex triggers have some coverage.
+        * If all tests in the org or all local tests are run, overall code coverage is at least 75%, and Apex triggers have some coverage.
 
--     - If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is covered by at least 75% individually.
+        * If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is covered by at least 75% individually.
 
 # checkOnlySuccess
 
@@ -242,11 +253,11 @@ Deploy has been queued.
 
 # asyncDeployCancel
 
-Run sfdx force:source:deploy:cancel -i %s -u %s to cancel the deploy.
+Run "force source deploy cancel -i %s -u %s" to cancel the deploy.
 
 # asyncDeployReport
 
-Run sfdx force:source:deploy:report -i %s -u %s to get the latest status.
+Run "force source deploy report -i %s -u %s" to get the latest status.
 
 # invalidDeployId
 
@@ -262,4 +273,4 @@ You requested an async deploy with code coverage or JUnit results. The reports w
 
 # deprecation
 
-This command will be deprecated. Try using the '%s' command instead.
+We plan to deprecate this command soon. Try using the "%s" command instead.
