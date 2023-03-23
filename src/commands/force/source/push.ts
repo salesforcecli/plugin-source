@@ -33,6 +33,7 @@ const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deplo
 const replacement = 'project deploy start';
 
 export default class Push extends DeployCommand {
+  public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),

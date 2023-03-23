@@ -186,4 +186,4 @@ The retrieve target directory [%s] overlaps one of your package directories. Spe
 
 # deprecation
 
-The '<%= command.id %>' command will be deprecated. Try using the %s command instead.
+This command will be deprecated. Try using the '%s' command instead.
