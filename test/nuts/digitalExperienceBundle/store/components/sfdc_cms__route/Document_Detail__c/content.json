@@ -1,0 +1,11 @@
+{
+  "type": "sfdc_cms__route",
+  "title": "Document Detail",
+  "contentBody": {
+    "activeViewId": "documentDetail",
+    "configurationTags": [],
+    "pageAccess": "UseParent",
+    "routeType": "managed-content-sfdc_cms__document",
+    "urlPrefix": "document"
+  }
+}
