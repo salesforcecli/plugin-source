@@ -148,7 +148,8 @@ describe('deb -- sourcepath option', () => {
       assertDocumentDetailPageA(deployedSource);
     });
 
-    it('should delete the page (view and route de components) of deb_a', async () => {
+    // skip until plugin-deploy-retrieve publishes
+    it.skip('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --noprompt --json`,
         {

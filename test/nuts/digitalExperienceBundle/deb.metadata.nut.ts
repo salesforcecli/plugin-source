@@ -192,7 +192,8 @@ describe('deb -- metadata option', () => {
       assertDocumentDetailPageA(deployedSource);
     });
 
-    it('should delete the page (view and route de components) of deb_a', async () => {
+    // skip until plugin-deploy-retrieve publishes
+    it.skip('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
         {
