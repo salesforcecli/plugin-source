@@ -149,12 +149,6 @@
     "alias": []
   },
   {
-    "command": "force:source:ignored:list",
-    "plugin": "@salesforce/plugin-source",
-    "flags": ["json", "sourcepath"],
-    "alias": []
-  },
-  {
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "json", "loglevel", "target-org", "verbose", "wait"],

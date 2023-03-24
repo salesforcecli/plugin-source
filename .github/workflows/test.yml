@@ -22,7 +22,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         command:
-          - 'yarn test:nuts:commands:other'
           - 'yarn test:nuts:deploy'
           - 'yarn test:nuts:deploy:async'
           - 'yarn test:nuts:deploy:destructive'
