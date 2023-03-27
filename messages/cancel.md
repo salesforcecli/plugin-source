@@ -36,4 +36,4 @@ The cancel command failed due to: %s
 
 # deprecation
 
-We plan to deprecate this command soon. Try using the "%s" command instead.
+We plan to deprecate this command in the future. Try using the "%s" command instead.
