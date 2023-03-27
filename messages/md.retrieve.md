@@ -117,4 +117,4 @@ If the retrieve request has completed, the retrieved metadata zip file will be w
 
 # deprecation
 
-We plan to deprecate this command soon. Try using the "%s" command instead.
+We plan to deprecate this command in the future. Try using the "%s" command instead.

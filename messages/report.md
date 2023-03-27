@@ -50,4 +50,4 @@ The metadata deploy operation failed.
 
 # deprecation
 
-We plan to deprecate this command soon. Try using the "%s" command instead.
+We plan to deprecate this command in the future. Try using the "%s" command instead.

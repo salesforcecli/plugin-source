@@ -273,4 +273,4 @@ You requested an async deploy with code coverage or JUnit results. The reports w
 
 # deprecation
 
-We plan to deprecate this command soon. Try using the "%s" command instead.
+We plan to deprecate this command in the future. Try using the "%s" command instead.
