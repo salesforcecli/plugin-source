@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join, sep } from 'path';
+import { join } from 'path';
 import { TestSessionOptions } from '@salesforce/cli-plugins-testkit/lib/testSession';
 import { registry } from '@salesforce/source-deploy-retrieve';
 import { META_XML_SUFFIX } from '@salesforce/source-deploy-retrieve/lib/src/common';
