@@ -16,6 +16,7 @@
       "deploydir",
       "ignoreerrors",
       "ignorewarnings",
+      "json",
       "junit",
       "loglevel",
       "purgeondelete",
@@ -35,7 +36,7 @@
   {
     "command": "force:mdapi:deploy:cancel",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "jobid", "loglevel", "target-org", "wait"],
+    "flags": ["api-version", "jobid", "json", "loglevel", "target-org", "wait"],
     "alias": []
   },
   {
@@ -46,6 +47,7 @@
       "concise",
       "coverageformatters",
       "jobid",
+      "json",
       "junit",
       "loglevel",
       "resultsdir",
@@ -60,6 +62,7 @@
     "plugin": "@salesforce/plugin-source",
     "flags": [
       "apiversion",
+      "json",
       "loglevel",
       "packagenames",
       "retrievetargetdir",
@@ -80,6 +83,7 @@
     "flags": [
       "api-version",
       "jobid",
+      "json",
       "loglevel",
       "retrievetargetdir",
       "target-org",
@@ -100,6 +104,7 @@
       "forceoverwrite",
       "ignoreerrors",
       "ignorewarnings",
+      "json",
       "junit",
       "loglevel",
       "manifest",
@@ -123,7 +128,7 @@
   {
     "command": "force:source:deploy:cancel",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "jobid", "loglevel", "target-org", "wait"],
+    "flags": ["api-version", "jobid", "json", "loglevel", "target-org", "wait"],
     "alias": []
   },
   {
@@ -133,6 +138,7 @@
       "api-version",
       "coverageformatters",
       "jobid",
+      "json",
       "junit",
       "loglevel",
       "resultsdir",
@@ -145,13 +151,13 @@
   {
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "forceoverwrite", "loglevel", "target-org", "verbose", "wait"],
+    "flags": ["api-version", "forceoverwrite", "json", "loglevel", "target-org", "verbose", "wait"],
     "alias": []
   },
   {
     "command": "force:source:push",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "forceoverwrite", "ignorewarnings", "loglevel", "quiet", "target-org", "wait"],
+    "flags": ["api-version", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "target-org", "wait"],
     "alias": []
   },
   {
@@ -161,6 +167,7 @@
       "api-version",
       "apiversion",
       "forceoverwrite",
+      "json",
       "loglevel",
       "manifest",
       "metadata",
@@ -177,7 +184,7 @@
   {
     "command": "force:source:status",
     "plugin": "@salesforce/plugin-source",
-    "flags": ["api-version", "concise", "local", "loglevel", "remote", "target-org"],
+    "flags": ["api-version", "concise", "json", "local", "loglevel", "remote", "target-org"],
     "alias": []
   }
 ]
