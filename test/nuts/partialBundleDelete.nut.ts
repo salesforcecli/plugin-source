@@ -108,7 +108,7 @@ describe('Partial Bundle Delete Retrieves', () => {
     expect(result.response.id).to.equal(expectedResponse.result.response.id);
     expect(result.response.fileProperties).to.deep.equal(expectedResponse.result.response.fileProperties);
     expectedResponse.result.inboundFiles.forEach((file) => {
-      expect(result.inboundFiles).to.deep.include(file);
+      expect(result.inboundFiles, JSON.stringify(file)).to.deep.include(file);
     });
   });
 
