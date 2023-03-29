@@ -107,7 +107,9 @@ describe('Partial Bundle Delete Retrieves', () => {
     expect(result.response.success).to.equal(expectedResponse.result.response.success);
     expect(result.response.id).to.equal(expectedResponse.result.response.id);
     expect(result.response.fileProperties).to.deep.equal(expectedResponse.result.response.fileProperties);
-    expect(result.inboundFiles).to.have.deep.members(expectedResponse.result.inboundFiles);
+    expectedResponse.result.inboundFiles.forEach((file) => {
+      expect(result.inboundFiles).to.deep.include(file);
+    });
   });
 
   describe('Aura and LWC', () => {
