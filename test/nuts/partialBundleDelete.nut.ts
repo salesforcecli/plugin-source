@@ -6,7 +6,7 @@
  */
 import * as path from 'path';
 import * as fs from 'fs';
-import { expect } from 'chai';
+import { expect, config } from 'chai';
 import * as sinon from 'sinon';
 import { TestSession, genUniqueString, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
@@ -19,6 +19,8 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { RetrieveCommandResult } from 'src/formatters/retrieveResultFormatter';
 import { Retrieve } from '../../src/commands/force/source/retrieve';
+
+config.truncateThreshold = 0;
 
 describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;
@@ -108,7 +110,10 @@ describe('Partial Bundle Delete Retrieves', () => {
     expect(result.response.id).to.equal(expectedResponse.result.response.id);
     expect(result.response.fileProperties).to.deep.equal(expectedResponse.result.response.fileProperties);
     expectedResponse.result.inboundFiles.forEach((file) => {
-      expect(result.inboundFiles, JSON.stringify(file)).to.deep.include(file);
+      expect(
+        result.inboundFiles,
+        JSON.stringify({ file, target: expectedResponse.result.inboundFiles })
+      ).to.deep.include(file);
     });
   });
 
