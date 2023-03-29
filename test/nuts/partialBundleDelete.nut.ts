@@ -284,7 +284,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
   result: {
     inboundFiles: [
       {
-        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
+        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
         type: 'DigitalExperience',
         state: 'Changed',
         filePath: path.join(
@@ -298,7 +298,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
         ),
       },
       {
-        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
+        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
         type: 'DigitalExperience',
         state: 'Changed',
         filePath: path.join(
@@ -312,7 +312,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
         ),
       },
       {
-        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
+        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
         type: 'DigitalExperience',
         state: 'Deleted',
         filePath: path.join(
