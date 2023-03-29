@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from 'path';
-import { UX } from '@salesforce/command';
+
 import {
   ChangeResult,
   getTrackingFileVersion,
@@ -21,19 +21,20 @@ import {
   FileResponse,
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
 interface TrackingSetupRequest extends SourceTrackingOptions {
   ignoreConflicts: boolean;
-  ux: UX;
+  ux: Ux;
   commandName: string;
 }
 
 interface TrackingUpdateRequest {
   tracking: SourceTracking;
   result: DeployResult | RetrieveResult;
-  ux: UX;
+  ux: Ux;
   /**
    * We don't want to get the fileResponses if there have been deletes (SDR will throw)
    * You can also pass this in if your command already ran getFileResponses and you want to avoid the perf hit from doing it twice
@@ -41,12 +42,12 @@ interface TrackingUpdateRequest {
   fileResponses?: FileResponse[];
 }
 
-interface ConflictResponse {
+type ConflictResponse = {
   state: 'Conflict';
   fullName: string;
   type: string;
   filePath: string;
-}
+};
 /**
  * Check if any conflicts exist in a specific component set.
  * If conflicts exist, this will output the table and throw
@@ -58,7 +59,7 @@ export const filterConflictsByComponentSet = async ({
 }: {
   tracking: SourceTracking;
   components: ComponentSet;
-  ux: UX;
+  ux: Ux;
 }): Promise<ChangeResult[]> => {
   const filteredConflicts = (await tracking.getConflicts()).filter((cr) =>
     components.has({ fullName: cr.name, type: cr.type })
@@ -114,13 +115,13 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
   if (!result) {
     return;
   }
-  ux.startSpinner('Updating source tracking');
+  ux.spinner.start('Updating source tracking');
 
   const successes = (fileResponses ?? result.getFileResponses()).filter(
     (fileResponse) => fileResponse.state !== ComponentStatus.Failed
   );
   if (!successes.length) {
-    ux.stopSpinner();
+    ux.spinner.stop();
     return;
   }
 
@@ -139,10 +140,10 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
     ),
   ]);
 
-  ux.stopSpinner();
+  ux.spinner.stop();
 };
 
-const writeConflictTable = (conflicts: ConflictResponse[], ux: UX): void => {
+const writeConflictTable = (conflicts: ConflictResponse[], ux: Ux): void => {
   ux.table(conflicts, {
     state: { header: 'STATE' },
     fullName: { header: 'FULL NAME' },
@@ -158,7 +159,7 @@ const writeConflictTable = (conflicts: ConflictResponse[], ux: UX): void => {
  * @param ux
  * @param message
  */
-const processConflicts = (conflicts: ChangeResult[], ux: UX, message: string): void => {
+const processConflicts = (conflicts: ChangeResult[], ux: Ux, message: string): void => {
   if (conflicts.length === 0) {
     return;
   }

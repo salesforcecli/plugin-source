@@ -7,9 +7,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import { TestSession, genUniqueString, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
-import { AuthInfo, Connection } from '@salesforce/core';
+import { AuthInfo, Connection, SfProject } from '@salesforce/core';
 import {
   ComponentSet,
   ComponentSetBuilder,
@@ -18,12 +17,13 @@ import {
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
 import { RetrieveCommandResult } from 'src/formatters/retrieveResultFormatter';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { Retrieve } from '../../src/commands/force/source/retrieve';
 
 describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;
   let projectPath: string;
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
   const scratchOrgUsername = genUniqueString('pbdr-test-%s@nut.org');
 
   before(async () => {
@@ -47,7 +47,7 @@ describe('Partial Bundle Delete Retrieves', () => {
   });
 
   after(async () => {
-    await session?.clean();
+    // await session?.clean();
   });
 
   afterEach(() => {
@@ -78,6 +78,9 @@ describe('Partial Bundle Delete Retrieves', () => {
     const connection = await Connection.create({
       authInfo: await AuthInfo.create(session.orgs.get(scratchOrgUsername)),
     });
+    sandbox
+      .stub(SfProject.prototype, 'getDefaultPackage')
+      .returns({ name: session.project.dir, path: session.project.dir, fullPath: session.project.dir });
     sandbox.stub(connection.metadata, 'retrieve').resolves(retrieveResponse);
     sandbox.stub(connection.metadata, 'checkRetrieveStatus').resolves(checkRetrieveStatusResponse);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -96,8 +99,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       );
       return compSet;
     });
-
-    const result = (await Retrieve.run(['-p', forgotPasswordDE, '--json'])) as RetrieveCommandResult;
+    const result = await Retrieve.run(['-p', forgotPasswordDE, '--json', '-o', scratchOrgUsername]);
 
     // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
@@ -282,7 +284,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
   result: {
     inboundFiles: [
       {
-        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
+        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
         type: 'DigitalExperience',
         state: 'Changed',
         filePath: path.join(
@@ -296,7 +298,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
         ),
       },
       {
-        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
+        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
         type: 'DigitalExperience',
         state: 'Changed',
         filePath: path.join(
@@ -310,7 +312,7 @@ const getExpectedCmdJSON = (projectPath: string) => ({
         ),
       },
       {
-        fullName: path.join('site', 'source_plugin_nut1.sfdc_cms__view', 'forgotPassword'),
+        fullName: 'site/source_plugin_nut1.sfdc_cms__view/forgotPassword',
         type: 'DigitalExperience',
         state: 'Deleted',
         filePath: path.join(

@@ -4,11 +4,18 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { EOL } from 'os';
-import { Messages } from '@salesforce/core';
-import { flags, FlagsConfig } from '@salesforce/command';
+import { Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+import {
+  arrayWithDeprecation,
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter';
 import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand';
 import { ProgressFormatter } from '../../../../formatters/progressFormatter';
@@ -18,45 +25,59 @@ import { DeployProgressStatusFormatter } from '../../../../formatters/deployProg
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployreport');
 
-export class Report extends DeployCommand {
-  public static aliases = ['force:mdapi:beta:deploy:report'];
-  public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(EOL);
-  public static readonly requiresUsername = true;
+const replacement = 'project deploy report';
 
-  public static readonly flagsConfig: FlagsConfig = {
-    wait: flags.minutes({
+export class Report extends DeployCommand {
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    wait: Flags.duration({
       char: 'w',
-      default: Duration.minutes(0),
-      min: Duration.minutes(-1),
-      description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      defaultValue: 0,
+      min: -1,
+      unit: 'minutes',
+      summary: messages.getMessage('flags.wait.summary'),
     }),
-    jobid: flags.id({
+    jobid: Flags.salesforceId({
       char: 'i',
-      description: messages.getMessage('flags.jobId'),
-      longDescription: messages.getMessage('flagsLong.jobId'),
-      validate: DeployCommand.isValidDeployId,
+      startsWith: '0Af',
+      length: 'both',
+      description: messages.getMessage('flags.jobId.description'),
+      summary: messages.getMessage('flags.jobId.summary'),
     }),
-    verbose: flags.builtin({
-      description: messages.getMessage('flags.verbose'),
-      longDescription: messages.getMessage('flagsLong.verbose'),
+    verbose: Flags.boolean({
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
-    concise: flags.builtin({
-      description: messages.getMessage('flags.concise'),
+    concise: Flags.boolean({
+      summary: messages.getMessage('flags.concise.summary'),
     }),
-    resultsdir: flags.directory({
-      description: messages.getMessage('flags.resultsDir'),
+    resultsdir: Flags.directory({
+      summary: messages.getMessage('flags.resultsDir.summary'),
     }),
-    coverageformatters: flags.array({
-      description: messages.getMessage('flags.coverageFormatters'),
+    coverageformatters: arrayWithDeprecation({
+      summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
     }),
-    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
+    junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
+  private flags: Interfaces.InferredFlags<typeof Report.flags>;
+  private org: Org;
+
   public async run(): Promise<MdDeployResult> {
+    this.flags = (await this.parse(Report)).flags;
+    this.org = this.flags['target-org'];
+
     await this.doReport();
     this.resolveSuccess();
     return this.formatResult();
@@ -64,33 +85,33 @@ export class Report extends DeployCommand {
 
   protected async doReport(): Promise<void> {
     if (this.flags.verbose) {
-      this.ux.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
+      this.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
     }
-    const waitFlag = this.getFlag<Duration>('wait');
+    const waitFlag = this.flags.wait;
     const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
     this.isAsync = waitDuration.quantity === 0;
 
-    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+    const deployId = this.resolveDeployId(this.flags.jobid);
 
     this.resultsDir = this.resolveOutputDir(
-      this.getFlag<string[]>('coverageformatters', undefined),
-      this.getFlag<boolean>('junit'),
-      this.getFlag<string>('resultsdir'),
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
       deployId,
       false
     );
 
     if (this.isAsync) {
-      this.deployResult = await this.report(deployId);
+      this.deployResult = await this.report(this.org.getConnection(), deployId);
       return;
     }
 
-    const deploy = this.createDeploy(deployId);
-    if (!this.isJsonOutput()) {
+    const deploy = this.createDeploy(this.org.getConnection(), deployId);
+    if (!this.jsonEnabled()) {
       const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
-        ? new DeployProgressBarFormatter(this.logger, this.ux)
-        : new DeployProgressStatusFormatter(this.logger, this.ux);
+        ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+        : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
       progressFormatter.progress(deploy);
     }
 
@@ -99,8 +120,8 @@ export class Report extends DeployCommand {
       this.deployResult = await deploy.pollStatus({ frequency: Duration.milliseconds(500), timeout: waitDuration });
     } catch (error) {
       if (error instanceof Error && error.message.includes('The client has timed out')) {
-        this.logger.debug('mdapi:deploy:report polling timed out. Requesting status...');
-        this.deployResult = await this.report(deployId);
+        this.debug('mdapi:deploy:report polling timed out. Requesting status...');
+        this.deployResult = await this.report(this.org.getConnection(), deployId);
       } else {
         throw error;
       }
@@ -124,23 +145,26 @@ export class Report extends DeployCommand {
 
   protected formatResult(): MdDeployResult {
     const formatter = new MdDeployResultFormatter(
-      this.logger,
-      this.ux,
+      new Ux({ jsonEnabled: this.jsonEnabled() }),
       {
-        concise: this.getFlag<boolean>('concise', false),
-        verbose: this.getFlag<boolean>('verbose', false),
-        coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
-        junitTestResults: this.getFlag<boolean>('junit', false),
+        concise: this.flags.concise ?? false,
+        verbose: this.flags.verbose ?? false,
+        coverageOptions: getCoverageFormattersOptions(this.flags.coverageformatters),
+        junitTestResults: this.flags.junit ?? false,
         resultsDir: this.resultsDir,
         testsRan: !!this.deployResult?.response?.numberTestsTotal,
       },
       this.deployResult
     );
 
-    this.maybeCreateRequestedReports();
+    this.maybeCreateRequestedReports({
+      coverageformatters: this.flags.coverageformatters,
+      junit: this.flags.junit,
+      org: this.org,
+    });
 
     // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display(true);
     }
 

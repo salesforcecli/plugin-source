@@ -53,7 +53,6 @@ export class Stash {
     'force:source:deploy': Stash.KEYS.SOURCE_DEPLOY,
     'force:source:deploy:cancel': Stash.KEYS.SOURCE_DEPLOY,
     'force:source:deploy:report': Stash.KEYS.SOURCE_DEPLOY,
-    'force:source:delete': Stash.KEYS.SOURCE_DEPLOY,
     'force:mdapi:retrieve': Stash.KEYS.MDAPI_RETRIEVE,
     'force:mdapi:retrieve:report': Stash.KEYS.MDAPI_RETRIEVE,
     'force:mdapi:beta:retrieve': Stash.KEYS.MDAPI_RETRIEVE,
@@ -88,7 +87,7 @@ export class Stash {
   public static getKey(commandId: string): StashKey {
     const key = Stash.keyMap[commandId] as StashKey;
     if (!key) {
-      const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
+      const messages = Messages.loadMessages('@salesforce/plugin-source', 'stash');
       throw new SfError(messages.getMessage('InvalidStashKey', [commandId]), 'InvalidStashKey');
     }
     return key;
@@ -139,7 +138,7 @@ export class Stash {
         const stashFilePath = Stash.instance?.getPath();
         const corruptFilePath = `${stashFilePath}_corrupted_${Date.now()}`;
         fs.renameSync(stashFilePath, corruptFilePath);
-        const messages = Messages.load('@salesforce/plugin-source', 'stash', ['InvalidStashKey']);
+        const messages = Messages.loadMessages('@salesforce/plugin-source', 'stash');
         throw new SfError(
           `${messages.getMessage('InvalidStashKey', [corruptFilePath])}\n\n${error.message}`,
           'InvalidStashFile',

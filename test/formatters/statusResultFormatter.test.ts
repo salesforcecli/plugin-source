@@ -4,11 +4,11 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { Logger } from '@salesforce/core';
-import { UX } from '@salesforce/command';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
+import { Ux } from '@salesforce/sf-plugins-core';
+import { TestContext } from '@salesforce/core/lib/testSetup';
 import { StatusFormatter, StatusResult } from '../../src/formatters/source/statusFormatter';
 
 const fakeResult: StatusResult[] = [
@@ -39,9 +39,8 @@ const fakeResult: StatusResult[] = [
 ];
 
 describe('status results', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = new TestContext().SANDBOX;
   let ux;
-  const logger = Logger.childFromRoot('retrieveTestLogger').useMemoryLogging();
   let logStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;
 
@@ -49,7 +48,7 @@ describe('status results', () => {
     logStub = sandbox.stub();
     tableStub = sandbox.stub();
 
-    ux = stubInterface<UX>(sandbox, {
+    ux = stubInterface<Ux>(sandbox, {
       log: logStub,
       table: tableStub,
     });
@@ -60,32 +59,32 @@ describe('status results', () => {
   });
 
   it('returns expected json', () => {
-    const formatter = new StatusFormatter(logger, ux as UX, {}, fakeResult);
+    const formatter = new StatusFormatter(ux as Ux, {}, fakeResult);
     expect(formatter.getJson()).deep.equal(fakeResult);
   });
 
   describe('human display', () => {
     it('includes ignored files without the concise option', () => {
-      const formatter = new StatusFormatter(logger, ux as UX, { concise: false }, fakeResult);
+      const formatter = new StatusFormatter(ux as Ux, { concise: false }, fakeResult);
       formatter.display();
       expect(tableStub.callCount).to.equal(1);
       expect(tableStub.firstCall.args[0]).to.have.equal(fakeResult);
     });
     it('omits ignored files with the concise option', () => {
-      const formatter = new StatusFormatter(logger, ux as UX, { concise: true }, fakeResult);
+      const formatter = new StatusFormatter(ux as Ux, { concise: true }, fakeResult);
       formatter.display();
       expect(tableStub.callCount).to.equal(1);
       expect(tableStub.firstCall.args[0]).to.deep.equal([fakeResult[2]]);
     });
     it('shows no results when there are none', () => {
-      const formatter = new StatusFormatter(logger, ux as UX, { concise: false }, []);
+      const formatter = new StatusFormatter(ux as Ux, { concise: false }, []);
       formatter.display();
       expect(logStub.callCount).to.equal(1);
       expect(logStub.firstCall.args[0]).to.contain('No local or remote changes found.');
     });
 
     it('shows no results when there are none because concise omitted them', () => {
-      const formatter = new StatusFormatter(logger, ux as UX, { concise: true }, [fakeResult[0]]);
+      const formatter = new StatusFormatter(ux as Ux, { concise: true }, [fakeResult[0]]);
       formatter.display();
       expect(logStub.callCount).to.equal(1);
       expect(logStub.firstCall.args[0]).to.contain('No local or remote changes found.');

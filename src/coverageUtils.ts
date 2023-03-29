@@ -99,7 +99,7 @@ export function transformDeployTestsResultsToTestResult(
 ): TestResult {
   const numTestsRun = parseInt(runTestResult.numTestsRun, 10);
   const numTestFailures = parseInt(runTestResult.numFailures, 10);
-  const testResult: TestResult = {
+  return {
     summary: {
       commandTimeInMs: 0,
       failRate: ((numTestFailures / numTestsRun) * 100).toFixed(2) + '%',
@@ -142,5 +142,4 @@ export function transformDeployTestsResultsToTestResult(
       return codeCoverageResult;
     }),
   };
-  return testResult;
 }

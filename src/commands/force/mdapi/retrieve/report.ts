@@ -4,12 +4,17 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
-import * as os from 'os';
-import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfError } from '@salesforce/core';
+import { Messages, Org, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { resolveZipFileName, SourceCommand } from '../../../../sourceCommand';
 import { Stash, MdRetrieveData } from '../../../../stash';
 import {
@@ -21,45 +26,44 @@ import {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
-
+export type ReportCommandResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
 export class Report extends SourceCommand {
-  public static aliases = ['force:mdapi:beta:retrieve:report'];
-  public static readonly description = messages.getMessage('reportCmd.description');
-  public static readonly examples = messages.getMessage('reportCmd.examples').split(os.EOL);
-  public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
+  public static readonly summary = messages.getMessage('report.summary');
+  public static readonly description = messages.getMessage('report.description');
+  public static readonly examples = messages.getMessages('report.examples');
+  public static readonly state = 'deprecated';
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
     // NOTE: this flag is not required because the value is stashed
     // from the force:mdapi:retrieve command.
-    retrievetargetdir: flags.directory({
+    retrievetargetdir: Flags.directory({
       char: 'r',
-      description: messages.getMessage('flags.retrievetargetdir'),
-      longDescription: messages.getMessage('flagsLong.retrievetargetdir'),
+      summary: messages.getMessage('flags.retrievetargetdir.summary'),
     }),
-    jobid: flags.id({
+    jobid: Flags.salesforceId({
       char: 'i',
-      description: messages.getMessage('flags.jobid'),
-      longDescription: messages.getMessage('flagsLong.jobid'),
+      description: messages.getMessage('flags.jobid.description'),
+      summary: messages.getMessage('flags.jobid.summary'),
     }),
-    zipfilename: flags.string({
+    zipfilename: Flags.string({
       char: 'n',
-      description: messages.getMessage('flags.zipfilename'),
-      longDescription: messages.getMessage('flagsLong.zipfilename'),
+      summary: messages.getMessage('flags.zipfilename.summary'),
     }),
-    unzip: flags.boolean({
+    unzip: Flags.boolean({
       char: 'z',
-      description: messages.getMessage('flags.unzip'),
-      longDescription: messages.getMessage('flagsLong.unzip'),
+      summary: messages.getMessage('flags.unzip.summary'),
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
       char: 'w',
-      description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      unit: 'minutes',
+      summary: messages.getMessage('flags.wait.summary'),
       min: -1,
-      default: Duration.minutes(1440), // 24 hours is a reasonable default versus -1 (no timeout)
+      defaultValue: 1440, // 24 hours is a reasonable default versus -1 (no timeout)
     }),
-    verbose: flags.builtin({
-      description: messages.getMessage('flags.verbose'),
-      longDescription: messages.getMessage('flagsLong.verbose'),
+    verbose: Flags.boolean({
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
 
@@ -71,15 +75,20 @@ export class Report extends SourceCommand {
   private wait: Duration;
   private isAsync: boolean;
   private mdapiRetrieve: MetadataApiRetrieve;
+  private flags: Interfaces.InferredFlags<typeof Report.flags>;
+  private org: Org;
 
-  public async run(): Promise<RetrieveCommandResult | RetrieveCommandAsyncResult> {
+  public async run(): Promise<ReportCommandResult> {
+    this.flags = (await this.parse(Report)).flags;
+    this.org = this.flags['target-org'];
+
     await this.report();
     this.resolveSuccess();
     return this.formatResult();
   }
 
   protected async report(): Promise<void> {
-    let retrieveId = this.getFlag<string>('jobid');
+    let retrieveId = this.flags.jobid;
 
     if (!retrieveId) {
       // Get stashed retrieve data
@@ -94,17 +103,17 @@ export class Report extends SourceCommand {
       this.zipFileName = resolveZipFileName(mdRetrieveStash?.zipfilename);
       this.unzip = mdRetrieveStash?.unzip;
     } else {
-      this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
-      this.zipFileName = resolveZipFileName(this.getFlag<string>('zipfilename'));
-      this.unzip = this.getFlag<boolean>('unzip');
+      this.retrieveTargetDir = this.resolveOutputDir(this.flags.retrievetargetdir);
+      this.zipFileName = resolveZipFileName(this.flags.zipfilename);
+      this.unzip = this.flags.unzip;
     }
 
-    const waitFlag = this.getFlag<Duration>('wait');
+    const waitFlag = this.flags.wait;
     this.wait = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
     this.isAsync = this.wait.quantity === 0;
 
-    this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
+    this.spinner.start(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
 
     this.mdapiRetrieve = new MetadataApiRetrieve({
       id: retrieveId,
@@ -123,11 +132,11 @@ export class Report extends SourceCommand {
         this.retrieveResult = await this.mdapiRetrieve.post(this.retrieveStatus);
       }
     } else {
-      this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.polling'));
+      this.spinner.status = spinnerMessages.getMessage('retrieve.polling');
       this.retrieveResult = await this.mdapiRetrieve.pollStatus(1000, this.wait.seconds);
     }
 
-    this.ux.stopSpinner();
+    this.spinner.stop();
   }
 
   // No-op implementation since any RetrieveResult status would be a success.
@@ -139,8 +148,8 @@ export class Report extends SourceCommand {
 
   protected formatResult(): RetrieveCommandResult | RetrieveCommandAsyncResult {
     if (this.isAsync && !this.retrieveResult) {
-      this.ux.log('');
-      this.ux.log(`Retrieve Status: ${this.retrieveStatus.status}`);
+      this.log('');
+      this.log(`Retrieve Status: ${this.retrieveStatus.status}`);
       return {
         done: this.retrieveStatus.done,
         id: this.retrieveStatus.id,
@@ -152,14 +161,18 @@ export class Report extends SourceCommand {
 
     const formatterOptions = {
       waitTime: this.wait.quantity,
-      verbose: this.getFlag<boolean>('verbose', false),
+      verbose: this.flags.verbose ?? false,
       retrieveTargetDir: this.retrieveTargetDir,
       zipFileName: this.zipFileName,
       unzip: this.unzip,
     };
-    const formatter = new RetrieveResultFormatter(this.logger, this.ux, formatterOptions, this.retrieveResult);
+    const formatter = new RetrieveResultFormatter(
+      new Ux({ jsonEnabled: this.jsonEnabled() }),
+      formatterOptions,
+      this.retrieveResult
+    );
 
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
     return formatter.getJson();

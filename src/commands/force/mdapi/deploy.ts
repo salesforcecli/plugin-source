@@ -4,11 +4,18 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { EOL } from 'os';
-import { flags, FlagsConfig } from '@salesforce/command';
 import { Duration, env } from '@salesforce/kit';
-import { Messages } from '@salesforce/core';
+import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import {
+  arrayWithDeprecation,
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { DeployCommand, getCoverageFormattersOptions, reportsFormatters, TestLevel } from '../../../deployCommand';
 import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
@@ -23,104 +30,118 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy')
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
 const xorFlags = ['zipfile', 'validateddeployrequestid', 'deploydir'];
+export type DeployResult = MdDeployResult | DeployCommandAsyncResult;
 
+const replacement = 'project deploy start';
 export class Deploy extends DeployCommand {
-  public static aliases = ['force:mdapi:beta:deploy'];
-  public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(EOL);
-  public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    checkonly: flags.boolean({
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    checkonly: Flags.boolean({
       char: 'c',
-      description: messages.getMessage('flags.checkOnly'),
-      longDescription: messages.getMessage('flagsLong.checkOnly'),
+      description: messages.getMessage('flags.checkOnly.description'),
+      summary: messages.getMessage('flags.checkOnly.summary'),
     }),
-    deploydir: flags.directory({
+    deploydir: Flags.directory({
       char: 'd',
-      description: messages.getMessage('flags.deployDir'),
-      longDescription: messages.getMessage('flagsLong.deployDir'),
+      description: messages.getMessage('flags.deployDir.description'),
+      summary: messages.getMessage('flags.deployDir.summary'),
       exactlyOne: xorFlags,
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
       char: 'w',
-      description: messages.getMessage('flags.wait', [0]),
-      longDescription: messages.getMessage('flagsLong.wait', [0]),
+      unit: 'minutes',
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
       default: Duration.minutes(0),
       min: -1,
     }),
-    testlevel: flags.enum({
+    testlevel: Flags.string({
       char: 'l',
-      description: messages.getMessage('flags.testLevel'),
-      longDescription: messages.getMessage('flagsLong.testLevel'),
+      description: messages.getMessage('flags.testLevel.description'),
+      summary: messages.getMessage('flags.testLevel.summary'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
-    runtests: flags.array({
+    runtests: arrayWithDeprecation({
       char: 'r',
-      description: messages.getMessage('flags.runTests'),
-      longDescription: messages.getMessage('flagsLong.runTests'),
+      summary: messages.getMessage('flags.runTests.summary'),
     }),
-    ignoreerrors: flags.boolean({
+    ignoreerrors: Flags.boolean({
       char: 'o',
-      description: messages.getMessage('flags.ignoreErrors'),
-      longDescription: messages.getMessage('flagsLong.ignoreErrors'),
+      description: messages.getMessage('flags.ignoreErrors.description'),
+      summary: messages.getMessage('flags.ignoreErrors.summary'),
     }),
-    ignorewarnings: flags.boolean({
+    ignorewarnings: Flags.boolean({
       char: 'g',
-      description: messages.getMessage('flags.ignoreWarnings'),
-      longDescription: messages.getMessage('flagsLong.ignoreWarnings'),
+      description: messages.getMessage('flags.ignoreWarnings.description'),
+      summary: messages.getMessage('flags.ignoreWarnings.summary'),
     }),
-    validateddeployrequestid: flags.id({
+    validateddeployrequestid: Flags.salesforceId({
       char: 'q',
-      description: messages.getMessage('flags.validatedDeployRequestId'),
-      longDescription: messages.getMessage('flagsLong.validatedDeployRequestId'),
+      length: 'both',
+      startsWith: '0Af',
+      description: messages.getMessage('flags.validatedDeployRequestId.description'),
+      summary: messages.getMessage('flags.validatedDeployRequestId.summary'),
       exactlyOne: xorFlags,
       exclusive: ['testlevel', 'runtests', 'checkonly'],
-      validate: DeployCommand.isValidDeployId,
     }),
-    verbose: flags.builtin({
-      description: messages.getMessage('flags.verbose'),
-      longDescription: messages.getMessage('flagsLong.verbose'),
+    verbose: Flags.boolean({
+      description: messages.getMessage('flags.verbose.description'),
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
-    zipfile: flags.filepath({
+    zipfile: Flags.file({
       char: 'f',
-      description: messages.getMessage('flags.zipFile'),
-      longDescription: messages.getMessage('flagsLong.zipFile'),
+      description: messages.getMessage('flags.zipFile.description'),
+      summary: messages.getMessage('flags.zipFile.summary'),
       exactlyOne: xorFlags,
     }),
-    singlepackage: flags.boolean({
+    singlepackage: Flags.boolean({
       char: 's',
-      description: messages.getMessage('flags.singlePackage'),
-      longDescription: messages.getMessage('flagsLong.singlePackage'),
+      description: messages.getMessage('flags.singlePackage.description'),
+      summary: messages.getMessage('flags.singlePackage.summary'),
     }),
-    soapdeploy: flags.boolean({
-      description: messages.getMessage('flags.soapDeploy'),
-      longDescription: messages.getMessage('flagsLong.soapDeploy'),
+    soapdeploy: Flags.boolean({
+      description: messages.getMessage('flags.soapDeploy.description'),
+      summary: messages.getMessage('flags.soapDeploy.summary'),
     }),
-    purgeondelete: flags.boolean({
-      description: messages.getMessage('flags.purgeOnDelete'),
+    purgeondelete: Flags.boolean({
+      summary: messages.getMessage('flags.purgeOnDelete.summary'),
     }),
-    concise: flags.builtin({
-      description: messages.getMessage('flags.concise'),
+    concise: Flags.boolean({
+      summary: messages.getMessage('flags.concise.summary'),
     }),
-    resultsdir: flags.directory({
-      description: messages.getMessage('flags.resultsDir'),
+    resultsdir: Flags.directory({
+      summary: messages.getMessage('flags.resultsDir.summary'),
     }),
-    coverageformatters: flags.array({
-      description: messages.getMessage('flags.coverageFormatters'),
+    coverageformatters: arrayWithDeprecation({
+      summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
     }),
-    junit: flags.boolean({ description: messages.getMessage('flags.junit') }),
+    junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
-  public async run(): Promise<MdDeployResult | DeployCommandAsyncResult> {
+  private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
+  private org: Org;
+
+  public async run(): Promise<DeployResult> {
+    this.flags = (await this.parse(Deploy)).flags;
+    this.org = this.flags['target-org'];
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();
   }
 
   protected async deploy(): Promise<void> {
-    const waitFlag = this.getFlag<Duration>('wait');
+    const waitFlag = this.flags.wait;
     const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
 
     this.isAsync = waitDuration.quantity === 0;
@@ -129,12 +150,15 @@ export class Deploy extends DeployCommand {
       this.warn(messages.getMessage('asyncCoverageJunitWarning'));
     }
     if (this.flags.validateddeployrequestid) {
-      this.deployResult = await this.deployRecentValidation();
+      this.deployResult = await this.deployRecentValidation(
+        this.flags.validateddeployrequestid,
+        this.org.getConnection()
+      );
       return;
     }
     const deploymentOptions = this.flags.zipfile
-      ? { zipPath: this.flags.zipfile as string }
-      : { mdapiPath: this.flags.deploydir as string };
+      ? { zipPath: this.flags.zipfile }
+      : { mdapiPath: this.flags.deploydir };
     const username = this.org.getUsername();
 
     // still here?  we need to deploy a zip file then
@@ -144,33 +168,38 @@ export class Deploy extends DeployCommand {
       apiOptions: {
         // properties that will always have values
         ...{
-          purgeOnDelete: this.getFlag('purgeondelete', false),
-          ignoreWarnings: this.getFlag('ignorewarnings', false),
-          rollbackOnError: !this.getFlag('ignoreerrors', false),
-          checkOnly: this.getFlag('checkonly', false),
-          singlePackage: this.getFlag('singlepackage', false),
+          purgeOnDelete: this.flags.purgeondelete ?? false,
+          ignoreWarnings: this.flags.ignorewarnings ?? false,
+          rollbackOnError: !this.flags.ignoreerrors ?? false,
+          checkOnly: this.flags.checkonly ?? false,
+          singlePackage: this.flags.singlepackage ?? false,
           rest: this.isRest,
         },
         // if runTests is defaulted as 'NoTestRun' and deploying to prod, you'll get this error
         // https://github.com/forcedotcom/cli/issues/1542
-        // add additional properties conditionally ()
-        ...(this.getFlag<string>('testlevel') ? { testLevel: this.getFlag<TestLevel>('testlevel') } : {}),
-        ...(this.getFlag<string[]>('runtests') ? { runTests: this.getFlag<string[]>('runtests') } : {}),
+        // add additional properties conditionally
+        ...(this.flags.testlevel
+          ? {
+              testLevel: this.flags.testlevel as TestLevel,
+            }
+          : {}),
+        ...(this.flags.runtests ? { runTests: this.flags.runtests } : {}),
       },
     });
+
     // eslint-disable-next-line @typescript-eslint/require-await
-    this.lifecycle.on('apiVersionDeploy', async (apiData: DeployVersionData) => {
-      this.ux.log(deployMessages.getMessage('apiVersionMsgBasic', [username, apiData.apiVersion, apiData.webService]));
+    Lifecycle.getInstance().on('apiVersionDeploy', async (apiData: DeployVersionData) => {
+      this.log(deployMessages.getMessage('apiVersionMsgBasic', [username, apiData.apiVersion, apiData.webService]));
     });
     await deploy.start();
     this.asyncDeployResult = { id: deploy.id };
     this.updateDeployId(deploy.id);
 
     if (!this.isAsync) {
-      if (!this.isJsonOutput()) {
+      if (!this.jsonEnabled()) {
         const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
-          ? new DeployProgressBarFormatter(this.logger, this.ux)
-          : new DeployProgressStatusFormatter(this.logger, this.ux);
+          ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+          : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
         progressFormatter.progress(deploy);
       }
       this.displayDeployId(deploy.id);
@@ -180,32 +209,40 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.getFlag<string[]>('coverageformatters', undefined),
-      this.getFlag<boolean>('junit'),
-      this.getFlag<string>('resultsdir'),
+      this.flags.coverageformatters,
+      this.flags.junit,
+      this.flags.resultsdir,
       this.deployResult?.response?.id,
       true
     );
 
     const formatterOptions: ResultFormatterOptions = {
-      concise: this.getFlag<boolean>('concise', false),
-      verbose: this.getFlag<boolean>('verbose', false),
+      concise: this.flags.concise ?? false,
+      verbose: this.flags.verbose ?? false,
       username: this.org.getUsername(),
-      coverageOptions: getCoverageFormattersOptions(this.getFlag<string[]>('coverageformatters', undefined)),
-      junitTestResults: this.flags.junit as boolean,
+      coverageOptions: getCoverageFormattersOptions(this.flags.coverageformatters),
+      junitTestResults: this.flags.junit,
       resultsDir: this.resultsDir,
-      testsRan: this.getFlag<string>('testlevel', 'NoTestRun') !== 'NoTestRun',
+      testsRan: (this.flags.testlevel ?? 'NoTestRun') !== 'NoTestRun',
     };
     const formatter = this.isAsync
-      ? new MdDeployAsyncResultFormatter(this.logger, this.ux, formatterOptions, this.asyncDeployResult)
-      : new MdDeployResultFormatter(this.logger, this.ux, formatterOptions, this.deployResult);
+      ? new MdDeployAsyncResultFormatter(
+          new Ux({ jsonEnabled: this.jsonEnabled() }),
+          formatterOptions,
+          this.asyncDeployResult
+        )
+      : new MdDeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 
     if (!this.isAsync) {
-      this.maybeCreateRequestedReports();
+      this.maybeCreateRequestedReports({
+        coverageformatters: this.flags.coverageformatters,
+        junit: this.flags.junit,
+        org: this.org,
+      });
     }
 
     // Only display results to console when JSON flag is unset.
-    if (!this.isJsonOutput()) {
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
 

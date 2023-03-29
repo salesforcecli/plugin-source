@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/PushResponse",
+  "definitions": {
+    "PushResponse": {
+      "type": "object",
+      "properties": {
+        "pushedSource": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "filePath": {
+                "type": "string"
+              },
+              "fullName": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string",
+                "enum": ["Created", "Changed", "Unchanged", "Deleted", "Failed"]
+              },
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": ["fullName", "state", "type"],
+            "additionalProperties": false
+          }
+        },
+        "replacements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": ["pushedSource"],
+      "additionalProperties": false
+    }
+  }
+}

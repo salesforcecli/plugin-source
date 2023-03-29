@@ -7,17 +7,21 @@
 
 import * as path from 'path';
 import * as chalk from 'chalk';
-import { UX } from '@salesforce/command';
-import { Logger, Messages, SfError } from '@salesforce/core';
+
+import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
   DeployMessage,
   DeployResult,
+  Failures,
   FileResponse,
+  FileResponseFailure,
   MetadataApiDeployStatus,
   RequestStatus,
+  Successes,
 } from '@salesforce/source-deploy-retrieve';
+import { Ux } from '@salesforce/sf-plugins-core';
 import { prepCoverageForDisplay } from '../coverageUtils';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
@@ -25,21 +29,21 @@ import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
-export interface DeployCommandResult extends MdDeployResult {
+export type DeployCommandResult = {
   deletedSource?: FileResponse[];
   deployedSource: FileResponse[];
   outboundFiles: string[];
   deploys: MetadataApiDeployStatus[];
   deletes?: MetadataApiDeployStatus[];
   replacements?: Record<string, string[]>;
-}
+} & MdDeployResult;
 
 export class DeployResultFormatter extends ResultFormatter {
   protected result: DeployResult;
   protected fileResponses: FileResponse[];
 
-  public constructor(logger: Logger, ux: UX, options: ResultFormatterOptions, result: DeployResult) {
-    super(logger, ux, options);
+  public constructor(ux: Ux, options: ResultFormatterOptions, result: DeployResult) {
+    super(ux, options);
     this.result = result;
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
   }
@@ -149,11 +153,19 @@ export class DeployResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Deployed Source'));
-      this.ux.table(successes, {
-        fullName: { header: 'FULL NAME' },
-        type: { header: 'TYPE' },
-        filePath: { header: 'PROJECT PATH' },
-      });
+      this.ux.table(
+        successes.map((success) => ({
+          state: success.state,
+          fullName: success.fullName,
+          type: success.type,
+          filePath: success.filePath,
+        })),
+        {
+          fullName: { header: 'FULL NAME' },
+          type: { header: 'TYPE' },
+          filePath: { header: 'PROJECT PATH' },
+        }
+      );
     }
   }
 
@@ -167,11 +179,14 @@ export class DeployResultFormatter extends ResultFormatter {
 
     this.ux.log('');
     this.ux.styledHeader(chalk.blue('Deleted Source'));
-    this.ux.table(deletions, {
-      fullName: { header: 'FULL NAME' },
-      type: { header: 'TYPE' },
-      filePath: { header: 'PROJECT PATH' },
-    });
+    this.ux.table(
+      deletions.map((entry) => ({ fullName: entry.fullName, type: entry.type, filePath: entry.filePath })),
+      {
+        fullName: { header: 'FULL NAME' },
+        type: { header: 'TYPE' },
+        filePath: { header: 'PROJECT PATH' },
+      }
+    );
   }
 
   protected displayFailures(): void {
@@ -206,11 +221,23 @@ export class DeployResultFormatter extends ResultFormatter {
       if (failures.length) {
         this.ux.log('');
         this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
-        this.ux.table(failures, {
-          problemType: { header: 'Type' },
-          fullName: { header: 'Name' },
-          error: { header: 'Problem' },
-        });
+        this.ux.table(
+          failures.map((entry: FileResponseFailure) => ({
+            fullName: entry.fullName,
+            problemType: entry.problemType,
+            filePath: entry.filePath,
+            columnNumber: entry.columnNumber,
+            error: entry.error,
+            lineNumber: entry.lineNumber,
+            state: entry.state,
+            type: entry.type,
+          })),
+          {
+            problemType: { header: 'Type' },
+            fullName: { header: 'Name' },
+            error: { header: 'Problem' },
+          }
+        );
         this.ux.log('');
       }
     }
@@ -243,12 +270,20 @@ export class DeployResultFormatter extends ResultFormatter {
       this.ux.styledHeader(
         chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
       );
-      this.ux.table(tests, {
-        name: { header: 'Name' },
-        methodName: { header: 'Method' },
-        message: { header: 'Message' },
-        stackTrace: { header: 'Stacktrace' },
-      });
+      this.ux.table(
+        tests.map((entry: Failures) => ({
+          name: entry.name,
+          methodName: entry.methodName,
+          message: entry.message,
+          stackTrace: entry.stackTrace,
+        })),
+        {
+          name: { header: 'Name' },
+          methodName: { header: 'Method' },
+          message: { header: 'Message' },
+          stackTrace: { header: 'Stacktrace' },
+        }
+      );
     }
   }
 
@@ -258,10 +293,13 @@ export class DeployResultFormatter extends ResultFormatter {
       const tests = this.sortTestResults(success);
       this.ux.log('');
       this.ux.styledHeader(chalk.green(`Test Success [${success.length}]`));
-      this.ux.table(tests, {
-        name: { header: 'Name' },
-        methodName: { header: 'Method' },
-      });
+      this.ux.table(
+        tests.map((test: Successes) => ({ name: test.name, methodName: test.methodName })),
+        {
+          name: { header: 'Name' },
+          methodName: { header: 'Method' },
+        }
+      );
     }
     const codeCoverage = ensureArray(this.result?.response?.details?.runTestResult?.codeCoverage);
 
@@ -270,11 +308,18 @@ export class DeployResultFormatter extends ResultFormatter {
 
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
-      this.ux.table(coverage, {
-        name: { header: 'Name' },
-        numLocations: { header: '% Covered' },
-        lineNotCovered: { header: 'Uncovered Lines' },
-      });
+      this.ux.table(
+        coverage.map((cov) => ({
+          name: cov.name,
+          numLocations: cov.numLocations,
+          lineNotCovered: cov.locationsNotCovered,
+        })),
+        {
+          name: { header: 'Name' },
+          numLocations: { header: '% Covered' },
+          lineNotCovered: { header: 'Uncovered Lines' },
+        }
+      );
     }
   }
 

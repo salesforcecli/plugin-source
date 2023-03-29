@@ -4,12 +4,17 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
-import * as os from 'os';
-import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfError } from '@salesforce/core';
+import { Connection, Messages, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+import {
+  Flags,
+  loglevel,
+  orgApiVersionFlagWithDeprecations,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { DeployCommand } from '../../../../deployCommand';
 import {
   DeployCancelCommandResult,
@@ -17,47 +22,56 @@ import {
 } from '../../../../formatters/deployCancelResultFormatter';
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.load('@salesforce/plugin-source', 'md.cancel', [
-  'CancelFailed',
-  'description',
-  'examples',
-  'flags.wait',
-  'flags.waitLong',
-  'flags.jobid',
-]);
+const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.cancel');
+
+const replacement = 'project deploy cancel';
 
 export class Cancel extends DeployCommand {
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
-  public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    wait: flags.minutes({
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly examples = messages.getMessages('examples');
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
+  public static readonly flags = {
+    'api-version': orgApiVersionFlagWithDeprecations,
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    wait: Flags.duration({
       char: 'w',
+      unit: 'minutes',
       default: Duration.minutes(DeployCommand.DEFAULT_WAIT_MINUTES),
-      min: Duration.minutes(1),
-      description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flags.waitLong'),
+      min: 1,
+      description: messages.getMessage('flags.wait.description'),
+      summary: messages.getMessage('flags.wait.summary'),
     }),
-    jobid: flags.id({
+    jobid: Flags.salesforceId({
       char: 'i',
-      description: messages.getMessage('flags.jobid'),
-      validate: DeployCommand.isValidDeployId,
+      length: 'both',
+      startsWith: '0Af',
+      summary: messages.getMessage('flags.jobid.summary'),
     }),
   };
+  private flags: Interfaces.InferredFlags<typeof Cancel.flags>;
+  private conn: Connection;
 
   public async run(): Promise<DeployCancelCommandResult> {
+    this.flags = (await this.parse(Cancel)).flags;
+    this.conn = this.flags['target-org'].getConnection(this.flags['api-version']);
     await this.cancel();
     this.resolveSuccess();
     return this.formatResult();
   }
 
   protected async cancel(): Promise<void> {
-    const deployId = this.resolveDeployId(this.getFlag<string>('jobid'));
+    const deployId = this.resolveDeployId(this.flags.jobid);
     try {
-      const deploy = this.createDeploy(deployId);
+      const deploy = this.createDeploy(this.conn, deployId);
       await deploy.cancel();
 
-      this.deployResult = await this.poll(deployId);
+      this.deployResult = await this.poll(this.conn, deployId);
     } catch (e) {
       const err = e as Error;
       throw new SfError(messages.getMessage('CancelFailed', [err.message]), 'CancelFailed');
@@ -72,8 +86,8 @@ export class Cancel extends DeployCommand {
   }
 
   protected formatResult(): DeployCancelCommandResult {
-    const formatter = new DeployCancelResultFormatter(this.logger, this.ux, this.deployResult);
-    if (!this.isJsonOutput()) {
+    const formatter = new DeployCancelResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), this.deployResult);
+    if (!this.jsonEnabled()) {
       formatter.display();
     }
     return formatter.getJson();

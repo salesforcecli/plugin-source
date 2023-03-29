@@ -7,10 +7,10 @@
 
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { getBoolean, getString } from '@salesforce/ts-types';
-import { expect } from '@salesforce/command/lib/test';
 import { Result } from '@salesforce/source-testkit/lib/types';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { expect } from 'chai';
 import { TEST_REPOS_MAP } from '../testMatrix';
 import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelResultFormatter';
 

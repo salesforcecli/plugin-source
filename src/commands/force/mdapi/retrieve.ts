@@ -4,10 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
-import * as os from 'os';
-import { flags, FlagsConfig } from '@salesforce/command';
-import { Messages, SfError, SfProject } from '@salesforce/core';
+import { Lifecycle, Messages, Org, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
   ComponentSetBuilder,
@@ -17,6 +14,14 @@ import {
   RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
 import { Optional } from '@salesforce/ts-types';
+import {
+  arrayWithDeprecation,
+  Flags,
+  loglevel,
+  requiredOrgFlagWithDeprecations,
+  Ux,
+} from '@salesforce/sf-plugins-core';
+import { Interfaces } from '@oclif/core';
 import { resolveZipFileName, SourceCommand } from '../../../sourceCommand';
 import { Stash } from '../../../stash';
 import {
@@ -28,69 +33,70 @@ import {
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
-const retrieveMessages = Messages.load('@salesforce/plugin-source', 'retrieve', ['apiVersionMsgDetailed']);
+const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
+export type RetrieveCommandCombinedResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
+const replacement = 'project retrieve start';
 
 export class Retrieve extends SourceCommand {
-  public static aliases = ['force:mdapi:beta:retrieve'];
-  public static readonly description = messages.getMessage('retrieveCmd.description');
-  public static readonly examples = messages.getMessage('retrieveCmd.examples').split(os.EOL);
-  public static readonly requiresUsername = true;
-  public static readonly flagsConfig: FlagsConfig = {
-    retrievetargetdir: flags.directory({
+  public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: replacement,
+    message: messages.getMessage('deprecation', [replacement]),
+  };
+  public static readonly summary = messages.getMessage('retrieve.summary');
+  public static readonly description = messages.getMessage('retrieve.description');
+  public static readonly examples = messages.getMessages('retrieve.examples');
+  public static readonly flags = {
+    loglevel,
+    'target-org': requiredOrgFlagWithDeprecations,
+    retrievetargetdir: Flags.directory({
       char: 'r',
-      description: messages.getMessage('flags.retrievetargetdir'),
-      longDescription: messages.getMessage('flagsLong.retrievetargetdir'),
+      summary: messages.getMessage('flags.retrievetargetdir.summary'),
       required: true,
     }),
-    unpackaged: flags.filepath({
+    unpackaged: Flags.file({
       char: 'k',
-      description: messages.getMessage('flags.unpackaged'),
-      longDescription: messages.getMessage('flagsLong.unpackaged'),
+      summary: messages.getMessage('flags.unpackaged.summary'),
       exclusive: ['sourcedir', 'packagenames'],
     }),
-    sourcedir: flags.directory({
+    sourcedir: Flags.directory({
       char: 'd',
-      description: messages.getMessage('flags.sourcedir'),
-      longDescription: messages.getMessage('flagsLong.sourcedir'),
+      summary: messages.getMessage('flags.sourcedir.summary'),
       exclusive: ['unpackaged', 'packagenames'],
     }),
-    packagenames: flags.array({
+    packagenames: arrayWithDeprecation({
       char: 'p',
-      description: messages.getMessage('flags.packagenames'),
-      longDescription: messages.getMessage('flagsLong.packagenames'),
+      summary: messages.getMessage('flags.packagenames.summary'),
       exclusive: ['sourcedir', 'unpackaged'],
     }),
-    singlepackage: flags.boolean({
+    singlepackage: Flags.boolean({
       char: 's',
-      description: messages.getMessage('flags.singlepackage'),
-      longDescription: messages.getMessage('flagsLong.singlepackage'),
+      description: messages.getMessage('flags.singlepackage.description'),
+      summary: messages.getMessage('flags.singlepackage.summary'),
     }),
-    zipfilename: flags.string({
+    zipfilename: Flags.string({
       char: 'n',
-      description: messages.getMessage('flags.zipfilename'),
-      longDescription: messages.getMessage('flagsLong.zipfilename'),
+      summary: messages.getMessage('flags.zipfilename.summary'),
     }),
-    unzip: flags.boolean({
+    unzip: Flags.boolean({
       char: 'z',
-      description: messages.getMessage('flags.unzip'),
-      longDescription: messages.getMessage('flagsLong.unzip'),
+      summary: messages.getMessage('flags.unzip.summary'),
     }),
-    wait: flags.minutes({
+    wait: Flags.duration({
       char: 'w',
-      description: messages.getMessage('flags.wait'),
-      longDescription: messages.getMessage('flagsLong.wait'),
+      unit: 'minutes',
+      summary: messages.getMessage('flags.wait.summary'),
       default: Duration.minutes(1440), // 24 hours is a reasonable default versus -1 (no timeout)
     }),
-    apiversion: flags.builtin({
+    apiversion: Flags.string({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore force char override for backward compat
       char: 'a',
-      description: messages.getMessage('flags.apiversion'),
-      longDescription: messages.getMessage('flagsLong.apiversion'),
+      description: messages.getMessage('flags.apiversion.description'),
+      summary: messages.getMessage('flags.apiversion.summary'),
     }),
-    verbose: flags.builtin({
-      description: messages.getMessage('flags.verbose'),
-      longDescription: messages.getMessage('flagsLong.verbose'),
+    verbose: Flags.boolean({
+      summary: messages.getMessage('flags.verbose.summary'),
     }),
   };
 
@@ -102,24 +108,27 @@ export class Retrieve extends SourceCommand {
   private wait: Duration;
   private isAsync: boolean;
   private mdapiRetrieve: MetadataApiRetrieve;
-
-  public async run(): Promise<RetrieveCommandResult | RetrieveCommandAsyncResult> {
+  private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  private org: Org;
+  public async run(): Promise<RetrieveCommandCombinedResult> {
+    this.flags = (await this.parse(Retrieve)).flags;
+    this.org = this.flags['target-org'];
     await this.retrieve();
     this.resolveSuccess();
     return this.formatResult();
   }
 
   protected async retrieve(): Promise<void> {
-    const packagenames = this.getFlag<string[]>('packagenames');
+    const packagenames = this.flags.packagenames;
     if (!packagenames && !this.flags.unpackaged) {
-      this.sourceDir = this.resolveRootDir(this.getFlag<string>('sourcedir'));
+      this.sourceDir = this.resolveRootDir(this.flags.sourcedir);
     }
-    this.retrieveTargetDir = this.resolveOutputDir(this.getFlag<string>('retrievetargetdir'));
-    const manifest = this.resolveManifest(this.getFlag<string>('unpackaged'));
-    const singlePackage = this.getFlag<boolean>('singlepackage');
-    this.zipFileName = resolveZipFileName(this.getFlag<string>('zipfilename'));
-    this.unzip = this.getFlag<boolean>('unzip');
-    const waitFlag = this.getFlag<Duration>('wait');
+    this.retrieveTargetDir = this.resolveOutputDir(this.flags.retrievetargetdir);
+    const manifest = this.resolveManifest(this.flags.unpackaged);
+    const singlePackage = this.flags.singlepackage;
+    this.zipFileName = resolveZipFileName(this.flags.zipfilename);
+    this.unzip = this.flags.unzip;
+    const waitFlag = this.flags.wait;
     this.wait = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
     this.isAsync = this.wait.quantity === 0;
 
@@ -127,14 +136,14 @@ export class Retrieve extends SourceCommand {
       throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]), 'InvalidPackageNames');
     }
 
-    this.ux.startSpinner(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
-    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.componentSetBuild'));
+    this.spinner.start(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
+    this.spinner.status = spinnerMessages.getMessage('retrieve.componentSetBuild');
 
     this.componentSet = await ComponentSetBuilder.build({
       // use the apiVersion if provided.
       // Manifests default to their specified apiVersion(ComponentSetBuilder handles this)
       // and not specifying the apiVersion will use the max for the org/Connection
-      apiversion: this.getFlag<string>('apiversion'),
+      apiversion: this.flags.apiversion,
       packagenames,
       sourcepath: this.sourceDir ? [this.sourceDir] : undefined,
       manifest: manifest && {
@@ -143,11 +152,11 @@ export class Retrieve extends SourceCommand {
       },
     });
 
-    await this.lifecycle.emit('preretrieve', { packageXmlPath: manifest });
+    await Lifecycle.getInstance().emit('preretrieve', { packageXmlPath: manifest });
     const username = this.org.getUsername();
     // eslint-disable-next-line @typescript-eslint/require-await
-    this.lifecycle.on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
-      this.ux.log(
+    Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
+      this.log(
         retrieveMessages.getMessage('apiVersionMsgDetailed', [
           'Retrieving',
           apiData.manifestVersion,
@@ -156,12 +165,12 @@ export class Retrieve extends SourceCommand {
         ])
       );
     });
-    this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.sendingRequest'));
+    this.spinner.status = spinnerMessages.getMessage('retrieve.sendingRequest');
 
     this.mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: username,
       output: this.retrieveTargetDir,
-      packageOptions: this.getFlag<string[]>('packagenames'),
+      packageOptions: this.flags.packagenames,
       format: 'metadata',
       singlePackage,
       zipFileName: this.zipFileName,
@@ -175,17 +184,17 @@ export class Retrieve extends SourceCommand {
       unzip: this.unzip,
     });
 
-    this.ux.log(`Retrieve ID: ${this.mdapiRetrieve.id}`);
+    this.log(`Retrieve ID: ${this.mdapiRetrieve.id}`);
 
     if (this.isAsync) {
-      this.ux.stopSpinner('queued');
+      this.spinner.stop('queued');
     } else {
-      this.ux.setSpinnerStatus(spinnerMessages.getMessage('retrieve.polling'));
+      this.spinner.status = spinnerMessages.getMessage('retrieve.polling');
       this.retrieveResult = await this.mdapiRetrieve.pollStatus({
         frequency: Duration.milliseconds(1000),
         timeout: this.wait,
       });
-      this.ux.stopSpinner();
+      this.spinner.stop();
     }
   }
 
@@ -207,12 +216,12 @@ export class Retrieve extends SourceCommand {
     // async result
     if (this.isAsync) {
       let cmdFlags = `--jobid ${this.mdapiRetrieve.id} --retrievetargetdir ${this.retrieveTargetDir}`;
-      const targetusernameFlag = this.getFlag<string>('targetusername');
+      const targetusernameFlag = this.flags['target-org'];
       if (targetusernameFlag) {
-        cmdFlags += ` --targetusername ${targetusernameFlag}`;
+        cmdFlags += ` --targetusername ${targetusernameFlag.getUsername()}`;
       }
-      this.ux.log('');
-      this.ux.log(messages.getMessage('checkStatus', [cmdFlags]));
+      this.log('');
+      this.log(messages.getMessage('checkStatus', [cmdFlags]));
       return {
         done: false,
         id: this.mdapiRetrieve.id,
@@ -223,14 +232,18 @@ export class Retrieve extends SourceCommand {
     } else {
       const formatterOptions = {
         waitTime: this.wait.quantity,
-        verbose: this.getFlag<boolean>('verbose', false),
+        verbose: this.flags.verbose ?? false,
         retrieveTargetDir: this.retrieveTargetDir,
         zipFileName: this.zipFileName,
         unzip: this.unzip,
       };
-      const formatter = new RetrieveResultFormatter(this.logger, this.ux, formatterOptions, this.retrieveResult);
+      const formatter = new RetrieveResultFormatter(
+        new Ux({ jsonEnabled: this.jsonEnabled() }),
+        formatterOptions,
+        this.retrieveResult
+      );
 
-      if (!this.isJsonOutput()) {
+      if (!this.jsonEnabled()) {
         formatter.display();
       }
       return formatter.getJson();
@@ -241,7 +254,7 @@ export class Retrieve extends SourceCommand {
     try {
       return SfProject.getInstance().getDefaultPackage().fullPath;
     } catch (error) {
-      this.logger.debug('No SFDX project found for default package directory');
+      this.debug('No SFDX project found for default package directory');
     }
   }
 
