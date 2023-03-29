@@ -109,12 +109,11 @@ describe('Partial Bundle Delete Retrieves', () => {
     expect(result.response.success).to.equal(expectedResponse.result.response.success);
     expect(result.response.id).to.equal(expectedResponse.result.response.id);
     expect(result.response.fileProperties).to.deep.equal(expectedResponse.result.response.fileProperties);
-    expectedResponse.result.inboundFiles.forEach((file) => {
-      expect(
-        result.inboundFiles,
-        JSON.stringify({ file, target: expectedResponse.result.inboundFiles })
-      ).to.deep.include(file);
-    });
+    expect(JSON.parse(JSON.stringify(result.inboundFiles))).to.have.deep.members(
+      // json to get the backstage that windows produces
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      JSON.parse(JSON.stringify(expectedResponse.result.inboundFiles))
+    );
   });
 
   describe('Aura and LWC', () => {
