@@ -203,7 +203,7 @@ describe('transform md RunTestResult', () => {
     sandboxStub.stub(mockConnection, 'instanceUrl').get(() => 'https://na139.salesforce.com');
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     sandboxStub.restore();
   });
   it('should transform md coverage to apex coverage format', () => {

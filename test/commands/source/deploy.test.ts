@@ -372,7 +372,7 @@ describe('force:source:deploy', () => {
   });
 
   describe('SOAP/REST', () => {
-    it('should use SOAP by default', async () => {
+    it('should use SOAP by default', () => {
       delete process.env.SFDX_REST_DEPLOY;
       const sourcepath = ['somepath'];
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
@@ -381,7 +381,7 @@ describe('force:source:deploy', () => {
       expect(cmd.isRest).to.be.false;
     });
 
-    it('should use SOAP from the env var', async () => {
+    it('should use SOAP from the env var', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'false';
         const sourcepath = ['somepath'];
@@ -394,7 +394,7 @@ describe('force:source:deploy', () => {
       }
     });
 
-    it('should use REST from the env var', async () => {
+    it('should use REST from the env var', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         const sourcepath = ['somepath'];
@@ -407,7 +407,7 @@ describe('force:source:deploy', () => {
       }
     });
 
-    it('should use SOAP by overriding env var with flag', async () => {
+    it('should use SOAP by overriding env var with flag', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         const sourcepath = ['somepath'];
@@ -420,7 +420,7 @@ describe('force:source:deploy', () => {
       }
     });
 
-    it('should use SOAP from flag', async () => {
+    it('should use SOAP from flag', () => {
       const sourcepath = ['somepath'];
       const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -428,7 +428,7 @@ describe('force:source:deploy', () => {
       expect(cmd.isRest).to.be.false;
     });
 
-    it('should use SOAP from config', async () => {
+    it('should use SOAP from config', () => {
       stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
       stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
       const sourcepath = ['somepath'];
@@ -438,7 +438,7 @@ describe('force:source:deploy', () => {
       expect(cmd.isRest).to.be.false;
     });
 
-    it('should use SOAP by overriding env var with config', async () => {
+    it('should use SOAP by overriding env var with config', () => {
       try {
         process.env.SFDX_REST_DEPLOY = 'true';
         stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);

@@ -54,7 +54,7 @@ describe('RetrieveResultFormatter', () => {
   });
 
   describe('getJson', () => {
-    it('should return expected json for a success', async () => {
+    it('should return expected json for a success', () => {
       const expectedSuccessResults: RetrieveCommandResult = {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [],
@@ -65,7 +65,7 @@ describe('RetrieveResultFormatter', () => {
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
 
-    it('should return expected json for a failure', async () => {
+    it('should return expected json for a failure', () => {
       const expectedFailureResults: RetrieveCommandResult = {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [],
@@ -76,7 +76,7 @@ describe('RetrieveResultFormatter', () => {
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
     });
 
-    it('should return expected json for an InProgress', async () => {
+    it('should return expected json for an InProgress', () => {
       const expectedInProgressResults: RetrieveCommandResult = {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [],
@@ -87,7 +87,7 @@ describe('RetrieveResultFormatter', () => {
       expect(formatter.getJson()).to.deep.equal(expectedInProgressResults);
     });
 
-    it('should return expected json for a success with packages', async () => {
+    it('should return expected json for a success with packages', () => {
       const testPkg = { name: 'testPkg', path: join('path', 'to', 'testPkg') };
       const expectedSuccessResults: RetrieveCommandResult = {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
@@ -99,7 +99,7 @@ describe('RetrieveResultFormatter', () => {
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
 
-    it('should return expected json for a success with warnings', async () => {
+    it('should return expected json for a success with warnings', () => {
       const warnMessages = retrieveResultWarnings.response.messages;
       const warnings = ensureArray(warnMessages);
       const expectedSuccessResults: RetrieveCommandResult = {
@@ -114,7 +114,7 @@ describe('RetrieveResultFormatter', () => {
   });
 
   describe('display', () => {
-    it('should output as expected for a success', async () => {
+    it('should output as expected for a success', () => {
       const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultSuccess);
       formatter.display();
       expect(styledHeaderStub.called).to.equal(true);
@@ -126,7 +126,7 @@ describe('RetrieveResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
-    it('should output as expected for an InProgress', async () => {
+    it('should output as expected for an InProgress', () => {
       const options = { waitTime: 33 };
       const formatter = new RetrieveResultFormatter(ux as Ux, options, retrieveResultInProgress);
       formatter.display();
@@ -138,7 +138,7 @@ describe('RetrieveResultFormatter', () => {
         .and.contain(`${options.waitTime} minutes`);
     });
 
-    it('should output as expected for a Failure', async () => {
+    it('should output as expected for a Failure', () => {
       const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultFailure);
       sandbox.stub(formatter, 'isSuccess').returns(false);
 
@@ -148,7 +148,7 @@ describe('RetrieveResultFormatter', () => {
       expect(logStub.firstCall.args[0]).to.contain('Retrieve Failed due to:');
     });
 
-    it('should output as expected for warnings', async () => {
+    it('should output as expected for warnings', () => {
       const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultWarnings);
       formatter.display();
       // Should call styledHeader for warnings and the standard "Retrieved Source" header
@@ -161,7 +161,7 @@ describe('RetrieveResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.deep.equal(warnings);
     });
 
-    it('should output a message when no results were returned', async () => {
+    it('should output a message when no results were returned', () => {
       const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultEmpty);
       formatter.display();
       expect(styledHeaderStub.called).to.equal(true);

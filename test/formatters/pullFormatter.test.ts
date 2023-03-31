@@ -55,14 +55,14 @@ describe('PullFormatter', () => {
   });
 
   describe('getJson', () => {
-    it('should return expected json for a success', async () => {
+    it('should return expected json for a success', () => {
       process.exitCode = 0;
       const expectedSuccessResults: PullResponse['pulledSource'] = retrieveResultSuccess.getFileResponses();
       const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultSuccess);
       expect(formatter.getJson().pulledSource).to.deep.equal(expectedSuccessResults);
     });
 
-    it('should return expected json for a failure', async () => {
+    it('should return expected json for a failure', () => {
       process.exitCode = 1;
       const expectedFailureResults: PullResponse['pulledSource'] = retrieveResultFailure.getFileResponses();
       const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultFailure);
@@ -77,14 +77,14 @@ describe('PullFormatter', () => {
       }
     });
 
-    it('should return expected json for an InProgress', async () => {
+    it('should return expected json for an InProgress', () => {
       const expectedInProgressResults: PullResponse['pulledSource'] = retrieveResultInProgress.getFileResponses();
       const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultInProgress);
       expect(formatter.getJson().pulledSource).to.deep.equal(expectedInProgressResults);
     });
 
     describe('display', () => {
-      it('should output as expected for a success', async () => {
+      it('should output as expected for a success', () => {
         process.exitCode = 0;
         const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultSuccess);
         formatter.display();
@@ -97,7 +97,7 @@ describe('PullFormatter', () => {
         expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
       });
 
-      it('should output as expected for an InProgress', async () => {
+      it('should output as expected for an InProgress', () => {
         process.exitCode = 68;
         const options = { waitTime: 33 };
         const formatter = new PullResultFormatter(ux as Ux, options, retrieveResultInProgress);
@@ -110,7 +110,7 @@ describe('PullFormatter', () => {
           .and.contain(`${options.waitTime} minutes`);
       });
 
-      it('should output as expected for a Failure', async () => {
+      it('should output as expected for a Failure', () => {
         process.exitCode = 1;
         const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultFailure);
         sandbox.stub(formatter, 'isSuccess').returns(false);
@@ -121,7 +121,7 @@ describe('PullFormatter', () => {
         expect(logStub.firstCall.args[0]).to.contain('Retrieve Failed due to:');
       });
 
-      it('should output as expected for warnings', async () => {
+      it('should output as expected for warnings', () => {
         process.exitCode = 0;
         const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultWarnings);
         formatter.display();
@@ -135,7 +135,7 @@ describe('PullFormatter', () => {
         expect(tableStub.firstCall.args[0]).to.deep.equal(warnings);
       });
 
-      it('should output a message when no results were returned', async () => {
+      it('should output a message when no results were returned', () => {
         process.exitCode = 0;
         const formatter = new PullResultFormatter(ux as Ux, {}, retrieveResultEmpty);
         formatter.display();

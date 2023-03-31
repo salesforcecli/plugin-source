@@ -60,7 +60,7 @@ describe('1k files in mdapi:deploy', () => {
     await session?.clean();
   });
 
-  it('should be able to handle a mdapi:deploy of 1k', async () => {
+  it('should be able to handle a mdapi:deploy of 1k', () => {
     execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
     const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
       ensureExitCode: 0,

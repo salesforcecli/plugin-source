@@ -137,7 +137,7 @@ describe('PushResultFormatter', () => {
       expect(headerStub.args[1][0]).to.include('Metadata Replacements');
       expect(tableStub.callCount, JSON.stringify(tableStub.args)).to.equal(2);
     });
-    it('should output as expected for a deploy failure (GACK)', async () => {
+    it('should output as expected for a deploy failure (GACK)', () => {
       const errorMessage =
         'UNKNOWN_EXCEPTION: An unexpected error occurred. Please include this ErrorId if you contact support: 1730955361-49792 (-1117026034)';
       const deployFailure = getDeployResult('failed', { errorMessage });
