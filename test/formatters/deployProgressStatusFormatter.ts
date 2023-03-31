@@ -37,7 +37,7 @@ describe('DeployProgressStatusFormatter', () => {
     mdApiDeploy.event.emit('update', deployResultInProgress.response); // eslint-disable-line
   };
 
-  it('should output with every update when verbose', async () => {
+  it('should output with every update when verbose', () => {
     const formatter = new DeployProgressStatusFormatter(ux as Ux, { verbose: true });
     formatter.progress(mdApiDeploy);
 
@@ -51,7 +51,7 @@ describe('DeployProgressStatusFormatter', () => {
     expect(printStub.calledThrice).to.equal(true);
   });
 
-  it('should only output on update when results change without verbose', async () => {
+  it('should only output on update when results change without verbose', () => {
     const formatter = new DeployProgressStatusFormatter(ux as Ux);
     formatter.progress(mdApiDeploy);
 

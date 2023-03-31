@@ -46,7 +46,7 @@ describe('mdDeployResultFormatter', () => {
   });
 
   describe('getJson', () => {
-    it('should return expected json for a success', async () => {
+    it('should return expected json for a success', () => {
       process.exitCode = 0;
       const expectedSuccessResults = deployResultSuccess.response;
       const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultSuccess);
@@ -55,7 +55,7 @@ describe('mdDeployResultFormatter', () => {
       expect(json).to.deep.equal(expectedSuccessResults);
     });
 
-    it('should return expected json for a failure', async () => {
+    it('should return expected json for a failure', () => {
       process.exitCode = 1;
 
       const expectedFailureResults = deployResultFailure.response;
@@ -86,7 +86,7 @@ describe('mdDeployResultFormatter', () => {
   });
 
   describe('display', () => {
-    it('should output as expected for a success (no table)', async () => {
+    it('should output as expected for a success (no table)', () => {
       process.exitCode = 0;
       const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultSuccess);
       formatter.display();
@@ -95,7 +95,7 @@ describe('mdDeployResultFormatter', () => {
       expect(styledHeaderStub.callCount).to.equal(0);
     });
 
-    it('should output as expected for a verbose success (has table)', async () => {
+    it('should output as expected for a verbose success (has table)', () => {
       process.exitCode = 0;
       const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultSuccess);
       formatter.display();
@@ -106,7 +106,7 @@ describe('mdDeployResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.have.length(2);
     });
 
-    it('should output as expected for a failure and exclude duplicate information', async () => {
+    it('should output as expected for a failure and exclude duplicate information', () => {
       process.exitCode = 1;
       const formatter = new MdDeployResultFormatter(ux as Ux, {}, deployResultFailure);
 
@@ -121,7 +121,7 @@ describe('mdDeployResultFormatter', () => {
       }
     });
 
-    it('should output as expected for a deploy failure (GACK)', async () => {
+    it('should output as expected for a deploy failure (GACK)', () => {
       const errorMessage =
         'UNKNOWN_EXCEPTION: An unexpected error occurred. Please include this ErrorId if you contact support: 1730955361-49792 (-1117026034)';
       const deployFailure = getDeployResult('failed', { errorMessage });
@@ -142,7 +142,7 @@ describe('mdDeployResultFormatter', () => {
       }
     });
 
-    it('should output as expected for a test failure with verbose', async () => {
+    it('should output as expected for a test failure with verbose', () => {
       process.exitCode = 1;
       const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestFailure);
       try {
@@ -159,7 +159,7 @@ describe('mdDeployResultFormatter', () => {
       }
     });
 
-    it('should output as expected for passing tests with verbose', async () => {
+    it('should output as expected for passing tests with verbose', () => {
       process.exitCode = 0;
       const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccess);
       formatter.display();
@@ -169,7 +169,7 @@ describe('mdDeployResultFormatter', () => {
       expect(styledHeaderStub.args[3][0]).to.include('Apex Code Coverage');
     });
 
-    it('should output as expected for passing and failing tests with verbose', async () => {
+    it('should output as expected for passing and failing tests with verbose', () => {
       process.exitCode = 1;
       const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccessAndFailure);
       try {
@@ -186,7 +186,7 @@ describe('mdDeployResultFormatter', () => {
       }
     });
 
-    it('shows success AND failures for partialSucceeded', async () => {
+    it('shows success AND failures for partialSucceeded', () => {
       process.exitCode = 69;
       const formatter = new MdDeployResultFormatter(ux as Ux, { verbose: true }, deployResultPartialSuccess);
       formatter.display();

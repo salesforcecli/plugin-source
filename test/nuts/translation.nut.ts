@@ -42,7 +42,7 @@ describe('translations', () => {
     await session?.clean();
   });
   describe('tracking/push', () => {
-    it('can deploy the whole project', async () => {
+    it('can deploy the whole project', () => {
       execCmd('force:source:push --json', {
         ensureExitCode: 0,
       });
@@ -59,7 +59,7 @@ describe('translations', () => {
       expect(statusResult[0].type).to.equal('CustomObjectTranslation');
     });
 
-    it('push local change', async () => {
+    it('push local change', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
       }).jsonOutput.result;
@@ -79,7 +79,7 @@ describe('translations', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
-    it('can generate manifest for translation types', async () => {
+    it('can generate manifest for translation types', () => {
       execCmd('force:source:manifest:create -p force-app --json', {
         ensureExitCode: 0,
       });
@@ -106,7 +106,7 @@ describe('translations', () => {
 
   describe('metadata', () => {
     describe('deploy', () => {
-      it('can deploy all metadata items', async () => {
+      it('can deploy all metadata items', () => {
         execCmd('force:source:deploy -m CustomFieldTranslation,CustomObjectTranslation --json', {
           ensureExitCode: 0,
         });
@@ -114,7 +114,7 @@ describe('translations', () => {
     });
 
     describe('retrieve', () => {
-      it('can retrieve all metadata items', async () => {
+      it('can retrieve all metadata items', () => {
         execCmd('force:source:retrieve -m CustomFieldTranslation,CustomObjectTranslation --json', {
           ensureExitCode: 0,
         });
@@ -124,20 +124,20 @@ describe('translations', () => {
 
   describe('sourcepath', () => {
     describe('deploy', () => {
-      it('can deploy the whole project', async () => {
+      it('can deploy the whole project', () => {
         execCmd('force:source:deploy -p force-app --json', {
           ensureExitCode: 0,
         });
       });
 
       describe('individual type deploys', () => {
-        it('can deploy COT', async () => {
+        it('can deploy COT', () => {
           execCmd(`force:source:deploy -p ${translationPath} --json`, {
             ensureExitCode: 0,
           });
         });
 
-        it('can deploy CFTs', async () => {
+        it('can deploy CFTs', () => {
           const result = execCmd<DeployCommandResult>(
             `force:source:deploy -p ${path.join(translationPath, 'customField__c.fieldTranslation-meta.xml')} --json`,
             {
@@ -147,7 +147,7 @@ describe('translations', () => {
           expect(result.jsonOutput.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
         });
 
-        it('can deploy COT', async () => {
+        it('can deploy COT', () => {
           execCmd(
             `force:source:deploy -p ${path.join(translationPath, 'customField__c.fieldTranslation-meta.xml')} --json`,
             {
@@ -159,20 +159,20 @@ describe('translations', () => {
     });
 
     describe('retrieve', () => {
-      it('can retrieve the whole project', async () => {
+      it('can retrieve the whole project', () => {
         execCmd('force:source:retrieve -p force-app --json', {
           ensureExitCode: 0,
         });
       });
 
       describe('individual type retrieves', () => {
-        it('can retrieve COT', async () => {
+        it('can retrieve COT', () => {
           execCmd(`force:source:retrieve -p ${translationPath} --json`, {
             ensureExitCode: 0,
           });
         });
 
-        it('can retrieve COT from directory', async () => {
+        it('can retrieve COT from directory', () => {
           execCmd(
             `force:source:retrieve -p ${path.join(
               translationPath,

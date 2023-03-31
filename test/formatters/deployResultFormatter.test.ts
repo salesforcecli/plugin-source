@@ -56,7 +56,7 @@ describe('DeployResultFormatter', () => {
   });
 
   describe('getJson', () => {
-    it('should return expected json for a success', async () => {
+    it('should return expected json for a success', () => {
       const deployResponse = JSON.parse(JSON.stringify(deployResultSuccess.response)) as DeployCommandResult;
       const expectedSuccessResults = deployResultSuccess.response as DeployCommandResult;
       const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultSuccess);
@@ -68,7 +68,7 @@ describe('DeployResultFormatter', () => {
       expect(json).to.deep.equal(expectedSuccessResults);
     });
 
-    it('should return expected json for a failure', async () => {
+    it('should return expected json for a failure', () => {
       const deployResponse = JSON.parse(JSON.stringify(deployResultFailure.response)) as DeployCommandResult;
       const expectedFailureResults = deployResultFailure.response as DeployCommandResult;
       expectedFailureResults.deployedSource = deployResultFailure.getFileResponses();
@@ -120,7 +120,7 @@ describe('DeployResultFormatter', () => {
   });
 
   describe('display', () => {
-    it('should output as expected for a success', async () => {
+    it('should output as expected for a success', () => {
       const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
@@ -132,7 +132,7 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
-    it('should output as expected for a failure and exclude duplicate information', async () => {
+    it('should output as expected for a failure and exclude duplicate information', () => {
       const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultFailure);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
@@ -144,7 +144,7 @@ describe('DeployResultFormatter', () => {
       expect(tableStub.firstCall.args[0]).to.deep.equal(fileResponses);
     });
 
-    it('should output as expected for a deploy failure (GACK)', async () => {
+    it('should output as expected for a deploy failure (GACK)', () => {
       const errorMessage =
         'UNKNOWN_EXCEPTION: An unexpected error occurred. Please include this ErrorId if you contact support: 1730955361-49792 (-1117026034)';
       const deployFailure = getDeployResult('failed', { errorMessage });
@@ -165,7 +165,7 @@ describe('DeployResultFormatter', () => {
       }
     });
 
-    it('should output as expected for a test failure with verbose', async () => {
+    it('should output as expected for a test failure with verbose', () => {
       const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestFailure);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
@@ -176,7 +176,7 @@ describe('DeployResultFormatter', () => {
       expect(styledHeaderStub.args[2][0]).to.include('Apex Code Coverage');
     });
 
-    it('should output as expected for passing tests with verbose', async () => {
+    it('should output as expected for passing tests with verbose', () => {
       const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccess);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
@@ -187,7 +187,7 @@ describe('DeployResultFormatter', () => {
       expect(styledHeaderStub.args[2][0]).to.include('Apex Code Coverage');
     });
 
-    it('should output as expected for passing and failing tests with verbose', async () => {
+    it('should output as expected for passing and failing tests with verbose', () => {
       const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccessAndFailure);
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(4);
@@ -199,7 +199,7 @@ describe('DeployResultFormatter', () => {
       expect(styledHeaderStub.args[3][0]).to.include('Apex Code Coverage');
     });
 
-    it('shows success AND failures for partialSucceeded', async () => {
+    it('shows success AND failures for partialSucceeded', () => {
       const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultPartialSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
@@ -210,7 +210,7 @@ describe('DeployResultFormatter', () => {
     });
 
     describe('replacements', () => {
-      it('omits replacements when there are none', async () => {
+      it('omits replacements when there are none', () => {
         process.exitCode = 0;
         const resultWithoutReplacements = {
           ...deployResultSuccess,
@@ -223,7 +223,7 @@ describe('DeployResultFormatter', () => {
         expect(tableStub.callCount, 'tableStub.callCount').to.equal(1);
         expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
       });
-      it('displays replacements on verbose', async () => {
+      it('displays replacements on verbose', () => {
         process.exitCode = 0;
 
         const resultWithReplacements = {
@@ -238,7 +238,7 @@ describe('DeployResultFormatter', () => {
         expect(styledHeaderStub.args[0][0]).to.include('Deployed Source');
         expect(styledHeaderStub.args[1][0]).to.include('Metadata Replacements');
       });
-      it('omits replacements unless verbose', async () => {
+      it('omits replacements unless verbose', () => {
         process.exitCode = 0;
 
         const resultWithReplacements = {

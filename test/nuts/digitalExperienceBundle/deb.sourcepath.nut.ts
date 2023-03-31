@@ -97,7 +97,7 @@ describe('deb -- sourcepath option', () => {
 
   describe('retrieve', () => {
     describe('individual metadata type', () => {
-      it('should retrieve deb type (all debs - deb_a and deb_b)', async () => {
+      it('should retrieve deb type (all debs - deb_a and deb_b)', () => {
         const inboundFiles = execCmd<RetrieveCommandResult>(
           `force:source:retrieve --sourcepath ${DEBS_RELATIVE_PATH} --json`,
           {
@@ -110,7 +110,7 @@ describe('deb -- sourcepath option', () => {
     });
 
     describe('individual metadata item', () => {
-      it('should retrieve just deb_a', async () => {
+      it('should retrieve just deb_a', () => {
         const inboundFiles = execCmd<RetrieveCommandResult>(
           `force:source:retrieve --sourcepath ${DEB_A_RELATIVE_PATH} --json`,
           {
@@ -121,7 +121,7 @@ describe('deb -- sourcepath option', () => {
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A);
       });
 
-      it('should retrieve de_view_home of deb_a', async () => {
+      it('should retrieve de_view_home of deb_a', () => {
         const inboundFiles = execCmd<RetrieveCommandResult>(
           `force:source:retrieve --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_HOME_A} --json`,
           {
@@ -135,7 +135,7 @@ describe('deb -- sourcepath option', () => {
   });
 
   describe('new site page', () => {
-    it('should deploy new page (view and route de components) of deb_a', async () => {
+    it('should deploy new page (view and route de components) of deb_a', () => {
       createDocumentDetailPageAInLocal(session.project.dir);
 
       const deployedSource = execCmd<DeployCommandResult>(

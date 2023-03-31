@@ -105,7 +105,7 @@ describe('source:deploy --destructive NUTs', () => {
   });
 
   describe('errors', () => {
-    it('should throw an error when a pre destructive flag is passed without the manifest flag', async () => {
+    it('should throw an error when a pre destructive flag is passed without the manifest flag', () => {
       const { apexName } = createApexClass();
 
       createManifest('ApexClass:GeocodingService', 'package');
@@ -120,7 +120,7 @@ describe('source:deploy --destructive NUTs', () => {
       }
     });
 
-    it('should throw an error when a post destructive flag is passed without the manifest flag', async () => {
+    it('should throw an error when a post destructive flag is passed without the manifest flag', () => {
       const { apexName } = createApexClass();
 
       createManifest('ApexClass:GeocodingService', 'package');
