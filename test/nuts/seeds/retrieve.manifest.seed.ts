@@ -34,8 +34,7 @@ context('Retrieve manifest NUTs [name: %REPO_NAME%]', () => {
       console.log('Clean Failed: ', e);
     }
   });
-  // skipping while source:convert is moved to PDR and not published
-  describe.skip('--manifest flag', () => {
+  describe('--manifest flag', () => {
     let i = 0;
     for (const testCase of REPO.retrieve.manifest) {
       const toRetrieve = path.normalize(testCase.toRetrieve);

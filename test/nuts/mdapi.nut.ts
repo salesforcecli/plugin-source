@@ -18,7 +18,7 @@ import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatt
 
 let session: TestSession;
 // must be skipped while source:convert is moved to PDR
-describe.skip('1k files in mdapi:deploy', () => {
+describe('1k files in mdapi:deploy', () => {
   const classCount = 1000;
 
   before(async () => {
@@ -61,7 +61,7 @@ describe.skip('1k files in mdapi:deploy', () => {
   });
 
   it('should be able to handle a mdapi:deploy of 1k', async () => {
-    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
+    execCmd('force:source:convert --outputdir --output-dir mdapiFormat', { ensureExitCode: 0 });
     const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
       ensureExitCode: 0,
     }).jsonOutput;
@@ -72,8 +72,7 @@ describe.skip('1k files in mdapi:deploy', () => {
     expect(res.result.done).to.be.true;
   });
 });
-// must be skipped while source:convert is moved to PDR
-describe.skip('mdapi NUTs', () => {
+describe('mdapi NUTs', () => {
   before(async () => {
     session = await TestSession.create({
       project: {

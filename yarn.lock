@@ -1128,19 +1128,7 @@
   resolved "https://registry.yarnpkg.com/@salesforce/schemas/-/schemas-1.5.1.tgz#2d1bfdcf593caaa04cd4b3e6fe621097ff7f28fe"
   integrity sha512-MRqU+tn8w5IFvZ0Lm9YKLgxYxr2MQMI+fXXsTrwfUnijsps+ybF9IOTu6MOMxxl2vCUkO8XDjA435wXlWSLI6g==
 
-"@salesforce/sf-plugins-core@^2.0.1", "@salesforce/sf-plugins-core@^2.0.2", "@salesforce/sf-plugins-core@^2.2.3", "@salesforce/sf-plugins-core@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-2.2.4.tgz#c94f83cab62ff0009b88069e72b4cdcfc9748b82"
-  integrity sha512-lKi0W4y3SJfZCT1cuWZsc6vbJLS+QwO4TMbu/dob0LIba7r3+nrd7st8t2xvm/Z3hRKr8xsJADq/XFYPU7jfmQ==
-  dependencies:
-    "@oclif/core" "^2.4.0"
-    "@salesforce/core" "^3.33.5"
-    "@salesforce/kit" "^1.9.0"
-    "@salesforce/ts-types" "^1.7.3"
-    chalk "^4"
-    inquirer "^8.2.5"
-
-"@salesforce/sf-plugins-core@^2.2.5":
+"@salesforce/sf-plugins-core@^2.0.1", "@salesforce/sf-plugins-core@^2.0.2", "@salesforce/sf-plugins-core@^2.2.3", "@salesforce/sf-plugins-core@^2.2.4", "@salesforce/sf-plugins-core@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-2.2.5.tgz#cc20c6f18f15c173b6bc3b511a56c09f155675df"
   integrity sha512-9CINVi3akBDreUpoz1J9QhZphKJWqq86m7aJxMPPTIh0cHAdJ4qi4KcdP4Tmwub2BUTYdbibYzix7kpRM0MkwA==
@@ -1152,7 +1140,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.10.1", "@salesforce/source-deploy-retrieve@^7.11.3", "@salesforce/source-deploy-retrieve@^7.12.0", "@salesforce/source-deploy-retrieve@^7.14.2":
+"@salesforce/source-deploy-retrieve@^7.10.1", "@salesforce/source-deploy-retrieve@^7.12.0", "@salesforce/source-deploy-retrieve@^7.14.2":
   version "7.14.2"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.14.2.tgz#39ae1d7506544d22e787ec6b1fedfa2d86ff3ccf"
   integrity sha512-AgwpTYUh4y7+mz8nY1okkiCCX+L1yC2hXGDcpIlaWQOVqiX8a2ZBFmd4Suq1WluPhRDg6Awztky1L/tHH6VUMw==
@@ -1188,19 +1176,7 @@
     sinon "^10.0.0"
     strip-ansi "^7.0.1"
 
-"@salesforce/source-tracking@^2.2.24":
-  version "2.2.24"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.24.tgz#ab6746748956eff3150bf9e1d1a97fae8d1dbead"
-  integrity sha512-7VhYDaFrjyOYIKiaVA3ZtcVTmwZ9KuakDIetgXHnwKMQ/oHB1N5i8aw70aM2+L+BVTzzbY2ki+Wnortsv2e+2Q==
-  dependencies:
-    "@salesforce/core" "^3.33.6"
-    "@salesforce/kit" "^1.9.0"
-    "@salesforce/source-deploy-retrieve" "^7.11.3"
-    graceful-fs "^4.2.10"
-    isomorphic-git "1.17.0"
-    ts-retry-promise "^0.7.0"
-
-"@salesforce/source-tracking@^2.2.26":
+"@salesforce/source-tracking@^2.2.24", "@salesforce/source-tracking@^2.2.26":
   version "2.2.26"
   resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.26.tgz#7db291c29987d169721ad7b23912b39472dc6843"
   integrity sha512-Atvh87ZVBgGtRuDQHLmZRAv7fmZFsDDeukgd+9vCDPG5fEiBaphjwbFBlhLxRrggwFqkT3od+KiH2FiVeFqMPw==
@@ -4180,7 +4156,7 @@ got@^11, got@^11.8.2, got@^11.8.6:
     p-cancelable "^2.0.0"
     responselike "^2.0.0"
 
-graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.5, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.11, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.6:
+graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.5, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.11, graceful-fs@^4.2.2, graceful-fs@^4.2.4, graceful-fs@^4.2.6:
   version "4.2.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==

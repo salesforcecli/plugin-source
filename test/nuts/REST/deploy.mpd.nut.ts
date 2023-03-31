@@ -114,8 +114,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
       });
     }
   });
-  // skipping while convert is moved to PDR
-  describe.skip('--manifest flag', () => {
+  describe('--manifest flag', () => {
     for (const manifest of repo.deploy.manifest) {
       const toDeploy = path.normalize(manifest.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
