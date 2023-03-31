@@ -119,7 +119,7 @@ describe('deb -- metadata option', () => {
     });
 
     describe('individual metadata type', () => {
-      it('should retrieve deb type (all debs - deb_a and deb_b)', async () => {
+      it('should retrieve deb type (all debs - deb_a and deb_b)', () => {
         const inboundFiles = execCmd<RetrieveCommandResult>(
           `force:source:retrieve --metadata ${METADATA.ALL_DEBS} --json`,
           {
@@ -179,7 +179,7 @@ describe('deb -- metadata option', () => {
   });
 
   describe('new site page', () => {
-    it('should deploy new page (view and route de components) of deb_a', async () => {
+    it('should deploy new page (view and route de components) of deb_a', () => {
       createDocumentDetailPageAInLocal(session.project.dir);
 
       const deployedSource = execCmd<DeployCommandResult>(
@@ -192,8 +192,7 @@ describe('deb -- metadata option', () => {
       assertDocumentDetailPageA(deployedSource);
     });
 
-    // skip until plugin-deploy-retrieve publishes
-    it.skip('should delete the page (view and route de components) of deb_a', async () => {
+    it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
         {

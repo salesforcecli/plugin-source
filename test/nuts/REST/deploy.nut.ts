@@ -89,8 +89,7 @@ context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
       });
     }
   });
-  // skipping while convert is in PDR but unpublished
-  describe.skip('--manifest', () => {
+  describe('--manifest', () => {
     for (const testCase of repo.deploy.manifest) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {

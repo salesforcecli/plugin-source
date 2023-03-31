@@ -12,7 +12,6 @@ import { PushResponse } from 'src/formatters/source/pushResultFormatter';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 import { StatusResult } from '../../src/formatters/source/statusFormatter';
-import { cliForManifestCreate } from './shared/cliForManifestCreate';
 
 describe('translations', () => {
   let session: TestSession;
@@ -81,7 +80,9 @@ describe('translations', () => {
     });
 
     it('can generate manifest for translation types', async () => {
-      execCmd('force:source:manifest:create -p force-app --json', { ensureExitCode: 0, cli: cliForManifestCreate });
+      execCmd('force:source:manifest:create -p force-app --json', {
+        ensureExitCode: 0,
+      });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
 
@@ -188,7 +189,7 @@ describe('translations', () => {
 
   describe('mdapi format', () => {
     it('can convert COT/CFTs correctly', () => {
-      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0, cli: cliForManifestCreate });
+      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0 });
       // the CFTs shouldn't be written to mdapi format
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'fields'))).to.be.false;
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'objectTranslations'))).to.be.true;
