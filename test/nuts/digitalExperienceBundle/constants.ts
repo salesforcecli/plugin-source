@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join, sep } from 'path';
+import { join } from 'path';
 import { TestSessionOptions } from '@salesforce/cli-plugins-testkit/lib/testSession';
 import { registry } from '@salesforce/source-deploy-retrieve';
 import { META_XML_SUFFIX } from '@salesforce/source-deploy-retrieve/lib/src/common';
@@ -51,20 +51,12 @@ export const STORE_COMPONENTS_PATH = join(STORE_PATH, DIR_NAMES.COMPONENTS);
 export const STORE_MANIFESTS_PATH = join(STORE_PATH, DIR_NAMES.MANIFESTS);
 
 export const FULL_NAMES = {
-  DEB_A: join(DIR_NAMES.SITE, DIR_NAMES.DEB_A),
-  DEB_B: join(DIR_NAMES.SITE, DIR_NAMES.DEB_B),
-  DE_VIEW_HOME_A: join(DIR_NAMES.SITE, `${DIR_NAMES.DEB_A}.${DIR_NAMES.DE_VIEW}`, DIR_NAMES.HOME),
-  DE_VIEW_HOME_B: join(DIR_NAMES.SITE, `${DIR_NAMES.DEB_B}.${DIR_NAMES.DE_VIEW}`, DIR_NAMES.HOME),
-  DE_VIEW_DOCUMENT_DETAIL_A: join(
-    DIR_NAMES.SITE,
-    `${DIR_NAMES.DEB_A}.${DIR_NAMES.DE_VIEW}`,
-    DIR_NAMES.VIEW_DOCUMENT_DETAIL
-  ),
-  DE_ROUTE_DOCUMENT_DETAIL_A: join(
-    DIR_NAMES.SITE,
-    `${DIR_NAMES.DEB_A}.${DIR_NAMES.DE_ROUTE}`,
-    DIR_NAMES.ROUTE_DOCUMENT_DETAIL
-  ),
+  DEB_A: `${DIR_NAMES.SITE}/${DIR_NAMES.DEB_A}`,
+  DEB_B: `${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}`,
+  DE_VIEW_HOME_A: `${DIR_NAMES.SITE}/${DIR_NAMES.DEB_A}.${DIR_NAMES.DE_VIEW}/${DIR_NAMES.HOME}`,
+  DE_VIEW_HOME_B: `${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}.${DIR_NAMES.DE_VIEW}/${DIR_NAMES.HOME}`,
+  DE_VIEW_DOCUMENT_DETAIL_A: `${DIR_NAMES.SITE}/${DIR_NAMES.DEB_A}.${DIR_NAMES.DE_VIEW}/${DIR_NAMES.VIEW_DOCUMENT_DETAIL}`,
+  DE_ROUTE_DOCUMENT_DETAIL_A: `${DIR_NAMES.SITE}/${DIR_NAMES.DEB_A}.${DIR_NAMES.DE_ROUTE}/${DIR_NAMES.ROUTE_DOCUMENT_DETAIL}`,
 } as const;
 
 export const FILE_NAMES = {
@@ -130,7 +122,7 @@ export const STORE = {
 export const METADATA = {
   ALL_DEBS: TYPES.DEB.name,
   ALL_DE: TYPES.DE.name,
-  ALL_DE_OF_DEB_B: `${TYPES.DE.name}:${DIR_NAMES.SITE}${sep}${DIR_NAMES.DEB_B}.*`,
+  ALL_DE_OF_DEB_B: `${TYPES.DE.name}:${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}.*`,
   FULL_SITE_DEB_A_AND_B: `${TYPES.DEB.name},${TYPES.DEC.name},${TYPES.NETWORK.name},${TYPES.CUSTOM_SITE.name}`,
   JUST_DEB_B: `${TYPES.DEB.name}:${FULL_NAMES.DEB_B}`,
   DE_VIEW_HOME_OF_DEB_B: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_HOME_B}`,
