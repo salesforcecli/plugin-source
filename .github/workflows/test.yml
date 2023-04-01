@@ -31,9 +31,6 @@ jobs:
           - 'yarn test:nuts:retrieve'
           - 'yarn test:nuts:specialTypes'
           - 'yarn test:nuts:tracking'
-        exclude:
-          - os: windows-latest
-            command: yarn test:nuts:deb
       fail-fast: false
     with:
       os: ${{ matrix.os }}
