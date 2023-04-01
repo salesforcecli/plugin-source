@@ -1093,13 +1093,13 @@
     fast-levenshtein "^3.0.0"
     tslib "^2"
 
-"@salesforce/plugin-templates@^55.4.4":
-  version "55.4.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-templates/-/plugin-templates-55.4.4.tgz#951526492afa4ff8c07b3efb81ebde41181796ba"
-  integrity sha512-9slmieN+d70Ozbnjmz/IB1XYrg3EhOmDwXLlZ2ciAiKxMbcLNCSMIFxawzvZSOjHLKnsL0ruPXZVvmY5KoprgA==
+"@salesforce/plugin-templates@^55.4.5":
+  version "55.4.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-templates/-/plugin-templates-55.4.5.tgz#e664244ca21c4ccd0f5ae5cd172a7661da866306"
+  integrity sha512-anfiVZbu32OtLyuSKvlKR4RBHLnbxoldsQXF5ShWvCIRswVBAAfSeUFtTWVtDl2q8741fWtmRpe9vZTnut4+Aw==
   dependencies:
     "@oclif/core" "^2.3.1"
-    "@salesforce/core" "^3.33.1"
+    "@salesforce/core" "^3.34.4"
     "@salesforce/sf-plugins-core" "^2.0.2"
     "@salesforce/templates" "^57.1.1"
     tslib "^2"
