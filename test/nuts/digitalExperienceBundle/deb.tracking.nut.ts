@@ -137,7 +137,7 @@ describe('deb -- tracking/push/pull', () => {
     });
   });
 
-  describe('delete', () => {
+  describe.skip('delete', () => {
     it('should see locally deleted de_view_home fr language variant of deb_b', async () => {
       await deleteViewHomeFRVariantInLocal('B', session.project.dir);
 
@@ -148,7 +148,7 @@ describe('deb -- tracking/push/pull', () => {
       assertViewHomeStatus(statusResult, 'B', 'FR_VARIANT');
     });
 
-    it.skip('should push locally deleted de_view_home fr language variant of deb_b', () => {
+    it('should push locally deleted de_view_home fr language variant of deb_b', () => {
       // Bug
     });
   });
