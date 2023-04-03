@@ -112,6 +112,7 @@ export const STORE = {
     FULL_SITE_DEB_A_AND_B: join(STORE_MANIFESTS_PATH, 'full-site-deb-a-and-b-package.xml'),
     JUST_DEB_A: join(STORE_MANIFESTS_PATH, 'just-deb-a-package.xml'),
     DE_VIEW_HOME_OF_DEB_A: join(STORE_MANIFESTS_PATH, 'de-view-home-of-deb-a-package.xml'),
+    DE_VIEW_HOME_OF_DEB_B: join(STORE_MANIFESTS_PATH, 'de-view-home-of-deb-b-package.xml'),
     DE_DOCUMENT_DETAIL_PAGE_A: join(STORE_MANIFESTS_PATH, 'de-document-detail-page-a-package.xml'),
     EMPTY_PACKAGE_XML: join(STORE_MANIFESTS_PATH, 'empty-package.xml'),
     ALL_DEBS_SOURCE_PATH_GEN: 'all-debs-sourcepath-gen-package.xml',
@@ -127,7 +128,60 @@ export const METADATA = {
   JUST_DEB_B: `${TYPES.DEB.name}:${FULL_NAMES.DEB_B}`,
   DE_VIEW_HOME_OF_DEB_B: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_HOME_B}`,
   DE_DOCUMENT_DETAIL_PAGE_A: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A},${TYPES.DE.name}:${FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A}`,
-};
+} as const;
+
+export const DEBS = {
+  A: {
+    FULL_NAME: FULL_NAMES.DEB_A,
+    FILES: {
+      META: {
+        RELATIVE_PATH: FILE_RELATIVE_PATHS.DEB_META_A,
+      },
+    },
+    DE: {
+      VIEW_HOME: {
+        FULL_NAME: FULL_NAMES.DE_VIEW_HOME_A,
+        MANIFEST: STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A,
+        FILES: {
+          CONTENT: {
+            RELATIVE_PATH: FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_A,
+          },
+          FR_VARIANT: {
+            RELATIVE_PATH: FILE_RELATIVE_PATHS.DE_VIEW_HOME_FR_VARIANT_A,
+          },
+          META: {
+            RELATIVE_PATH: FILE_RELATIVE_PATHS.DE_VIEW_HOME_META_A,
+          },
+        },
+      },
+    },
+  },
+  B: {
+    FULL_NAME: FULL_NAMES.DEB_B,
+    FILES: {
+      META: {
+        RELATIVE_PATH: FILE_RELATIVE_PATHS.DEB_META_B,
+      },
+    },
+    DE: {
+      VIEW_HOME: {
+        FULL_NAME: FULL_NAMES.DE_VIEW_HOME_B,
+        MANIFEST: STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_B,
+        FILES: {
+          CONTENT: {
+            RELATIVE_PATH: FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_B,
+          },
+          FR_VARIANT: {
+            RELATIVE_PATH: FILE_RELATIVE_PATHS.DE_VIEW_HOME_FR_VARIANT_B,
+          },
+          META: {
+            RELATIVE_PATH: FILE_RELATIVE_PATHS.DE_VIEW_HOME_META_B,
+          },
+        },
+      },
+    },
+  },
+} as const;
 
 export const TEST_SESSION_OPTIONS: TestSessionOptions = {
   project: {

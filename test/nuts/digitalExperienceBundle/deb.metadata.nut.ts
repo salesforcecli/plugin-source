@@ -17,8 +17,10 @@ import {
   assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
   assertViewHome,
+  assertViewHomeFRVariantDelete,
   createDocumentDetailPageAInLocal,
   deleteLocalSource,
+  deleteViewHomeFRVariantInLocal,
 } from './helper';
 
 describe('deb -- metadata option', () => {
@@ -108,7 +110,7 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertViewHome(deployedSource, 'b');
+        assertViewHome(deployedSource, 'B');
       });
     });
   });
@@ -173,8 +175,23 @@ describe('deb -- metadata option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertViewHome(inboundFiles, 'b');
+        assertViewHome(inboundFiles, 'B');
       });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete de_view_home fr language variant of deb_b', async () => {
+      await deleteViewHomeFRVariantInLocal('B', session.project.dir);
+
+      const deployedSource = execCmd<DeployCommandResult>(
+        `force:source:deploy --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      ).jsonOutput.result.deployedSource;
+
+      assertViewHomeFRVariantDelete(deployedSource, 'B', session.project.dir);
     });
   });
 
