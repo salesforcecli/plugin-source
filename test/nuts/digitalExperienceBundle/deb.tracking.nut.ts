@@ -138,7 +138,7 @@ describe('deb -- tracking/push/pull', () => {
   });
 
   describe('delete', () => {
-    it('should see locally deleted de_view_home fr variant of deb_b', async () => {
+    it('should see locally deleted de_view_home fr language variant of deb_b', async () => {
       await deleteViewHomeFRVariantInLocal('B', session.project.dir);
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
@@ -148,7 +148,7 @@ describe('deb -- tracking/push/pull', () => {
       assertViewHomeStatus(statusResult, 'B', 'FR_VARIANT');
     });
 
-    it.skip('should push locally deleted de_view_home fr variant of deb_b', () => {
+    it.skip('should push locally deleted de_view_home fr language variant of deb_b', () => {
       // Bug
     });
   });
