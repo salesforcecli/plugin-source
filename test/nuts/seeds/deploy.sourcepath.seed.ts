@@ -48,7 +48,13 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%]', () => {
     it('should throw an error if the sourcepath is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
       testkit.expect.errorToHaveName(deploy, 'SfError');
-      testkit.expect.errorToHaveMessage(deploy, 'not a valid source file path');
+      try {
+        // old message, can be removed after SDR strict mode PR is merged
+        testkit.expect.errorToHaveMessage(deploy, 'not a valid source file path');
+      } catch (e) {
+        // new message
+        testkit.expect.errorToHaveMessage(deploy, 'File or folder not found');
+      }
     });
   });
 });
