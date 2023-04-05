@@ -20,8 +20,10 @@ import {
   assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
   assertViewHome,
+  assertViewHomeFRVariantDelete,
   createDocumentDetailPageAInLocal,
   deleteLocalSource,
+  deleteViewHomeFRVariantInLocal,
 } from './helper';
 
 describe('deb -- manifest option', () => {
@@ -129,7 +131,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertViewHome(deployedSource, 'a');
+        assertViewHome(deployedSource, 'A');
       });
     });
 
@@ -218,7 +220,7 @@ describe('deb -- manifest option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertViewHome(inboundFiles, 'a');
+        assertViewHome(inboundFiles, 'A');
       });
     });
 
@@ -244,6 +246,21 @@ describe('deb -- manifest option', () => {
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete de_view_home fr language variant of deb_a', async () => {
+      await deleteViewHomeFRVariantInLocal('A', session.project.dir);
+
+      const deployedSource = execCmd<DeployCommandResult>(
+        `force:source:deploy --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      ).jsonOutput.result.deployedSource;
+
+      assertViewHomeFRVariantDelete(deployedSource, 'A', session.project.dir);
     });
   });
 

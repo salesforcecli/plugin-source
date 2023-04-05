@@ -4,7 +4,6 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-// import * as fs from 'fs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
@@ -22,7 +21,9 @@ import {
   assertDocumentDetailPageADelete,
   assertSingleDEBAndItsDECounts,
   assertViewHome,
+  assertViewHomeFRVariantDelete,
   createDocumentDetailPageAInLocal,
+  deleteViewHomeFRVariantInLocal,
 } from './helper';
 
 describe('deb -- sourcepath option', () => {
@@ -90,7 +91,7 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.deployedSource;
 
-        assertViewHome(deployedSource, 'a');
+        assertViewHome(deployedSource, 'A');
       });
     });
   });
@@ -129,8 +130,23 @@ describe('deb -- sourcepath option', () => {
           }
         ).jsonOutput.result.inboundFiles;
 
-        assertViewHome(inboundFiles, 'a');
+        assertViewHome(inboundFiles, 'A');
       });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete de_view_home fr language variant of deb_a', async () => {
+      await deleteViewHomeFRVariantInLocal('A', session.project.dir);
+
+      const deployedSource = execCmd<DeployCommandResult>(
+        `force:source:deploy --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_HOME_A} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      ).jsonOutput.result.deployedSource;
+
+      assertViewHomeFRVariantDelete(deployedSource, 'A', session.project.dir);
     });
   });
 

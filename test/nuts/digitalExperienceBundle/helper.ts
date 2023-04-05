@@ -11,7 +11,8 @@ import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { isNameObsolete } from '../shared/isNameObsolete';
-import { DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants';
+import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
+import { DEBS, DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants';
 
 type CustomFileResponses = Array<Pick<FileResponse, 'filePath' | 'fullName' | 'type'>>;
 
@@ -72,19 +73,19 @@ export function assertDECountOfSingleDEB(resp: CustomFileResponses) {
   expect(resp.every((s) => s.type === TYPES.DE.name)).to.be.true;
 }
 
-export function assertDEBMeta(resp: CustomFileResponses, deb: 'a' | 'b') {
+export function assertDEBMeta(resp: CustomFileResponses, deb: 'A' | 'B') {
   expect(resp).to.have.length(1);
 
   resp[0].filePath = relative(process.cwd(), resp[0].filePath);
 
   expect(resp[0]).to.include({
     type: TYPES.DEB.name,
-    fullName: deb === 'a' ? FULL_NAMES.DEB_A : FULL_NAMES.DEB_B,
-    filePath: deb === 'a' ? FILE_RELATIVE_PATHS.DEB_META_A : FILE_RELATIVE_PATHS.DEB_META_B,
+    fullName: DEBS[deb].FULL_NAME,
+    filePath: DEBS[deb].FILES.META.RELATIVE_PATH,
   });
 }
 
-export function assertViewHome(resp: CustomFileResponses, deb: 'a' | 'b') {
+export function assertViewHome(resp: CustomFileResponses, deb: 'A' | 'B') {
   expect(resp).to.have.length(3);
   expect(
     resp.map((s) => ({
@@ -95,39 +96,35 @@ export function assertViewHome(resp: CustomFileResponses, deb: 'a' | 'b') {
   ).to.have.deep.members([
     {
       type: TYPES.DE.name,
-      fullName: deb === 'a' ? FULL_NAMES.DE_VIEW_HOME_A : FULL_NAMES.DE_VIEW_HOME_B,
-      filePath: deb === 'a' ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_A : FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_B,
+      fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
+      filePath: DEBS[deb].DE.VIEW_HOME.FILES.CONTENT.RELATIVE_PATH,
     },
     {
       type: TYPES.DE.name,
-      fullName: deb === 'a' ? FULL_NAMES.DE_VIEW_HOME_A : FULL_NAMES.DE_VIEW_HOME_B,
-      filePath:
-        deb === 'a' ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_FR_VARIANT_A : FILE_RELATIVE_PATHS.DE_VIEW_HOME_FR_VARIANT_B,
+      fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
+      filePath: DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH,
     },
     {
       type: TYPES.DE.name,
-      fullName: deb === 'a' ? FULL_NAMES.DE_VIEW_HOME_A : FULL_NAMES.DE_VIEW_HOME_B,
-      filePath: deb === 'a' ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_META_A : FILE_RELATIVE_PATHS.DE_VIEW_HOME_META_B,
+      fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
+      filePath: DEBS[deb].DE.VIEW_HOME.FILES.META.RELATIVE_PATH,
     },
   ]);
 }
 
-export function assertViewHomeStatus(resp: CustomFileResponses, deb: 'a' | 'b', type: 'content' | 'meta') {
+export function assertViewHomeStatus(
+  resp: CustomFileResponses,
+  deb: 'A' | 'B',
+  type: 'CONTENT' | 'META' | 'FR_VARIANT'
+) {
   expect(resp).to.have.length(1);
 
   resp[0].filePath = relative(process.cwd(), resp[0].filePath);
 
   expect(resp[0]).to.include({
     type: TYPES.DE.name,
-    fullName: deb === 'a' ? FULL_NAMES.DE_VIEW_HOME_A : FULL_NAMES.DE_VIEW_HOME_B,
-    filePath:
-      deb === 'a'
-        ? type === 'content'
-          ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_A
-          : FILE_RELATIVE_PATHS.DE_VIEW_HOME_META_A
-        : type === 'content'
-        ? FILE_RELATIVE_PATHS.DE_VIEW_HOME_CONTENT_B
-        : FILE_RELATIVE_PATHS.DE_VIEW_HOME_META_B,
+    fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
+    filePath: DEBS[deb].DE.VIEW_HOME.FILES[type].RELATIVE_PATH,
   });
 }
 
@@ -163,7 +160,7 @@ export function assertDocumentDetailPageA(resp: CustomFileResponses) {
   ]);
 }
 
-export async function assertDocumentDetailPageADelete(session: TestSession, shouldBeDeletedInLocal: boolean) {
+export async function assertDocumentDetailPageADelete(session: TestSession, assertDeleteInLocal: boolean) {
   expect(
     await isNameObsolete(session.orgs.get('default').username, TYPES.DE.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
   ).to.be.true;
@@ -171,10 +168,24 @@ export async function assertDocumentDetailPageADelete(session: TestSession, shou
     await isNameObsolete(session.orgs.get('default').username, TYPES.DE.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
   ).to.be.true;
 
-  if (shouldBeDeletedInLocal) {
+  if (assertDeleteInLocal) {
     expect(fs.existsSync(join(session.project.dir, DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A))).to.be.false;
     expect(fs.existsSync(join(session.project.dir, DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A))).to.be.false;
   }
+}
+
+export function assertViewHomeFRVariantDelete(resp: CustomFileResponses, deb: 'A' | 'B', projectDir: string) {
+  expect(resp).to.have.length(2);
+
+  const inboundFiles = execCmd<RetrieveCommandResult>(
+    `force:source:retrieve --manifest ${DEBS[deb].DE.VIEW_HOME.MANIFEST} --json`,
+    {
+      ensureExitCode: 0,
+    }
+  ).jsonOutput.result.inboundFiles;
+
+  expect(inboundFiles).to.have.length(2);
+  expect(fs.existsSync(join(projectDir, DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH))).to.be.false;
 }
 
 export function assertNoLocalChanges() {
@@ -201,6 +212,10 @@ export function createDocumentDetailPageAInLocal(projectDir: string) {
 export async function deleteDocumentDetailPageAInLocal(projectDir: string) {
   await fs.promises.rm(join(projectDir, DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A), { recursive: true });
   await fs.promises.rm(join(projectDir, DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A), { recursive: true });
+}
+
+export async function deleteViewHomeFRVariantInLocal(deb: 'A' | 'B', projectDir: string) {
+  await fs.promises.rm(join(projectDir, DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH));
 }
 
 export async function deleteLocalSource(sourceRelativePath: string, projectDir: string) {
