@@ -59,7 +59,6 @@ export default class Status extends SfCommand<StatusCommandResult> {
   public async run(): Promise<StatusCommandResult> {
     this.flags = (await this.parse(Status)).flags;
     const tracking = await trackingSetup({
-      commandName: 'force:source:status',
       ignoreConflicts: true,
       org: this.flags['target-org'],
       project: this.project,

@@ -85,7 +85,6 @@ export default class Pull extends SourceCommand {
   protected async preChecks(): Promise<void> {
     this.spinner.start('Loading source tracking information');
     this.tracking = await trackingSetup({
-      commandName: 'force:source:pull',
       ignoreConflicts: this.flags.forceoverwrite ?? false,
       org: this.flags['target-org'],
       project: this.project,

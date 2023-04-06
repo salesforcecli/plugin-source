@@ -84,7 +84,6 @@ export default class Push extends DeployCommand {
 
   protected async prechecks(): Promise<void> {
     this.tracking = await trackingSetup({
-      commandName: 'force:source:push',
       ignoreConflicts: this.flags.forceoverwrite ?? false,
       org: this.flags['target-org'],
       project: this.project,

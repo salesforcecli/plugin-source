@@ -148,7 +148,6 @@ export class Retrieve extends SourceCommand {
         org: this.flags['target-org'],
         project: this.project,
         ignoreConflicts: true,
-        commandName: 'force:source:retrieve',
       });
     }
   }
