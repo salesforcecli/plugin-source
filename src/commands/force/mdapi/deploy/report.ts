@@ -43,6 +43,7 @@ export class Report extends DeployCommand {
     wait: Flags.duration({
       char: 'w',
       defaultValue: 0,
+      default: Duration.minutes(0),
       min: -1,
       unit: 'minutes',
       summary: messages.getMessage('flags.wait.summary'),
@@ -88,7 +89,7 @@ export class Report extends DeployCommand {
       this.log(messages.getMessage('usernameOutput', [this.org.getUsername()]));
     }
     const waitFlag = this.flags.wait;
-    const waitDuration = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
+    const waitDuration = waitFlag?.minutes === -1 ? Duration.days(7) : waitFlag;
 
     this.isAsync = waitDuration.quantity === 0;
 
