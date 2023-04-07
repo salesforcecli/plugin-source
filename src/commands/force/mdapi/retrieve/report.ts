@@ -60,6 +60,7 @@ export class Report extends SourceCommand {
       unit: 'minutes',
       summary: messages.getMessage('flags.wait.summary'),
       min: -1,
+      default: Duration.minutes(1440),
       defaultValue: 1440, // 24 hours is a reasonable default versus -1 (no timeout)
     }),
     verbose: Flags.boolean({
