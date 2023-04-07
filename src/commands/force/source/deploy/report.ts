@@ -40,7 +40,7 @@ export class Report extends DeployCommand {
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
     to: replacement,
-    message: messages.getMessage('deprecation', [replacement]),
+    message: messages.getMessage('deprecation', ['project deploy start', replacement]),
   };
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
