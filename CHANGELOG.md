@@ -1,3 +1,12 @@
+## [2.9.2](https://github.com/salesforcecli/plugin-source/compare/2.9.1...2.9.2) (2023-04-07)
+
+
+### Bug Fixes
+
+* default for wait on mdapi:report commands ([#804](https://github.com/salesforcecli/plugin-source/issues/804)) ([63bd14d](https://github.com/salesforcecli/plugin-source/commit/63bd14d6b5ccf3c4ebe761859c82c2e95f251fa9))
+
+
+
 ## [2.9.1](https://github.com/salesforcecli/plugin-source/compare/2.8.0...2.9.1) (2023-03-29)
 
 
