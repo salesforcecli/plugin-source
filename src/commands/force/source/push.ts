@@ -247,7 +247,9 @@ export default class Push extends DeployCommand {
     try {
       formatter.getJson();
     } catch (e) {
-      this.logJson(this.toErrorJson(e as SfCommand.Error));
+      if (this.jsonEnabled()) {
+        this.logJson(this.toErrorJson(e as SfCommand.Error));
+      }
     }
 
     throw error;
