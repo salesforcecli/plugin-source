@@ -185,7 +185,16 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       it('fails to push', () => {
         const failure = execCmd('force:source:push --json', {
           ensureExitCode: 1,
-        }).jsonOutput as unknown as { name: string; exitCode: number; result: FileResponse[]; data: FileResponse[] };
+        }).jsonOutput as unknown as {
+          name: string;
+          exitCode: number;
+          status: number;
+          message: string;
+          stack: string;
+          context: string;
+          result: FileResponse[];
+          data: FileResponse[];
+        };
         expect(failure).to.have.property('exitCode', 1);
         expect(failure).to.have.property('commandName', 'Push');
         expect(
@@ -199,6 +208,10 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
           }
         });
         expect(failure.result).to.deep.equal(failure.data);
+        expect(failure.status).to.equal(1);
+        expect(failure.message).to.equal('Push Failed.');
+        expect(failure.stack).to.be.a('string');
+        expect(failure.context).to.equal('Push');
       });
       it('classes that failed to deploy are still in local status', () => {
         it('sees no local changes', () => {

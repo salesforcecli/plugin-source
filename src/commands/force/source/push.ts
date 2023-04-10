@@ -247,7 +247,17 @@ export default class Push extends DeployCommand {
     try {
       formatter.getJson();
     } catch (e) {
-      this.logJson(this.toErrorJson(e as SfCommand.Error));
+      if (this.jsonEnabled()) {
+        const err = this.toErrorJson(e as SfCommand.Error);
+        // restore json format
+        err.message = 'Push Failed.';
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+        err.stack = e.stack;
+        err.context = 'Push';
+        err.status = 1;
+
+        this.logJson(err);
+      }
     }
 
     throw error;
