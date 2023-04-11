@@ -948,12 +948,12 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^3.2.25", "@salesforce/cli-plugins-testkit@^3.3.0":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.3.1.tgz#43f5818fb89c99c606535235624320881e050fae"
-  integrity sha512-cE13PNGBqqk9H01RLGZxDKgXRrHE4p1YsEConet7IsYYgZMXmhH1OUfj9HGmTTe55SZdmF1wt+Cu8AdZwFRBSw==
+"@salesforce/cli-plugins-testkit@^3.3.2":
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-3.3.2.tgz#5a5bd6f1c505962b97682463c0a204fb6b67b5bf"
+  integrity sha512-lXxm9tYNRD34GdcHtYVcFIccG9k5v8Ai/O1ytHE4zOoDowmeyB5l47O7Qo8blmeYbggRJUQIFfao2EPrJlTKCQ==
   dependencies:
-    "@salesforce/core" "^3.34.4"
+    "@salesforce/core" "^3.34.6"
     "@salesforce/kit" "^1.9.2"
     "@salesforce/ts-types" "^1.7.3"
     "@types/shelljs" "^0.8.11"
@@ -1150,16 +1150,16 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^7.12.0", "@salesforce/source-deploy-retrieve@^7.14.2", "@salesforce/source-deploy-retrieve@^7.14.5":
-  version "7.14.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.14.5.tgz#386b8d54945d96c9164b6e1b7b309847a8320628"
-  integrity sha512-znRX/86SG6t7gdXYkocwRx1x5yjLm6N3h0N4DA632hYC51Vrx4A68oe0+6MYA09oEBy4J2A9Kx/YzUIgQF8vsg==
+"@salesforce/source-deploy-retrieve@^7.12.0", "@salesforce/source-deploy-retrieve@^7.14.2", "@salesforce/source-deploy-retrieve@^7.15.0":
+  version "7.15.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.15.1.tgz#059d088f5fb5726323d9822599d730474ce6dc70"
+  integrity sha512-37jjQWb24FBEwP0aAW1UnSkVk+TMr8KEtCN5tNa43LXK21m06suMDx92Y+lS8xJ9esgj/GEEuXgG8OCf+L5qcg==
   dependencies:
     "@salesforce/core" "^3.34.6"
     "@salesforce/kit" "^1.9.2"
     "@salesforce/ts-types" "^1.7.2"
     archiver "^5.3.1"
-    fast-xml-parser "^3.21.1"
+    fast-xml-parser "^4.1.4"
     got "^11.8.6"
     graceful-fs "^4.2.11"
     ignore "^5.2.4"
@@ -1169,15 +1169,34 @@
     proxy-from-env "^1.1.0"
     unzipper "0.10.11"
 
-"@salesforce/source-testkit@^2.0.47":
-  version "2.0.47"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.0.47.tgz#285f8a3f9595e27c85ff4711f6531bb8706a5aa7"
-  integrity sha512-T4QK2FfQ/54PB8T39J3TFCzeXHqL9OOiU2zzdy4yTIfuJUAe31OBjesvWmEhi/dMpTwTp9P7ChIlUlRKQle5iQ==
+"@salesforce/source-deploy-retrieve@^8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-8.0.1.tgz#769d761cf2a3015282ad6a77e103d2a9c1e99052"
+  integrity sha512-uXgMwBXaCH0SM93e8Q/ptGc4xi+wna/CO+SFfZHvy3nnlGHi7MQOUNRnAn2L5NzqEg0ZX9HrXpx4ILf4hLFl3w==
   dependencies:
-    "@salesforce/cli-plugins-testkit" "^3.2.25"
     "@salesforce/core" "^3.34.6"
     "@salesforce/kit" "^1.9.2"
-    "@salesforce/source-deploy-retrieve" "^7.12.0"
+    "@salesforce/ts-types" "^1.7.2"
+    archiver "^5.3.1"
+    fast-xml-parser "^4.1.4"
+    got "^11.8.6"
+    graceful-fs "^4.2.11"
+    ignore "^5.2.4"
+    mime "2.6.0"
+    minimatch "^5.1.6"
+    proxy-agent "^5.0.0"
+    proxy-from-env "^1.1.0"
+    unzipper "0.10.11"
+
+"@salesforce/source-testkit@^2.0.51":
+  version "2.0.51"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.0.51.tgz#69fd318295d77200b5957db6d0d3eb59b07c11bc"
+  integrity sha512-MBkUbT9aIAwxYJBw0aIeiZ2JYasQETWLdc8ZQdCbiEgrFsjGlAqa/eQMrRgLrlcokKQFa655cvHxQELbONVgbw==
+  dependencies:
+    "@salesforce/cli-plugins-testkit" "^3.3.2"
+    "@salesforce/core" "^3.34.6"
+    "@salesforce/kit" "^1.9.2"
+    "@salesforce/source-deploy-retrieve" "^7.15.0"
     "@salesforce/ts-types" "^1.7.3"
     archiver "^5.2.0"
     chai-each "^0.0.1"
@@ -1185,14 +1204,14 @@
     shelljs "^0.8.4"
     sinon "^10.0.0"
 
-"@salesforce/source-tracking@^2.2.24", "@salesforce/source-tracking@^2.2.26":
-  version "2.2.26"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.26.tgz#7db291c29987d169721ad7b23912b39472dc6843"
-  integrity sha512-Atvh87ZVBgGtRuDQHLmZRAv7fmZFsDDeukgd+9vCDPG5fEiBaphjwbFBlhLxRrggwFqkT3od+KiH2FiVeFqMPw==
+"@salesforce/source-tracking@^2.2.26", "@salesforce/source-tracking@^2.2.27":
+  version "2.2.27"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.27.tgz#c6d14d37153cee63c1e1d18593f1b44753562ef8"
+  integrity sha512-3Krl4dngtVKjp10gj8x6eXS/blKK+pVHu7RbIW8BWBUFehANt3/ddKnAcqMIRiHgE3gODbE54Whz6EFl4AEWBg==
   dependencies:
-    "@salesforce/core" "^3.33.6"
+    "@salesforce/core" "^3.34.6"
     "@salesforce/kit" "^1.9.0"
-    "@salesforce/source-deploy-retrieve" "^7.12.0"
+    "@salesforce/source-deploy-retrieve" "^8.0.1"
     graceful-fs "^4.2.11"
     isomorphic-git "1.17.0"
     ts-retry-promise "^0.7.0"
@@ -3672,6 +3691,13 @@ fast-xml-parser@^3.21.1:
   integrity sha512-FTFVjYoBOZTJekiUsawGsSYV9QL0A+zDYCRj7y34IO6Jg+2IMYEtQa+bbictpdpV8dHxXywqU7C0gRDEOFtBFg==
   dependencies:
     strnum "^1.0.4"
+
+fast-xml-parser@^4.1.4:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.2.0.tgz#6db2ba33b95b8b4af93f94fe024d4b4d02a50855"
+  integrity sha512-+zVQv4aVTO+o8oRUyRL7PjgeVo1J6oP8Cw2+a8UTZQcj5V0yUK5T63gTN0ldgiHDPghUjKc4OpT6SwMTwnOQug==
+  dependencies:
+    strnum "^1.0.5"
 
 fastest-levenshtein@^1.0.7:
   version "1.0.16"
@@ -7416,9 +7442,9 @@ strip-json-comments@3.1.1, strip-json-comments@^3.1.0, strip-json-comments@^3.1.
   resolved "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
-strnum@^1.0.4:
+strnum@^1.0.4, strnum@^1.0.5:
   version "1.0.5"
-  resolved "https://registry.npmjs.org/strnum/-/strnum-1.0.5.tgz#5c4e829fe15ad4ff0d20c3db5ac97b73c9b072db"
+  resolved "https://registry.yarnpkg.com/strnum/-/strnum-1.0.5.tgz#5c4e829fe15ad4ff0d20c3db5ac97b73c9b072db"
   integrity sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==
 
 supports-color@8.1.1, supports-color@^8.1.0, supports-color@^8.1.1:
