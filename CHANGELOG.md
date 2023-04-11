@@ -1,3 +1,12 @@
+## [2.9.5](https://github.com/salesforcecli/plugin-source/compare/2.9.4...2.9.5) (2023-04-11)
+
+
+### Bug Fixes
+
+* bump SDR, STL, and core libs ([#812](https://github.com/salesforcecli/plugin-source/issues/812)) ([dc67e09](https://github.com/salesforcecli/plugin-source/commit/dc67e0900863d5c2d42644e38e7c44dada4fc88d))
+
+
+
 ## [2.9.4](https://github.com/salesforcecli/plugin-source/compare/2.9.3...2.9.4) (2023-04-08)
 
 
