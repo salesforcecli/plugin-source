@@ -1,3 +1,12 @@
+## [2.10.1](https://github.com/salesforcecli/plugin-source/compare/2.10.0...2.10.1) (2023-04-13)
+
+
+### Bug Fixes
+
+* bump STL ([#814](https://github.com/salesforcecli/plugin-source/issues/814)) ([9398e87](https://github.com/salesforcecli/plugin-source/commit/9398e874b19967ba94dc9b615695ebc9bddebd48))
+
+
+
 # [2.10.0](https://github.com/salesforcecli/plugin-source/compare/2.9.6...2.10.0) (2023-04-13)
 
 
