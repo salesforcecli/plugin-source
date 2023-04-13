@@ -6,13 +6,7 @@
  */
 import * as path from 'path';
 
-import {
-  ChangeResult,
-  getTrackingFileVersion,
-  SourceTracking,
-  SourceTrackingOptions,
-  throwIfInvalid,
-} from '@salesforce/source-tracking';
+import { ChangeResult, SourceTracking, SourceTrackingOptions } from '@salesforce/source-tracking';
 import { Messages, SfError } from '@salesforce/core';
 import {
   ComponentSet,
@@ -28,7 +22,6 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 interface TrackingSetupRequest extends SourceTrackingOptions {
   ignoreConflicts: boolean;
   ux: Ux;
-  commandName: string;
 }
 
 interface TrackingUpdateRequest {
@@ -75,29 +68,7 @@ export const filterConflictsByComponentSet = async ({
  * @returns SourceTracking
  */
 export const trackingSetup = async (options: TrackingSetupRequest): Promise<SourceTracking> => {
-  const { ux, org, ignoreConflicts, commandName, ...createOptions } = options;
-  const projectPath = options.project.getPath();
-  // 3 commands use throwIfInvalid
-  if (commandName.endsWith('push') || commandName.endsWith('pull') || commandName.endsWith('status')) {
-    throwIfInvalid({
-      org,
-      projectPath,
-      toValidate: 'plugin-source',
-      command: commandName,
-    });
-  }
-  // confirm tracking file version is plugin-source for all --tracksource flags (deploy, retrieve, delete)
-  if (getTrackingFileVersion(org, projectPath) === 'toolbelt') {
-    throw new SfError(
-      'You cannot use the "tracksource" flag with the old version of the tracking files',
-      'sourceTrackingFileVersionMismatch',
-      [
-        'Clear the old version of the tracking files with "sfdx force:source:legacy:tracking:clear"',
-        'Create a new org to use the new tracking files',
-      ]
-    );
-  }
-
+  const { ux, org, ignoreConflicts, ...createOptions } = options;
   const tracking = await SourceTracking.create({ org, ...createOptions });
   if (!ignoreConflicts) {
     processConflicts(await tracking.getConflicts(), ux, messages.getMessage('conflictMsg'));

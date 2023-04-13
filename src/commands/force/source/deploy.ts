@@ -170,7 +170,6 @@ export class Deploy extends DeployCommand {
   protected async preChecks(): Promise<void> {
     if (this.flags.tracksource) {
       this.tracking = await trackingSetup({
-        commandName: 'force:source:deploy',
         // we'll check ACTUAL conflicts once we get a componentSet built
         ignoreConflicts: true,
         org: this.org,
