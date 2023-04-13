@@ -1204,13 +1204,25 @@
     shelljs "^0.8.4"
     sinon "^10.0.0"
 
-"@salesforce/source-tracking@^2.2.26", "@salesforce/source-tracking@^2.2.27":
+"@salesforce/source-tracking@^2.2.26":
   version "2.2.27"
   resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-2.2.27.tgz#c6d14d37153cee63c1e1d18593f1b44753562ef8"
   integrity sha512-3Krl4dngtVKjp10gj8x6eXS/blKK+pVHu7RbIW8BWBUFehANt3/ddKnAcqMIRiHgE3gODbE54Whz6EFl4AEWBg==
   dependencies:
     "@salesforce/core" "^3.34.6"
     "@salesforce/kit" "^1.9.0"
+    "@salesforce/source-deploy-retrieve" "^8.0.1"
+    graceful-fs "^4.2.11"
+    isomorphic-git "1.17.0"
+    ts-retry-promise "^0.7.0"
+
+"@salesforce/source-tracking@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-3.1.0.tgz#24218a8e3dcecf167b92c8c4a5845b7e46ba2999"
+  integrity sha512-oGn63hMjBoRU5aXycS+iAT+4cWKBKuMdOTnfAnDPuJc2FM3UZMW5q5X3v+Pd0kTLWPoGo8qxoVboIJm5vlG9uw==
+  dependencies:
+    "@salesforce/core" "^3.34.6"
+    "@salesforce/kit" "^1.9.2"
     "@salesforce/source-deploy-retrieve" "^8.0.1"
     graceful-fs "^4.2.11"
     isomorphic-git "1.17.0"
