@@ -1,3 +1,12 @@
+# [2.10.0](https://github.com/salesforcecli/plugin-source/compare/2.9.6...2.10.0) (2023-04-13)
+
+
+### Features
+
+* remove STL compatibility features for old toolbelt tracking files ([#803](https://github.com/salesforcecli/plugin-source/issues/803)) ([9502fa6](https://github.com/salesforcecli/plugin-source/commit/9502fa62c12b266cb515092ff47814df5ff4de4a))
+
+
+
 ## [2.9.6](https://github.com/salesforcecli/plugin-source/compare/2.9.5...2.9.6) (2023-04-13)
 
 
