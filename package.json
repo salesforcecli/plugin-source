@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-source",
   "description": "Commands to interact with source formatted metadata",
-  "version": "2.9.5",
+  "version": "2.9.6",
   "author": "Salesforce",
   "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
