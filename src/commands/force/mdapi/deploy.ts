@@ -12,11 +12,16 @@ import {
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
-  requiredOrgFlagWithDeprecations,
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { DeployCommand, getCoverageFormattersOptions, reportsFormatters, TestLevel } from '../../../deployCommand';
+import {
+  DeployCommand,
+  getCoverageFormattersOptions,
+  reportsFormatters,
+  targetUsernameFlag,
+  TestLevel,
+} from '../../../deployCommand';
 import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
 import { ProgressFormatter } from '../../../formatters/progressFormatter';
@@ -44,7 +49,7 @@ export class Deploy extends DeployCommand {
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
-    'target-org': requiredOrgFlagWithDeprecations,
+    'target-org': targetUsernameFlag,
     checkonly: Flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkOnly.description'),
@@ -75,6 +80,7 @@ export class Deploy extends DeployCommand {
       summary: messages.getMessage('flags.runTests.summary'),
     }),
     ignoreerrors: Flags.boolean({
+      // break this
       char: 'o',
       description: messages.getMessage('flags.ignoreErrors.description'),
       summary: messages.getMessage('flags.ignoreErrors.summary'),
@@ -134,7 +140,7 @@ export class Deploy extends DeployCommand {
 
   public async run(): Promise<DeployResult> {
     this.flags = (await this.parse(Deploy)).flags;
-    this.org = this.flags['target-org'];
+    this.org = await Org.create({ aliasOrUsername: this.flags['target-org'] });
     await this.deploy();
     this.resolveSuccess();
     return this.formatResult();

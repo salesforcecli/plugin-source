@@ -455,7 +455,7 @@ describe('mdapi NUTs', () => {
         });
         it('should deploy validated Id', () => {
           execCmd(
-            `force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse.id} --ignorewarnings --ignoreerrors`,
+            `force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse.id} --ignorewarnings -o`,
             {
               ensureExitCode: 0,
             }

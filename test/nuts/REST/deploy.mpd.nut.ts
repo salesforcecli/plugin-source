@@ -133,7 +133,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
     const toDeploy = path.normalize(repo.deploy.sourcepath[0].toDeploy);
     it(`should checkonly deploy ${toDeploy}`, async () => {
       await testkit.deploy({
-        args: `--sourcepath ${toDeploy} --checkonly --ignoreerrors`,
+        args: `--sourcepath ${toDeploy} -c -o`,
       });
       await testkit.expect.filesToNotBeDeployed(repo.deploy.sourcepath[0].toVerify);
     });
@@ -158,7 +158,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
       const classes = path.join('foo-bar', 'app', 'classes');
 
       const checkOnly = (await testkit.deploy({
-        args: `--sourcepath ${classes} --testlevel RunAllTestsInOrg --checkonly --ignoreerrors --wait 0`,
+        args: `-p ${classes} --testlevel RunAllTestsInOrg --checkonly --ignoreerrors --wait 0`,
       })) as { result: DeployCommandResult };
 
       // quick deploy won't work unless the checkonly has finished successfully

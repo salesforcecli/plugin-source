@@ -15,7 +15,17 @@ import {
   MetadataApiDeployStatus,
   RequestStatus,
 } from '@salesforce/source-deploy-retrieve';
-import { Connection, Messages, Org, PollingClient, SfdxPropertyKeys, SfError, StatusResult } from '@salesforce/core';
+import {
+  ConfigAggregator,
+  Connection,
+  Messages,
+  Org,
+  PollingClient,
+  SfdxPropertyKeys,
+  SfError,
+  StateAggregator,
+  StatusResult,
+} from '@salesforce/core';
 import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
 import { Duration, once, ensureArray } from '@salesforce/kit';
 import {
@@ -25,6 +35,7 @@ import {
   DefaultReportOptions,
   JUnitReporter,
 } from '@salesforce/apex-node';
+import { Flags } from '@salesforce/sf-plugins-core';
 import { SourceCommand } from './sourceCommand';
 import { DeployData, Stash } from './stash';
 import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResult } from './coverageUtils';
@@ -53,6 +64,7 @@ export abstract class DeployCommand extends SourceCommand {
     const stashKey = Stash.getKey(this.id);
     Stash.set(stashKey, { jobid: id });
   });
+
   /**
    * Request a report of an in-progress or completed deployment.
    *
@@ -258,4 +270,27 @@ export const getCoverageFormattersOptions = (formatters: string[] = []): Coverag
     reportFormats,
     reportOptions,
   };
+};
+
+export const targetUsernameFlag = Flags.string({
+  required: true,
+  char: 'u',
+  deprecateAliases: true,
+  // DO NOT alias to 'o', it will conflict with '--ignoreerrors'
+  aliases: ['targetusername', 'u'],
+  summary: messages.getMessage('flags.targetusername.summary'),
+  parse: async (input: string | undefined) => resolveUsername(input),
+  default: async () => resolveUsername(),
+  defaultHelp: async () => resolveUsername(),
+});
+
+export const resolveUsername = async (usernameOrAlias?: string): Promise<string> => {
+  const stateAggregator = await StateAggregator.getInstance();
+  // we have a value, but don't know if it's a username or an alias
+  if (usernameOrAlias) return stateAggregator.aliases.resolveUsername(usernameOrAlias);
+  // we didn't get a value, so let's see if the config has a default target org
+  const configAggregator = await ConfigAggregator.create();
+  const defaultUsernameOrAlias: string = configAggregator.getPropertyValue('target-org');
+  if (defaultUsernameOrAlias) return stateAggregator.aliases.resolveUsername(defaultUsernameOrAlias);
+  throw new SfError(messages.getMessage('missingUsername'), 'MissingUsernameError');
 };

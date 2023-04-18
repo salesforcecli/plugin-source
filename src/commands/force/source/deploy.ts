@@ -14,11 +14,16 @@ import {
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
-  requiredOrgFlagWithDeprecations,
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { DeployCommand, getCoverageFormattersOptions, reportsFormatters, TestLevel } from '../../../deployCommand';
+import {
+  DeployCommand,
+  getCoverageFormattersOptions,
+  reportsFormatters,
+  targetUsernameFlag,
+  TestLevel,
+} from '../../../deployCommand';
 import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
 import {
   DeployAsyncResultFormatter,
@@ -53,7 +58,7 @@ export class Deploy extends DeployCommand {
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
-    'target-org': requiredOrgFlagWithDeprecations,
+    'target-org': targetUsernameFlag,
     checkonly: Flags.boolean({
       char: 'c',
       description: messages.getMessage('flags.checkonly.description'),
@@ -83,6 +88,7 @@ export class Deploy extends DeployCommand {
     }),
     ignoreerrors: Flags.boolean({
       char: 'o',
+      // brfeak this
       description: messages.getMessage('flags.ignoreErrors.description'),
       summary: messages.getMessage('flags.ignoreErrors.summary'),
     }),
@@ -159,7 +165,7 @@ export class Deploy extends DeployCommand {
   private org: Org;
   public async run(): Promise<DeployCommandCombinedResult> {
     this.flags = (await this.parse(Deploy)).flags;
-    this.org = this.flags['target-org'];
+    this.org = await Org.create({ aliasOrUsername: this.flags['target-org'] });
     await this.preChecks();
     await this.deploy();
     this.resolveSuccess();
