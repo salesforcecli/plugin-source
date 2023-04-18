@@ -91,4 +91,37 @@ describe('-t flag for deploy, retrieve, and delete', () => {
       ).to.have.length(0);
     });
   });
+
+  describe('short character flag validation', () => {
+    it("won't confuse -o/-u", () => {
+      execCmd<DeployCommandResult>(`force:source:deploy -p force-app,my-app,foo-bar/app -o --json`, {
+        ensureExitCode: 0,
+      });
+
+      execCmd<DeployCommandResult>(
+        `force:source:deploy -p force-app,my-app,foo-bar/app -o -u ${session.orgs.get('default').username} --json`,
+        {
+          ensureExitCode: 0,
+        }
+      );
+
+      execCmd<DeployCommandResult>(
+        `force:source:deploy -p force-app,my-app,foo-bar/app -o --targetusername ${
+          session.orgs.get('default').username
+        } --json`,
+        {
+          ensureExitCode: 0,
+        }
+      );
+
+      execCmd<DeployCommandResult>(
+        `force:source:deploy -p force-app,my-app,foo-bar/app -o --target-org ${
+          session.orgs.get('default').username
+        } --json`,
+        {
+          ensureExitCode: 0,
+        }
+      );
+    });
+  });
 });
