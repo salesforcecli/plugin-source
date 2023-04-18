@@ -1,3 +1,12 @@
+## [2.10.2](https://github.com/salesforcecli/plugin-source/compare/2.10.1...2.10.2) (2023-04-18)
+
+
+### Bug Fixes
+
+* remove -o conflict, add short char UTs, add short chars to NUTs ([#821](https://github.com/salesforcecli/plugin-source/issues/821)) ([17ff76b](https://github.com/salesforcecli/plugin-source/commit/17ff76b9db439cb7c4da118174fb3b0d06a9322d))
+
+
+
 ## [2.10.1](https://github.com/salesforcecli/plugin-source/compare/2.10.0...2.10.1) (2023-04-13)
 
 
