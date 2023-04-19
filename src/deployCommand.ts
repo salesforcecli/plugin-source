@@ -133,7 +133,9 @@ export abstract class DeployCommand extends SourceCommand {
       return false;
     }
 
-    const restDeployConfig = this.configAggregator.getInfo(SfdxPropertyKeys.REST_DEPLOY).value;
+    const restDeployConfig =
+      this.configAggregator.getInfo(SfdxPropertyKeys.REST_DEPLOY).value ??
+      this.configAggregator.getInfo('org-metadata-rest-deploy').value;
     // aggregator property values are returned as strings
     if (restDeployConfig === 'false') {
       this.debug('restDeploy SFDX config === false.  Using SOAP');

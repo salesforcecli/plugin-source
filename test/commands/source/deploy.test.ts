@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, SfdxConfigAggregator, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
@@ -85,6 +85,8 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
+    cmd.configAggregator = await SfdxConfigAggregator.create();
+
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
     sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
@@ -373,6 +375,81 @@ describe('force:source:deploy', () => {
     });
 
     describe('SOAP/REST', () => {
+      it('should override env var with --soapdeploy', async () => {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+        process.env.SFDX_REST_DEPLOY = 'false';
+      });
+
+      it('should override config with --soapdeploy', async () => {
+        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+
+      it('should REST deploy with config', async () => {
+        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs({ apiOptions: { rest: true } });
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+
+      it('should REST deploy', async () => {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs({ apiOptions: { rest: true } });
+        ensureHookArgs();
+        ensureProgressBar(0);
+        process.env.SFDX_REST_DEPLOY = 'false';
+      });
+
       it('should use SOAP by default', () => {
         delete process.env.SFDX_REST_DEPLOY;
         const sourcepath = ['somepath'];
