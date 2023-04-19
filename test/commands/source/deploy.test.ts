@@ -173,360 +173,340 @@ describe('force:source:deploy', () => {
     expect(initProgressBarStub.callCount).to.equal(callCount);
   };
 
-  it('should pass along sourcepath', async () => {
-    const sourcepath = ['somepath'];
-    const result = await runDeployCmd(['--sourcepath', sourcepath[0], '--json']);
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({ sourcepath });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass along metadata', async () => {
-    const metadata = ['ApexClass:MyClass'];
-    const result = await runDeployCmd(['--metadata', metadata[0], '--json']);
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({
-      metadata: {
-        metadataEntries: metadata,
-        directoryPaths: [defaultDir],
-      },
-    });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass along manifest', async () => {
-    const manifest = 'package.xml';
-    const result = await runDeployCmd(['--manifest', manifest, '--json']);
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({
-      manifest: {
-        manifestPath: manifest,
-        directoryPaths: [defaultDir],
-        destructiveChangesPost: undefined,
-        destructiveChangesPre: undefined,
-      },
-    });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass along apiversion', async () => {
-    const manifest = 'package.xml';
-    const apiversion = '50.0';
-    const result = await runDeployCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({
-      apiversion,
-      manifest: {
-        manifestPath: manifest,
-        directoryPaths: [defaultDir],
-        destructiveChangesPost: undefined,
-        destructiveChangesPre: undefined,
-      },
-    });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass along sourceapiversion', async () => {
-    const sourceApiVersion = '50.0';
-    resolveProjectConfigStub.resolves({ sourceApiVersion });
-    const manifest = 'package.xml';
-    const result = await runDeployCmd(['--manifest', manifest, '--json'], { sourceApiVersion });
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({
-      sourceapiversion: sourceApiVersion,
-      manifest: {
-        manifestPath: manifest,
-        directoryPaths: [defaultDir],
-        destructiveChangesPost: undefined,
-        destructiveChangesPre: undefined,
-      },
-    });
-    ensureDeployArgs();
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass purgeOnDelete flag', async () => {
-    const manifest = 'package.xml';
-    const destructiveChanges = 'destructiveChangesPost.xml';
-    const runTests = ['MyClassTest'];
-    const testLevel = 'RunSpecifiedTests';
-    const result = await runDeployCmd([
-      `--manifest=${manifest}`,
-      `--postdestructivechanges=${destructiveChanges}`,
-      '--ignorewarnings',
-      '--ignoreerrors',
-      '--checkonly',
-      `--runtests=${runTests[0]}`,
-      `--testlevel=${testLevel}`,
-      '--purgeondelete',
-      '--json',
-    ]);
-
-    expect(result).to.deep.equal(expectedResults);
-    ensureDeployArgs({
-      apiOptions: {
-        checkOnly: true,
-        ignoreWarnings: true,
-        purgeOnDelete: true,
-        rest: false,
-        rollbackOnError: false,
-        runTests,
-        testLevel,
-      },
-    });
-    ensureCreateComponentSetArgs({
-      manifest: {
-        manifestPath: manifest,
-        directoryPaths: [defaultDir],
-        destructiveChangesPost: destructiveChanges,
-        destructiveChangesPre: undefined,
-      },
-    });
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass default purgeondelete flag to false', async () => {
-    const manifest = 'package.xml';
-    const destructiveChanges = 'destructiveChangesPost.xml';
-    const runTests = ['MyClassTest'];
-    const testLevel = 'RunSpecifiedTests';
-    const result = await runDeployCmd([
-      `--manifest=${manifest}`,
-      `--postdestructivechanges=${destructiveChanges}`,
-      '--ignorewarnings',
-      '--ignoreerrors',
-      '--checkonly',
-      `--runtests=${runTests[0]}`,
-      `--testlevel=${testLevel}`,
-      '--json',
-    ]);
-
-    expect(result).to.deep.equal(expectedResults);
-    ensureDeployArgs({
-      apiOptions: {
-        checkOnly: true,
-        ignoreWarnings: true,
-        purgeOnDelete: false,
-        rest: false,
-        rollbackOnError: false,
-        runTests,
-        testLevel,
-      },
-    });
-    ensureCreateComponentSetArgs({
-      manifest: {
-        manifestPath: manifest,
-        directoryPaths: [defaultDir],
-        destructiveChangesPost: destructiveChanges,
-        destructiveChangesPre: undefined,
-      },
-    });
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  it('should pass along all deploy options', async () => {
-    const manifest = 'package.xml';
-    const runTests = ['MyClassTest'];
-    const testLevel = 'RunSpecifiedTests';
-    const result = await runDeployCmd([
-      `--manifest=${manifest}`,
-      '--ignorewarnings',
-      '--ignoreerrors',
-      '--checkonly',
-      `--runtests=${runTests[0]}`,
-      `--testlevel=${testLevel}`,
-      '--json',
-    ]);
-
-    expect(result).to.deep.equal(expectedResults);
-    ensureCreateComponentSetArgs({
-      manifest: {
-        manifestPath: manifest,
-        directoryPaths: [defaultDir],
-        destructiveChangesPost: undefined,
-        destructiveChangesPre: undefined,
-      },
-    });
-
-    // Ensure ComponentSet.deploy() overridden args
-    ensureDeployArgs({
-      apiOptions: {
-        ignoreWarnings: true,
-        rollbackOnError: false,
-        checkOnly: true,
-        runTests,
-        testLevel,
-      },
-    });
-    ensureHookArgs();
-    ensureProgressBar(0);
-  });
-
-  describe('SOAP/REST', () => {
-    it('should override env var with --soapdeploy', async () => {
-      process.env.SFDX_REST_DEPLOY = 'true';
-      const manifest = 'package.xml';
-      const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
-      });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-      process.env.SFDX_REST_DEPLOY = 'false';
-    });
-
-    it('should override config with --soapdeploy', async () => {
-      await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
-      const manifest = 'package.xml';
-      const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
-      });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-    });
-
-    it('should REST deploy with config', async () => {
-      await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
-
-      const manifest = 'package.xml';
-      const result = await runDeployCmd(['--manifest', manifest, '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
-      });
-      ensureDeployArgs({ apiOptions: { rest: true } });
-      ensureHookArgs();
-      ensureProgressBar(0);
-    });
-
-    it('should REST deploy', async () => {
-      process.env.SFDX_REST_DEPLOY = 'true';
-      const manifest = 'package.xml';
-      const result = await runDeployCmd(['--manifest', manifest, '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
-      });
-      ensureDeployArgs({ apiOptions: { rest: true } });
-      ensureHookArgs();
-      ensureProgressBar(0);
-      process.env.SFDX_REST_DEPLOY = 'false';
-    });
-
-    it('should use SOAP by default', () => {
-      delete process.env.SFDX_REST_DEPLOY;
+  describe('long command flags', () => {
+    it('should pass along sourcepath', async () => {
       const sourcepath = ['somepath'];
-      const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore private method
-      expect(cmd.isRest).to.be.false;
+      const result = await runDeployCmd(['--sourcepath', sourcepath[0], '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({ sourcepath });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
     });
 
-    it('should use SOAP from the env var', () => {
-      try {
+    it('should pass along metadata', async () => {
+      const metadata = ['ApexClass:MyClass'];
+      const result = await runDeployCmd(['--metadata', metadata[0], '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        metadata: {
+          metadataEntries: metadata,
+          directoryPaths: [defaultDir],
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along manifest', async () => {
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['--manifest', manifest, '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along apiversion', async () => {
+      const manifest = 'package.xml';
+      const apiversion = '50.0';
+      const result = await runDeployCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        apiversion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along sourceapiversion', async () => {
+      const sourceApiVersion = '50.0';
+      resolveProjectConfigStub.resolves({ sourceApiVersion });
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['--manifest', manifest, '--json'], { sourceApiVersion });
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        sourceapiversion: sourceApiVersion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass purgeOnDelete flag', async () => {
+      const manifest = 'package.xml';
+      const destructiveChanges = 'destructiveChangesPost.xml';
+      const runTests = ['MyClassTest'];
+      const testLevel = 'RunSpecifiedTests';
+      const result = await runDeployCmd([
+        `--manifest=${manifest}`,
+        `--postdestructivechanges=${destructiveChanges}`,
+        '--ignorewarnings',
+        '--ignoreerrors',
+        '--checkonly',
+        `--runtests=${runTests[0]}`,
+        `--testlevel=${testLevel}`,
+        '--purgeondelete',
+        '--json',
+      ]);
+
+      expect(result).to.deep.equal(expectedResults);
+      ensureDeployArgs({
+        apiOptions: {
+          checkOnly: true,
+          ignoreWarnings: true,
+          purgeOnDelete: true,
+          rest: false,
+          rollbackOnError: false,
+          runTests,
+          testLevel,
+        },
+      });
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: destructiveChanges,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass default purgeondelete flag to false', async () => {
+      const manifest = 'package.xml';
+      const destructiveChanges = 'destructiveChangesPost.xml';
+      const runTests = ['MyClassTest'];
+      const testLevel = 'RunSpecifiedTests';
+      const result = await runDeployCmd([
+        `--manifest=${manifest}`,
+        `--postdestructivechanges=${destructiveChanges}`,
+        '--ignorewarnings',
+        '--ignoreerrors',
+        '--checkonly',
+        `--runtests=${runTests[0]}`,
+        `--testlevel=${testLevel}`,
+        '--json',
+      ]);
+
+      expect(result).to.deep.equal(expectedResults);
+      ensureDeployArgs({
+        apiOptions: {
+          checkOnly: true,
+          ignoreWarnings: true,
+          purgeOnDelete: false,
+          rest: false,
+          rollbackOnError: false,
+          runTests,
+          testLevel,
+        },
+      });
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: destructiveChanges,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along all deploy options', async () => {
+      const manifest = 'package.xml';
+      const runTests = ['MyClassTest'];
+      const testLevel = 'RunSpecifiedTests';
+      const result = await runDeployCmd([
+        `--manifest=${manifest}`,
+        '--ignorewarnings',
+        '--ignoreerrors',
+        '--checkonly',
+        `--runtests=${runTests[0]}`,
+        `--testlevel=${testLevel}`,
+        '--json',
+      ]);
+
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+
+      // Ensure ComponentSet.deploy() overridden args
+      ensureDeployArgs({
+        apiOptions: {
+          ignoreWarnings: true,
+          rollbackOnError: false,
+          checkOnly: true,
+          runTests,
+          testLevel,
+        },
+      });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    describe('SOAP/REST', () => {
+      it('should override env var with --soapdeploy', async () => {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
         process.env.SFDX_REST_DEPLOY = 'false';
+      });
+
+      it('should override config with --soapdeploy', async () => {
+        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+
+      it('should REST deploy with config', async () => {
+        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs({ apiOptions: { rest: true } });
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+
+      it('should REST deploy', async () => {
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const manifest = 'package.xml';
+        const result = await runDeployCmd(['--manifest', manifest, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [defaultDir],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs({ apiOptions: { rest: true } });
+        ensureHookArgs();
+        ensureProgressBar(0);
+        process.env.SFDX_REST_DEPLOY = 'false';
+      });
+
+      it('should use SOAP by default', () => {
+        delete process.env.SFDX_REST_DEPLOY;
         const sourcepath = ['somepath'];
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
         expect(cmd.isRest).to.be.false;
-      } finally {
-        delete process.env.SFDX_REST_DEPLOY;
-      }
-    });
+      });
 
-    it('should use REST from the env var', () => {
-      try {
-        process.env.SFDX_REST_DEPLOY = 'true';
-        const sourcepath = ['somepath'];
-        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore private method
-        expect(cmd.isRest).to.be.false;
-      } finally {
-        delete process.env.SFDX_REST_DEPLOY;
-      }
-    });
+      it('should use SOAP from the env var', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'false';
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
 
-    it('should use SOAP by overriding env var with flag', () => {
-      try {
-        process.env.SFDX_REST_DEPLOY = 'true';
+      it('should use REST from the env var', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'true';
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
+
+      it('should use SOAP by overriding env var with flag', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'true';
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
+
+      it('should use SOAP from flag', () => {
         const sourcepath = ['somepath'];
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
         expect(cmd.isRest).to.be.false;
-      } finally {
-        delete process.env.SFDX_REST_DEPLOY;
-      }
-    });
+      });
 
-    it('should use SOAP from flag', () => {
-      const sourcepath = ['somepath'];
-      const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore private method
-      expect(cmd.isRest).to.be.false;
-    });
-
-    it('should use SOAP from config', () => {
-      stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
-      stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
-      const sourcepath = ['somepath'];
-      const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore private method
-      expect(cmd.isRest).to.be.false;
-    });
-    it('should use REST from config', () => {
-      stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
-      stubMethod(sandbox, ConfigAggregator.prototype, 'getInfo').returns({ value: true });
-      const sourcepath = ['somepath'];
-      const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore private method
-      expect(cmd.isRest).to.be.false;
-    });
-
-    it('should use SOAP by overriding env var with config', () => {
-      try {
-        process.env.SFDX_REST_DEPLOY = 'true';
+      it('should use SOAP from config', () => {
         stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
         stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
         const sourcepath = ['somepath'];
@@ -534,87 +514,550 @@ describe('force:source:deploy', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore private method
         expect(cmd.isRest).to.be.false;
-      } finally {
-        delete process.env.SFDX_REST_DEPLOY;
-      }
-    });
-  });
+      });
 
-  describe('Hooks', () => {
-    it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
-      await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
-      expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+      it('should use SOAP by overriding env var with config', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'true';
+          stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+          stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
     });
 
-    it('should emit predeploy hooks for async deploys', async () => {
-      const sourcepath = ['somepath'];
-      await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
-      expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-    });
-  });
+    describe('Hooks', () => {
+      it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
+        await runDeployCmd(['--validateddeployrequestid', '0Af0x00000pkAXLCA2']);
+        expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+      });
 
-  describe('Progress Bar', () => {
-    it('should NOT call progress bar because of environment variable', async () => {
-      try {
-        process.env.SFDX_USE_PROGRESS_BAR = 'false';
+      it('should emit predeploy hooks for async deploys', async () => {
+        const sourcepath = ['somepath'];
+        await runDeployCmd(['--sourcepath', sourcepath[0], '--wait', '0']);
+        expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+      });
+    });
+
+    describe('Progress Bar', () => {
+      it('should NOT call progress bar because of environment variable', async () => {
+        try {
+          process.env.SFDX_USE_PROGRESS_BAR = 'false';
+          const sourcepath = ['somepath'];
+          const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
+          expect(result).to.deep.equal(expectedResults);
+          ensureCreateComponentSetArgs({ sourcepath });
+          ensureDeployArgs();
+          ensureHookArgs();
+          expect(progressStatusStub.calledOnce).to.be.true;
+          expect(progressBarStub.calledOnce).to.be.false;
+        } finally {
+          delete process.env.SFDX_USE_PROGRESS_BAR;
+        }
+      });
+
+      it('should call progress bar', async () => {
         const sourcepath = ['somepath'];
         const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
         expect(result).to.deep.equal(expectedResults);
         ensureCreateComponentSetArgs({ sourcepath });
         ensureDeployArgs();
         ensureHookArgs();
-        expect(progressStatusStub.calledOnce).to.be.true;
-        expect(progressBarStub.calledOnce).to.be.false;
-      } finally {
-        delete process.env.SFDX_USE_PROGRESS_BAR;
-      }
+        expect(progressStatusStub.calledOnce).to.be.false;
+        expect(progressBarStub.calledOnce).to.be.true;
+      });
+
+      it('should NOT call progress bar because of --json', async () => {
+        const sourcepath = ['somepath'];
+        const result = await runDeployCmd(['--json', '--sourcepath', sourcepath[0]]);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
     });
 
-    it('should call progress bar', async () => {
-      const sourcepath = ['somepath'];
-      const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
+    it('should return JSON format and not display for a synchronous deploy', async () => {
+      const result = await runDeployCmd(['--sourcepath', 'somepath', '--json']);
+      expect(formatterDisplayStub.calledOnce).to.equal(false);
       expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({ sourcepath });
-      ensureDeployArgs();
-      ensureHookArgs();
-      expect(progressStatusStub.calledOnce).to.be.false;
-      expect(progressBarStub.calledOnce).to.be.true;
     });
 
-    it('should NOT call progress bar because of --json', async () => {
+    it('should return JSON format and not display for an asynchronous deploy', async () => {
+      const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+      const result = await runDeployCmd(['--sourcepath', 'somepath', '--json', '--wait', '0']);
+      expect(formatterAsyncDisplayStub.calledOnce).to.equal(false);
+      expect(result).to.deep.equal(expectedAsyncResults);
+    });
+
+    it('should return JSON format and display for a synchronous deploy', async () => {
+      const result = await runDeployCmd(['--sourcepath', 'somepath']);
+      expect(formatterDisplayStub.calledOnce).to.equal(true);
+      expect(result).to.deep.equal(expectedResults);
+    });
+
+    it('should return JSON format and display for an asynchronous deploy', async () => {
+      const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+      const result = await runDeployCmd(['--sourcepath', 'somepath', '--wait', '0']);
+      expect(formatterAsyncDisplayStub.calledOnce).to.equal(true);
+      expect(result).to.deep.equal(expectedAsyncResults);
+    });
+  });
+
+  describe('short command flags', () => {
+    it('should pass along sourcepath', async () => {
       const sourcepath = ['somepath'];
-      const result = await runDeployCmd(['--json', '--sourcepath', sourcepath[0]]);
+      const result = await runDeployCmd(['-p', sourcepath[0], '--json']);
       expect(result).to.deep.equal(expectedResults);
       ensureCreateComponentSetArgs({ sourcepath });
       ensureDeployArgs();
       ensureHookArgs();
       ensureProgressBar(0);
     });
-  });
 
-  it('should return JSON format and not display for a synchronous deploy', async () => {
-    const result = await runDeployCmd(['--sourcepath', 'somepath', '--json']);
-    expect(formatterDisplayStub.calledOnce).to.equal(false);
-    expect(result).to.deep.equal(expectedResults);
-  });
+    it('should pass along metadata', async () => {
+      const metadata = ['ApexClass:MyClass'];
+      const result = await runDeployCmd(['-m', metadata[0], '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        metadata: {
+          metadataEntries: metadata,
+          directoryPaths: [defaultDir],
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
 
-  it('should return JSON format and not display for an asynchronous deploy', async () => {
-    const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
-    const result = await runDeployCmd(['--sourcepath', 'somepath', '--json', '--wait', '0']);
-    expect(formatterAsyncDisplayStub.calledOnce).to.equal(false);
-    expect(result).to.deep.equal(expectedAsyncResults);
-  });
+    it('should pass along manifest', async () => {
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['-x', manifest, '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
 
-  it('should return JSON format and display for a synchronous deploy', async () => {
-    const result = await runDeployCmd(['--sourcepath', 'somepath']);
-    expect(formatterDisplayStub.calledOnce).to.equal(true);
-    expect(result).to.deep.equal(expectedResults);
-  });
+    it('should pass along apiversion', async () => {
+      const manifest = 'package.xml';
+      const apiversion = '50.0';
+      const result = await runDeployCmd(['-x', manifest, '--apiversion', apiversion, '--json']);
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        apiversion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
 
-  it('should return JSON format and display for an asynchronous deploy', async () => {
-    const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
-    const result = await runDeployCmd(['--sourcepath', 'somepath', '--wait', '0']);
-    expect(formatterAsyncDisplayStub.calledOnce).to.equal(true);
-    expect(result).to.deep.equal(expectedAsyncResults);
+    it('should pass along sourceapiversion', async () => {
+      const sourceApiVersion = '50.0';
+      resolveProjectConfigStub.resolves({ sourceApiVersion });
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['-x', manifest, '--json', '-u', testOrg.username], { sourceApiVersion });
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        sourceapiversion: sourceApiVersion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along --targetusername', async () => {
+      const sourceApiVersion = '50.0';
+      resolveProjectConfigStub.resolves({ sourceApiVersion });
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['-x', manifest, '--json', '--targetusername', testOrg.username], {
+        sourceApiVersion,
+      });
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        sourceapiversion: sourceApiVersion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs();
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along --targetusername with -o', async () => {
+      const sourceApiVersion = '50.0';
+      resolveProjectConfigStub.resolves({ sourceApiVersion });
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['-x', manifest, '--json', '-o', '--targetusername', testOrg.username], {
+        sourceApiVersion,
+      });
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        sourceapiversion: sourceApiVersion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs({ apiOptions: { rollbackOnError: false } });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along --target-org with -o', async () => {
+      const sourceApiVersion = '50.0';
+      resolveProjectConfigStub.resolves({ sourceApiVersion });
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['-x', manifest, '--json', '-o', '--target-org', testOrg.username], {
+        sourceApiVersion,
+      });
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        sourceapiversion: sourceApiVersion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs({ apiOptions: { rollbackOnError: false } });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+    it('should pass along -u with -o', async () => {
+      const sourceApiVersion = '50.0';
+      resolveProjectConfigStub.resolves({ sourceApiVersion });
+      const manifest = 'package.xml';
+      const result = await runDeployCmd(['-x', manifest, '--json', '-o', '-u', testOrg.username], {
+        sourceApiVersion,
+      });
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        sourceapiversion: sourceApiVersion,
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureDeployArgs({ apiOptions: { rollbackOnError: false } });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass purgeOnDelete flag', async () => {
+      const manifest = 'package.xml';
+      const destructiveChanges = 'destructiveChangesPost.xml';
+      const runTests = ['MyClassTest'];
+      const testLevel = 'RunSpecifiedTests';
+      const result = await runDeployCmd([
+        `-x=${manifest}`,
+        `--postdestructivechanges=${destructiveChanges}`,
+        '-g',
+        '-o',
+        '-c',
+        `-r=${runTests[0]}`,
+        `-l=${testLevel}`,
+        '--purgeondelete',
+        '--json',
+      ]);
+
+      expect(result).to.deep.equal(expectedResults);
+      ensureDeployArgs({
+        apiOptions: {
+          checkOnly: true,
+          ignoreWarnings: true,
+          purgeOnDelete: true,
+          rest: false,
+          rollbackOnError: false,
+          runTests,
+          testLevel,
+        },
+      });
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: destructiveChanges,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass default purgeondelete flag to false', async () => {
+      const manifest = 'package.xml';
+      const destructiveChanges = 'destructiveChangesPost.xml';
+      const runTests = ['MyClassTest'];
+      const testLevel = 'RunSpecifiedTests';
+      const result = await runDeployCmd([
+        `-x=${manifest}`,
+        `--postdestructivechanges=${destructiveChanges}`,
+        '-g',
+        '-o',
+        '-c',
+        `-r=${runTests[0]}`,
+        `-l=${testLevel}`,
+        '--json',
+      ]);
+
+      expect(result).to.deep.equal(expectedResults);
+      ensureDeployArgs({
+        apiOptions: {
+          checkOnly: true,
+          ignoreWarnings: true,
+          purgeOnDelete: false,
+          rest: false,
+          rollbackOnError: false,
+          runTests,
+          testLevel,
+        },
+      });
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: destructiveChanges,
+          destructiveChangesPre: undefined,
+        },
+      });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    it('should pass along all deploy options', async () => {
+      const manifest = 'package.xml';
+      const runTests = ['MyClassTest'];
+      const testLevel = 'RunSpecifiedTests';
+      const result = await runDeployCmd([
+        `-x=${manifest}`,
+        '-g',
+        '-o',
+        '-c',
+        `-r=${runTests[0]}`,
+        `-l=${testLevel}`,
+        '--json',
+      ]);
+
+      expect(result).to.deep.equal(expectedResults);
+      ensureCreateComponentSetArgs({
+        manifest: {
+          manifestPath: manifest,
+          directoryPaths: [defaultDir],
+          destructiveChangesPost: undefined,
+          destructiveChangesPre: undefined,
+        },
+      });
+
+      // Ensure ComponentSet.deploy() overridden args
+      ensureDeployArgs({
+        apiOptions: {
+          ignoreWarnings: true,
+          rollbackOnError: false,
+          checkOnly: true,
+          runTests,
+          testLevel,
+        },
+      });
+      ensureHookArgs();
+      ensureProgressBar(0);
+    });
+
+    describe('SOAP/REST', () => {
+      it('should use SOAP by default', () => {
+        delete process.env.SFDX_REST_DEPLOY;
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      });
+
+      it('should use SOAP from the env var', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'false';
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
+
+      it('should use REST from the env var', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'true';
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
+
+      it('should use SOAP by overriding env var with flag', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'true';
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
+
+      it('should use SOAP from flag', () => {
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      });
+
+      it('should use SOAP from config', () => {
+        stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+        stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
+      });
+
+      it('should use SOAP by overriding env var with config', () => {
+        try {
+          process.env.SFDX_REST_DEPLOY = 'true';
+          stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+          stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+          const sourcepath = ['somepath'];
+          const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore private method
+          expect(cmd.isRest).to.be.false;
+        } finally {
+          delete process.env.SFDX_REST_DEPLOY;
+        }
+      });
+    });
+
+    describe('Hooks', () => {
+      it('should emit postdeploy hooks for validateddeployrequestid deploys', async () => {
+        await runDeployCmd(['-q', '0Af0x00000pkAXLCA2']);
+        expect(lifecycleEmitStub.firstCall.args[0]).to.equal('postdeploy');
+      });
+
+      it('should emit predeploy hooks for async deploys', async () => {
+        const sourcepath = ['somepath'];
+        await runDeployCmd(['-p', sourcepath[0], '-w', '0']);
+        expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
+      });
+    });
+
+    describe('Progress Bar', () => {
+      it('should NOT call progress bar because of environment variable', async () => {
+        try {
+          process.env.SFDX_USE_PROGRESS_BAR = 'false';
+          const sourcepath = ['somepath'];
+          const result = await runDeployCmd(['-p', sourcepath[0]]);
+          expect(result).to.deep.equal(expectedResults);
+          ensureCreateComponentSetArgs({ sourcepath });
+          ensureDeployArgs();
+          ensureHookArgs();
+          expect(progressStatusStub.calledOnce).to.be.true;
+          expect(progressBarStub.calledOnce).to.be.false;
+        } finally {
+          delete process.env.SFDX_USE_PROGRESS_BAR;
+        }
+      });
+
+      it('should call progress bar', async () => {
+        const sourcepath = ['somepath'];
+        const result = await runDeployCmd(['-p', sourcepath[0]]);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        expect(progressStatusStub.calledOnce).to.be.false;
+        expect(progressBarStub.calledOnce).to.be.true;
+      });
+
+      it('should NOT call progress bar because of --json', async () => {
+        const sourcepath = ['somepath'];
+        const result = await runDeployCmd(['--json', '-p', sourcepath[0]]);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+    });
+
+    it('should return JSON format and not display for a synchronous deploy', async () => {
+      const result = await runDeployCmd(['-p', 'somepath', '--json']);
+      expect(formatterDisplayStub.calledOnce).to.equal(false);
+      expect(result).to.deep.equal(expectedResults);
+    });
+
+    it('should return JSON format and not display for an asynchronous deploy', async () => {
+      const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+      const result = await runDeployCmd(['-p', 'somepath', '--json', '-w', '0']);
+      expect(formatterAsyncDisplayStub.calledOnce).to.equal(false);
+      expect(result).to.deep.equal(expectedAsyncResults);
+    });
+
+    it('should return JSON format and display for a synchronous deploy', async () => {
+      const result = await runDeployCmd(['-p', 'somepath']);
+      expect(formatterDisplayStub.calledOnce).to.equal(true);
+      expect(result).to.deep.equal(expectedResults);
+    });
+
+    it('should return JSON format and display for an asynchronous deploy', async () => {
+      const formatterAsyncDisplayStub = stubMethod(sandbox, DeployAsyncResultFormatter.prototype, 'display');
+      const result = await runDeployCmd(['-p', 'somepath', '-w', '0']);
+      expect(formatterAsyncDisplayStub.calledOnce).to.equal(true);
+      expect(result).to.deep.equal(expectedAsyncResults);
+    });
   });
 });

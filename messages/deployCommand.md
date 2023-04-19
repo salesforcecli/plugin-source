@@ -17,3 +17,11 @@ Deploying metadata to %s using the v%s %s API.
 # apiVersionMsgDetailed
 
 %s v%s metadata to %s using the v%s %s API.
+
+# missingUsername
+
+Unable to determine the username of the org to delete. Specify the username with the --target-org | -u flag.
+
+# flags.targetusername.summary
+
+Username or alias of the target org.
