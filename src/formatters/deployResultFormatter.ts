@@ -236,6 +236,9 @@ export class DeployResultFormatter extends ResultFormatter {
             problemType: { header: 'Type' },
             fullName: { header: 'Name' },
             error: { header: 'Problem' },
+          },
+          {
+            'no-truncate': true,
           }
         );
         this.ux.log('');
