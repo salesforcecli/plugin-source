@@ -1116,15 +1116,15 @@
     yeoman-environment "^3.15.1"
     yeoman-generator "^5.8.0"
 
-"@salesforce/plugin-user@^2.3.5":
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-2.3.5.tgz#4fe10ed22074fb85eb81520dc1e8cef11aff6ffa"
-  integrity sha512-Dr7/zGF+4nCQNcPPJRCyqDZDkdmig+MyGCRdM6ctqVrD9YCcpfhF0/Iclq/Dbx8wttAUvjTQpab08I6vI5PRfQ==
+"@salesforce/plugin-user@^2.3.8":
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-2.3.8.tgz#437eea42547db28dbb0972a3517ed845525fb449"
+  integrity sha512-0j45g7EwWCsX/hcRQAlVXVXa6yMKPPd72pCnQFwEar+Jfw1gMmcE9altsfRcU6C4UjCPIr0RjnYcb0ybULl0Hw==
   dependencies:
     "@oclif/core" "^2.6.2"
     "@salesforce/core" "^3.33.5"
     "@salesforce/kit" "^1.9.0"
-    "@salesforce/sf-plugins-core" "^2.2.4"
+    "@salesforce/sf-plugins-core" "^2.2.5"
     "@salesforce/ts-types" "^1.7.3"
     tslib "^2"
 
