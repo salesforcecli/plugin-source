@@ -732,7 +732,7 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^2.0.7", "@oclif/core@^2.1.7", "@oclif/core@^2.3.1", "@oclif/core@^2.6.2", "@oclif/core@^2.6.3", "@oclif/core@^2.8.0":
+"@oclif/core@^2.0.7", "@oclif/core@^2.3.1", "@oclif/core@^2.6.2", "@oclif/core@^2.6.3", "@oclif/core@^2.8.0":
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.8.0.tgz#4948de3168804169fa68895af8ec4853f332b307"
   integrity sha512-A2wHItFrD/WOw5bJ6Mtv9MD7If0bsKNR0pwEY0me+fo4HSXlJOtgYGqmzb8t8akX3DUUT7XsjPajsoHLkIJyvg==
@@ -963,10 +963,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.7.0"
 
-"@salesforce/core@^3.24.0", "@salesforce/core@^3.32.12", "@salesforce/core@^3.33.4", "@salesforce/core@^3.33.5", "@salesforce/core@^3.33.6", "@salesforce/core@^3.34.3", "@salesforce/core@^3.34.4", "@salesforce/core@^3.34.6":
-  version "3.34.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.34.6.tgz#816031d3aab098d56165d876db626a3610d86c6e"
-  integrity sha512-9Nd+bQRSvCYDiZo97bhseajLhr7d51J9gsPUnfN3nHy1/TBQXjN+upRAPAeldvzU8G3L98WGDMtEpSTOG/PxkQ==
+"@salesforce/core@^3.24.0", "@salesforce/core@^3.32.12", "@salesforce/core@^3.33.5", "@salesforce/core@^3.33.6", "@salesforce/core@^3.34.1", "@salesforce/core@^3.34.3", "@salesforce/core@^3.34.4", "@salesforce/core@^3.34.6":
+  version "3.34.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.34.8.tgz#01d74a6548ca395502ad61fe6e6e0ddc83f2ad01"
+  integrity sha512-2BpnyHMzN7NOg/nXEQNxpditMfQ9oKD30wC1IpTbSeS5JxZYYCAdDZkL0CfbtUceJwj/E3/x6oldiW2zQugrVg==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.9.2"
@@ -982,7 +982,7 @@
     form-data "^4.0.0"
     graceful-fs "^4.2.11"
     js2xmlparser "^4.0.1"
-    jsforce "^2.0.0-beta.20"
+    jsforce "^2.0.0-beta.21"
     jsonwebtoken "9.0.0"
     ts-retry-promise "^0.7.0"
 
@@ -1031,7 +1031,7 @@
     typescript "^4.1.3"
     wireit "^0.9.5"
 
-"@salesforce/kit@^1.7.1", "@salesforce/kit@^1.8.0", "@salesforce/kit@^1.8.2", "@salesforce/kit@^1.9.0", "@salesforce/kit@^1.9.2":
+"@salesforce/kit@^1.7.1", "@salesforce/kit@^1.8.2", "@salesforce/kit@^1.9.0", "@salesforce/kit@^1.9.2":
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-1.9.2.tgz#d232f135428363cdfe2649cb99a94bc2eb0a12fd"
   integrity sha512-kjZvjFNP6njhAiEa/ErdLXSDWZKafHYJyKCKz1wnSFmDM8TOpKHCCVw5cQo87ZQr8OqxqwUDIAlSBLyMzKi4Lg==
@@ -1074,17 +1074,17 @@
     shelljs "^0.8.5"
     tslib "^2"
 
-"@salesforce/plugin-info@^2.5.1":
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.5.1.tgz#4de5108f5510dad4609d99c2610212273760483a"
-  integrity sha512-6wKJ2eF0peB8PqR3Ebf7RJ/+Ds7cNYVIyzJThhEPHPWaG4JfJKd6Sw75BR3ATrBvJKEKC2oQ/fKXeOPVGs/hXw==
+"@salesforce/plugin-info@^2.6.8":
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.6.8.tgz#9d6be6c630aff973995f1f2e0c843e3b740300a7"
+  integrity sha512-186wY5MotgdlPbeXf6CIToZv593cAytFyKH+N6Ymmajw/EVONq4mNi1U5Li580B2GB/8jVOwcNb5hwXmHS3qow==
   dependencies:
-    "@oclif/core" "^2.1.7"
-    "@salesforce/core" "^3.33.4"
-    "@salesforce/kit" "^1.8.0"
-    "@salesforce/sf-plugins-core" "^2.2.3"
+    "@oclif/core" "^2.8.0"
+    "@salesforce/core" "^3.34.1"
+    "@salesforce/kit" "^1.9.2"
+    "@salesforce/sf-plugins-core" "^2.2.7"
     got "^11.8.6"
-    marked "^4.2.12"
+    marked "^4.3.0"
     marked-terminal "^4.2.0"
     open "^8.4.2"
     proxy-agent "^5.0.0"
@@ -1138,7 +1138,7 @@
   resolved "https://registry.yarnpkg.com/@salesforce/schemas/-/schemas-1.5.1.tgz#2d1bfdcf593caaa04cd4b3e6fe621097ff7f28fe"
   integrity sha512-MRqU+tn8w5IFvZ0Lm9YKLgxYxr2MQMI+fXXsTrwfUnijsps+ybF9IOTu6MOMxxl2vCUkO8XDjA435wXlWSLI6g==
 
-"@salesforce/sf-plugins-core@^2.0.1", "@salesforce/sf-plugins-core@^2.0.2", "@salesforce/sf-plugins-core@^2.2.3", "@salesforce/sf-plugins-core@^2.2.4", "@salesforce/sf-plugins-core@^2.2.5", "@salesforce/sf-plugins-core@^2.2.7":
+"@salesforce/sf-plugins-core@^2.0.1", "@salesforce/sf-plugins-core@^2.0.2", "@salesforce/sf-plugins-core@^2.2.4", "@salesforce/sf-plugins-core@^2.2.5", "@salesforce/sf-plugins-core@^2.2.7":
   version "2.2.7"
   resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-2.2.7.tgz#dd3d567ef89396b3f414645b986dbddadc6ee342"
   integrity sha512-bwtfYfJbvjrx3Up2fLmqHXgfXWdcI3CFS5D5zQf2wZhc5Ori4jlNMPsW2SP2J3ze50thjX+kLOTKu96AHiW7sA==
@@ -4969,10 +4969,10 @@ jsesc@^2.5.1:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jsforce@^2.0.0-beta.20:
-  version "2.0.0-beta.20"
-  resolved "https://registry.yarnpkg.com/jsforce/-/jsforce-2.0.0-beta.20.tgz#907630942b2ecd653098caa3f87e7710874cb207"
-  integrity sha512-5TpdU0MEUN34M0mSKmBwOMKaI8dllTYF8NzpJn0/9akrwqKEERK6K2jGiMWcs85Vx1HCHEcwU2n+5ij6z6zr2g==
+jsforce@^2.0.0-beta.21:
+  version "2.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/jsforce/-/jsforce-2.0.0-beta.21.tgz#04c94d762d2536bf1af3062d5cca206656f5b12b"
+  integrity sha512-74GUF/96vYBNZo3SUccXtt4CmfvZ0iqTSc0Z3OB940Ec7oU6coOAGhlCZ+XprXaHOMMhXMXrZQ1PCd16yjIA7A==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@babel/runtime-corejs3" "^7.12.5"
@@ -4993,7 +4993,7 @@ jsforce@^2.0.0-beta.20:
     open "^7.0.0"
     regenerator-runtime "^0.13.3"
     strip-ansi "^6.0.0"
-    xml2js "^0.4.22"
+    xml2js "^0.5.0"
 
 json-buffer@3.0.1:
   version "3.0.1"
@@ -5410,10 +5410,10 @@ marked-terminal@^4.2.0:
     node-emoji "^1.10.0"
     supports-hyperlinks "^2.1.0"
 
-marked@^4.0.19, marked@^4.2.12:
-  version "4.2.12"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-4.2.12.tgz#d69a64e21d71b06250da995dcd065c11083bebb5"
-  integrity sha512-yr8hSKa3Fv4D3jdZmtMMPghgVt6TWbk86WQaWhDloQjRSQhMMYCAro7jP7VDJrjjdV8pxVxMssXS8B8Y5DZ5aw==
+marked@^4.0.19, marked@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-4.3.0.tgz#796362821b019f734054582038b116481b456cf3"
+  integrity sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==
 
 "mem-fs-editor@^8.1.2 || ^9.0.0", mem-fs-editor@^9.0.0:
   version "9.7.0"
@@ -8166,10 +8166,10 @@ xml2js@0.4.19:
     sax ">=0.6.0"
     xmlbuilder "~9.0.1"
 
-xml2js@^0.4.22:
-  version "0.4.23"
-  resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
-  integrity sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==
+xml2js@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/xml2js/-/xml2js-0.5.0.tgz#d9440631fbb2ed800203fad106f2724f62c493b7"
+  integrity sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==
   dependencies:
     sax ">=0.6.0"
     xmlbuilder "~11.0.0"
