@@ -1,3 +1,12 @@
+## [2.10.5](https://github.com/salesforcecli/plugin-source/compare/2.10.4...2.10.5) (2023-04-25)
+
+
+### Bug Fixes
+
+* do not truncate deploy results for failures ([#823](https://github.com/salesforcecli/plugin-source/issues/823)) ([cee59dd](https://github.com/salesforcecli/plugin-source/commit/cee59ddaf7aa2d09488523904a2ae6983d015f1d))
+
+
+
 ## [2.10.4](https://github.com/salesforcecli/plugin-source/compare/2.10.3...2.10.4) (2023-04-21)
 
 
