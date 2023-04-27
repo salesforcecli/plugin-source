@@ -86,7 +86,6 @@ describe('force:source:deploy', () => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
     cmd.configAggregator = await SfdxConfigAggregator.create();
-
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
     sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
@@ -391,11 +390,11 @@ describe('force:source:deploy', () => {
         ensureDeployArgs();
         ensureHookArgs();
         ensureProgressBar(0);
-        process.env.SFDX_REST_DEPLOY = 'false';
+        delete process.env.SFDX_REST_DEPLOY;
       });
 
       it('should override config with --soapdeploy', async () => {
-        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+        await $$.stubConfig({ 'org-metadata-rest-deploy': 'true', 'target-org': testOrg.username });
         const manifest = 'package.xml';
         const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
         expect(result).to.deep.equal(expectedResults);
@@ -413,7 +412,7 @@ describe('force:source:deploy', () => {
       });
 
       it('should REST deploy with config', async () => {
-        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+        await $$.stubConfig({ 'org-metadata-rest-deploy': 'true', 'target-org': testOrg.username });
 
         const manifest = 'package.xml';
         const result = await runDeployCmd(['--manifest', manifest, '--json']);
