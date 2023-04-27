@@ -191,6 +191,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
           status: number;
           message: string;
           stack: string;
+          commandName: string;
           context: string;
           result: FileResponse[];
           data: FileResponse[];
@@ -209,7 +210,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         });
         expect(failure.result).to.deep.equal(failure.data);
         expect(failure.status).to.equal(1);
-        expect(failure.message).to.equal('Push Failed.');
+        expect(failure.message).to.equal('Push failed. ');
         expect(failure.stack).to.be.a('string');
         expect(failure.context).to.equal('Push');
       });
