@@ -1185,6 +1185,18 @@
     chalk "^4"
     inquirer "^8.2.5"
 
+"@salesforce/sf-plugins-core@^2.2.10":
+  version "2.2.10"
+  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-2.2.10.tgz#801a299765a0e8113fadf443928a52dc654a6c94"
+  integrity sha512-fcmgbGY3PwR3D7GnHlCWMS37neBWh0+PElD5s9WFZyyNXwbH6Yl9y33mgslemesg+LnOppYetdBH7eDg1+MSzg==
+  dependencies:
+    "@oclif/core" "^2.8.2"
+    "@salesforce/core" "^3.34.6"
+    "@salesforce/kit" "^1.9.2"
+    "@salesforce/ts-types" "^1.7.3"
+    chalk "^4"
+    inquirer "^8.2.5"
+
 "@salesforce/source-deploy-retrieve@^7.14.2", "@salesforce/source-deploy-retrieve@^7.15.0":
   version "7.15.1"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-7.15.1.tgz#059d088f5fb5726323d9822599d730474ce6dc70"
