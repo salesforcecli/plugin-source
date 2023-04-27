@@ -57,6 +57,7 @@ export class PushResultFormatter extends ResultFormatter {
       error.setData(errorData);
       error['result'] = errorData;
       error['commandName'] = 'Push';
+      error['context'] = 'Push';
       // partial success
       if (process.exitCode === 69) {
         error['partialSuccess'] = this.fileResponses.filter(

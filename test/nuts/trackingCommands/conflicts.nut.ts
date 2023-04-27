@@ -127,7 +127,34 @@ describe('conflict detection and resolution', () => {
   });
 
   it('gets conflict error on push', () => {
-    execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 1 });
+    const pushResponse = execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 1 });
+    const filePath = path.join(
+      session.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'applications',
+      'EBikes.app-meta.xml'
+    );
+    // Ensure JSON structure on push errors
+    const json = pushResponse.jsonOutput;
+    expect(json.data).to.deep.equal([
+      {
+        state: 'Conflict',
+        fullName: 'EBikes',
+        type: 'CustomApplication',
+        filePath,
+      },
+    ]);
+    expect(json.code).to.equal(1);
+    expect(json.exitCode).to.equal(1);
+    expect(json.status).to.equal(1);
+    expect(json.name).to.equal('sourceConflictDetected');
+    expect(json.message).to.include("We couldn't complete the operation due to conflicts.");
+    expect(json.stack).to.include('sourceConflictDetected');
+    expect(json.context).to.equal('Push');
+    // @ts-expect-error it's SfCommand.Error
+    expect(json.commandName).to.include('Push');
   });
   it('gets conflict error on pull', () => {
     execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 1 });

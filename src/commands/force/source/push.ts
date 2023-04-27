@@ -233,39 +233,6 @@ export default class Push extends DeployCommand {
     this.setExitCode(1);
   }
 
-  // protected catch(error: Error | SfError | SfCommand.Error): Promise<SfCommand.Error> {
-  //   const formatter = new PushResultFormatter(
-  //     new Ux({ jsonEnabled: this.jsonEnabled() }),
-  //     {
-  //       quiet: this.flags.quiet ?? false,
-  //     },
-  //     this.deployResults,
-  //     this.deletes
-  //   );
-  //   try {
-  //     formatter.getJson();
-  //   } catch (e) {
-  //     if (this.jsonEnabled()) {
-  //       const err = this.toErrorJson(e as SfCommand.Error) as SfCommand.Error & SfCommand.Json<FileResponse[]>;
-  //       // restore json format
-  //       err.message = error.message ?? 'Push Failed.';
-  //       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-  //       err.stack = error.stack;
-  //       err.context = 'Push';
-  //       err.status = 1;
-  //       err.name = error.name ?? e.name;
-  //       if ((error as SfCommand.Error).data) {
-  //         err.data = (error as SfCommand.Error).data;
-  //         err.result = (error as SfCommand.Error).data as FileResponse[];
-  //       }
-
-  //       this.logJson(err);
-  //     }
-  //   }
-
-  //   throw error;
-  // }
-
   protected formatResult(): PushResponse {
     if (!this.deployResults.length) {
       this.log('No results found');
