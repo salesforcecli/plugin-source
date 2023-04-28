@@ -8,7 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'shelljs';
-import { expect } from 'chai';
+import { expect, config } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { create as createArchive } from 'archiver';
@@ -17,6 +17,8 @@ import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResu
 import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 
 let session: TestSession;
+config.truncateThreshold = 0;
+
 // must be skipped while source:convert is moved to PDR
 describe('1k files in mdapi:deploy', () => {
   const classCount = 1000;
