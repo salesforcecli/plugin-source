@@ -167,7 +167,7 @@ describe('mdapi NUTs', () => {
       expect(rv.code, `Failed to create ${apexManifestPath} manifest for tests`).to.equal(0);
     });
 
-    describe('mdapi:retrieve (sync)', () => {
+    describe.only('mdapi:retrieve (sync)', () => {
       it('retrieves content from manifest', () => {
         const retrieveTargetDir = 'mdRetrieveFromManifest';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
@@ -243,7 +243,7 @@ describe('mdapi NUTs', () => {
       });
     });
 
-    describe('mdapi:retrieve (async) and mdapi:retrieve:report', () => {
+    describe.only('mdapi:retrieve (async) and mdapi:retrieve:report', () => {
       it('retrieves report (async)', () => {
         const retrieveTargetDir = 'mdRetrieveReportAsync';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
