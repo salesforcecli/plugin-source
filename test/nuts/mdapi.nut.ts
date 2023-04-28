@@ -164,6 +164,9 @@ describe('mdapi NUTs', () => {
 
       // Create manifests for retrieve commands to use
       rv = exec(`sfdx force:source:manifest:create -p force-app -n ${manifestPath}`, { silent: true });
+      // what's wrong with this manifest?
+      // eslint-disable-next-line no-console
+      console.log(fs.readFileSync(path.join(session.project.dir, manifestPath), 'utf8'));
       expect(rv.code, `Failed to create ${manifestPath} manifest for tests`).to.equal(0);
       rv = exec(`sfdx force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { silent: true });
       expect(rv.code, `Failed to create ${apexManifestPath} manifest for tests`).to.equal(0);
