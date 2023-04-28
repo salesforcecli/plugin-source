@@ -1,15 +1,15 @@
 {
   "name": "@salesforce/plugin-source",
   "description": "Commands to interact with source formatted metadata",
-  "version": "2.10.5",
+  "version": "2.10.6",
   "author": "Salesforce",
   "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
-    "@oclif/core": "^2.6.3",
+    "@oclif/core": "^2.8.2",
     "@salesforce/apex-node": "^1.6.0",
     "@salesforce/core": "^3.36.0",
-    "@salesforce/kit": "^1.9.0",
+    "@salesforce/kit": "^1.9.2",
     "@salesforce/sf-plugins-core": "^2.4.0",
     "@salesforce/source-deploy-retrieve": "^8.0.1",
     "@salesforce/source-tracking": "^3.1.0",

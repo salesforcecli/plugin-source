@@ -6,7 +6,7 @@
  */
 
 import { Duration, env } from '@salesforce/kit';
-import { Lifecycle, Messages, SfError } from '@salesforce/core';
+import { Lifecycle, Messages } from '@salesforce/core';
 import { DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
@@ -15,7 +15,6 @@ import {
   loglevel,
   orgApiVersionFlagWithDeprecations,
   requiredOrgFlagWithDeprecations,
-  SfCommand,
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
@@ -232,34 +231,6 @@ export default class Push extends DeployCommand {
 
     this.warn(` Unexpected exit code ${this.deployResults.map((result) => result.response.errorMessage).join(', ')}`);
     this.setExitCode(1);
-  }
-
-  protected catch(error: Error | SfError | SfCommand.Error): Promise<SfCommand.Error> {
-    const formatter = new PushResultFormatter(
-      new Ux({ jsonEnabled: this.jsonEnabled() }),
-      {
-        quiet: this.flags.quiet ?? false,
-      },
-      this.deployResults,
-      this.deletes
-    );
-    try {
-      formatter.getJson();
-    } catch (e) {
-      if (this.jsonEnabled()) {
-        const err = this.toErrorJson(e as SfCommand.Error);
-        // restore json format
-        err.message = 'Push Failed.';
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-        err.stack = e.stack;
-        err.context = 'Push';
-        err.status = 1;
-
-        this.logJson(err);
-      }
-    }
-
-    throw error;
   }
 
   protected formatResult(): PushResponse {

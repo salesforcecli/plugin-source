@@ -92,6 +92,9 @@ describe('PushResultFormatter', () => {
         expect(error).to.have.property('actions').deep.equal([]);
         expect(error).to.have.property('data').deep.equal([expectedFail]);
         expect(error).to.have.property('result').deep.equal([expectedFail]);
+        expect(error).to.have.property('context', 'Push');
+        expect(error).to.have.property('commandName', 'Push');
+        expect(error).to.have.property('exitCode', 1);
       }
     });
     describe('json with quiet', () => {
