@@ -98,7 +98,7 @@ describe('mdapi NUTs', () => {
     execCmd('force:source:deploy -p force-app', { cli: 'sfdx' });
     execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx' });
 
-    process.env.SFDX_USE_PROGRESS_BAR = 'false';
+    process.env.SF_USE_PROGRESS_BAR = 'false';
   });
 
   after(async () => {

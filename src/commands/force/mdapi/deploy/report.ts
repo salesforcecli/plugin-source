@@ -110,7 +110,7 @@ export class Report extends DeployCommand {
 
     const deploy = this.createDeploy(this.org.getConnection(), deployId);
     if (!this.jsonEnabled()) {
-      const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
+      const progressFormatter: ProgressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
         ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
         : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
       progressFormatter.progress(deploy);
