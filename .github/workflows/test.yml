@@ -20,7 +20,8 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         command:
           # - 'yarn test:nuts:deb'
           # - 'yarn test:nuts:deploy'
@@ -33,6 +34,5 @@ jobs:
           # - 'yarn test:nuts:tracking'
       fail-fast: false
     with:
-      # os: ${{ matrix.os }}
-      os: ubuntu-latest
+      os: ${{ matrix.os }}
       command: ${{ matrix.command }}
