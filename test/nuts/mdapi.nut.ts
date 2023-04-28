@@ -81,24 +81,20 @@ describe('mdapi NUTs', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
           config: path.join('config', 'project-scratch-def.json'),
           setDefault: true,
-          duration: 1,
         },
         {
-          executable: 'sfdx',
           config: path.join('config', 'project-scratch-def.json'),
-          duration: 1,
           alias: 'nonDefaultOrg',
         },
       ],
     });
 
-    execCmd('force:source:deploy -p force-app', { cli: 'sfdx' });
-    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx' });
+    execCmd('force:source:deploy -p force-app', { ensureExitCode: 0 });
+    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx', ensureExitCode: 0 });
 
-    process.env.SF_USE_PROGRESS_BAR = 'false';
+    process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
 
   after(async () => {
@@ -157,14 +153,12 @@ describe('mdapi NUTs', () => {
     before(() => {
       // Install the ElectronBranding package in the default org for retrieve commands to use
       const pkgInstallCmd = `sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
-      let rv = exec(pkgInstallCmd, { silent: true });
+      const rv = exec(pkgInstallCmd, { silent: true });
       expect(rv.code, 'Failed to install ElectronBranding package for tests').to.equal(0);
 
       // Create manifests for retrieve commands to use
-      rv = exec(`sfdx force:source:manifest:create -p force-app -n ${manifestPath}`, { silent: true });
-      expect(rv.code, `Failed to create ${manifestPath} manifest for tests`).to.equal(0);
-      rv = exec(`sfdx force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { silent: true });
-      expect(rv.code, `Failed to create ${apexManifestPath} manifest for tests`).to.equal(0);
+      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0 });
+      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0 });
     });
 
     describe('mdapi:retrieve (sync)', () => {
