@@ -34,5 +34,6 @@ jobs:
           # - 'yarn test:nuts:tracking'
       fail-fast: false
     with:
+      retries: 1
       os: ${{ matrix.os }}
       command: ${{ matrix.command }}
