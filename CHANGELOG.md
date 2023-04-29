@@ -1,3 +1,16 @@
+## [2.10.7](https://github.com/salesforcecli/plugin-source/compare/2.10.6...2.10.7) (2023-04-29)
+
+
+### Bug Fixes
+
+* avoid warning from asking for old config ([#829](https://github.com/salesforcecli/plugin-source/issues/829)) ([a72ee16](https://github.com/salesforcecli/plugin-source/commit/a72ee162b679509adfa32733a19a0312ef05db08))
+
+
+
+## [2.10.6](https://github.com/salesforcecli/plugin-source/compare/2.10.5...2.10.6) (2023-04-28)
+
+
+
 ## [2.10.5](https://github.com/salesforcecli/plugin-source/compare/2.10.4...2.10.5) (2023-04-25)
 
 
