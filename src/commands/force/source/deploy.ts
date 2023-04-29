@@ -276,7 +276,7 @@ export class Deploy extends DeployCommand {
       if (!this.isAsync) {
         // we're not print JSON output
         if (!this.jsonEnabled()) {
-          const progressFormatter: ProgressFormatter = env.getBoolean('SFDX_USE_PROGRESS_BAR', true)
+          const progressFormatter: ProgressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
             ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
             : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), {
                 verbose: this.flags.verbose,

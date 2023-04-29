@@ -14,6 +14,7 @@ import { ConfigAggregator, Lifecycle, Messages, SfdxConfigAggregator, SfProject 
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
+import ConfigMeta, { ConfigVars } from '@salesforce/plugin-deploy-retrieve/lib/configMeta';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
 import {
@@ -85,8 +86,7 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
-    cmd.configAggregator = await SfdxConfigAggregator.create();
-
+    cmd.configAggregator = await (await SfdxConfigAggregator.create({ customConfigMeta: ConfigMeta })).reload();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
     sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
@@ -102,6 +102,7 @@ describe('force:source:deploy', () => {
   };
 
   beforeEach(async () => {
+    resetEnv();
     await $$.stubAuths(testOrg);
     await $$.stubConfig({ 'target-org': testOrg.username });
 
@@ -122,6 +123,7 @@ describe('force:source:deploy', () => {
   afterEach(() => {
     $$.restore();
     sandbox.restore();
+    resetEnv();
   });
 
   // Ensure correct ComponentSetBuilder options
@@ -162,11 +164,13 @@ describe('force:source:deploy', () => {
   // Ensure Lifecycle hooks are called properly
   const ensureHookArgs = () => {
     const failureMsg = 'Lifecycle.emit() should be called for predeploy and postdeploy';
-    expect(lifecycleEmitStub.calledTwice, failureMsg).to.equal(true);
-    expect(lifecycleEmitStub.firstCall.args[0]).to.equal('predeploy');
-    expect(lifecycleEmitStub.firstCall.args[1]).to.deep.equal([exampleSourceComponent]);
-    expect(lifecycleEmitStub.secondCall.args[0]).to.equal('postdeploy');
-    expect(lifecycleEmitStub.secondCall.args[1]).to.deep.equal(deployResult);
+    // there's also a warning about the deprecated env
+    expect(lifecycleEmitStub.callCount, failureMsg).to.be.greaterThanOrEqual(2);
+    const predeploy = lifecycleEmitStub.getCalls().find((call) => call.args[0] === 'predeploy');
+    const postdeploy = lifecycleEmitStub.getCalls().find((call) => call.args[0] === 'postdeploy');
+
+    expect(predeploy.args[1]).to.deep.equal([exampleSourceComponent]);
+    expect(postdeploy.args[1]).to.deep.equal(deployResult);
   };
 
   const ensureProgressBar = (callCount: number) => {
@@ -391,11 +395,10 @@ describe('force:source:deploy', () => {
         ensureDeployArgs();
         ensureHookArgs();
         ensureProgressBar(0);
-        process.env.SFDX_REST_DEPLOY = 'false';
       });
 
       it('should override config with --soapdeploy', async () => {
-        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+        await $$.stubConfig({ 'org-metadata-rest-deploy': 'true', 'target-org': testOrg.username });
         const manifest = 'package.xml';
         const result = await runDeployCmd(['--manifest', manifest, '--soapdeploy', '--json']);
         expect(result).to.deep.equal(expectedResults);
@@ -413,7 +416,7 @@ describe('force:source:deploy', () => {
       });
 
       it('should REST deploy with config', async () => {
-        await $$.stubConfig({ restDeploy: 'true', 'target-org': testOrg.username });
+        await $$.stubConfig({ [ConfigVars.ORG_METADATA_REST_DEPLOY]: 'true', 'target-org': testOrg.username });
 
         const manifest = 'package.xml';
         const result = await runDeployCmd(['--manifest', manifest, '--json']);
@@ -447,11 +450,9 @@ describe('force:source:deploy', () => {
         ensureDeployArgs({ apiOptions: { rest: true } });
         ensureHookArgs();
         ensureProgressBar(0);
-        process.env.SFDX_REST_DEPLOY = 'false';
       });
 
       it('should use SOAP by default', () => {
-        delete process.env.SFDX_REST_DEPLOY;
         const sourcepath = ['somepath'];
         const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -460,42 +461,30 @@ describe('force:source:deploy', () => {
       });
 
       it('should use SOAP from the env var', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'false';
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'false';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
 
       it('should use REST from the env var', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'true';
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
 
       it('should use SOAP by overriding env var with flag', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'true';
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
 
       it('should use SOAP from flag', () => {
@@ -517,18 +506,14 @@ describe('force:source:deploy', () => {
       });
 
       it('should use SOAP by overriding env var with config', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'true';
-          stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
-          stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'true';
+        stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+        stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['--sourcepath', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
     });
 
@@ -548,7 +533,7 @@ describe('force:source:deploy', () => {
     describe('Progress Bar', () => {
       it('should NOT call progress bar because of environment variable', async () => {
         try {
-          process.env.SFDX_USE_PROGRESS_BAR = 'false';
+          process.env.SF_USE_PROGRESS_BAR = 'false';
           const sourcepath = ['somepath'];
           const result = await runDeployCmd(['--sourcepath', sourcepath[0]]);
           expect(result).to.deep.equal(expectedResults);
@@ -558,7 +543,7 @@ describe('force:source:deploy', () => {
           expect(progressStatusStub.calledOnce).to.be.true;
           expect(progressBarStub.calledOnce).to.be.false;
         } finally {
-          delete process.env.SFDX_USE_PROGRESS_BAR;
+          delete process.env.SF_USE_PROGRESS_BAR;
         }
       });
 
@@ -901,7 +886,6 @@ describe('force:source:deploy', () => {
 
     describe('SOAP/REST', () => {
       it('should use SOAP by default', () => {
-        delete process.env.SFDX_REST_DEPLOY;
         const sourcepath = ['somepath'];
         const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -910,42 +894,30 @@ describe('force:source:deploy', () => {
       });
 
       it('should use SOAP from the env var', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'false';
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'false';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
 
       it('should use REST from the env var', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'true';
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0]], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
 
       it('should use SOAP by overriding env var with flag', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'true';
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'true';
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
 
       it('should use SOAP from flag', () => {
@@ -967,18 +939,14 @@ describe('force:source:deploy', () => {
       });
 
       it('should use SOAP by overriding env var with config', () => {
-        try {
-          process.env.SFDX_REST_DEPLOY = 'true';
-          stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
-          stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
-          const sourcepath = ['somepath'];
-          const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore private method
-          expect(cmd.isRest).to.be.false;
-        } finally {
-          delete process.env.SFDX_REST_DEPLOY;
-        }
+        process.env.SFDX_REST_DEPLOY = 'true';
+        stubMethod(sandbox, ConfigAggregator, 'create').resolves(ConfigAggregator.prototype);
+        stubMethod(sandbox, ConfigAggregator.prototype, 'getPropertyValue').returns('false');
+        const sourcepath = ['somepath'];
+        const cmd = new TestDeploy(['-p', sourcepath[0], '--soapdeploy'], oclifConfigStub);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore private method
+        expect(cmd.isRest).to.be.false;
       });
     });
 
@@ -997,19 +965,15 @@ describe('force:source:deploy', () => {
 
     describe('Progress Bar', () => {
       it('should NOT call progress bar because of environment variable', async () => {
-        try {
-          process.env.SFDX_USE_PROGRESS_BAR = 'false';
-          const sourcepath = ['somepath'];
-          const result = await runDeployCmd(['-p', sourcepath[0]]);
-          expect(result).to.deep.equal(expectedResults);
-          ensureCreateComponentSetArgs({ sourcepath });
-          ensureDeployArgs();
-          ensureHookArgs();
-          expect(progressStatusStub.calledOnce).to.be.true;
-          expect(progressBarStub.calledOnce).to.be.false;
-        } finally {
-          delete process.env.SFDX_USE_PROGRESS_BAR;
-        }
+        process.env.SF_USE_PROGRESS_BAR = 'false';
+        const sourcepath = ['somepath'];
+        const result = await runDeployCmd(['-p', sourcepath[0]]);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        expect(progressStatusStub.calledOnce).to.be.true;
+        expect(progressBarStub.calledOnce).to.be.false;
       });
 
       it('should call progress bar', async () => {
@@ -1061,3 +1025,11 @@ describe('force:source:deploy', () => {
     });
   });
 });
+
+/** when envVars is loading stuff, it copies deprecated envs.  So when you clear them, you have to clear both versions of each env */
+const resetEnv = () => {
+  delete process.env.SFDX_REST_DEPLOY;
+  delete process.env.SF_ORG_METADATA_REST_DEPLOY;
+  delete process.env.SFDX_USE_PROGRESS_BAR;
+  delete process.env.SF_USE_PROGRESS_BAR;
+};
