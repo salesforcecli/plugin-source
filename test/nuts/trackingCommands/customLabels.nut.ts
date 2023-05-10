@@ -15,7 +15,7 @@ import { PushResponse } from '../../../src/formatters/source/pushResultFormatter
 import { PullResponse } from '../../../src/formatters/source/pullFormatter';
 
 let session: TestSession;
-describe.only('CustomLabel source tracking', () => {
+describe('CustomLabel source tracking', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
@@ -69,5 +69,28 @@ describe.only('CustomLabel source tracking', () => {
     expect(fs.existsSync(clFile)).to.be.true;
     expect(fs.readFileSync(clFile, { encoding: 'utf-8' })).to.not.include('DeleteMe');
     expect(fs.readFileSync(clFile, { encoding: 'utf-8' })).to.include('KeepMe1');
+  });
+
+  it('deletes the remaining CustomLabel', async () => {
+    const clFile = path.join(
+      session.project.dir,
+      'force-app',
+      'main',
+      'default',
+      'labels',
+      'CustomLabels.labels-meta.xml'
+    );
+    const conn = await Connection.create({
+      authInfo: await AuthInfo.create({
+        username: session.orgs.get('default').username,
+      }),
+    });
+    const ids = (await conn.tooling.query<{ Id: string }>('SELECT Id FROM CustomLabel')).records.map((r) => r.Id);
+    await conn.tooling.sobject('CustomLabel').delete(ids);
+
+    const result = execCmd<PullResponse>('force:source:pull -f', { ensureExitCode: 0 }).shellOutput.stdout;
+    expect(fs.existsSync(clFile)).to.be.false;
+    expect(result).to.contain('KeepMe1');
+    expect(result).to.contain('KeepMe2');
   });
 });
