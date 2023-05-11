@@ -19,15 +19,12 @@ describe('CustomLabel source tracking', () => {
   before(async () => {
     session = await TestSession.create({
       project: {
-        gitClone: 'https://github.com/WillieRuemmele/sfdx-delete-customlabel',
+        sourceDir: path.join(process.cwd(), 'test', 'nuts', 'customLabelProject'),
       },
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
-          duration: 1,
           setDefault: true,
-          wait: 10,
           config: path.join('config', 'project-scratch-def.json'),
         },
       ],
