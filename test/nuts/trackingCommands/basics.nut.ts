@@ -28,10 +28,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
-          duration: 1,
           setDefault: true,
-          wait: 10,
           config: path.join('config', 'project-scratch-def.json'),
         },
       ],

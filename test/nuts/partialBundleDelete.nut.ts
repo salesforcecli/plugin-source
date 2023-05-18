@@ -7,7 +7,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { expect } from 'chai';
-import { TestSession, genUniqueString, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
+import { TestSession, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection, SfProject } from '@salesforce/core';
 import {
   ComponentSet,
@@ -24,7 +24,7 @@ describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;
   let projectPath: string;
   const sandbox = new TestContext().SANDBOX;
-  const scratchOrgUsername = genUniqueString('pbdr-test-%s@nut.org');
+  let scratchOrgUsername: string | undefined;
 
   before(async () => {
     session = await TestSession.create({
@@ -34,16 +34,13 @@ describe('Partial Bundle Delete Retrieves', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
-          duration: 1,
           setDefault: true,
-          wait: 10,
           config: path.join('config', 'project-scratch-def.json'),
-          username: scratchOrgUsername,
         },
       ],
     });
     projectPath = path.join(session.project.dir, 'force-app', 'main', 'default');
+    scratchOrgUsername = session.orgs.get('default').username;
   });
 
   after(async () => {

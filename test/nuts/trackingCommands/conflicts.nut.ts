@@ -30,10 +30,7 @@ describe('conflict detection and resolution', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
-          duration: 1,
           setDefault: true,
-          wait: 10,
           config: path.join('config', 'project-scratch-def.json'),
         },
       ],
