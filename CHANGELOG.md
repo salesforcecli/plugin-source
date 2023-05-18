@@ -1,3 +1,9 @@
+## [2.10.10](https://github.com/salesforcecli/plugin-source/compare/2.10.9...2.10.10) (2023-05-18)
+
+### Bug Fixes
+
+- bump deps ([#844](https://github.com/salesforcecli/plugin-source/issues/844)) ([faf4d98](https://github.com/salesforcecli/plugin-source/commit/faf4d9837285b65009154fccd5be397e007e9e96))
+
 ## [2.10.9](https://github.com/salesforcecli/plugin-source/compare/2.10.8...2.10.9) (2023-05-16)
 
 ### Bug Fixes
