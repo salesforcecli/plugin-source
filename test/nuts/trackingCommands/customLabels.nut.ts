@@ -60,15 +60,18 @@ describe('CustomLabel source tracking', () => {
       })
     ).Id;
     await conn.tooling.sobject('CustomLabel').delete(id);
+    expect((await conn.tooling.query('SELECT Id FROM CustomLabel')).totalSize).to.equal(2);
 
     const result = execCmd<PullResponse>('force:source:pull -f --json', { ensureExitCode: 0 }).jsonOutput.result;
-    expect(result.pulledSource).length.to.equal(1);
+    expect(result.pulledSource.length).to.equal(1);
+    expect(result.pulledSource[0].state).to.equal('Deleted');
+    expect(result.pulledSource[0].fullName).to.equal('DeleteMe');
     expect(fs.existsSync(clFile)).to.be.true;
     expect(fs.readFileSync(clFile, { encoding: 'utf-8' })).to.not.include('DeleteMe');
     expect(fs.readFileSync(clFile, { encoding: 'utf-8' })).to.include('KeepMe1');
   });
 
-  it('deletes the remaining CustomLabel', async () => {
+  it('deletes the remaining CustomLabel(s) and file', async () => {
     const clFile = path.join(
       session.project.dir,
       'force-app',
@@ -83,9 +86,14 @@ describe('CustomLabel source tracking', () => {
       }),
     });
     const ids = (await conn.tooling.query<{ Id: string }>('SELECT Id FROM CustomLabel')).records.map((r) => r.Id);
-    await conn.tooling.sobject('CustomLabel').delete(ids);
+    // deleting by passing an array of IDs was throwing an error
+    // await conn.tooling.sobject('CustomLabel').delete(ids);
+    expect(ids.length).to.equal(2);
+    await conn.tooling.sobject('CustomLabel').delete(ids[0]);
+    await conn.tooling.sobject('CustomLabel').delete(ids[1]);
+    expect((await conn.tooling.query('SELECT Id FROM CustomLabel')).totalSize).to.equal(0);
 
-    const result = execCmd<PullResponse>('force:source:pull -f', { ensureExitCode: 0 }).shellOutput.stdout;
+    const result = execCmd<PullResponse>('force:source:pull', { ensureExitCode: 0 }).shellOutput.stdout;
     expect(fs.existsSync(clFile)).to.be.false;
     expect(result).to.contain('KeepMe1');
     expect(result).to.contain('KeepMe2');
