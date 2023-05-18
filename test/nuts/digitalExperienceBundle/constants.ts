@@ -190,10 +190,7 @@ export const TEST_SESSION_OPTIONS: TestSessionOptions = {
   devhubAuthStrategy: 'AUTO',
   scratchOrgs: [
     {
-      executable: 'sfdx',
-      duration: 1,
       setDefault: true,
-      wait: 10,
       config: join('config', 'project-scratch-def.json'),
     },
   ],

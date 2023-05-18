@@ -29,10 +29,8 @@ describe('1k files in mdapi:deploy', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
           config: path.join('config', 'project-scratch-def.json'),
           setDefault: true,
-          duration: 1,
         },
       ],
     });

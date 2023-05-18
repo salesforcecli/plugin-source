@@ -35,8 +35,6 @@ describe('forceignore changes', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
-          duration: 1,
           setDefault: true,
           config: path.join('config', 'project-scratch-def.json'),
         },

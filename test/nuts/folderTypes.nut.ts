@@ -23,11 +23,8 @@ describe('metadata types that go in folders', () => {
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [
         {
-          executable: 'sfdx',
           config: path.join('config', 'project-scratch-def.json'),
           setDefault: true,
-          wait: 10,
-          duration: 1,
         },
       ],
     });
