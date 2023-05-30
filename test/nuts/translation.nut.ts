@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { PushResponse } from 'src/formatters/source/pushResultFormatter';
+import { PushResponse } from '../../src/formatters/source/pushResultFormatter';
 import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 import { StatusResult } from '../../src/formatters/source/statusFormatter';

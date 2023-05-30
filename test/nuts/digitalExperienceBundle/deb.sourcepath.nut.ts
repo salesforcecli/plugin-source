@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
 import {
   DEB_A_RELATIVE_PATH,
   DEBS_RELATIVE_PATH,
