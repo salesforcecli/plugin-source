@@ -16,8 +16,8 @@ import {
   MetadataApiRetrieve,
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
-import { RetrieveCommandResult } from 'src/formatters/retrieveResultFormatter';
 import { TestContext } from '@salesforce/core/lib/testSetup';
+import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
 import { Retrieve } from '../../src/commands/force/source/retrieve';
 
 describe('Partial Bundle Delete Retrieves', () => {

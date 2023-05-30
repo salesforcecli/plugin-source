@@ -6,8 +6,8 @@
  */
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { beforeEach } from 'mocha';
-import { DeployCommandResult } from '../../../lib/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
 import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, TEST_SESSION_OPTIONS, TYPES } from './constants';
 import {
   assertAllDEBAndTheirDECounts,

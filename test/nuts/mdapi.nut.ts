@@ -12,7 +12,7 @@ import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { create as createArchive } from 'archiver';
-import { RetrieveCommandAsyncResult, RetrieveCommandResult } from 'src/formatters/mdapi/retrieveResultFormatter';
+import { RetrieveCommandAsyncResult, RetrieveCommandResult } from '../../src/formatters/mdapi/retrieveResultFormatter';
 import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
 import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter';
 

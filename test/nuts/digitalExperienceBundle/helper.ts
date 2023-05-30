@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter';
 import { isNameObsolete } from '../shared/isNameObsolete';
-import { RetrieveCommandResult } from '../../../lib/formatters/retrieveResultFormatter';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
 import { DEBS, DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants';
 
 type CustomFileResponses = Array<Pick<FileResponse, 'filePath' | 'fullName' | 'type'>>;
