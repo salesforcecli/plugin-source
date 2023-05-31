@@ -1,3 +1,12 @@
+## [2.10.12](https://github.com/salesforcecli/plugin-source/compare/2.10.11...2.10.12) (2023-05-31)
+
+
+### Bug Fixes
+
+* **deps:** core4, sdr9, and associated changes ([9f48b95](https://github.com/salesforcecli/plugin-source/commit/9f48b955fb4603bc732af07028c47b6b779bab83))
+
+
+
 ## [2.10.11](https://github.com/salesforcecli/plugin-source/compare/2.10.10...2.10.11) (2023-05-30)
 
 
