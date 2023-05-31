@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-import { MockTestOrgData, testSetup } from '@salesforce/core/lib/testSetup';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { createSandbox, SinonSandbox } from 'sinon';
 import { transformCoverageToApexCoverage } from '../src/coverageUtils';
@@ -178,7 +178,7 @@ const sampleRunTestResult = {
 };
 
 describe('transform md RunTestResult', () => {
-  const $$ = testSetup();
+  const $$ = new TestContext();
   let mockConnection: Connection;
   const testData = new MockTestOrgData();
 
