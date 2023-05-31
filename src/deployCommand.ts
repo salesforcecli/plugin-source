@@ -25,7 +25,7 @@ import {
   StateAggregator,
   StatusResult,
 } from '@salesforce/core';
-import { AnyJson, getBoolean, isString } from '@salesforce/ts-types';
+import { AnyJson, getBoolean } from '@salesforce/ts-types';
 import { Duration, once, ensureArray } from '@salesforce/kit';
 import {
   CoverageReporter,
@@ -171,11 +171,9 @@ export abstract class DeployCommand extends SourceCommand {
   }
 
   protected async deployRecentValidation(id: string, conn: Connection): Promise<DeployResult> {
-    const response = await conn.deployRecentValidation({ id, rest: this.isRest });
+    const validatedDeployId = await conn.metadata.deployRecentValidation({ id, rest: this.isRest });
     // This is the deploy ID of the deployRecentValidation response, not
     // the already validated deploy ID (i.e., validateddeployrequestid).
-    // REST returns an object with an ID, SOAP returns the id as a string.
-    const validatedDeployId = isString(response) ? response : (response as { id: string }).id;
     this.updateDeployId(validatedDeployId);
     this.asyncDeployResult = { id: validatedDeployId };
 

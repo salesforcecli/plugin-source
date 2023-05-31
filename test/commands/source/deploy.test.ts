@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Messages, SfdxConfigAggregator, SfProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
@@ -86,7 +86,7 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
-    cmd.configAggregator = await (await SfdxConfigAggregator.create({ customConfigMeta: ConfigMeta })).reload();
+    cmd.configAggregator = await (await ConfigAggregator.create({ customConfigMeta: ConfigMeta })).reload();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
     sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
