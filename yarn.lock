@@ -1054,10 +1054,10 @@
     jsonwebtoken "9.0.0"
     ts-retry-promise "^0.7.0"
 
-"@salesforce/core@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-4.0.1.tgz#d843c86cfd59f74e33e70d9558e0fe3ee9b49a53"
-  integrity sha512-BjHM3C3QfjW0wSrt0q2+5JOwa/9edg/18TT2C3iykmPxeDXAum/2W/S+7ctyefEJ0/VYlh/DvzLaEc74MadKnA==
+"@salesforce/core@^4.0.1", "@salesforce/core@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-4.1.0.tgz#909c1ef1640683f797529899dbf316d53f1aebee"
+  integrity sha512-S+5sJ3wSlpu4ATEYGDeqNMu1NaRgD5+HjtYFZiiUOdtHrUh55JD6DGcwgtrj2ojM9cnwcqlj/Ho/2yljrJdOSQ==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^3.0.0"
@@ -1073,6 +1073,7 @@
     js2xmlparser "^4.0.1"
     jsforce "^2.0.0-beta.23"
     jsonwebtoken "9.0.0"
+    proper-lockfile "^4.1.2"
     ts-retry-promise "^0.7.0"
 
 "@salesforce/dev-config@^4.0.1":
@@ -1150,14 +1151,14 @@
     handlebars "^4.7.7"
     tslib "^2"
 
-"@salesforce/plugin-deploy-retrieve@^1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-deploy-retrieve/-/plugin-deploy-retrieve-1.11.0.tgz#20ffc5516e035a4f9a7e1f0578121f81c474556b"
-  integrity sha512-CopHJ0kwnhdjOr9BwGOpDbkySDPx7Gi3oNcjb+VSxaVZ29HoLYf3agriY02+FFwUkpfSToVhg7RTx+VnvWCiWA==
+"@salesforce/plugin-deploy-retrieve@^1.11.1":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-deploy-retrieve/-/plugin-deploy-retrieve-1.11.1.tgz#36de0fea41d3b6ab471f681c60f3350117b005c6"
+  integrity sha512-ZN5ykzuu9BAFBlHxSIiKgb/vYf3k8Qf4uzHOkEuvw0i4+wAzDL99U5MPhNn/S6b0/icM+ctXSPCpyFxfHHMDRg==
   dependencies:
     "@oclif/core" "^2.8.2"
     "@salesforce/apex-node" "^1.6.1"
-    "@salesforce/core" "^4.0.1"
+    "@salesforce/core" "^4.1.0"
     "@salesforce/kit" "^3.0.2"
     "@salesforce/sf-plugins-core" "^3.0.2"
     "@salesforce/source-deploy-retrieve" "^9.1.0"
