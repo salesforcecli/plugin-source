@@ -1,3 +1,12 @@
+## [2.10.13](https://github.com/salesforcecli/plugin-source/compare/2.10.12...2.10.13) (2023-06-06)
+
+
+### Bug Fixes
+
+* more flag conflicts ([#861](https://github.com/salesforcecli/plugin-source/issues/861)) ([81bb1dc](https://github.com/salesforcecli/plugin-source/commit/81bb1dc0b47802ac613fe34f774524553535ca5d))
+
+
+
 ## [2.10.12](https://github.com/salesforcecli/plugin-source/compare/2.10.11...2.10.12) (2023-05-31)
 
 
