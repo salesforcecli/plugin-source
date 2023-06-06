@@ -28,6 +28,7 @@ import {
   requiredOrgFlagWithDeprecations,
   Ux,
 } from '@salesforce/sf-plugins-core';
+import { AlphabetLowercase } from '@oclif/core/lib/interfaces';
 import { SourceCommand } from '../../../sourceCommand';
 import {
   PackageRetrieval,
@@ -56,7 +57,8 @@ export class Retrieve extends SourceCommand {
     message: messages.getMessage('deprecation', [replacement]),
   };
   public static readonly flags = {
-    'api-version': orgApiVersionFlagWithDeprecations,
+    // I have no idea why 'a' isn't matching the type AlphabetLowercase automatically
+    'api-version': { ...orgApiVersionFlagWithDeprecations, char: 'a' as AlphabetLowercase },
     loglevel,
     'target-org': requiredOrgFlagWithDeprecations,
     retrievetargetdir: Flags.directory({
@@ -64,11 +66,6 @@ export class Retrieve extends SourceCommand {
       description: messages.getMessage('flags.retrievetargetdir.description'),
       summary: messages.getMessage('flags.retrievetargetdir.summary'),
       exclusive: ['packagenames', 'sourcepath'],
-    }),
-    apiversion: Flags.string({
-      /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-      // @ts-ignore force char override for backward compat
-      char: 'a',
     }),
     sourcepath: arrayWithDeprecation({
       char: 'p',
@@ -167,7 +164,7 @@ export class Retrieve extends SourceCommand {
     });
     this.spinner.start(spinnerMessages.getMessage('retrieve.componentSetBuild'));
     this.componentSet = await ComponentSetBuilder.build({
-      apiversion: this.flags.apiversion,
+      apiversion: this.flags['api-version'],
       sourceapiversion: await this.getSourceApiVersion(),
       packagenames: this.flags.packagenames,
       sourcepath: this.flags.sourcepath,
