@@ -3,7 +3,9 @@
     "command": "force",
     "plugin": "@salesforce/plugin-source",
     "flags": ["json"],
-    "alias": []
+    "alias": [],
+    "flagChars": [],
+    "flagAliases": []
   },
   {
     "command": "force:mdapi:deploy",
@@ -31,13 +33,17 @@
       "wait",
       "zipfile"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["c", "d", "f", "g", "l", "o", "q", "r", "s", "u", "w"],
+    "flagAliases": ["apiversion", "targetusername"]
   },
   {
     "command": "force:mdapi:deploy:cancel",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "jobid", "json", "loglevel", "target-org", "wait"],
-    "alias": []
+    "alias": [],
+    "flagChars": ["i", "o", "w"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:mdapi:deploy:report",
@@ -55,7 +61,9 @@
       "verbose",
       "wait"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["i", "o", "w"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:mdapi:retrieve",
@@ -75,7 +83,9 @@
       "wait",
       "zipfilename"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["a", "d", "k", "n", "o", "p", "r", "s", "w", "z"],
+    "flagAliases": ["targetusername", "u"]
   },
   {
     "command": "force:mdapi:retrieve:report",
@@ -92,7 +102,9 @@
       "wait",
       "zipfilename"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["i", "n", "o", "r", "w", "z"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:source:deploy",
@@ -123,13 +135,17 @@
       "verbose",
       "wait"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["c", "f", "g", "l", "m", "o", "p", "q", "r", "t", "u", "w", "x"],
+    "flagAliases": ["apiversion", "targetusername"]
   },
   {
     "command": "force:source:deploy:cancel",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "jobid", "json", "loglevel", "target-org", "wait"],
-    "alias": []
+    "alias": [],
+    "flagChars": ["i", "o", "w"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:source:deploy:report",
@@ -146,26 +162,31 @@
       "verbose",
       "wait"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["i", "o", "w"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:source:pull",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "json", "loglevel", "target-org", "verbose", "wait"],
-    "alias": []
+    "alias": [],
+    "flagChars": ["f", "o", "w"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:source:push",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "forceoverwrite", "ignorewarnings", "json", "loglevel", "quiet", "target-org", "wait"],
-    "alias": []
+    "alias": [],
+    "flagChars": ["f", "g", "o", "w"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:source:retrieve",
     "plugin": "@salesforce/plugin-source",
     "flags": [
       "api-version",
-      "apiversion",
       "forceoverwrite",
       "json",
       "loglevel",
@@ -179,12 +200,16 @@
       "verbose",
       "wait"
     ],
-    "alias": []
+    "alias": [],
+    "flagChars": ["a", "f", "m", "n", "o", "p", "r", "t", "w", "x"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   },
   {
     "command": "force:source:status",
     "plugin": "@salesforce/plugin-source",
     "flags": ["api-version", "concise", "json", "local", "loglevel", "remote", "target-org"],
-    "alias": []
+    "alias": [],
+    "flagChars": ["l", "o", "r"],
+    "flagAliases": ["apiversion", "targetusername", "u"]
   }
 ]
