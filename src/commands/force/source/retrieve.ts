@@ -50,7 +50,6 @@ export class Retrieve extends SourceCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
-  public static readonly requiresUsername = true;
   public static readonly state = 'deprecated';
   public static readonly deprecationOptions = {
     to: replacement,
