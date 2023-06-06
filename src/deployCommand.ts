@@ -274,7 +274,7 @@ export const targetUsernameFlag = Flags.string({
   char: 'u',
   deprecateAliases: true,
   // DO NOT alias to 'o', it will conflict with '--ignoreerrors'
-  aliases: ['targetusername', 'u'],
+  aliases: ['targetusername'],
   summary: messages.getMessage('flags.targetusername.summary'),
   parse: async (input: string | undefined) => resolveUsername(input),
   default: async () => resolveUsername(),
