@@ -10,8 +10,7 @@
 
 import got from 'got';
 import { Help } from '@oclif/core';
-import * as ProxyAgent from 'proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
+import { ProxyAgent } from 'proxy-agent';
 import { ConfigAggregator } from '@salesforce/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 
@@ -61,7 +60,7 @@ const getCurrentApiVersion = async (): Promise<string> => {
     JSON.parse(
       (
         await got(url, {
-          agent: { https: ProxyAgent(getProxyForUrl(url)) },
+          agent: { https: new ProxyAgent() },
         })
       ).body
     ) as {
