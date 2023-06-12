@@ -1,3 +1,12 @@
+## [2.10.15](https://github.com/salesforcecli/plugin-source/compare/2.10.14...2.10.15) (2023-06-12)
+
+
+### Bug Fixes
+
+* bump proxy-agent to latest major version ([#863](https://github.com/salesforcecli/plugin-source/issues/863)) ([64bb075](https://github.com/salesforcecli/plugin-source/commit/64bb075afd2eb274845e9f381913f4d631722340))
+
+
+
 ## [2.10.14](https://github.com/salesforcecli/plugin-source/compare/2.10.13...2.10.14) (2023-06-07)
 
 
