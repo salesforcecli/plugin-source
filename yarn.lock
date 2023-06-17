@@ -797,7 +797,7 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^2.3.1", "@oclif/core@^2.8.0", "@oclif/core@^2.8.2", "@oclif/core@^2.8.4", "@oclif/core@^2.8.5":
+"@oclif/core@^2.3.1", "@oclif/core@^2.8.2", "@oclif/core@^2.8.4", "@oclif/core@^2.8.5":
   version "2.8.5"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.8.5.tgz#7964057bbee5e91dae8b35e030e767f38e50a19e"
   integrity sha512-316DLfrHQDYmWDriI4Woxk9y1wVUrPN1sZdbQLHdOdlTA9v/twe7TdHpWOriEypfl6C85NWEJKc1870yuLtjrQ==
@@ -1168,21 +1168,20 @@
     shelljs "^0.8.5"
     tslib "^2"
 
-"@salesforce/plugin-info@^2.6.16":
-  version "2.6.16"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.6.16.tgz#6f4ede775c219707aba9a761e24580d98e090f59"
-  integrity sha512-ffAuk4XroKvaejoh54TFAdW47UyPt6FyZ7LtsL8WAf0DyKPdsFzcpT6mfD8qtTO1ADRdYguF9JmerHhYi8x7mA==
+"@salesforce/plugin-info@^2.6.20":
+  version "2.6.20"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.6.20.tgz#a35ab951c31a7af4c5033af09149e3654037c599"
+  integrity sha512-H4F07ByTh5T393xN/nV+YkrLw0HKO0ggaXz9PjsvBh2Ma/yJL7wh+klrpa8nLiupsRG3DpNzPRCv1PMu76SCig==
   dependencies:
-    "@oclif/core" "^2.8.0"
-    "@salesforce/core" "^3.36.2"
-    "@salesforce/kit" "^1.9.2"
-    "@salesforce/sf-plugins-core" "^2.4.3"
+    "@oclif/core" "^2.8.2"
+    "@salesforce/core" "^4.1.0"
+    "@salesforce/kit" "^3.0.2"
+    "@salesforce/sf-plugins-core" "^3.0.2"
     got "^11.8.6"
     marked "^4.3.0"
     marked-terminal "^4.2.0"
     open "^8.4.2"
-    proxy-agent "^5.0.0"
-    proxy-from-env "^1.1.0"
+    proxy-agent "^6.2.1"
     semver "^7.5.0"
     tslib "^2"
 
