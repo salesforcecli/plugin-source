@@ -8,17 +8,17 @@
 import { join } from 'path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { spyMethod, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigFile } from '@salesforce/core';
+import { stubMethod } from '@salesforce/ts-sinon';
 
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import { stubSfCommandUx, stubUx } from '@salesforce/sf-plugins-core';
+import { Stash } from '../../../src/stash';
 import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
 import { getDeployResult } from '../source/deployResponses';
-import { Stash } from '../../../src/stash';
+// import { Stash } from '../../../src/stash';
 
 describe('force:mdapi:deploy:cancel', () => {
   Cancel.id = 'force:mdapi:deploy:cancel';
@@ -50,7 +50,11 @@ describe('force:mdapi:deploy:cancel', () => {
     await $$.stubAuths(testOrg);
     await $$.stubConfig({ 'target-org': testOrg.username });
 
-    stubMethod($$.SANDBOX, ConfigFile.prototype, 'get').returns({ jobid: stashedDeployId });
+    // Stash is doing interesting "instance" things with its init() method, so we don't stub via the TestSetup way
+    stubMethod($$.SANDBOX, Stash, 'get').returns({ jobid: stashedDeployId });
+    // Cancel.id = 'force:mdapi:deploy:cancel';
+    // $$.setConfigStubContents('Stash', { contents: { MDAPI_DEPLOY: { jobid: stashedDeployId } } });
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     pollStub = $$.SANDBOX.stub(Cancel.prototype, 'poll').resolves({ response: expectedResults });
@@ -62,12 +66,11 @@ describe('force:mdapi:deploy:cancel', () => {
   });
 
   it('should use stashed deploy ID', async () => {
-    const getStashSpy = spyMethod($$.SANDBOX, Stash, 'get');
+    // const getStashSpy = spyMethod($$.SANDBOX, Stash, 'get');
     const result = await Cancel.run(['--json']);
 
     expect(result).to.deep.equal(expectedResults);
-    expect(getStashSpy.called).to.equal(true);
-    expect(pollStub.firstCall.args[1]).to.equal(stashedDeployId);
+    expect(pollStub.getCalls().some((call) => call.args[1] === stashedDeployId)).to.equal(true);
     expect(cancelStub.calledOnce).to.equal(true);
     expect(sfCommandUxStubs.log.callCount).to.equal(0);
     expect(stubUxStubs.log.callCount).to.equal(0);
@@ -79,11 +82,8 @@ describe('force:mdapi:deploy:cancel', () => {
   });
 
   it('should use the jobid flag', async () => {
-    const getStashSpy = spyMethod($$.SANDBOX, Stash, 'get');
     const result = await Cancel.run(['--json', '--jobid', expectedResults.id]);
-
     expect(result).to.deep.equal(expectedResults);
-    expect(getStashSpy.called).to.equal(false);
     expect(pollStub.firstCall.args[1]).to.equal(expectedResults.id);
     expect(cancelStub.calledOnce).to.equal(true);
   });

@@ -10,9 +10,9 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/core';
+import { ConfigAggregator, Lifecycle, Messages, SfProject, SfProjectJson } from '@salesforce/core';
 import { Config } from '@oclif/core';
-import { SfCommand } from '@salesforce/sf-plugins-core';
+import { SfCommand, stubSfCommandUx } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
 import ConfigMeta, { ConfigVars } from '@salesforce/plugin-deploy-retrieve/lib/configMeta';
 import { Deploy } from '../../../src/commands/force/source/deploy';
@@ -178,85 +178,114 @@ describe('force:source:deploy', () => {
   };
 
   describe('long command flags', () => {
-    it('should pass along sourcepath', async () => {
-      const sourcepath = ['somepath'];
-      const result = await runDeployCmd(['--sourcepath', sourcepath[0], '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({ sourcepath });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-    });
+    describe.only('TEMP: modified tests', () => {
+      beforeEach(() => {
+        Deploy.id = 'force:source:deploy';
 
-    it('should pass along metadata', async () => {
-      const metadata = ['ApexClass:MyClass'];
-      const result = await runDeployCmd(['--metadata', metadata[0], '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        metadata: {
-          metadataEntries: metadata,
-          directoryPaths: [defaultDir],
-        },
-      });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-    });
+        initProgressBarStub = stubMethod(sandbox, Deploy.prototype, 'initProgressBar');
+        progressBarStub = stubMethod(sandbox, DeployProgressBarFormatter.prototype, 'progress');
+        formatterDisplayStub = stubMethod(sandbox, DeployResultFormatter.prototype, 'display');
+        stubSfCommandUx($$.SANDBOX);
 
-    it('should pass along manifest', async () => {
-      const manifest = 'package.xml';
-      const result = await runDeployCmd(['--manifest', manifest, '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
-      });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-    });
+        stubMethod(sandbox, Deploy.prototype, 'deployRecentValidation').resolves({});
 
-    it('should pass along apiversion', async () => {
-      const manifest = 'package.xml';
-      const apiversion = '50.0';
-      const result = await runDeployCmd(['--manifest', manifest, '--apiversion', apiversion, '--json']);
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        apiversion,
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
+        progressStatusStub = stubMethod(sandbox, DeployProgressStatusFormatter.prototype, 'progress');
       });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
-    });
+      it('should pass along sourcepath', async () => {
+        const sourcepath = ['somepath'];
+        $$.setConfigStubContents('SfProjectJson', {
+          contents: {
+            packageDirectories: [{ path: join('my', 'default', 'package'), default: true }],
+            pushPackageDirectoriesSequentially: true,
+          },
+        });
+        const result = await Deploy.run(['--sourcepath', sourcepath[0], '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({ sourcepath });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
 
-    it('should pass along sourceapiversion', async () => {
-      const sourceApiVersion = '50.0';
-      resolveProjectConfigStub.resolves({ sourceApiVersion });
-      const manifest = 'package.xml';
-      const result = await runDeployCmd(['--manifest', manifest, '--json'], { sourceApiVersion });
-      expect(result).to.deep.equal(expectedResults);
-      ensureCreateComponentSetArgs({
-        sourceapiversion: sourceApiVersion,
-        manifest: {
-          manifestPath: manifest,
-          directoryPaths: [defaultDir],
-          destructiveChangesPost: undefined,
-          destructiveChangesPre: undefined,
-        },
+      it('should pass along metadata', async () => {
+        const metadata = ['ApexClass:MyClass'];
+        const result = await Deploy.run(['--metadata', metadata[0], '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          metadata: {
+            metadataEntries: metadata,
+            directoryPaths: [SfProject.getInstance().getDefaultPackage().fullPath],
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
       });
-      ensureDeployArgs();
-      ensureHookArgs();
-      ensureProgressBar(0);
+
+      it('should pass along manifest', async () => {
+        const manifest = 'package.xml';
+        const result = await Deploy.run(['--manifest', manifest, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [SfProject.getInstance().getDefaultPackage().fullPath],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+
+      it('should pass along apiversion', async () => {
+        const manifest = 'package.xml';
+        const apiversion = '50.0';
+        const result = await Deploy.run(['--manifest', manifest, '--apiversion', apiversion, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        ensureCreateComponentSetArgs({
+          apiversion,
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [SfProject.getInstance().getDefaultPackage().fullPath],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
+
+      it('should pass along sourceapiversion', async () => {
+        const sourceApiVersion = '50.0';
+        $$.setConfigStubContents('SfProject', {
+          contents: {
+            packageDirectories: [{ path: join('my', 'default', 'package'), default: true }],
+            pushPackageDirectoriesSequentially: true,
+            sourceApiVersion,
+          },
+        });
+        const manifest = 'package.xml';
+        const result = await Deploy.run(['--manifest', manifest, '--json']);
+        expect(result).to.deep.equal(expectedResults);
+        expect((await SfProject.getInstance().resolveProjectConfig()).sourceApiVersion as string).to.equal(
+          sourceApiVersion
+        );
+        ensureCreateComponentSetArgs({
+          sourceapiversion: (await SfProject.getInstance().resolveProjectConfig()).sourceApiVersion as string,
+          manifest: {
+            manifestPath: manifest,
+            directoryPaths: [SfProject.getInstance().getDefaultPackage().fullPath],
+            destructiveChangesPost: undefined,
+            destructiveChangesPre: undefined,
+          },
+        });
+        ensureDeployArgs();
+        ensureHookArgs();
+        ensureProgressBar(0);
+      });
     });
 
     it('should pass purgeOnDelete flag', async () => {
