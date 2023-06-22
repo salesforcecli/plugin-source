@@ -29,7 +29,7 @@ import { exampleSourceComponent } from './testConsts';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-describe.only('force:source:retrieve', () => {
+describe('force:source:retrieve', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
   let sfCommandUxStubs: ReturnType<typeof stubSfCommandUx>;
