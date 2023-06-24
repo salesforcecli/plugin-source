@@ -1,3 +1,12 @@
+## [2.10.17](https://github.com/salesforcecli/plugin-source/compare/2.10.16...2.10.17) (2023-06-24)
+
+
+### Bug Fixes
+
+* **deps:** bump fast-xml-parser from 4.2.4 to 4.2.5 ([#878](https://github.com/salesforcecli/plugin-source/issues/878)) ([41e25eb](https://github.com/salesforcecli/plugin-source/commit/41e25ebeef8e2c32c40f351d51e19641f1ffb50a))
+
+
+
 ## [2.10.16](https://github.com/salesforcecli/plugin-source/compare/2.10.15...2.10.16) (2023-06-24)
 
 
