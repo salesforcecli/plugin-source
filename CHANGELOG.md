@@ -1,3 +1,12 @@
+## [2.10.19](https://github.com/salesforcecli/plugin-source/compare/2.10.18...2.10.19) (2023-06-28)
+
+
+### Bug Fixes
+
+* bump STL to 4.2.1 ([#879](https://github.com/salesforcecli/plugin-source/issues/879)) ([c790c4b](https://github.com/salesforcecli/plugin-source/commit/c790c4bd20a0b565250162860af3f3a87a6e51d4))
+
+
+
 ## [2.10.18](https://github.com/salesforcecli/plugin-source/compare/2.10.17...2.10.18) (2023-06-24)
 
 
