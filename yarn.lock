@@ -1018,7 +1018,7 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^4.0.1", "@salesforce/cli-plugins-testkit@^4.1.1":
+"@salesforce/cli-plugins-testkit@^4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.1.1.tgz#3504d7b05f63bf15a706385efb90c1c5f46c6c38"
   integrity sha512-aGeiVYdWW6O/Q5LHCc4ZVNKihz0oiCljplbT2EmjyTyo+3Bxj1iyuo3o428+wo9BIc/Qk0jkKjqrSGS5HPDs/A==
@@ -1255,7 +1255,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^9.1.0", "@salesforce/source-deploy-retrieve@^9.2.2", "@salesforce/source-deploy-retrieve@^9.2.6":
+"@salesforce/source-deploy-retrieve@^9.1.0", "@salesforce/source-deploy-retrieve@^9.2.2", "@salesforce/source-deploy-retrieve@^9.2.5", "@salesforce/source-deploy-retrieve@^9.2.6":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-9.3.0.tgz#7350751cdc2591c2d0b1726f519f1e54a9d1a5b8"
   integrity sha512-QeFia9cw47WUNs85UY0dTL3w00xjaktPQgYEUMjPAahGkA8ZpIyMMaktT20cLKAt44qMfyJHP3g+q5pnnF/Kmg==
@@ -1274,15 +1274,15 @@
     proxy-agent "^6.2.1"
     unzipper "0.10.14"
 
-"@salesforce/source-testkit@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.0.tgz#11645c68e5944ea80ca6b4debe1dd963e47757b8"
-  integrity sha512-HzhwI4V27+2mphjp/mz4l0Y6QB24j7Cj/4wTrMvnrJNu8Kn70MdOYWToSlaaVTq+5ZeLVC7adFaSgsL6efjDMQ==
+"@salesforce/source-testkit@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.8.tgz#3278ca206939b4765a3d8719769b2171697180dd"
+  integrity sha512-K1svj131bOuzx+sh9QPDeIH70c4a0WUyPepYiaUyBs99Dh6bfWvBrLTbfkgiNQAww3XmsPcQkkFMUHW+nJEcsg==
   dependencies:
-    "@salesforce/cli-plugins-testkit" "^4.0.1"
-    "@salesforce/core" "^4.0.1"
-    "@salesforce/kit" "^3.0.2"
-    "@salesforce/source-deploy-retrieve" "^9.1.0"
+    "@salesforce/cli-plugins-testkit" "^4.1.1"
+    "@salesforce/core" "^4.1.0"
+    "@salesforce/kit" "^3.0.3"
+    "@salesforce/source-deploy-retrieve" "^9.2.5"
     "@salesforce/ts-types" "^2.0.2"
     archiver "^5.2.0"
     chai-each "^0.0.1"
