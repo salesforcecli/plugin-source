@@ -1,3 +1,12 @@
+## [2.10.20](https://github.com/salesforcecli/plugin-source/compare/2.10.19...2.10.20) (2023-07-01)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/apex-node from 1.6.1 to 1.6.2 ([#883](https://github.com/salesforcecli/plugin-source/issues/883)) ([c0ae6f3](https://github.com/salesforcecli/plugin-source/commit/c0ae6f3c0f66326bf00396078b87e6f4b138d5b0))
+
+
+
 ## [2.10.19](https://github.com/salesforcecli/plugin-source/compare/2.10.18...2.10.19) (2023-06-28)
 
 
