@@ -1,3 +1,12 @@
+## [2.10.23](https://github.com/salesforcecli/plugin-source/compare/2.10.22...2.10.23) (2023-07-08)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/source-tracking from 4.2.2 to 4.2.5 ([#889](https://github.com/salesforcecli/plugin-source/issues/889)) ([b0a150e](https://github.com/salesforcecli/plugin-source/commit/b0a150eda4bf821b57784db52887573d72d9b0d9))
+
+
+
 ## [2.10.22](https://github.com/salesforcecli/plugin-source/compare/2.10.21...2.10.22) (2023-07-01)
 
 
