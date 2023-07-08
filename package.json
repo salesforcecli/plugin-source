@@ -25,7 +25,7 @@
     "@salesforce/dev-config": "^4.0.1",
     "@salesforce/dev-scripts": "^5.4.2",
     "@salesforce/plugin-command-reference": "^3.0.3",
-    "@salesforce/plugin-deploy-retrieve": "^1.11.1",
+    "@salesforce/plugin-deploy-retrieve": "^1.14.3",
     "@salesforce/plugin-info": "^2.6.20",
     "@salesforce/plugin-settings": "^1.4.10",
     "@salesforce/plugin-templates": "^55.4.18",
