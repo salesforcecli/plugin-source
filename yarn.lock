@@ -1207,16 +1207,16 @@
     yeoman-environment "^3.15.1"
     yeoman-generator "^5.9.0"
 
-"@salesforce/plugin-user@^2.3.17":
-  version "2.3.17"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-2.3.17.tgz#f4bfd40a29311a1921bac8c6c5ff164155699606"
-  integrity sha512-ZP/JS7vTBIa1bqxC18RMo8ZDe3I/gg/KIoPEi7W0HLBk5/EX3evHlNiInZ2eiu7FvdWCILwwk244AXEE0VbCwg==
+"@salesforce/plugin-user@^2.3.20":
+  version "2.3.20"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-2.3.20.tgz#039e15e519a923f0a69b6a89b3e02d2e13473c2c"
+  integrity sha512-N1zDoi1nrrCN8LTh4FdlusVX61t78D6+BIz6PVK3eQ0FYqsEzL8iWIDvab7SEieXWpftoY8KmL0Pcm0OjMRKiA==
   dependencies:
     "@oclif/core" "^2.8.2"
-    "@salesforce/core" "^4.1.0"
+    "@salesforce/core" "^4.3.5"
     "@salesforce/kit" "^3.0.2"
     "@salesforce/sf-plugins-core" "^3.0.2"
-    "@salesforce/ts-types" "^2.0.2"
+    "@salesforce/ts-types" "^2.0.3"
     tslib "^2"
 
 "@salesforce/prettier-config@^0.0.3":
