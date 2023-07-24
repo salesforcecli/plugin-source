@@ -15,7 +15,7 @@
     "@salesforce/source-tracking": "^4.2.5",
     "chalk": "^4.1.2",
     "got": "^11.8.6",
-    "proxy-agent": "^6.2.1",
+    "proxy-agent": "^6.3.0",
     "tslib": "^2"
   },
   "devDependencies": {
