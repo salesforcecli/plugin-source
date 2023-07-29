@@ -972,13 +972,13 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^4.1.1", "@salesforce/cli-plugins-testkit@^4.2.6":
-  version "4.2.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.2.6.tgz#608b65bbd37e01f862ab11ac229413e086b5cc67"
-  integrity sha512-zp6drvOfc2eSs7lfrccbY1YywvT1jaqJQ8lUI3lbFBcRNp/4/pgcoLHigBPZjycg022jXnziyutxM+w7539l2w==
+"@salesforce/cli-plugins-testkit@^4.2.6", "@salesforce/cli-plugins-testkit@^4.2.8":
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.2.8.tgz#92cfd53e2e8c1c01fd189e24a49ba3b6610b7def"
+  integrity sha512-321rtZIArosBMl7XgyfYoQL8HTF0NjMt4bXWINqnseB+sIg3BdAExHJkGQvaLj0zMpecwSXtZYRSmU6ziuuNtg==
   dependencies:
-    "@salesforce/core" "^4.3.7"
-    "@salesforce/kit" "^3.0.5"
+    "@salesforce/core" "^4.3.11"
+    "@salesforce/kit" "^3.0.6"
     "@salesforce/ts-types" "^2.0.2"
     "@types/shelljs" "^0.8.12"
     debug "^4.3.1"
@@ -1008,7 +1008,7 @@
     jsonwebtoken "9.0.0"
     ts-retry-promise "^0.7.0"
 
-"@salesforce/core@^4.0.1", "@salesforce/core@^4.1.0", "@salesforce/core@^4.2.1", "@salesforce/core@^4.3.1", "@salesforce/core@^4.3.10", "@salesforce/core@^4.3.11", "@salesforce/core@^4.3.2", "@salesforce/core@^4.3.5", "@salesforce/core@^4.3.6", "@salesforce/core@^4.3.7":
+"@salesforce/core@^4.0.1", "@salesforce/core@^4.1.0", "@salesforce/core@^4.2.1", "@salesforce/core@^4.3.1", "@salesforce/core@^4.3.10", "@salesforce/core@^4.3.11", "@salesforce/core@^4.3.2", "@salesforce/core@^4.3.5", "@salesforce/core@^4.3.6":
   version "4.3.11"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-4.3.11.tgz#3fde6affd77f56ee1915b4a2d594ea424ce84817"
   integrity sha512-rjrS0VoDlNaB4RYKLNZQ8+7QayWh5yTV79apCU9fYe0fR1D1p5tb+GAXe4B7AaOReQ8JOQhPBRMx1uzF3Lqn4A==
