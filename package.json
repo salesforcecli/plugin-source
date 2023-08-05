@@ -28,7 +28,7 @@
     "@salesforce/plugin-deploy-retrieve": "^1.16.1",
     "@salesforce/plugin-info": "^2.6.20",
     "@salesforce/plugin-settings": "^1.4.10",
-    "@salesforce/plugin-templates": "^55.5.6",
+    "@salesforce/plugin-templates": "^55.5.7",
     "@salesforce/plugin-user": "^2.3.20",
     "@salesforce/prettier-config": "^0.0.3",
     "@salesforce/source-testkit": "^2.1.20",
