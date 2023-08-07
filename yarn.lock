@@ -763,7 +763,7 @@
     supports-color "^8.1.1"
     tslib "^2"
 
-"@oclif/core@^2.11.1", "@oclif/core@^2.11.7", "@oclif/core@^2.8.11", "@oclif/core@^2.8.2", "@oclif/core@^2.8.5", "@oclif/core@^2.8.7", "@oclif/core@^2.9.3", "@oclif/core@^2.9.4":
+"@oclif/core@^2.11.1", "@oclif/core@^2.11.7", "@oclif/core@^2.8.2", "@oclif/core@^2.8.5", "@oclif/core@^2.8.7", "@oclif/core@^2.9.3", "@oclif/core@^2.9.4":
   version "2.11.7"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.11.7.tgz#7781a4dc65597ed9d8fda39cb1b209efca1c2d24"
   integrity sha512-0jbHePVekndUTd+Wee0+pnCpRhuHJrKiG9OtMqf4JSBCxp5Q8V+ACf8QKN4gNH9ppbGORfnTIYtXWh60+DcIiw==
@@ -1173,12 +1173,12 @@
     fast-levenshtein "^3.0.0"
     tslib "^2"
 
-"@salesforce/plugin-templates@^55.5.6":
-  version "55.5.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-templates/-/plugin-templates-55.5.6.tgz#7ec91a58c85611b1dad09166b2b1cc4e54319851"
-  integrity sha512-hdPhQU4L21ZfblHw6BXQco6nD/4ggrw1e3S7sxpQVxFkoILEJVKf++ITMXH2Xg34/MrDshGDG9jCTK+yobQ0eQ==
+"@salesforce/plugin-templates@^55.5.8":
+  version "55.5.8"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-templates/-/plugin-templates-55.5.8.tgz#b75a1ed4b4333516cf3f6ff3868bf47c07555c8a"
+  integrity sha512-uPltl4XGXf942XHg26PpzHNDfnFCs1jfyrqYab3IlR+KVIpgFvnxhpNy4TiNh5taBwsG6KoMDtzOYGa+doqdPA==
   dependencies:
-    "@oclif/core" "^2.8.11"
+    "@oclif/core" "^2.9.4"
     "@salesforce/core" "^4.2.1"
     "@salesforce/sf-plugins-core" "^3.1.4"
     "@salesforce/templates" "^57.1.2"
