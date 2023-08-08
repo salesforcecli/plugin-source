@@ -1,3 +1,12 @@
+## [2.10.30](https://github.com/salesforcecli/plugin-source/compare/2.10.29...2.10.30) (2023-08-08)
+
+
+### Bug Fixes
+
+* **deps:** core5 ([00096e0](https://github.com/salesforcecli/plugin-source/commit/00096e0573fd72739e373e0119b7ebd05f8f6173))
+
+
+
 ## [2.10.29](https://github.com/salesforcecli/plugin-source/compare/2.10.28...2.10.29) (2023-08-07)
 
 
