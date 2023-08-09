@@ -25,6 +25,7 @@ describe('1k files in mdapi:deploy', () => {
     session = await TestSession.create({
       project: {
         name: 'large-repo',
+        apiVersion: '58.0',
       },
       devhubAuthStrategy: 'AUTO',
       scratchOrgs: [

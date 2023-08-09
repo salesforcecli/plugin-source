@@ -960,14 +960,14 @@
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.6"
 
-"@salesforce/cli-plugins-testkit@^4.2.9":
-  version "4.2.9"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.2.9.tgz#813bbb6a7926d17d5d0becd664e08f1c115680d1"
-  integrity sha512-v71dFmhlgwtmehK2QJ8+toeCYc39WQFu7R2wmhsHQeVA1UuYcx3uue5JnC392PIXddxQtjdR6eazk52tQg4nyA==
+"@salesforce/cli-plugins-testkit@^4.2.9", "@salesforce/cli-plugins-testkit@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.3.0.tgz#253079d476569fbc4977c8100b3bf201b3e4a788"
+  integrity sha512-kW59i4muO49evQ76waWTfDUXpTfyBUQ0N1QIF4ZFB+aSAdVGG5N/oTMYz882ScS/SwB0XP0H119wT4cLoJI+Mw==
   dependencies:
     "@salesforce/core" "^5.2.0"
     "@salesforce/kit" "^3.0.9"
-    "@salesforce/ts-types" "^2.0.2"
+    "@salesforce/ts-types" "^2.0.6"
     "@types/shelljs" "^0.8.12"
     debug "^4.3.1"
     jszip "^3.10.1"
@@ -1228,7 +1228,7 @@
     sinon "^5.1.1"
     tslib "^2.5.3"
 
-"@salesforce/ts-types@^2.0.1", "@salesforce/ts-types@^2.0.2", "@salesforce/ts-types@^2.0.5", "@salesforce/ts-types@^2.0.6":
+"@salesforce/ts-types@^2.0.1", "@salesforce/ts-types@^2.0.5", "@salesforce/ts-types@^2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@salesforce/ts-types/-/ts-types-2.0.6.tgz#659590ee6ece45213bbdb23c9e244d206a2f912e"
   integrity sha512-hGSU3pwZKItAw567cD2hf+nwe4yPVANonb1E28bLVaRjYAI6FmdxjjTxA+wZRrTpTCpjd5TY67Lq2X1X1lY8bA==
