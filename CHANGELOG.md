@@ -1,3 +1,12 @@
+## [2.10.31](https://github.com/salesforcecli/plugin-source/compare/2.10.30...2.10.31) (2023-08-12)
+
+
+### Bug Fixes
+
+* update partial bundle delete tests for Dreamhouse source changes ([#929](https://github.com/salesforcecli/plugin-source/issues/929)) ([c22a4fb](https://github.com/salesforcecli/plugin-source/commit/c22a4fbe4eb6aaf37a62c1619a1df0ef3b15e1cb))
+
+
+
 ## [2.10.30](https://github.com/salesforcecli/plugin-source/compare/2.10.29...2.10.30) (2023-08-08)
 
 
