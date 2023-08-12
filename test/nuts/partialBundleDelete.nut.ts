@@ -131,16 +131,16 @@ describe('Partial Bundle Delete Retrieves', () => {
     // component locally, then retrieve the component from the org which should
     // delete the CSS file added to match the component in the org.
     it('should replace and report local Aura content that was deleted for retrieve', () => {
-      const auraPropertyListMapPath = path.join(auraSrcDir, 'auraPropertyListMap');
+      const pageTemplatePath = path.join(auraSrcDir, 'pageTemplate_2_7_3');
 
-      // Add another CSS file to the auraPropertyListMap component. This file
+      // Add another CSS file to the pageTemplate_2_7_3 component. This file
       // should be deleted after a retrieve of the component from the org.
-      const testCssFile = path.join(auraPropertyListMapPath, 'testFile.css');
+      const testCssFile = path.join(pageTemplatePath, 'testFile.css');
       fs.writeFileSync(testCssFile, '.THIS header { display: none; }');
       expect(fs.existsSync(testCssFile)).to.be.true;
 
       const result = execCmd<RetrieveCommandResult>(
-        `force:source:retrieve -p ${auraPropertyListMapPath} -u ${scratchOrgUsername} --json`,
+        `force:source:retrieve -p ${pageTemplatePath} -u ${scratchOrgUsername} --json`,
         { ensureExitCode: 0 }
       );
 
@@ -151,7 +151,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       // find the deleted entry for testFile.css
       const deletedFileResponse = inboundFiles.find((fr) => fr.state === 'Deleted');
       expect(deletedFileResponse).to.deep.equal({
-        fullName: 'auraPropertyListMap',
+        fullName: 'pageTemplate_2_7_3',
         type: 'AuraDefinitionBundle',
         state: 'Deleted',
         filePath: testCssFile,
