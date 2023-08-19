@@ -104,12 +104,12 @@ function getSampleTestResult() {
             'xsi:nil': 'true',
           },
         },
-        numLocations: '10',
-        numLocationsNotCovered: '1',
+        numLocations: '100',
+        numLocationsNotCovered: '100',
         type: 'Class',
       },
       {
-        id: '01p19000002uDLAABN',
+        id: '01p19000002uDLAAAN',
         locationsNotCovered: {
           column: '0',
           line: '12',
@@ -122,12 +122,12 @@ function getSampleTestResult() {
             'xsi:nil': 'true',
           },
         },
-        numLocations: '4',
-        numLocationsNotCovered: '1',
+        numLocations: '100',
+        numLocationsNotCovered: '26',
         type: 'Class',
       },
       {
-        id: '01p19000002uDLAACN',
+        id: '01p19000002uDLAABN',
         locationsNotCovered: {
           column: '0',
           line: '12',
@@ -140,8 +140,62 @@ function getSampleTestResult() {
             'xsi:nil': 'true',
           },
         },
-        numLocations: '10',
-        numLocationsNotCovered: '2',
+        numLocations: '100',
+        numLocationsNotCovered: '25',
+        type: 'Class',
+      },
+      {
+        id: '01p19000002uDLAABN',
+        locationsNotCovered: {
+          column: '0',
+          line: '12',
+          numExecutions: '0',
+          time: '-1.0',
+        },
+        name: 'D',
+        namespace: {
+          $: {
+            'xsi:nil': 'true',
+          },
+        },
+        numLocations: '100',
+        numLocationsNotCovered: '11',
+        type: 'Class',
+      },
+      {
+        id: '01p19000002uDLAABN',
+        locationsNotCovered: {
+          column: '0',
+          line: '12',
+          numExecutions: '0',
+          time: '-1.0',
+        },
+        name: 'E',
+        namespace: {
+          $: {
+            'xsi:nil': 'true',
+          },
+        },
+        numLocations: '100',
+        numLocationsNotCovered: '10',
+        type: 'Class',
+      },
+      {
+        id: '01p19000002uDLAACN',
+        locationsNotCovered: {
+          column: '0',
+          line: '12',
+          numExecutions: '0',
+          time: '-1.0',
+        },
+        name: 'F',
+        namespace: {
+          $: {
+            'xsi:nil': 'true',
+          },
+        },
+        numLocations: '100',
+        numLocationsNotCovered: '0',
         type: 'Class',
       },
     ],
@@ -269,7 +323,7 @@ describe('transform md RunTestResult', () => {
 
   it('should transform md coverage to apex coverage format', () => {
     const apexCoverage = transformCoverageToApexCoverage(sampleTestResult.codeCoverage);
-    expect(apexCoverage.records).to.have.length(7);
+    expect(apexCoverage.records).to.have.length(10);
     expect(apexCoverage.records[0].ApexClassOrTrigger.Name).to.equal('PagedResult');
     expect(apexCoverage.records[1].ApexClassOrTrigger.Name).to.equal('PropertyController');
     expect(apexCoverage.records[2].ApexClassOrTrigger.Name).to.equal('SampleDataController');
@@ -292,24 +346,30 @@ describe('transform md RunTestResult', () => {
     expect(codeCoverage[0].name).to.equal('A');
     expect(codeCoverage[1].name).to.equal('B');
     expect(codeCoverage[2].name).to.equal('C');
-    expect(codeCoverage[3].name).to.equal('GeocodingService');
-    expect(codeCoverage[4].name).to.equal('PagedResult');
-    expect(codeCoverage[5].name).to.equal('PropertyController');
-    expect(codeCoverage[6].name).to.equal('SampleDataController');
+    expect(codeCoverage[3].name).to.equal('D');
+    expect(codeCoverage[4].name).to.equal('E');
+    expect(codeCoverage[5].name).to.equal('F');
+    expect(codeCoverage[6].name).to.equal('GeocodingService');
+    expect(codeCoverage[7].name).to.equal('PagedResult');
+    expect(codeCoverage[8].name).to.equal('PropertyController');
+    expect(codeCoverage[9].name).to.equal('SampleDataController');
+  });
+
+  it('should display code coverage percentage with red color when its value is < 75%', () => {
+    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
+    expect(codeCoverage[0].numLocations).to.equal(chalk.red('0%'));
+    expect(codeCoverage[1].numLocations).to.equal(chalk.red('74%'));
+  });
+
+  it('should display code coverage percentage with yellow color when its value is >= 75% and < 90%', () => {
+    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
+    expect(codeCoverage[2].numLocations).to.equal(chalk.yellow('75%'));
+    expect(codeCoverage[3].numLocations).to.equal(chalk.yellow('89%'));
   });
 
   it('should display code coverage percentage with green color when its value is >= 90%', () => {
     const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
-    expect(codeCoverage[0].numLocations).to.equal(chalk.green('90%'));
-  });
-
-  it('should display code coverage percentage with red color when its value is <= 75%', () => {
-    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
-    expect(codeCoverage[1].numLocations).to.equal(chalk.red('75%'));
-  });
-
-  it('should display code coverage percentage with yellow color when its value is > 75% and < 90%', () => {
-    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
-    expect(codeCoverage[2].numLocations).to.equal(chalk.yellow('80%'));
+    expect(codeCoverage[4].numLocations).to.equal(chalk.green('90%'));
+    expect(codeCoverage[5].numLocations).to.equal(chalk.green('100%'));
   });
 });

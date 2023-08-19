@@ -47,7 +47,7 @@ export function prepCoverageForDisplay(codeCoverage: CodeCoverage[]): CodeCovera
     const numLocationsNotCovered = parseInt(cov.numLocationsNotCovered, 10);
     const coverageDecimal = parseFloat(((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2));
     const pctCovered = numLocationsNum > 0 ? coverageDecimal * 100 : 100;
-    const color = pctCovered <= 75 ? chalk.red : pctCovered >= 90 ? chalk.green : chalk.yellow;
+    const color = pctCovered < 75 ? chalk.red : pctCovered >= 90 ? chalk.green : chalk.yellow;
     cov.numLocations = color(`${pctCovered}%`);
 
     cov.lineNotCovered = cov.locationsNotCovered
