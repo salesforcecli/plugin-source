@@ -812,12 +812,12 @@
     ts-json-schema-generator "^1.2.0"
     tslib "^2.6.0"
 
-"@oclif/plugin-help@^5.2.11", "@oclif/plugin-help@^5.2.14":
-  version "5.2.14"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-5.2.14.tgz#c89f623712fc7d74f01fd2c9d909434b335a2e7b"
-  integrity sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==
+"@oclif/plugin-help@^5.2.14", "@oclif/plugin-help@^5.2.17":
+  version "5.2.17"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-5.2.17.tgz#72c549b1db8e16060ee4f320db96291ca341430f"
+  integrity sha512-8dhvATZZnkD8uq3etsvbVjjpdxiTqXTPjkMlU8ToQz09DL5BBzYApm65iTHFE0Vn9DPbKcNxX1d8YiF3ilgMOQ==
   dependencies:
-    "@oclif/core" "^2.9.3"
+    "@oclif/core" "^2.11.8"
 
 "@oclif/plugin-not-found@^2.3.32":
   version "2.3.32"
