@@ -763,10 +763,10 @@
     supports-color "^8.1.1"
     tslib "^2"
 
-"@oclif/core@^2.11.1", "@oclif/core@^2.11.7", "@oclif/core@^2.11.8", "@oclif/core@^2.9.3", "@oclif/core@^2.9.4":
-  version "2.11.8"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.11.8.tgz#780c4fdf53e8569cf754c2a8fefcc7ddeacf1747"
-  integrity sha512-GILmztcHBzze45GvxRpUvqQI5nM26kSE/Q21Y+6DtMR+C8etM/hFW26D3uqIAbGlGtg5QEZZ6pjA/Fqgz+gl3A==
+"@oclif/core@^2.11.1", "@oclif/core@^2.11.10", "@oclif/core@^2.11.7", "@oclif/core@^2.11.8", "@oclif/core@^2.9.3", "@oclif/core@^2.9.4":
+  version "2.11.10"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-2.11.10.tgz#638128034b8b4bdf4b23480a7278426f85130170"
+  integrity sha512-/7Umij3OU++6o+z4U+waJ5nP6IvK9KKEVzz+xsla68YoECLQwz43boUKqYizlNMtTfiwNkiYb5QE+OU/q5qEtA==
   dependencies:
     "@types/cli-progress" "^3.11.0"
     ansi-escapes "^4.3.2"
@@ -1080,12 +1080,12 @@
     shelljs "^0.8.5"
     tslib "^2"
 
-"@salesforce/plugin-info@^2.6.38":
-  version "2.6.38"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.6.38.tgz#fd4b000b5ada29512c6661977e1163ff26c79337"
-  integrity sha512-vWJwlVC9A9iHk3Nf3Meuh3kAFdnwnVdaOBJeqvQgALEBM3wTZrFXjV6pLpX9Cqc4yVA+Go736RGI3ai2yP5qOg==
+"@salesforce/plugin-info@^2.6.40":
+  version "2.6.40"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-info/-/plugin-info-2.6.40.tgz#822ab22d5d29d8318358c8ea1285b3d9abc702e7"
+  integrity sha512-l9Edp5r+yGmWbMlip4BGJhu9ls7RoNg+HTER7ufMtvDf59++dcINdtbdUQPF0toasmF+6hAyMPHL6ADa+9jpaw==
   dependencies:
-    "@oclif/core" "^2.11.7"
+    "@oclif/core" "^2.11.10"
     "@salesforce/core" "^5.2.0"
     "@salesforce/kit" "^3.0.9"
     "@salesforce/sf-plugins-core" "^3.1.14"
