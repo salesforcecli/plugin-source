@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
-    "@oclif/core": "^2.11.8",
+    "@oclif/core": "^2.15.0",
     "@salesforce/apex-node": "^2.1.0",
     "@salesforce/core": "^5.2.0",
     "@salesforce/kit": "^3.0.9",
