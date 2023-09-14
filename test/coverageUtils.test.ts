@@ -372,4 +372,17 @@ describe('transform md RunTestResult', () => {
     expect(codeCoverage[4].numLocations).to.equal(chalk.green('90%'));
     expect(codeCoverage[5].numLocations).to.equal(chalk.green('100%'));
   });
+
+  it('lineNotCovered is empty string when there is no data', () => {
+    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
+    expect(codeCoverage.find((c) => c.name === 'SampleDataController').lineNotCovered).equal('');
+  });
+  it('lineNotCovered is single number for one item', () => {
+    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
+    expect(codeCoverage.find((c) => c.name === 'PagedResult').lineNotCovered).equal('12');
+  });
+  it('lineNotCovered is comma separated list for multiple items', () => {
+    const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
+    expect(codeCoverage.find((c) => c.name === 'PropertyController').lineNotCovered).equal('26,31,78');
+  });
 });
