@@ -220,12 +220,11 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
 
-      // TODO: unsure about locationsNotCovered vs lineNotCovered
       this.ux.table(
         coverage.map((entry) => ({
           name: entry.name,
           numLocations: entry.numLocations,
-          lineNotCovered: entry.locationsNotCovered,
+          lineNotCovered: entry.lineNotCovered,
         })),
         {
           name: { header: 'Name' },

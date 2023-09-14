@@ -315,7 +315,7 @@ export class DeployResultFormatter extends ResultFormatter {
         coverage.map((cov) => ({
           name: cov.name,
           numLocations: cov.numLocations,
-          lineNotCovered: cov.locationsNotCovered,
+          lineNotCovered: cov.lineNotCovered,
         })),
         {
           name: { header: 'Name' },
