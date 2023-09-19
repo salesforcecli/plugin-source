@@ -39,26 +39,31 @@ function mapTestResults(testResults: Failures[] | Successes[]): ApexTestResultDa
   });
 }
 
-export function prepCoverageForDisplay(codeCoverage: CodeCoverage[]): CodeCoverage[] {
+export function prepCoverageForDisplay(codeCoverage: CodeCoverage[]): Array<CodeCoverage & { lineNotCovered: string }> {
   const coverage = codeCoverage.sort((a, b) => (a.name.toUpperCase() > b.name.toUpperCase() ? 1 : -1));
 
-  coverage.forEach((cov: CodeCoverage & { lineNotCovered: string }) => {
-    const numLocationsNum = parseInt(cov.numLocations, 10);
-    const numLocationsNotCovered = parseInt(cov.numLocationsNotCovered, 10);
-    const color = numLocationsNotCovered > 0 ? chalk.red : chalk.green;
-
-    const coverageDecimal = parseFloat(((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2));
-    const pctCovered = numLocationsNum > 0 ? coverageDecimal * 100 : 100;
-    cov.numLocations = color(`${pctCovered}%`);
-
-    cov.lineNotCovered = cov.locationsNotCovered
+  return coverage.map((cov) => ({
+    ...cov,
+    numLocations: stylePercentage(calculateCoveragePercent(cov)),
+    lineNotCovered: cov.locationsNotCovered
       ? ensureArray(cov.locationsNotCovered)
           .map((location) => location.line)
           .join(',')
-      : '';
-  });
-  return coverage;
+      : '',
+  }));
 }
+
+const stylePercentage = (pct: number): string => {
+  const color = pct < 75 ? chalk.red : pct >= 90 ? chalk.green : chalk.yellow;
+  return color(`${pct}%`);
+};
+
+const calculateCoveragePercent = (cov: CodeCoverage): number => {
+  const numLocationsNum = parseInt(cov.numLocations, 10);
+  const numLocationsNotCovered = parseInt(cov.numLocationsNotCovered, 10);
+  const coverageDecimal = parseFloat(((numLocationsNum - numLocationsNotCovered) / numLocationsNum).toFixed(2));
+  return numLocationsNum > 0 ? coverageDecimal * 100 : 100;
+};
 
 function generateCoveredLines(cov: CodeCoverage): [number[], number[]] {
   const numCovered = parseInt(cov.numLocations, 10);

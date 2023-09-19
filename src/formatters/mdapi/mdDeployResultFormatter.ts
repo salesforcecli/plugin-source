@@ -19,7 +19,7 @@ import {
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
-import { prepCoverageForDisplay } from '../../coverageUtils';
+import { maybePrintCodeCoverageTable } from '../codeCoverageTable';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
@@ -212,28 +212,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
         }
       );
     }
-    const codeCoverage = ensureArray(this.result?.response?.details?.runTestResult?.codeCoverage);
-
-    if (codeCoverage.length) {
-      const coverage = prepCoverageForDisplay(codeCoverage);
-
-      this.ux.log('');
-      this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
-
-      // TODO: unsure about locationsNotCovered vs lineNotCovered
-      this.ux.table(
-        coverage.map((entry) => ({
-          name: entry.name,
-          numLocations: entry.numLocations,
-          lineNotCovered: entry.locationsNotCovered,
-        })),
-        {
-          name: { header: 'Name' },
-          numLocations: { header: '% Covered' },
-          lineNotCovered: { header: 'Uncovered Lines' },
-        }
-      );
-    }
+    maybePrintCodeCoverageTable(this.result.response.details?.runTestResult?.codeCoverage, this.ux);
   }
 
   protected verboseTestTime(): void {

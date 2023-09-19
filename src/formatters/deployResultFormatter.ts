@@ -22,9 +22,9 @@ import {
   Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { prepCoverageForDisplay } from '../coverageUtils';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
+import { maybePrintCodeCoverageTable } from './codeCoverageTable';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
@@ -304,26 +304,7 @@ export class DeployResultFormatter extends ResultFormatter {
         }
       );
     }
-    const codeCoverage = ensureArray(this.result?.response?.details?.runTestResult?.codeCoverage);
-
-    if (codeCoverage.length) {
-      const coverage = prepCoverageForDisplay(codeCoverage);
-
-      this.ux.log('');
-      this.ux.styledHeader(chalk.blue('Apex Code Coverage'));
-      this.ux.table(
-        coverage.map((cov) => ({
-          name: cov.name,
-          numLocations: cov.numLocations,
-          lineNotCovered: cov.locationsNotCovered,
-        })),
-        {
-          name: { header: 'Name' },
-          numLocations: { header: '% Covered' },
-          lineNotCovered: { header: 'Uncovered Lines' },
-        }
-      );
-    }
+    maybePrintCodeCoverageTable(this.result.response.details?.runTestResult?.codeCoverage, this.ux);
   }
 
   protected verboseTestTime(): void {
