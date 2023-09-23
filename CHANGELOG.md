@@ -1,3 +1,9 @@
+## [2.10.35](https://github.com/salesforcecli/plugin-source/compare/2.10.34...2.10.35) (2023-09-23)
+
+### Bug Fixes
+
+- **deps:** bump proxy-agent from 6.3.0 to 6.3.1 ([#955](https://github.com/salesforcecli/plugin-source/issues/955)) ([bc91615](https://github.com/salesforcecli/plugin-source/commit/bc916157c81c1ad3c4ddc1951be523424ac422f9))
+
 ## [2.10.34](https://github.com/salesforcecli/plugin-source/compare/2.10.33...2.10.34) (2023-09-19)
 
 ### Bug Fixes
