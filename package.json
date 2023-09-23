@@ -10,7 +10,7 @@
     "@salesforce/apex-node": "^2.1.0",
     "@salesforce/core": "^5.2.0",
     "@salesforce/kit": "^3.0.9",
-    "@salesforce/sf-plugins-core": "^3.1.20",
+    "@salesforce/sf-plugins-core": "^3.1.23",
     "@salesforce/source-deploy-retrieve": "^9.7.4",
     "@salesforce/source-tracking": "^4.2.10",
     "chalk": "^4.1.2",
