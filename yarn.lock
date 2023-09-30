@@ -973,10 +973,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/core@^5.2.0", "@salesforce/core@^5.2.1", "@salesforce/core@^5.2.7", "@salesforce/core@^5.2.9":
-  version "5.2.10"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-5.2.10.tgz#7f4824ddcef108b6ccec24434260c620de39012e"
-  integrity sha512-Xj1QRajmHWgl0ahivjKFGKJlGXwe9yFOZ3PwF91qEupGbO74XrCJ8OUM7EVlk53LKy9LlPZQFuy2ATX9MyEDKA==
+"@salesforce/core@^5.2.0", "@salesforce/core@^5.2.1", "@salesforce/core@^5.2.6", "@salesforce/core@^5.2.7", "@salesforce/core@^5.2.9":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-5.3.1.tgz#93c49760faa7b503bbfea8376d80a66815065e4a"
+  integrity sha512-LEQ3Yp7GxexsGXxT85Pp4AgOzzqY9Y3kol8ByVsHpHGvs8XLRbKl44IPxTXBdMB2roFM+Iosd46i0KbTuh2MQg==
   dependencies:
     "@salesforce/kit" "^3.0.11"
     "@salesforce/schemas" "^1.6.0"
@@ -1120,16 +1120,16 @@
     yeoman-environment "^3.19.3"
     yeoman-generator "^5.9.0"
 
-"@salesforce/plugin-user@^2.3.28":
-  version "2.3.28"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-2.3.28.tgz#3e55e0108058d2fed5655e17c27bddd4eba1f906"
-  integrity sha512-H2lDBGS5TbjJ0gQW3p5pUDKkqEjS8BIcVYLjRMUrAwvw0hm5o6CdO48+wMkojgzhBh4FQPIYQlVzpty6Zq81nA==
+"@salesforce/plugin-user@^2.3.33":
+  version "2.3.33"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-user/-/plugin-user-2.3.33.tgz#84e60a825e9a18d1dc2ba5a84a3290a19cba1ac9"
+  integrity sha512-xlq/qRfFekPrWCNM/pq1Yg0zHW4YtFS1sXXlemOuLVisUVp1CleyNSBFFIoB86T7NhsPqyHRoIMD+5RTrZ5viA==
   dependencies:
-    "@oclif/core" "^2.11.7"
-    "@salesforce/core" "^5.2.0"
+    "@oclif/core" "^2.15.0"
+    "@salesforce/core" "^5.2.6"
     "@salesforce/kit" "^3.0.9"
-    "@salesforce/sf-plugins-core" "^3.1.14"
-    "@salesforce/ts-types" "^2.0.6"
+    "@salesforce/sf-plugins-core" "^3.1.20"
+    "@salesforce/ts-types" "^2.0.7"
     tslib "^2"
 
 "@salesforce/prettier-config@^0.0.3":
