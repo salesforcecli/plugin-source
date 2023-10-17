@@ -1,3 +1,9 @@
+## [2.10.42](https://github.com/salesforcecli/plugin-source/compare/2.10.41...2.10.42) (2023-10-17)
+
+### Bug Fixes
+
+- **deps:** bump SDR for deduplicated fileResponses ([#978](https://github.com/salesforcecli/plugin-source/issues/978)) ([0ca27ff](https://github.com/salesforcecli/plugin-source/commit/0ca27fff41e27d6ac663f2f73d06fb864ae9aea4))
+
 ## [2.10.41](https://github.com/salesforcecli/plugin-source/compare/2.10.40...2.10.41) (2023-10-17)
 
 ### Bug Fixes
