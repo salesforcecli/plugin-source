@@ -1,3 +1,9 @@
+## [2.10.43](https://github.com/salesforcecli/plugin-source/compare/2.10.42...2.10.43) (2023-10-17)
+
+### Bug Fixes
+
+- **deps:** bump stl ([#979](https://github.com/salesforcecli/plugin-source/issues/979)) ([214f725](https://github.com/salesforcecli/plugin-source/commit/214f7255aa9e5c888e2128d21867467bc710ebff))
+
 ## [2.10.42](https://github.com/salesforcecli/plugin-source/compare/2.10.41...2.10.42) (2023-10-17)
 
 ### Bug Fixes
