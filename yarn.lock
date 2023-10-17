@@ -1038,15 +1038,15 @@
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.6"
 
-"@salesforce/cli-plugins-testkit@^4.3.1", "@salesforce/cli-plugins-testkit@^4.3.6":
-  version "4.3.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.3.6.tgz#7d2258d34b1033af81e9531bd4613d2683327eb1"
-  integrity sha512-gcwXoMA6PtxzXL/Gd5XxlCpiV6Mbb8MehdAWWlmTb7ExfElHqvSPAwZEbim32ACcfJeqVVK0Y1CbRdbmNMNUYw==
+"@salesforce/cli-plugins-testkit@^4.3.1", "@salesforce/cli-plugins-testkit@^4.4.7":
+  version "4.4.7"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.4.7.tgz#dced302efd8415b9f96df639755e279f13d6d220"
+  integrity sha512-QKxQEdYvV8hcqGfpxmYFtPBRwejLA7bhnbNNWYugEAKdsxXS12Zi1TyiUetzifQngVgvoxEDjcU+v8SRKCb96Q==
   dependencies:
-    "@salesforce/core" "^5.2.9"
-    "@salesforce/kit" "^3.0.11"
+    "@salesforce/core" "^5.3.5"
+    "@salesforce/kit" "^3.0.13"
     "@salesforce/ts-types" "^2.0.6"
-    "@types/shelljs" "^0.8.12"
+    "@types/shelljs" "^0.8.13"
     debug "^4.3.1"
     jszip "^3.10.1"
     shelljs "^0.8.4"
@@ -1689,10 +1689,10 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.3.tgz#9a726e116beb26c24f1ccd6850201e1246122e04"
   integrity sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==
 
-"@types/shelljs@^0.8.11", "@types/shelljs@^0.8.12":
-  version "0.8.12"
-  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.8.12.tgz#79dc9632af7d5ca1b5afb65a6bfc1422d79b5fa0"
-  integrity sha512-ZA8U81/gldY+rR5zl/7HSHrG2KDfEb3lzG6uCUDhW1DTQE9yC/VBQ45fXnXq8f3CgInfhZmjtdu/WOUlrXRQUg==
+"@types/shelljs@^0.8.11", "@types/shelljs@^0.8.13":
+  version "0.8.13"
+  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.8.13.tgz#a94bf7f2b82b7cd9f4496bbe063c3adb0868a650"
+  integrity sha512-++uMLOQSLlse1kCfEOwhgmHuaABZwinkylmUKCpvcEGZUov3TtM+gJZloSkW/W+9pEAEg/VBOwiSR05oqJsa5A==
   dependencies:
     "@types/glob" "~7.2.0"
     "@types/node" "*"
