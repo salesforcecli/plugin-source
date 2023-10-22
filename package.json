@@ -9,7 +9,7 @@
     "@oclif/core": "^2.15.0",
     "@salesforce/apex-node": "^2.1.0",
     "@salesforce/core": "^5.3.10",
-    "@salesforce/kit": "^3.0.12",
+    "@salesforce/kit": "^3.0.14",
     "@salesforce/sf-plugins-core": "^3.1.25",
     "@salesforce/source-deploy-retrieve": "^9.7.27",
     "@salesforce/source-tracking": "^4.2.17",
