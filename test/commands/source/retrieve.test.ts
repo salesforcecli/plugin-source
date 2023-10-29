@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join } from 'path';
-import * as path from 'path';
+import { join } from 'node:path';
+import * as path from 'node:path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import {
