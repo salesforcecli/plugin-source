@@ -1060,18 +1060,18 @@
     handlebars "^4.7.8"
     tslib "^2"
 
-"@salesforce/plugin-deploy-retrieve@^1.19.0":
-  version "1.19.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-deploy-retrieve/-/plugin-deploy-retrieve-1.19.0.tgz#42742de331f80ebbdeb20772248aa337f8bd2cf1"
-  integrity sha512-R5RqwMXJakUHRpXYQdXdn6To/lgqfUSgZhZyiD/IulTs9C3KfDogYQaLpvhgb36HaQuCLFR+dV86O5iougdL8w==
+"@salesforce/plugin-deploy-retrieve@^1.19.2":
+  version "1.19.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-deploy-retrieve/-/plugin-deploy-retrieve-1.19.2.tgz#68d0bc165a1486a3dd0ee1af1f96fb096a6a5ea8"
+  integrity sha512-y8I7Pcc36EcZSziNBlFNkZSCDMw1nyiixh+LGXQsn5CVmL1eXq/PiExVGTxwkyVTNc2NO+q5sNzPCKIhcn+rIA==
   dependencies:
     "@oclif/core" "^2.15.0"
     "@salesforce/apex-node" "^2.1.0"
-    "@salesforce/core" "^5.3.5"
-    "@salesforce/kit" "^3.0.9"
+    "@salesforce/core" "^5.3.9"
+    "@salesforce/kit" "^3.0.13"
     "@salesforce/sf-plugins-core" "^3.1.22"
-    "@salesforce/source-deploy-retrieve" "^9.7.24"
-    "@salesforce/source-tracking" "^4.2.16"
+    "@salesforce/source-deploy-retrieve" "^9.7.27"
+    "@salesforce/source-tracking" "^4.2.17"
     chalk "^4.1.2"
     shelljs "^0.8.5"
     tslib "^2"
@@ -1151,7 +1151,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/source-deploy-retrieve@^9.7.24", "@salesforce/source-deploy-retrieve@^9.7.25", "@salesforce/source-deploy-retrieve@^9.7.28", "@salesforce/source-deploy-retrieve@^9.7.7":
+"@salesforce/source-deploy-retrieve@^9.7.25", "@salesforce/source-deploy-retrieve@^9.7.27", "@salesforce/source-deploy-retrieve@^9.7.28", "@salesforce/source-deploy-retrieve@^9.7.7":
   version "9.7.28"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-9.7.28.tgz#7142733acfd269ba28212044cd8e024b3d8a3568"
   integrity sha512-0dmPAqxH1aI3EN7rXA1pS9iuOaiW8FM6iuqyRZ3oJYPTW4JD6g1YsRAOdAzmIPjLzhMXFDDcSbS6/+ZfOTJPQg==
@@ -1186,7 +1186,7 @@
     shelljs "^0.8.4"
     sinon "^10.0.0"
 
-"@salesforce/source-tracking@^4.2.16", "@salesforce/source-tracking@^4.2.17":
+"@salesforce/source-tracking@^4.2.17":
   version "4.2.17"
   resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-4.2.17.tgz#2f507a8352fecf6dbcddea074648fd898b142874"
   integrity sha512-3tEXph7SiEFYY+eQEXFyEr6//7TlCLxWXS/YebY8gPY9zP/Ny6wVPP5E+A5QbN6GiXNMVJNmpq431b9NnQY8Fg==
