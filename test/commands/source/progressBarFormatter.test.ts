@@ -4,14 +4,14 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
-import { ProgressBar } from '../../../src/types';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
+import { ProgressBar } from '../../../src/types.js';
 
 describe('Progress Bar Events', () => {
   const sandbox = new TestContext().SANDBOX;

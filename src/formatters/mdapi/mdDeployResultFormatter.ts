@@ -5,7 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as chalk from 'chalk';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+import chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import { Messages, SfError } from '@salesforce/core';
 import {
@@ -18,10 +20,10 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
-import { maybePrintCodeCoverageTable } from '../codeCoverageTable';
+import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
+import { maybePrintCodeCoverageTable } from '../codeCoverageTable.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 export type MdDeployResult = {

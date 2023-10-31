@@ -5,11 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import path from 'node:path';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
-import { PushResponse } from '../../src/formatters/source/pushResultFormatter';
+import { DeployCommandResult } from '../../src/formatters/deployResultFormatter.js';
+import { PushResponse } from '../../src/formatters/source/pushResultFormatter.js';
 
 describe('Nested LWCs', () => {
   let session: TestSession;

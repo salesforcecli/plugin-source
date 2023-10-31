@@ -7,12 +7,12 @@
 
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { getBoolean, getString } from '@salesforce/ts-types';
-import { Result } from '@salesforce/source-testkit/lib/types';
+import { Result } from '@salesforce/source-testkit/lib/types.js';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
-import { TEST_REPOS_MAP } from '../testMatrix';
-import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelResultFormatter';
+import { TEST_REPOS_MAP } from '../testMatrix.js';
+import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelResultFormatter.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');

@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join } from 'path';
-import { TestSessionOptions } from '@salesforce/cli-plugins-testkit/lib/testSession';
+import { join } from 'node:path';
+import { TestSessionOptions } from '@salesforce/cli-plugins-testkit/lib/testSession.js';
 import { registry } from '@salesforce/source-deploy-retrieve';
 import { META_XML_SUFFIX } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
@@ -15,7 +15,7 @@ export const DEB_NUTS_PATH = join(process.cwd(), 'test', 'nuts', 'digitalExperie
 
 export const TYPES = {
   DEB: registry.types.digitalexperiencebundle,
-  DE: registry.types.digitalexperiencebundle.children.types.digitalexperience,
+  DE: registry.types.digitalexperiencebundle.children?.types.digitalexperience,
   DEC: registry.types.digitalexperienceconfig,
   NETWORK: registry.types.network,
   CUSTOM_SITE: registry.types.customsite,
@@ -67,7 +67,7 @@ export const FILE_NAMES = {
   META: {
     DEB_A: `${DIR_NAMES.DEB_A}.${TYPES.DEB.suffix}${META_XML_SUFFIX}`,
     DEB_B: `${DIR_NAMES.DEB_B}.${TYPES.DEB.suffix}${META_XML_SUFFIX}`,
-    DE: TYPES.DE.metaFileSuffix, // metaFileName = metaFileSuffix in case of DigitalExperience
+    DE: TYPES.DE?.metaFileSuffix ?? '', // metaFileName = metaFileSuffix in case of DigitalExperience
   },
 } as const;
 
@@ -122,12 +122,12 @@ export const STORE = {
 
 export const METADATA = {
   ALL_DEBS: TYPES.DEB.name,
-  ALL_DE: TYPES.DE.name,
-  ALL_DE_OF_DEB_B: `${TYPES.DE.name}:${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}.*`,
+  ALL_DE: TYPES.DE?.name,
+  ALL_DE_OF_DEB_B: `${TYPES.DE?.name}:${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}.*`,
   FULL_SITE_DEB_A_AND_B: `${TYPES.DEB.name},${TYPES.DEC.name},${TYPES.NETWORK.name},${TYPES.CUSTOM_SITE.name}`,
   JUST_DEB_B: `${TYPES.DEB.name}:${FULL_NAMES.DEB_B}`,
-  DE_VIEW_HOME_OF_DEB_B: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_HOME_B}`,
-  DE_DOCUMENT_DETAIL_PAGE_A: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A},${TYPES.DE.name}:${FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A}`,
+  DE_VIEW_HOME_OF_DEB_B: `${TYPES.DE?.name}:${FULL_NAMES.DE_VIEW_HOME_B}`,
+  DE_DOCUMENT_DETAIL_PAGE_A: `${TYPES.DE?.name}:${FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A},${TYPES.DE?.name}:${FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A}`,
 } as const;
 
 export const DEBS = {

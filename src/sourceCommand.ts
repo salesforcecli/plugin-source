@@ -5,16 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { dirname, resolve, extname } from 'path';
-import * as fs from 'fs';
+import { dirname, resolve, extname } from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { Messages, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { getString, Optional } from '@salesforce/ts-types';
 import { ux } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
-import { EnsureFsFlagOptions, FsError, ProgressBar } from './types';
+import { EnsureFsFlagOptions, FsError, ProgressBar } from './types.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
 
 export abstract class SourceCommand extends SfCommand<unknown> {
@@ -66,7 +67,7 @@ export abstract class SourceCommand extends SfCommand<unknown> {
     const { flagName, path, type, throwOnENOENT } = options;
 
     const trimmedPath = path?.trim();
-    let resolvedPath: string;
+    let resolvedPath = '';
     if (trimmedPath?.length) {
       resolvedPath = resolve(trimmedPath);
     }
@@ -123,5 +124,5 @@ export const resolveZipFileName = (zipFileName?: string): string => {
   if (zipFileName && !extname(zipFileName)) {
     zipFileName += '.zip';
   }
-  return zipFileName || 'unpackaged.zip';
+  return zipFileName ?? 'unpackaged.zip';
 };

@@ -4,8 +4,9 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { relative, resolve as pathResolve } from 'path';
-import * as chalk from 'chalk';
+import { dirname, relative, resolve as pathResolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
 import {
@@ -19,9 +20,9 @@ import {
 import { isString } from '@salesforce/ts-types';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export type PushResponse = {
@@ -52,7 +53,14 @@ export class PushResultFormatter extends ResultFormatter {
   public getJson(): PushResponse {
     // throws a particular json structure.
     if (process.exitCode !== 0) {
-      const error = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const error: SfError & {
+        result: FileResponse[];
+        commandName: string;
+        context: string;
+        partialSuccess: FileResponse[];
+      } = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
       const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
       error.setData(errorData);
       error['result'] = errorData;
@@ -123,7 +131,8 @@ export class PushResultFormatter extends ResultFormatter {
     }
     // "content" property of the bundles as a string
     const contentFilePathFromDeployedBundles = this.componentsFromFilenames(
-      bundlesDeployed.map((fileResponse) => fileResponse.filePath)
+      // the .filter(isString) should ensure only strings are present, but TS isn't finding that
+      bundlesDeployed.map((fileResponse) => fileResponse.filePath as string)
     )
       .map((c) => c.content)
       .filter(isString);
@@ -134,9 +143,8 @@ export class PushResultFormatter extends ResultFormatter {
       .map((filePath) => {
         const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
         if (
-          cmp instanceof SourceComponent &&
           cmp.type.strategies?.adapter === 'bundle' &&
-          contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content))
+          contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content ?? ''))
         ) {
           return {
             state: ComponentStatus.Deleted,
@@ -240,9 +248,7 @@ export class PushResultFormatter extends ResultFormatter {
 
   private componentsFromFilenames(filenames: string[]): SourceComponent[] {
     const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(filenames));
-    return filenames
-      .flatMap((filename) => this.resolveComponentsOrWarn(filename, resolver))
-      .filter((cmp) => cmp instanceof SourceComponent);
+    return filenames.flatMap((filename) => this.resolveComponentsOrWarn(filename, resolver));
   }
 
   private resolveComponentsOrWarn(filename: string, resolver: MetadataResolver): SourceComponent[] {
@@ -263,7 +269,7 @@ export const mergeReplacements = (results: DeployResult[]): DeployResult['replac
       if (!merged.has(key)) {
         merged.set(key, value);
       } else {
-        merged.set(key, Array.from(new Set([...merged.get(key), ...value])));
+        merged.set(key, Array.from(new Set([...(merged.get(key) ?? []), ...value])));
       }
     });
   });

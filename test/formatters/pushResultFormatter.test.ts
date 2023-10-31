@@ -5,13 +5,13 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { DeployResult } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { getDeployResult } from '../commands/source/deployResponses';
-import { PushResultFormatter, mergeReplacements } from '../../src/formatters/source/pushResultFormatter';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { getDeployResult } from '../commands/source/deployResponses.js';
+import { PushResultFormatter, mergeReplacements } from '../../src/formatters/source/pushResultFormatter.js';
 
 describe('PushResultFormatter', () => {
   const deployResultSuccess = [getDeployResult('successSync')];

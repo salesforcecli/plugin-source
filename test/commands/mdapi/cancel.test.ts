@@ -5,20 +5,20 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join } from 'path';
-import * as sinon from 'sinon';
+import { join } from 'node:path';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { spyMethod, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile } from '@salesforce/core';
 
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
 import { stubSfCommandUx, stubUx } from '@salesforce/sf-plugins-core';
-import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel';
-import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { getDeployResult } from '../source/deployResponses';
-import { Stash } from '../../../src/stash';
+import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel.js';
+import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter.js';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { getDeployResult } from '../source/deployResponses.js';
+import { Stash } from '../../../src/stash.js';
 
 describe('force:mdapi:deploy:cancel', () => {
   Cancel.id = 'force:mdapi:deploy:cancel';

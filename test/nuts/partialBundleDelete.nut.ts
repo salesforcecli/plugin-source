@@ -4,10 +4,10 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as path from 'path';
-import * as fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
-import { TestSession, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
+import { execCmd, TestProject, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection, SfProject } from '@salesforce/core';
 import {
   ComponentSet,
@@ -16,9 +16,9 @@ import {
   MetadataApiRetrieve,
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
-import { Retrieve } from '../../src/commands/force/source/retrieve';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
+import { Retrieve } from '../../src/commands/force/source/retrieve.js';
 
 describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;

@@ -5,9 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { dirname, join, resolve } from 'path';
-import * as fs from 'fs';
+import { dirname, join, resolve } from 'node:path';
+import fs from 'node:fs';
 
+import { fileURLToPath } from 'node:url';
 import { Lifecycle, Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
@@ -29,16 +30,16 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { AlphabetLowercase } from '@oclif/core/lib/interfaces';
-import { SourceCommand } from '../../../sourceCommand';
+import { SourceCommand } from '../../../sourceCommand.js';
 import {
   PackageRetrieval,
   RetrieveCommandResult,
   RetrieveResultFormatter,
-} from '../../../formatters/retrieveResultFormatter';
-import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
-import { promisesQueue } from '../../../promiseQueue';
+} from '../../../formatters/retrieveResultFormatter.js';
+import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions.js';
+import { promisesQueue } from '../../../promiseQueue.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');

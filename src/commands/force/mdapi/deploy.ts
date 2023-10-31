@@ -4,6 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
@@ -21,16 +23,16 @@ import {
   reportsFormatters,
   targetUsernameFlag,
   TestLevel,
-} from '../../../deployCommand';
-import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
-import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
-import { ProgressFormatter } from '../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter';
-import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
+} from '../../../deployCommand.js';
+import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter.js';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter.js';
+import { ProgressFormatter } from '../../../formatters/progressFormatter.js';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
+import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter.js';
+import { ResultFormatterOptions } from '../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 

@@ -4,6 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Lifecycle, Messages, Org, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
@@ -22,15 +24,15 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { resolveZipFileName, SourceCommand } from '../../../sourceCommand';
-import { Stash } from '../../../stash';
+import { resolveZipFileName, SourceCommand } from '../../../sourceCommand.js';
+import { Stash } from '../../../stash.js';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
   RetrieveResultFormatter,
-} from '../../../formatters/mdapi/retrieveResultFormatter';
+} from '../../../formatters/mdapi/retrieveResultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');

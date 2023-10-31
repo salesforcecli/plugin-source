@@ -4,9 +4,10 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { ConfigAggregator, Lifecycle, Logger, Messages, SfProject, OrgConfigProperties, Org } from '@salesforce/core';
 import { SfDoctor } from '@salesforce/plugin-info';
-
 type HookFunction = (options: { doctor: SfDoctor }) => Promise<[void]>;
 
 let logger: Logger;
@@ -18,7 +19,7 @@ const getLogger = (): Logger => {
 };
 
 const pluginName = '@salesforce/plugin-source';
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages(pluginName, 'diagnostics');
 
 export const hook: HookFunction = async (options) => {

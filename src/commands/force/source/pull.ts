@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Duration } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { FileResponse, RequestStatus, RetrieveVersionData, RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -17,11 +19,11 @@ import {
   requiredOrgFlagWithDeprecations,
   Ux,
 } from '@salesforce/sf-plugins-core';
-import { SourceCommand } from '../../../sourceCommand';
-import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter';
-import { trackingSetup, updateTracking } from '../../../trackingFunctions';
+import { SourceCommand } from '../../../sourceCommand.js';
+import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter.js';
+import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
@@ -60,10 +62,10 @@ export default class Pull extends SourceCommand {
 
   public static requiresProject = true;
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
-  protected tracking: SourceTracking;
-  protected retrieveResult: RetrieveResult;
-  protected deleteFileResponses: FileResponse[];
-  private flags: Interfaces.InferredFlags<typeof Pull.flags>;
+  protected tracking: SourceTracking | undefined;
+  protected retrieveResult: RetrieveResult | undefined;
+  protected deleteFileResponses: FileResponse[] | undefined;
+  private flags: Interfaces.InferredFlags<typeof Pull.flags> | undefined;
 
   public async run(): Promise<PullResponse> {
     this.flags = (await this.parse(Pull)).flags;

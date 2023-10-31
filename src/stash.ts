@@ -4,11 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { ConfigFile, Logger, Messages, SfError } from '@salesforce/core';
 import { JsonMap, Optional } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 
 interface StashFile {
   isGlobal: boolean;
@@ -84,7 +86,7 @@ export class Stash {
    * @param commandId The oclif Command.id.  E.g., `this.id`
    * @returns the `StashKey` to use for `Stash.get()` and `Stash.set()`
    */
-  public static getKey(commandId: string): StashKey {
+  public static getKey(commandId: keyof typeof Stash.keyMap): StashKey {
     const key = Stash.keyMap[commandId] as StashKey;
     if (!key) {
       const messages = Messages.loadMessages('@salesforce/plugin-source', 'stash');

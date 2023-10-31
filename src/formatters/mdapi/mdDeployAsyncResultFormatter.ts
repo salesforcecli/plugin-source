@@ -5,15 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages } from '@salesforce/core';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatterOptions } from '../resultFormatter';
-import { DeployAsyncResultFormatter } from '../source/deployAsyncResultFormatter';
+import { ResultFormatterOptions } from '../resultFormatter.js';
+import { DeployAsyncResultFormatter } from '../source/deployAsyncResultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 export class MdDeployAsyncResultFormatter extends DeployAsyncResultFormatter {

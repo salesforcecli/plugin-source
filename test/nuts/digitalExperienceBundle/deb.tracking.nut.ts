@@ -4,15 +4,15 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
-import { join } from 'path';
+import fs from 'node:fs';
+import { join } from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { DeleteTrackingResult } from '@salesforce/plugin-deploy-retrieve/lib/commands/project/delete/tracking';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { PullResponse } from '../../../src/formatters/source/pullFormatter';
-import { FILE_RELATIVE_PATHS, TEST_SESSION_OPTIONS, TYPES } from './constants';
+import { DeleteTrackingResult } from '@salesforce/plugin-deploy-retrieve/lib/commands/project/delete/tracking.js';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter.js';
+import { FILE_RELATIVE_PATHS, TEST_SESSION_OPTIONS, TYPES } from './constants.js';
 import {
   assertAllDEBAndTheirDECounts,
   assertDEBMeta,
@@ -24,7 +24,7 @@ import {
   createDocumentDetailPageAInLocal,
   deleteDocumentDetailPageAInLocal,
   deleteViewHomeFRVariantInLocal,
-} from './helper';
+} from './helper.js';
 
 describe('deb -- tracking/push/pull', () => {
   let session: TestSession;
@@ -133,7 +133,7 @@ describe('deb -- tracking/push/pull', () => {
         ensureExitCode: 0,
       }).jsonOutput.result;
 
-      expect(statusResult.every((s) => s.type !== TYPES.DE.name && s.type !== TYPES.DEB.name)).to.be.true;
+      expect(statusResult.every((s) => s.type !== TYPES.DE?.name && s.type !== TYPES.DEB.name)).to.be.true;
     });
   });
 

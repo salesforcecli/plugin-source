@@ -5,20 +5,20 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join } from 'path';
-import * as sinon from 'sinon';
+import { join } from 'node:path';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { Cancel } from '../../../src/commands/force/source/deploy/cancel';
-import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { Stash } from '../../../src/stash';
-import { getDeployResult } from './deployResponses';
+import { Cancel } from '../../../src/commands/force/source/deploy/cancel.js';
+import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter.js';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { Stash } from '../../../src/stash.js';
+import { getDeployResult } from './deployResponses.js';
 
 describe('force:source:deploy:cancel', () => {
   const $$ = new TestContext();

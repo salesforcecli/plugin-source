@@ -5,8 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as chalk from 'chalk';
+import path from 'node:path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
@@ -22,11 +24,11 @@ import {
   Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
-import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
-import { maybePrintCodeCoverageTable } from './codeCoverageTable';
+import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
+import { MdDeployResult } from './mdapi/mdDeployResultFormatter.js';
+import { maybePrintCodeCoverageTable } from './codeCoverageTable.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export type DeployCommandResult = {

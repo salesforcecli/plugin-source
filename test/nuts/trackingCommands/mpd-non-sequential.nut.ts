@@ -5,11 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import path from 'node:path';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
 
 let session: TestSession;
 let conn: Connection;

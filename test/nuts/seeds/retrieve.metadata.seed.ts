@@ -5,10 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import path from 'node:path';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { JsonMap } from '@salesforce/ts-types';
-import { TEST_REPOS_MAP } from '../testMatrix';
+import { TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%');

@@ -4,30 +4,30 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { join, relative } from 'path';
-import * as fs from 'fs';
+import { join, relative } from 'node:path';
+import fs from 'node:fs';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { isNameObsolete } from '../shared/isNameObsolete';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
-import { DEBS, DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
+import { isNameObsolete } from '../shared/isNameObsolete.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
+import { DEBS, DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants.js';
 
 type CustomFileResponses = Array<Pick<FileResponse, 'filePath' | 'fullName' | 'type'>>;
 
 export function assertAllDEBAndTheirDECounts(
-  resp: CustomFileResponses,
+  resp: CustomFileResponses | undefined,
   otherComponentsCount = 0,
   assertTotalCount = true
 ) {
   if (assertTotalCount) expect(resp).to.have.length(104 + otherComponentsCount);
 
   expect(
-    resp.reduce(
-      (acc: [number, number, number, number], curr: FileResponse) => {
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
+    resp?.reduce(
+      (acc: [number, number, number, number], curr) => {
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === FULL_NAMES.DEB_A) acc[2]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === FULL_NAMES.DEB_B) acc[3]++;
         return acc;
@@ -43,7 +43,7 @@ export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFull
   expect(
     resp.reduce(
       (acc: [number, number], curr: FileResponse) => {
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(debFullName)) acc[0]++;
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(debFullName)) acc[0]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === debFullName) acc[1]++;
         return acc;
       },
@@ -58,8 +58,8 @@ export function assertDECountsOfAllDEB(resp: CustomFileResponses) {
   expect(
     resp.reduce(
       (acc: [number, number], curr: FileResponse) => {
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
         return acc;
       },
       [0, 0]
@@ -70,7 +70,7 @@ export function assertDECountsOfAllDEB(resp: CustomFileResponses) {
 
 export function assertDECountOfSingleDEB(resp: CustomFileResponses) {
   expect(resp).to.have.length(51);
-  expect(resp.every((s) => s.type === TYPES.DE.name)).to.be.true;
+  expect(resp.every((s) => s.type === TYPES.DE?.name)).to.be.true;
 }
 
 export function assertDEBMeta(resp: CustomFileResponses, deb: 'A' | 'B') {
@@ -95,17 +95,17 @@ export function assertViewHome(resp: CustomFileResponses, deb: 'A' | 'B') {
     }))
   ).to.have.deep.members([
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
       filePath: DEBS[deb].DE.VIEW_HOME.FILES.CONTENT.RELATIVE_PATH,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
       filePath: DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
       filePath: DEBS[deb].DE.VIEW_HOME.FILES.META.RELATIVE_PATH,
     },
@@ -122,7 +122,7 @@ export function assertViewHomeStatus(
   resp[0].filePath = relative(process.cwd(), resp[0].filePath);
 
   expect(resp[0]).to.include({
-    type: TYPES.DE.name,
+    type: TYPES.DE?.name,
     fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
     filePath: DEBS[deb].DE.VIEW_HOME.FILES[type].RELATIVE_PATH,
   });
@@ -138,22 +138,22 @@ export function assertDocumentDetailPageA(resp: CustomFileResponses) {
     }))
   ).to.have.deep.members([
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_META_A,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_CONTENT_A,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_META_A,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_CONTENT_A,
     },
@@ -162,10 +162,10 @@ export function assertDocumentDetailPageA(resp: CustomFileResponses) {
 
 export async function assertDocumentDetailPageADelete(session: TestSession, assertDeleteInLocal: boolean) {
   expect(
-    await isNameObsolete(session.orgs.get('default').username, TYPES.DE.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
+    await isNameObsolete(session.orgs.get('default').username, TYPES.DE?.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
   ).to.be.true;
   expect(
-    await isNameObsolete(session.orgs.get('default').username, TYPES.DE.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
+    await isNameObsolete(session.orgs.get('default').username, TYPES.DE?.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
   ).to.be.true;
 
   if (assertDeleteInLocal) {

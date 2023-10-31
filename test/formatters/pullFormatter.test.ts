@@ -5,16 +5,16 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { relative } from 'path';
-import * as sinon from 'sinon';
+import { relative } from 'node:path';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { getRetrieveResult } from '../commands/source/retrieveResponses';
-import { PullResponse, PullResultFormatter } from '../../src/formatters/source/pullFormatter';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { getRetrieveResult } from '../commands/source/retrieveResponses.js';
+import { PullResponse, PullResultFormatter } from '../../src/formatters/source/pullFormatter.js';
 
 describe('PullFormatter', () => {
   const sandbox = new TestContext().SANDBOX;

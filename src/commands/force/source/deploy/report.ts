@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages, SfProject } from '@salesforce/core';
 
 import { Duration, env } from '@salesforce/kit';
@@ -18,17 +20,17 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand';
+import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand.js';
 import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
-} from '../../../../formatters/deployReportResultFormatter';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { ResultFormatterOptions } from '../../../../formatters/resultFormatter';
+} from '../../../../formatters/deployReportResultFormatter.js';
+import { ProgressFormatter } from '../../../../formatters/progressFormatter.js';
+import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter.js';
+import { ResultFormatterOptions } from '../../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
 
 const replacement = 'project deploy report';

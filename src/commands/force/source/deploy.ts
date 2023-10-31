@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
@@ -23,19 +25,20 @@ import {
   reportsFormatters,
   targetUsernameFlag,
   TestLevel,
-} from '../../../deployCommand';
-import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter';
+} from '../../../deployCommand.js';
+import { DeployCommandResult, DeployResultFormatter } from '../../../formatters/deployResultFormatter.js';
 import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
-} from '../../../formatters/source/deployAsyncResultFormatter';
-import { ProgressFormatter } from '../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
-import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
+} from '../../../formatters/source/deployAsyncResultFormatter.js';
+import { ProgressFormatter } from '../../../formatters/progressFormatter.js';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
+import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions.js';
+import { ResultFormatterOptions } from '../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 

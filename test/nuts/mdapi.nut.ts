@@ -5,16 +5,19 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { exec } from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { create as createArchive } from 'archiver';
-import { RetrieveCommandAsyncResult, RetrieveCommandResult } from '../../src/formatters/mdapi/retrieveResultFormatter';
-import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter';
-import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter';
+import {
+  RetrieveCommandAsyncResult,
+  RetrieveCommandResult,
+} from '../../src/formatters/mdapi/retrieveResultFormatter.js';
+import { DeployCancelCommandResult } from '../../src/formatters/deployCancelResultFormatter.js';
+import { MdDeployResult } from '../../src/formatters/mdapi/mdDeployResultFormatter.js';
 
 let session: TestSession;
 // must be skipped while source:convert is moved to PDR

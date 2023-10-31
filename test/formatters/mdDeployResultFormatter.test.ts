@@ -4,13 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { getDeployResult } from '../commands/source/deployResponses';
-import { MdDeployResultFormatter } from '../../src/formatters/mdapi/mdDeployResultFormatter';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { getDeployResult } from '../commands/source/deployResponses.js';
+import { MdDeployResultFormatter } from '../../src/formatters/mdapi/mdDeployResultFormatter.js';
 
 describe('mdDeployResultFormatter', () => {
   const sandbox = new TestContext().SANDBOX;

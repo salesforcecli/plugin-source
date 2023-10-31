@@ -5,15 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as sinon from 'sinon';
+import path from 'node:path';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { getDeployResult } from '../commands/source/deployResponses';
-import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { getDeployResult } from '../commands/source/deployResponses.js';
+import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter.js';
 
 describe('DeployResultFormatter', () => {
   const sandbox = new TestContext().SANDBOX;
@@ -25,7 +25,7 @@ describe('DeployResultFormatter', () => {
   const deployResultTestSuccess = getDeployResult('passedTest');
   const deployResultTestSuccessAndFailure = getDeployResult('passedAndFailedTest');
 
-  let ux;
+  let ux: Ux;
 
   let logStub: sinon.SinonStub;
   let styledHeaderStub: sinon.SinonStub;
@@ -43,6 +43,9 @@ describe('DeployResultFormatter', () => {
     logStub = sandbox.stub();
     styledHeaderStub = sandbox.stub();
     tableStub = sandbox.stub();
+    // ux is a stubbed Ux
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     ux = stubInterface<Ux>(sandbox, {
       log: logStub,
       styledHeader: styledHeaderStub,
@@ -59,7 +62,7 @@ describe('DeployResultFormatter', () => {
     it('should return expected json for a success', () => {
       const deployResponse = JSON.parse(JSON.stringify(deployResultSuccess.response)) as DeployCommandResult;
       const expectedSuccessResults = deployResultSuccess.response as DeployCommandResult;
-      const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultSuccess);
+      const formatter = new DeployResultFormatter(ux, {}, deployResultSuccess);
       const json = formatter.getJson();
 
       expectedSuccessResults.deployedSource = deployResultSuccess.getFileResponses();
@@ -74,7 +77,7 @@ describe('DeployResultFormatter', () => {
       expectedFailureResults.deployedSource = deployResultFailure.getFileResponses();
       expectedFailureResults.outboundFiles = [];
       expectedFailureResults.deploys = [deployResponse];
-      const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultFailure);
+      const formatter = new DeployResultFormatter(ux, {}, deployResultFailure);
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
     });
 
@@ -84,7 +87,7 @@ describe('DeployResultFormatter', () => {
       expectedPartialSuccessResponse.deployedSource = deployResultPartialSuccess.getFileResponses();
       expectedPartialSuccessResponse.outboundFiles = [];
       expectedPartialSuccessResponse.deploys = [deployResponse];
-      const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultPartialSuccess);
+      const formatter = new DeployResultFormatter(ux, {}, deployResultPartialSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedPartialSuccessResponse);
     });
 
@@ -94,7 +97,7 @@ describe('DeployResultFormatter', () => {
           ...(JSON.parse(JSON.stringify(deployResultSuccess)) as DeployResult),
           replacements: new Map<string, string[]>([['MyApexClass.cls', ['foo', 'bar']]]),
         };
-        const formatter = new DeployResultFormatter(ux as Ux, {}, resultWithReplacements as DeployResult);
+        const formatter = new DeployResultFormatter(ux, {}, resultWithReplacements as DeployResult);
         const json = formatter.getJson();
 
         expect(json.replacements).to.deep.equal({ 'MyApexClass.cls': ['foo', 'bar'] });
@@ -103,7 +106,7 @@ describe('DeployResultFormatter', () => {
         const resultWithoutReplacements = {
           ...(JSON.parse(JSON.stringify(deployResultSuccess)) as DeployResult),
         };
-        const formatter = new DeployResultFormatter(ux as Ux, {}, resultWithoutReplacements as DeployResult);
+        const formatter = new DeployResultFormatter(ux, {}, resultWithoutReplacements as DeployResult);
         const json = formatter.getJson();
         expect(json.replacements).to.be.undefined;
       });
@@ -112,7 +115,7 @@ describe('DeployResultFormatter', () => {
           ...(JSON.parse(JSON.stringify(deployResultSuccess)) as DeployResult),
           replacements: new Map<string, string[]>(),
         };
-        const formatter = new DeployResultFormatter(ux as Ux, {}, resultWithEmptyReplacements as DeployResult);
+        const formatter = new DeployResultFormatter(ux, {}, resultWithEmptyReplacements as DeployResult);
         const json = formatter.getJson();
         expect(json.replacements).to.be.undefined;
       });
@@ -121,7 +124,7 @@ describe('DeployResultFormatter', () => {
 
   describe('display', () => {
     it('should output as expected for a success', () => {
-      const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultSuccess);
+      const formatter = new DeployResultFormatter(ux, {}, deployResultSuccess);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
       expect(logStub.callCount).to.equal(2);
@@ -133,7 +136,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for a failure and exclude duplicate information', () => {
-      const formatter = new DeployResultFormatter(ux as Ux, {}, deployResultFailure);
+      const formatter = new DeployResultFormatter(ux, {}, deployResultFailure);
       formatter.display();
       expect(styledHeaderStub.calledOnce).to.equal(true);
       expect(logStub.callCount).to.equal(3);
@@ -151,7 +154,7 @@ describe('DeployResultFormatter', () => {
       deployFailure.response.details.componentFailures = [];
       deployFailure.response.details.componentSuccesses = [];
       delete deployFailure.response.details.runTestResult;
-      const formatter = new DeployResultFormatter(ux as Ux, {}, deployFailure);
+      const formatter = new DeployResultFormatter(ux, {}, deployFailure);
       sandbox.stub(formatter, 'isSuccess').returns(false);
 
       try {
@@ -166,7 +169,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for a test failure with verbose', () => {
-      const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestFailure);
+      const formatter = new DeployResultFormatter(ux, { verbose: true }, deployResultTestFailure);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
       expect(logStub.callCount).to.equal(8);
@@ -177,7 +180,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for passing tests with verbose', () => {
-      const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccess);
+      const formatter = new DeployResultFormatter(ux, { verbose: true }, deployResultTestSuccess);
       formatter.display();
       expect(styledHeaderStub.calledThrice).to.equal(true);
       expect(logStub.callCount).to.equal(8);
@@ -188,7 +191,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('should output as expected for passing and failing tests with verbose', () => {
-      const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultTestSuccessAndFailure);
+      const formatter = new DeployResultFormatter(ux, { verbose: true }, deployResultTestSuccessAndFailure);
       formatter.display();
       expect(styledHeaderStub.callCount).to.equal(4);
       expect(logStub.callCount).to.equal(9);
@@ -200,7 +203,7 @@ describe('DeployResultFormatter', () => {
     });
 
     it('shows success AND failures for partialSucceeded', () => {
-      const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, deployResultPartialSuccess);
+      const formatter = new DeployResultFormatter(ux, { verbose: true }, deployResultPartialSuccess);
       formatter.display();
       expect(styledHeaderStub.callCount, 'styledHeaderStub.callCount').to.equal(2);
       expect(logStub.callCount, 'logStub.callCount').to.equal(4);
@@ -215,7 +218,7 @@ describe('DeployResultFormatter', () => {
         const resultWithoutReplacements = {
           ...deployResultSuccess,
         } as DeployResult;
-        const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, resultWithoutReplacements);
+        const formatter = new DeployResultFormatter(ux, { verbose: true }, resultWithoutReplacements);
 
         formatter.display();
 
@@ -230,7 +233,7 @@ describe('DeployResultFormatter', () => {
           ...deployResultSuccess,
           replacements: new Map<string, string[]>([['MyApexClass.cls', ['foo', 'bar']]]),
         } as DeployResult;
-        const formatter = new DeployResultFormatter(ux as Ux, { verbose: true }, resultWithReplacements);
+        const formatter = new DeployResultFormatter(ux, { verbose: true }, resultWithReplacements);
         formatter.display();
 
         expect(logStub.callCount, 'logStub.callCount').to.equal(3);
@@ -245,7 +248,7 @@ describe('DeployResultFormatter', () => {
           ...deployResultSuccess,
           replacements: new Map<string, string[]>([['MyApexClass.cls', ['foo', 'bar']]]),
         } as DeployResult;
-        const formatter = new DeployResultFormatter(ux as Ux, {}, resultWithReplacements);
+        const formatter = new DeployResultFormatter(ux, {}, resultWithReplacements);
         formatter.display();
 
         expect(logStub.callCount, 'logStub.callCount').to.equal(2);

@@ -5,11 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import path from 'node:path';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { isNameObsolete } from './shared/isNameObsolete';
+import { isNameObsolete } from './shared/isNameObsolete.js';
 
 describe('source:deploy --destructive NUTs', () => {
   let testkit: SourceTestkit;
@@ -83,8 +83,10 @@ describe('source:deploy --destructive NUTs', () => {
     it('should delete a class, then deploy and then delete an ApexClass', async () => {
       const pre = createApexClass('pre').apexName;
       const post = createApexClass('post').apexName;
-      let preDeleted = await isNameObsolete(testkit.username, 'ApexClass', pre);
-      let postDeleted = await isNameObsolete(testkit.username, 'ApexClass', post);
+      let [preDeleted, postDeleted] = await Promise.all([
+        isNameObsolete(testkit.username, 'ApexClass', pre),
+        isNameObsolete(testkit.username, 'ApexClass', post),
+      ]);
 
       expect(preDeleted).to.be.false;
       expect(postDeleted).to.be.false;

@@ -9,17 +9,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
-import * as shell from 'shelljs';
+import shell from 'shelljs';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
-import { PullResponse } from '../../../src/formatters/source/pullFormatter';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter.js';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
 
 let session: TestSession;
 const classdir = 'force-app/main/default/classes';

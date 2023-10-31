@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { join, parse } from 'path';
-import { blue } from 'chalk';
+import { join, parse } from 'node:path';
+import chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
@@ -15,14 +15,14 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { RetrieveFormatter } from '../retrieveFormatter';
-import { ResultFormatterOptions } from '../resultFormatter';
+import { RetrieveFormatter } from '../retrieveFormatter.js';
+import { ResultFormatterOptions } from '../resultFormatter.js';
 
 export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string };
 
 export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
   retrieveTargetDir: string;
-  zipFileName?: string;
+  zipFileName: string;
   unzip?: boolean;
 }
 
@@ -40,7 +40,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
   public constructor(ux: Ux, public options: RetrieveResultFormatterOptions, result: RetrieveResult) {
     super(ux, options, result);
     this.options.zipFileName ??= 'unpackaged.zip';
-    this.zipFilePath = join(options.retrieveTargetDir, options.zipFileName);
+    this.zipFilePath = join(options.retrieveTargetDir, this.options.zipFileName);
   }
 
   /**
@@ -87,7 +87,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
     this.sortFileProperties(retrievedFiles);
 
     this.ux.log('');
-    this.ux.styledHeader(blue(`Components Retrieved [${retrievedFiles.length}]`));
+    this.ux.styledHeader(chalk.blue(`Components Retrieved [${retrievedFiles.length}]`));
     this.ux.table(retrievedFiles, {
       type: { header: 'TYPE' },
       fileName: { header: 'FILE' },

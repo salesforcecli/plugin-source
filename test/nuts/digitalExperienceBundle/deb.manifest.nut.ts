@@ -4,14 +4,14 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
-import { join } from 'path';
+import fs from 'node:fs';
+import { join } from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
-import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, STORE, TEST_SESSION_OPTIONS, TYPES } from './constants';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
+import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, STORE, TEST_SESSION_OPTIONS, TYPES } from './constants.js';
 import {
   assertAllDEBAndTheirDECounts,
   assertDECountOfSingleDEB,
@@ -24,7 +24,7 @@ import {
   createDocumentDetailPageAInLocal,
   deleteLocalSource,
   deleteViewHomeFRVariantInLocal,
-} from './helper';
+} from './helper.js';
 
 describe('deb -- manifest option', () => {
   let session: TestSession;
@@ -71,7 +71,7 @@ describe('deb -- manifest option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertAllDEBAndTheirDECounts(deployedSource, 6);
     });

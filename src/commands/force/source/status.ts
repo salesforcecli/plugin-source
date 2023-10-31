@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages } from '@salesforce/core';
 import { ChangeResult, StatusOutputRow } from '@salesforce/source-tracking';
 import { Interfaces } from '@oclif/core';
@@ -16,10 +18,10 @@ import {
   SfCommand,
   Ux,
 } from '@salesforce/sf-plugins-core';
-import { StatusFormatter, StatusResult } from '../../../formatters/source/statusFormatter';
-import { trackingSetup } from '../../../trackingFunctions';
+import { StatusFormatter, StatusResult } from '../../../formatters/source/statusFormatter.js';
+import { trackingSetup } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 export type StatusCommandResult = StatusResult[];

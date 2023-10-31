@@ -299,7 +299,7 @@ export const getDeployResult = (
     getFileResponses() {
       let fileProps: DeployMessage[] = [];
       if (type === 'failed') {
-        const failures = response.details.componentFailures || [];
+        const failures = response.details.componentFailures ?? [];
         fileProps = ensureArray(failures);
         return fileProps.map((comp) => ({
           fullName: comp.fullName,

@@ -5,12 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { createSandbox, SinonSandbox } from 'sinon';
-import * as chalk from 'chalk';
-import { transformCoverageToApexCoverage, prepCoverageForDisplay } from '../src/coverageUtils';
-import { transformDeployTestsResultsToTestResult } from '../src/coverageUtils';
+import chalk from 'chalk';
+import {
+  prepCoverageForDisplay,
+  transformCoverageToApexCoverage,
+  transformDeployTestsResultsToTestResult,
+} from '../src/coverageUtils.js';
 
 // methods are mutating the object instead of returning new ones
 function getSampleTestResult() {
@@ -375,14 +378,14 @@ describe('transform md RunTestResult', () => {
 
   it('lineNotCovered is empty string when there is no data', () => {
     const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
-    expect(codeCoverage.find((c) => c.name === 'SampleDataController').lineNotCovered).equal('');
+    expect(codeCoverage.find((c) => c.name === 'SampleDataController')?.lineNotCovered).equal('');
   });
   it('lineNotCovered is single number for one item', () => {
     const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
-    expect(codeCoverage.find((c) => c.name === 'PagedResult').lineNotCovered).equal('12');
+    expect(codeCoverage.find((c) => c.name === 'PagedResult')?.lineNotCovered).equal('12');
   });
   it('lineNotCovered is comma separated list for multiple items', () => {
     const codeCoverage = prepCoverageForDisplay(sampleTestResult.codeCoverage);
-    expect(codeCoverage.find((c) => c.name === 'PropertyController').lineNotCovered).equal('26,31,78');
+    expect(codeCoverage.find((c) => c.name === 'PropertyController')?.lineNotCovered).equal('26,31,78');
   });
 });

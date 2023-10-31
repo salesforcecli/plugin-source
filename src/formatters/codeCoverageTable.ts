@@ -7,8 +7,8 @@
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { CodeCoverage } from '@salesforce/source-deploy-retrieve';
-import chalk = require('chalk');
-import { prepCoverageForDisplay } from '../coverageUtils';
+import chalk from 'chalk';
+import { prepCoverageForDisplay } from '../coverageUtils.js';
 
 /**
  * prints a table of formatted code coverage results if there are any

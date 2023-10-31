@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
 import {
   DEB_A_RELATIVE_PATH,
   DEBS_RELATIVE_PATH,
@@ -14,7 +14,7 @@ import {
   FULL_NAMES,
   TEST_SESSION_OPTIONS,
   TYPES,
-} from './constants';
+} from './constants.js';
 import {
   assertAllDEBAndTheirDECounts,
   assertDocumentDetailPageA,
@@ -24,7 +24,7 @@ import {
   assertViewHomeFRVariantDelete,
   createDocumentDetailPageAInLocal,
   deleteViewHomeFRVariantInLocal,
-} from './helper';
+} from './helper.js';
 
 describe('deb -- sourcepath option', () => {
   let session: TestSession;

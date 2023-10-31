@@ -5,13 +5,13 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import path from 'node:path';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
 
 let session: TestSession;
 describe('-t flag for deploy, retrieve, and delete', () => {

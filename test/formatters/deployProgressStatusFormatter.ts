@@ -5,17 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { getDeployResult } from '../commands/source/deployResponses';
-import { DeployProgressStatusFormatter } from '../../src/formatters/deployProgressStatusFormatter';
+import { getDeployResult } from '../commands/source/deployResponses.js';
+import { DeployProgressStatusFormatter } from '../../src/formatters/deployProgressStatusFormatter.js';
 
 describe('DeployProgressStatusFormatter', () => {
   const sandbox = sinon.createSandbox();
   const deployResultInProgress = getDeployResult('inProgress');
-  let ux;
+  let ux: Ux;
   let printStub: sinon.SinonStub;
   let mdApiDeploy: MetadataApiDeploy;
 
@@ -38,7 +38,7 @@ describe('DeployProgressStatusFormatter', () => {
   };
 
   it('should output with every update when verbose', () => {
-    const formatter = new DeployProgressStatusFormatter(ux as Ux, { verbose: true });
+    const formatter = new DeployProgressStatusFormatter(ux, { verbose: true });
     formatter.progress(mdApiDeploy);
 
     fireUpdateEvent();
@@ -52,7 +52,7 @@ describe('DeployProgressStatusFormatter', () => {
   });
 
   it('should only output on update when results change without verbose', () => {
-    const formatter = new DeployProgressStatusFormatter(ux as Ux);
+    const formatter = new DeployProgressStatusFormatter(ux);
     formatter.progress(mdApiDeploy);
 
     fireUpdateEvent();

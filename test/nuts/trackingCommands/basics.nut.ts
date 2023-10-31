@@ -5,16 +5,16 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
-import * as shelljs from 'shelljs';
+import shelljs from 'shelljs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retrieve';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { PullResponse } from '../../../src/formatters/source/pullFormatter';
-import { itemsInEBikesPush } from './consts';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter.js';
+import { itemsInEBikesPush } from './consts.js';
 
 const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
 
