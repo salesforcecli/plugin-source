@@ -180,7 +180,7 @@ export class Retrieve extends SourceCommand {
       },
     });
 
-    if (this.flags.manifest || this.flags.metadata) {
+    if (this.flags.manifest ?? this.flags.metadata) {
       if (this.wantsToRetrieveCustomFields()) {
         this.warn(messages.getMessage('wantsToRetrieveCustomFields'));
         this.componentSet.add({

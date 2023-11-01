@@ -9,6 +9,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
+import { ComponentStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types.js';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
 
@@ -100,8 +101,8 @@ describe('lwc', () => {
     }).jsonOutput?.result.pushedSource;
     const bundleMembers = result?.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(4);
-    expect(bundleMembers?.filter((r) => r.state === 'Deleted')).to.have.length(1);
-    expect(bundleMembers?.filter((r) => r.state === 'Changed')).to.have.length(3);
+    expect(bundleMembers?.filter((r) => r.state === ComponentStatus.Deleted)).to.have.length(1);
+    expect(bundleMembers?.filter((r) => r.state === ComponentStatus.Changed)).to.have.length(3);
   });
 
   it('sees no local changes', () => {
@@ -142,7 +143,7 @@ describe('lwc', () => {
     const bundleMembers = result?.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(3);
     expect(
-      bundleMembers?.every((r) => r.state === 'Deleted'),
+      bundleMembers?.every((r) => r.state === ComponentStatus.Deleted),
       JSON.stringify(bundleMembers, undefined, 2)
     ).to.be.true;
   });

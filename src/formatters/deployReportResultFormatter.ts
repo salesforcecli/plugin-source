@@ -17,7 +17,7 @@ export type DeployReportCommandResult = MetadataApiDeployStatus;
 
 export class DeployReportResultFormatter extends DeployResultFormatter {
   public display(): void {
-    const status = getString(this, 'result.response.status', 'unknown');
+    const status = getString(this, 'result.response.status', 'unknown') as RequestStatus;
     this.ux.log(`Status: ${status}`);
     if (!this.isVerbose()) {
       const componentsTotal = this.getNumResult('numberComponentsTotal');

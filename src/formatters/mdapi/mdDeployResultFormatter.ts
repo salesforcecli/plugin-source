@@ -221,7 +221,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
 
   protected verboseTestTime(): void {
     if (
-      this.result.response?.details?.runTestResult?.successes ||
+      this.result.response?.details?.runTestResult?.successes ??
       this.result?.response?.details?.runTestResult?.failures
     ) {
       this.ux.log('');

@@ -113,7 +113,7 @@ export class PushResultFormatter extends ResultFormatter {
   protected correctFileResponses(): FileResponse[] {
     const withoutUnchanged = this.results.some((result) => result.getFileResponses().length)
       ? this.results.flatMap((result) =>
-          result.getFileResponses().filter((fileResponse) => fileResponse.state !== 'Unchanged')
+          result.getFileResponses().filter((fileResponse) => fileResponse.state !== ComponentStatus.Unchanged)
         )
       : [];
     if (!this.deletes.length) {
@@ -167,7 +167,7 @@ export class PushResultFormatter extends ResultFormatter {
       return;
     }
     if (this.isSuccess() && this.fileResponses?.length) {
-      const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
+      const successes = this.fileResponses.filter((f) => f.state !== ComponentStatus.Failed);
       if (!successes.length) {
         return;
       }
@@ -217,7 +217,7 @@ export class PushResultFormatter extends ResultFormatter {
     if (this.fileResponses?.length) {
       const fileResponses: FileResponseFailure[] = [];
       this.fileResponses
-        .filter((f) => f.state === 'Failed')
+        .filter((f) => f.state === ComponentStatus.Failed)
         .map((f) => {
           // we've filtered all of the file responses to failed errors with the state filter  above
           fileResponses.push(f as FileResponseFailure);

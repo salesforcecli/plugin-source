@@ -196,10 +196,12 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         expect(failure).to.have.property('exitCode', 1);
         expect(failure).to.have.property('commandName', 'Push');
         expect(
-          failure.result.every((r) => r.type === 'ApexClass' && r.state === 'Failed' && r.problemType === 'Error')
+          failure.result.every(
+            (r) => r.type === 'ApexClass' && r.state === ComponentStatus.Failed && r.problemType === 'Error'
+          )
         ).to.equal(true);
         failure.result.forEach((f) => {
-          if (f.state === 'Failed') {
+          if (f.state === ComponentStatus.Failed) {
             expect(f.lineNumber).to.exist;
             expect(f.columnNumber).to.exist;
             expect(f.error).to.be.a('string');

@@ -24,6 +24,7 @@ import {
   Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
+import { ComponentStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types.js';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter.js';
 import { maybePrintCodeCoverageTable } from './codeCoverageTable.js';
@@ -172,7 +173,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displayDeletions(): void {
-    const deletions = this.fileResponses.filter((f) => f.state === 'Deleted');
+    const deletions = this.fileResponses.filter((f) => f.state === ComponentStatus.Deleted);
     if (!deletions.length) {
       return;
     }
@@ -199,7 +200,7 @@ export class DeployResultFormatter extends ResultFormatter {
       if (this.fileResponses?.length) {
         const fileResponses: FileResponse[] = [];
         this.fileResponses
-          .filter((f) => f.state === 'Failed')
+          .filter((f) => f.state === ComponentStatus.Failed)
           .map((f) => {
             fileResponses.push(f);
             if ('error' in f) {
@@ -317,7 +318,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected verboseTestTime(): void {
     if (
-      this.result.response?.details?.runTestResult?.successes ||
+      this.result.response?.details?.runTestResult?.successes ??
       this.result?.response?.details?.runTestResult?.failures
     ) {
       this.ux.log('');

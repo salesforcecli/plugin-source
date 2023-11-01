@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
-import { DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
+import { ComponentStatus, DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { getBoolean } from '@salesforce/ts-types';
 import {
@@ -211,7 +211,7 @@ export default class Push extends DeployCommand {
       result.response.status === RequestStatus.Succeeded ||
       // successful-ish  (only warnings about deleted things that are already deleted)
       (result.response.status === RequestStatus.Failed &&
-        result.getFileResponses().every((fr) => fr.state !== 'Failed') &&
+        result.getFileResponses().every((fr) => fr.state !== ComponentStatus.Failed) &&
         !result.response.errorMessage);
     // all successes
     if (this.deployResults.every((result) => isSuccessLike(result))) {

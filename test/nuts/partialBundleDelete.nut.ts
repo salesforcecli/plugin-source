@@ -17,6 +17,7 @@ import {
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
 import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { ComponentStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types.js';
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
 import { Retrieve } from '../../src/commands/force/source/retrieve.js';
 
@@ -149,7 +150,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       expect(inboundFiles).to.be.an('array').and.not.empty;
 
       // find the deleted entry for testFile.css
-      const deletedFileResponse = inboundFiles?.find((fr) => fr.state === 'Deleted');
+      const deletedFileResponse = inboundFiles?.find((fr) => fr.state === ComponentStatus.Deleted);
       expect(deletedFileResponse).to.deep.equal({
         fullName: 'pageTemplate_2_7_3',
         type: 'AuraDefinitionBundle',
@@ -182,7 +183,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       expect(inboundFiles).to.be.an('array').and.not.empty;
 
       // find the deleted entry for testFile.css
-      const deletedFileResponse = inboundFiles?.find((fr) => fr.state === 'Deleted');
+      const deletedFileResponse = inboundFiles?.find((fr) => fr.state === ComponentStatus.Deleted);
       expect(deletedFileResponse).to.deep.equal({
         fullName: 'propertyTile',
         type: 'LightningComponentBundle',

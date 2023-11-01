@@ -104,8 +104,7 @@ export abstract class ResultFormatter {
     }
     if (
       this.options.testsRan &&
-      this.options.coverageOptions &&
-      this.options.coverageOptions.reportFormats &&
+      this.options.coverageOptions?.reportFormats &&
       this.options.coverageOptions?.reportFormats?.length > 0
     ) {
       this.ux.log(
