@@ -7,6 +7,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
+import url from 'node:url';
 import shelljs from 'shelljs';
 import { RepoConfig, TEST_REPOS_MAP } from './testMatrix.js';
 
@@ -14,7 +15,7 @@ const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER ?? '';
 const SEED_EXCLUDE = process.env.PLUGIN_SOURCE_SEED_EXCLUDE;
 
 function getSeedFiles(): string[] {
-  const seedDir = path.join(__dirname, 'seeds');
+  const seedDir = path.join(path.dirname(url.fileURLToPath(import.meta.url)), 'seeds');
   const files = fs.readdirSync(seedDir);
   return files
     .filter((f) => f.endsWith('.seed.ts'))
@@ -37,7 +38,7 @@ function generateNut(generatedDir: string, seedName: string, seedContents: strin
 }
 
 function generateNuts(): void {
-  const generatedDir = path.resolve(__dirname, 'generated');
+  const generatedDir = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'generated');
   shelljs.rm('-rf', generatedDir);
   fs.mkdirSync(generatedDir, { recursive: true });
   const seeds = getSeedFiles();

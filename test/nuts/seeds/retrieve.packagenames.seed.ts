@@ -8,7 +8,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { exec } from 'shelljs';
+import shelljs from 'shelljs';
 
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const ESCAPEROOM = { id: '04t0P000000JFs1QAG', name: 'DFXP Escape Room' };
@@ -36,22 +36,24 @@ context('Retrieve packagenames NUTs', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      shelljs.exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });
 
     it('should retrieve two installed packages', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
-      exec(`sfdx force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, { silent: true });
+      shelljs.exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      shelljs.exec(`sfdx force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, {
+        silent: true,
+      });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${ESCAPEROOM.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name, ESCAPEROOM.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      shelljs.exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
 
       await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,

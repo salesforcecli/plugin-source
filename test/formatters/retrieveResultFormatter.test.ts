@@ -6,7 +6,7 @@
  */
 
 import { join, relative } from 'node:path';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { cloneJson, ensureArray } from '@salesforce/kit';

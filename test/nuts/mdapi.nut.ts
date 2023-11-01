@@ -7,11 +7,11 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { exec } from 'shelljs';
+import shelljs from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
-import { create as createArchive } from 'archiver';
+import create from 'archiver';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
@@ -155,7 +155,7 @@ describe('mdapi NUTs', () => {
     before(() => {
       // Install the ElectronBranding package in the default org for retrieve commands to use
       const pkgInstallCmd = `sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
-      const rv = exec(pkgInstallCmd, { silent: true });
+      const rv = shelljs.exec(pkgInstallCmd, { silent: true });
       expect(rv.code, 'Failed to install ElectronBranding package for tests').to.equal(0);
 
       // Create manifests for retrieve commands to use
@@ -354,7 +354,7 @@ describe('mdapi NUTs', () => {
       // make a mdapi directory from the project
       execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0 });
       // make a zip from that
-      const zip = createArchive('zip', { zlib: { level: 9 } });
+      const zip = create('zip', { zlib: { level: 9 } });
       const output = fs.createWriteStream(path.join(session.project.dir, `${mdapiOut}.zip`));
       zip.pipe(output);
       // anywhere not at the root level is fine
