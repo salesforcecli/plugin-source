@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (--version)
-@salesforce/plugin-source/2.0.12 linux-x64 node-v14.20.0
+@salesforce/plugin-source/2.10.46 linux-x64 node-v18.18.2
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -88,1573 +88,947 @@ USAGE
 
 <!-- commands -->
 
-- [`sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaconvert--r-directory--d-directory--p-array---x-string---m-array---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-o] [-g] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetadeploy--d-directory--w-minutes--o--g--q-id---l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg---r-array---c--f-filepath--s---soapdeploy---purgeondelete---resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetadeployreport--w-minutes--i-id---resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaretrieve--r-directory--k-filepath---d-directory---p-array--s--n-string--z--w-minutes--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapibetaretrievereport--r-directory--i-id--n-string--z--w-minutes--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapiconvert--r-directory--d-directory--p-array---x-string---m-array---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:deploy [-d <directory>] [-w <minutes>] [-o] [-g] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapideploy--d-directory--w-minutes--o--g--q-id---l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg---r-array---c--f-filepath--s---soapdeploy---purgeondelete---resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapideploycancel--w-minutes--i-id--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapideployreport--w-minutes--i-id---resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapiretrieve--r-directory--k-filepath---d-directory---p-array--s--n-string--z--w-minutes--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:mdapi:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcemdapiretrievereport--r-directory--i-id--n-string--z--w-minutes--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetapull--f--w-minutes--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetapush--f--w-minutes--g--u-string---apiversion-string---quiet---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetastatus--l---r--u-string---apiversion-string---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetatrackingclear--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:beta:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcebetatrackingreset--r-integer--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:convert [-r <directory>] [-d <directory>] [-n <string>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceconvert--r-directory--d-directory--n-string--p-array---x-string---m-array---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:delete [-w <minutes>] [-l NoTestRun|RunLocalTests|RunAllTestsInOrg] [-r] [-m <array>] [-p <array>] [-f [-t | -c]] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedelete--w-minutes--l-notestrunrunlocaltestsrunalltestsinorg--r--m-array--p-array--f--t---c--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [-o] [-g] [--purgeondelete -x <filepath>] [-q <id> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -t] [-m <array>] [-p <array>] [--predestructivechanges <filepath> ] [--postdestructivechanges <filepath> ] [-f ] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeploy---soapdeploy--w-minutes--o--g---purgeondelete--x-filepath--q-id---c---l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg---r-array---t--m-array--p-array---predestructivechanges-filepath----postdestructivechanges-filepath---f----resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeploycancel--w-minutes--i-id--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcedeployreport--w-minutes--i-id---resultsdir-directory---coverageformatters-array---junit--u-string---apiversion-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceignoredlist--p-filepath---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array> --fromorg <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcemanifestcreate--m-array--p-array--n-string---t-prepostdestroypackage--c-array---fromorg-string--o-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepull--f--w-minutes--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcepush--f--w-minutes--g--u-string---apiversion-string---quiet---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourceretrieve--p-array---x-filepath---m-array--w-minutes--n-array--f--t--u-string--a-string---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcestatus--l---r--u-string---apiversion-string---concise---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcetrackingclear--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
-- [`sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-forcesourcetrackingreset--r-integer--p--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx force:mdapi:deploy`](#sfdx-forcemdapideploy)
+- [`sfdx force:mdapi:deploy:cancel`](#sfdx-forcemdapideploycancel)
+- [`sfdx force:mdapi:deploy:report`](#sfdx-forcemdapideployreport)
+- [`sfdx force:mdapi:retrieve`](#sfdx-forcemdapiretrieve)
+- [`sfdx force:mdapi:retrieve:report`](#sfdx-forcemdapiretrievereport)
+- [`sfdx force:source:deploy`](#sfdx-forcesourcedeploy)
+- [`sfdx force:source:deploy:cancel`](#sfdx-forcesourcedeploycancel)
+- [`sfdx force:source:deploy:report`](#sfdx-forcesourcedeployreport)
+- [`sfdx force:source:pull`](#sfdx-forcesourcepull)
+- [`sfdx force:source:push`](#sfdx-forcesourcepush)
+- [`sfdx force:source:retrieve`](#sfdx-forcesourceretrieve)
+- [`sfdx force:source:status`](#sfdx-forcesourcestatus)
 
-## `sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:deploy`
 
-convert metadata from the Metadata API format into the source format
+Deploy metadata to an org using Metadata API.
 
 ```
 USAGE
-  $ sfdx force:mdapi:beta:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -d, --outputdir=<value>                                                           the output directory to store the
-                                                                                    source–formatted files
-  -m, --metadata=<value>                                                            comma-separated list of metadata
-                                                                                    component names to convert
-  -p, --metadatapath=<value>                                                        comma-separated list of metadata
-                                                                                    file paths to convert
-  -r, --rootdir=<value>                                                             (required) the root directory
-                                                                                    containing the Metadata
-                                                                                    API–formatted metadata
-  -x, --manifest=<value>                                                            file path to manifest (package.xml)
-                                                                                    of metadata types to convert.
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  convert metadata from the Metadata API format into the source format
-
-  Converts metadata retrieved via Metadata API into the source format used in Salesforce DX projects.
-
-  To use Salesforce CLI to work with components that you retrieved via Metadata API, first convert your files from the
-  metadata format to the source format using "sfdx force:mdapi:convert".
-
-  To convert files from the source format back to the metadata format, so that you can deploy them using "sfdx
-  force:mdapi:deploy", run "sfdx force:source:convert".
-
-ALIASES
-  $ sfdx force:mdapi:beta:convert
-
-EXAMPLES
-  $ sfdx force:mdapi:convert -r path/to/metadata
-
-  $ sfdx force:mdapi:convert -r path/to/metadata -d path/to/outputdir
-```
-
-## `sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-o] [-g] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-deploy metadata to an org using Metadata API
-
-```
-USAGE
-  $ sfdx force:mdapi:beta:deploy [-d <directory>] [-w <minutes>] [-o] [-g] [-q <id> | -l
-    NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -c] [-f <filepath>] [-s] [--soapdeploy]
-    [--purgeondelete] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion
-    <string>] [--verbose] [--concise] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:mdapi:deploy -u <value> [--json] [--api-version <value>] [-d <value>] [-w <value>] [-o] [-g] [-q <value>
+    | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -c] [--verbose] [-f <value>] [-s]
+    [--soapdeploy] [--purgeondelete] [--concise] [--resultsdir <value>] [--coverageformatters
+    clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
   -c, --checkonly
-      validate deploy but don’t save to the org
+      Validates the deployed metadata and runs all Apex tests, but prevents the deployment from being saved to the org.
 
   -d, --deploydir=<value>
-      root of directory tree of files to deploy
+      Root of directory tree that contains the files you want to deploy.
 
   -f, --zipfile=<value>
-      path to .zip file of metadata to deploy
+      Path to .zip file of metadata to deploy.
 
   -g, --ignorewarnings
-      whether a warning will allow a deployment to complete successfully
+      Ignore any warnings and don't roll back the deployment.
 
-  -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)
-      deployment testing level
+  -l, --testlevel=<option>
+      Level of deployment tests to run.
+      <options: NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg>
 
   -o, --ignoreerrors
-      ignore any errors and do not roll back deployment
+      Ignore any errors and don't roll back the deployment.
 
   -q, --validateddeployrequestid=<value>
-      request ID of the validated deployment to run a Quick Deploy
+      Request ID of the validated deployment to run a Quick Deploy.
 
-  -r, --runtests=<value>
-      tests to run if --testlevel RunSpecifiedTests
+  -r, --runtests=<value>...
+      Apex test classes to run if --testlevel is RunSpecifiedTests.
 
   -s, --singlepackage
-      Indicates that the zip file points to a directory structure for a single package
+      Indicates that the zip file points to a directory structure for a single package.
 
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
+  -u, --target-org=<value>
+      (required) Username or alias of the target org.
 
   -w, --wait=<value>
-      [default: 0 minutes] wait time for command to finish in minutes. Use -1 to wait indefinitely 0
+      [default: 0 minutes] Number of minutes to wait for the command to finish; specify -1 to wait indefinitely.
 
-  --apiversion=<value>
-      override the api version used for api requests made by this command
+  --api-version=<value>
+      Override the api version used for api requests made by this command
 
   --concise
-      omit success messages for smaller JSON output
+      Omit success messages for smaller JSON output.
 
-  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary
-      format of the code coverage results
-
-  --json
-      format output as json
+  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary...
+      Format of the code coverage results.
 
   --junit
-      output JUnit test results
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
+      Output JUnit test results.
 
   --purgeondelete
-      specify that deleted components in the destructive changes manifest file are immediately eligible for deletion
-      rather than being stored in the Recycle Bin
+      Specify that deleted components in the destructive changes manifest file are immediately eligible for deletion
+      rather than being stored in the Recycle Bin.
 
   --resultsdir=<value>
-      output directory for code coverage and JUnit results; defaults to the deploy ID
+      Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
   --soapdeploy
-      deploy metadata with SOAP API instead of REST API
+      Deploy metadata with SOAP API instead of REST API.
 
   --verbose
-      verbose output of deploy results
+      Display verbose output of the deploy results.
 
-DESCRIPTION
-  deploy metadata to an org using Metadata API
-
-ALIASES
-  $ sfdx force:mdapi:beta:deploy
+GLOBAL FLAGS
+  --json  Format output as json.
 
 EXAMPLES
   Return a job ID you can use to check the deploy status:
 
-  $ sfdx force:mdapi:deploy -d some/path
+    $ sfdx force:mdapi:deploy --deploydir some/path
 
   Deploy and poll for 1000 minutes:
 
-  $ sfdx force:mdapi:deploy -d some/path -w 1000
+    $ sfdx force:mdapi:deploy --deploydir some/path --wait 1000
 
   Deploy a ZIP file:
 
-  $ sfdx force:mdapi:deploy -f stuff.zip
+    $ sfdx force:mdapi:deploy --zipfile stuff.zip
 
   Validate a deployment so the ID can be used for a quick deploy:
 
-  $ sfdx force:mdapi:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg
+    $ sfdx force:mdapi:deploy --deploydir some/path --wait 1000 --checkonly --testlevel RunAllTestsInOrg
 
   Quick deploy using a previously validated deployment:
 
-  $ sfdx force:mdapi:deploy -q MyValidatedId
-```
+    $ sfdx force:mdapi:deploy --validateddeployrequestid MyValidatedId
 
-## `sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-check the status of a metadata deployment
-
-```
-USAGE
-  $ sfdx force:mdapi:beta:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit]
-    [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -i, --jobid=<value>
-      job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; if not specified,
-      defaults to your most recent CLI deployment
-
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=<value>
-      [default: 0 minutes] wait time for command to finish in minutes.  Use -1 to poll indefinitely
-
-  --apiversion=<value>
-      override the api version used for api requests made by this command
-
-  --concise
-      omit success messages for smaller JSON output
-
-  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary
-      format of the code coverage results
-
-  --json
-      format output as json
-
-  --junit
-      output JUnit test results
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-
-  --resultsdir=<value>
-      output directory for code coverage and JUnit results; defaults to the deploy ID
-
-  --verbose
-      verbose output of deploy results
-
-DESCRIPTION
-  check the status of a metadata deployment
-
-ALIASES
-  $ sfdx force:mdapi:beta:deploy:report
-
-EXAMPLES
-  Check the status of the most recent deployment
-
-  $ sfdx force:mdapi:deploy:report
-
-  Check the status of a deploy with job ID 1234 and wait for 10 minutes for the result:
-
-  $ sfdx force:mdapi:deploy:report -i 1234 -w 10
-```
-
-## `sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-retrieve metadata from an org using Metadata API
-
-```
-USAGE
-  $ sfdx force:mdapi:beta:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w
-    <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -a, --apiversion=<value>                                                          target API version for the retrieve
-  -d, --sourcedir=<value>                                                           source dir to use instead of the
-                                                                                    default package dir in
-                                                                                    sfdx-project.json
-  -k, --unpackaged=<value>                                                          file path of manifest of components
-                                                                                    to retrieve
-  -n, --zipfilename=<value>                                                         file name to use for the retrieved
-                                                                                    zip file
-  -p, --packagenames=<value>                                                        a comma-separated list of packages
-                                                                                    to retrieve
-  -r, --retrievetargetdir=<value>                                                   (required) directory root for the
-                                                                                    retrieved files
-  -s, --singlepackage                                                               indicates that the zip file points
-                                                                                    to a directory structure for a
-                                                                                    single package
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 1440 minutes] wait time
-                                                                                    for command to finish in minutes
-  -z, --unzip                                                                       extract all files from the retrieved
-                                                                                    zip file
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         verbose output of retrieve result
-
-DESCRIPTION
-  retrieve metadata from an org using Metadata API
-
-  Uses Metadata API to retrieve a .zip of XML files that represent metadata from the targeted org. The default target
-  username is the admin user for the default scratch org. You can retrieve and deploy up to 10,000 files or 400 MB (39
-  MB compressed) at one time.
-
-ALIASES
-  $ sfdx force:mdapi:beta:retrieve
-
-EXAMPLES
-  Retrieve metadata in the default project directory into the target directory:
-
-  $ sfdx force:mdapi:retrieve -r path/to/retrieve/dir
-
-  Retrieve metadata defined in the specified manifest into the target directory:
-
-  $ sfdx force:mdapi:retrieve -r path/to/retrieve/dir -k package.xml
-
-  Retrieve metadata defined by the specified directory, name the retrieved zipfile and extract all contents
-
-  $ sfdx force:mdapi:retrieve -d path/to/apexClasses -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
-
-  Enqueue a retrieve request but do not wait for the metadata to be retrieved:
-
-  $ sfdx force:mdapi:retrieve -r path/to/retrieve/dir --wait 0
-```
-
-## `sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-check the status of a metadata retrieval
-
-```
-USAGE
-  $ sfdx force:mdapi:beta:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion
-    <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -i, --jobid=<value>                                                               job ID of the retrieve you want to
-                                                                                    check; defaults to your most recent
-                                                                                    CLI retrieval if not specified
-  -n, --zipfilename=<value>                                                         file name to use for the retrieved
-                                                                                    zip file
-  -r, --retrievetargetdir=<value>                                                   directory root for the retrieved
-                                                                                    files
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 1440 minutes] wait time
-                                                                                    for command to finish in minutes
-  -z, --unzip                                                                       extract all files from the retrieved
-                                                                                    zip file
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         verbose output of retrieve result
-
-DESCRIPTION
-  check the status of a metadata retrieval
-
-  Specify the job ID and a target directory for the retrieve you want to check. You can also specify a wait time
-  (minutes) to check for updates to the retrieve status. If the retrieve was successful, the resulting zip file will be
-  saved to the location passed in with the retrieve target parameter.
-
-ALIASES
-  $ sfdx force:mdapi:beta:retrieve:report
-
-EXAMPLES
-  Poll until the metadata is retrieved (or timeout is reached) using data from the last force:mdapi:retrieve command:
-
-    sfdx force:mdapi:retrieve:report
-
-  Report the current status of the last retrieve command. If the retrieve is complete the zip file of metadata is written to the target directoy:
-
-    sfdx force:mdapi:retrieve:report -r path/to/retrieve/dir -w 0
-
-  Poll until the metadata is retrieved (or timeout is reached) using the provided RetrieveID, naming the zip file and extracting all contents:
-
-    sfdx force:mdapi:retrieve:report -i retrieveId -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
-```
-
-## `sfdx force:mdapi:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-convert metadata from the Metadata API format into the source format
-
-```
-USAGE
-  $ sfdx force:mdapi:convert -r <directory> [-d <directory>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -d, --outputdir=<value>                                                           the output directory to store the
-                                                                                    source–formatted files
-  -m, --metadata=<value>                                                            comma-separated list of metadata
-                                                                                    component names to convert
-  -p, --metadatapath=<value>                                                        comma-separated list of metadata
-                                                                                    file paths to convert
-  -r, --rootdir=<value>                                                             (required) the root directory
-                                                                                    containing the Metadata
-                                                                                    API–formatted metadata
-  -x, --manifest=<value>                                                            file path to manifest (package.xml)
-                                                                                    of metadata types to convert.
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  convert metadata from the Metadata API format into the source format
-
-  Converts metadata retrieved via Metadata API into the source format used in Salesforce DX projects.
-
-  To use Salesforce CLI to work with components that you retrieved via Metadata API, first convert your files from the
-  metadata format to the source format using "sfdx force:mdapi:convert".
-
-  To convert files from the source format back to the metadata format, so that you can deploy them using "sfdx
-  force:mdapi:deploy", run "sfdx force:source:convert".
-
-ALIASES
-  $ sfdx force:mdapi:beta:convert
-
-EXAMPLES
-  $ sfdx force:mdapi:convert -r path/to/metadata
-
-  $ sfdx force:mdapi:convert -r path/to/metadata -d path/to/outputdir
-```
-
-_See code: [src/commands/force/mdapi/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/mdapi/convert.ts)_
-
-## `sfdx force:mdapi:deploy [-d <directory>] [-w <minutes>] [-o] [-g] [-q <id> | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -c] [-f <filepath>] [-s] [--soapdeploy] [--purgeondelete] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-deploy metadata to an org using Metadata API
-
-```
-USAGE
-  $ sfdx force:mdapi:deploy [-d <directory>] [-w <minutes>] [-o] [-g] [-q <id> | -l
-    NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -c] [-f <filepath>] [-s] [--soapdeploy]
-    [--purgeondelete] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion
-    <string>] [--verbose] [--concise] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
+FLAG DESCRIPTIONS
   -c, --checkonly
-      validate deploy but don’t save to the org
 
-  -d, --deploydir=<value>
-      root of directory tree of files to deploy
+    Validates the deployed metadata and runs all Apex tests, but prevents the deployment from being saved to the org.
 
-  -f, --zipfile=<value>
-      path to .zip file of metadata to deploy
+    IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained
+    certain terms to avoid any effect on customer implementations.
 
-  -g, --ignorewarnings
-      whether a warning will allow a deployment to complete successfully
+    If you change a field type from Master-Detail to Lookup or vice versa, that change isn’t supported when using the
+    --checkonly parameter to test a deployment (validation). This kind of change isn’t supported for test deployments to
+    avoid the risk of data loss or corruption. If a change that isn’t supported for test deployments is included in a
+    deployment package, the test deployment fails and issues an error.
 
-  -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)
-      deployment testing level
+    If your deployment package changes a field type from Master-Detail to Lookup or vice versa, you can still validate
+    the changes prior to deploying to Production by performing a full deployment to another test Sandbox. A full
+    deployment includes a validation of the changes as part of the deployment process.
 
-  -o, --ignoreerrors
-      ignore any errors and do not roll back deployment
+    Note: A Metadata API deployment that includes Master-Detail relationships deletes all detail records in the Recycle
+    Bin in the following cases.
 
-  -q, --validateddeployrequestid=<value>
-      request ID of the validated deployment to run a Quick Deploy
+    1. For a deployment with a new Master-Detail field, soft delete (send to the Recycle Bin) all detail records before
+    proceeding to deploy the Master-Detail field, or the deployment fails. During the deployment, detail records are
+    permanently deleted from the Recycle Bin and cannot be recovered.
+    2. For a deployment that converts a Lookup field relationship to a Master-Detail relationship, detail records must
+    reference a master record or be soft-deleted (sent to the Recycle Bin) for the deployment to succeed. However, a
+    successful deployment permanently deletes any detail records in the Recycle Bin.
 
-  -r, --runtests=<value>
-      tests to run if --testlevel RunSpecifiedTests
+  -d, --deploydir=<value>  Root of directory tree that contains the files you want to deploy.
 
-  -s, --singlepackage
-      Indicates that the zip file points to a directory structure for a single package
+    The root must contain a valid package.xml file describing the entities in the directory structure. Required to
+    initiate a deployment if you don’t use --zipfile. If you specify both --zipfile and --deploydir, a zip file of the
+    contents of the --deploydir directory is written to the location specified by --zipfile.
 
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
+  -f, --zipfile=<value>  Path to .zip file of metadata to deploy.
 
-  -w, --wait=<value>
-      [default: 0 minutes] wait time for command to finish in minutes. Use -1 to wait indefinitely 0
+    You must indicate this option or --deploydir. If you specify both --zipfile and --deploydir, a .zip file of the
+    contents of the deploy directory is created at the path specified for the .zip file.
 
-  --apiversion=<value>
-      override the api version used for api requests made by this command
+  -g, --ignorewarnings  Ignore any warnings and don't roll back the deployment.
 
-  --concise
-      omit success messages for smaller JSON output
+    If a warning occurs and ignoreWarnings is set to true, the success field in DeployMessage is true. When
+    ignoreWarnings is set to false, success is set to false, and the warning is treated like an error.
+    This field is available in API version 18.0 and later. Prior to version 18.0, there was no distinction between
+    warnings and errors. All problems were treated as errors and prevented a successful deployment.
 
-  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary
-      format of the code coverage results
+  -l, --testlevel=NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg  Level of deployment tests to run.
 
-  --json
-      format output as json
+    Valid values are:
 
-  --junit
-      output JUnit test results
+    * NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as
+    sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
+    * RunSpecifiedTests—Runs only the tests that you specify in the --runtests option. Code coverage requirements differ
+    from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75%
+    code coverage for each class and trigger in the deployment package. This coverage is computed for each class and
+    trigger individually and is different than the overall coverage percentage.
+    * RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked
+    packages. This test level is the default for production deployments that include Apex classes or triggers.
+    * RunAllTestsInOrg—All tests in your org are run, including tests of managed packages.
 
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
+    If you don’t specify a test level, the default behavior depends on the contents of your deployment package. For more
+    information, see “Running Tests in a Deployment” in the Metadata API Developer Guide.
 
-  --purgeondelete
-      specify that deleted components in the destructive changes manifest file are immediately eligible for deletion
-      rather than being stored in the Recycle Bin
+  -o, --ignoreerrors  Ignore any errors and don't roll back the deployment.
 
-  --resultsdir=<value>
-      output directory for code coverage and JUnit results; defaults to the deploy ID
+    The default is false. Keep this parameter set to false when deploying to a production org. If set to true,
+    components without errors are deployed, and components with errors are skipped.
 
-  --soapdeploy
-      deploy metadata with SOAP API instead of REST API
+  -q, --validateddeployrequestid=<value>  Request ID of the validated deployment to run a Quick Deploy.
 
-  --verbose
-      verbose output of deploy results
+    Deploying a validation helps you shorten your deployment time because tests aren’t rerun. If you have a recent
+    successful validation, you can deploy the validated components without running tests. A validation doesn’t save any
+    components in the org. You use a validation only to check the success or failure messages that you would receive
+    with an actual deployment. To validate your components, add the -c | --checkonly flag when you run 'force mdapi
+    deploy'. This flag sets the checkOnly='true' parameter for your deployment. Before deploying a recent validation,
+    ensure that the following requirements are met:
 
-DESCRIPTION
-  deploy metadata to an org using Metadata API
+    1. The components have been validated successfully for the target environment within the last 10 days.
+    2. As part of the validation, Apex tests in the target org have passed.
+    3. Code coverage requirements are met.
+    - If all tests in the org or all local tests are run, overall code coverage is at least 75%, and Apex triggers have
+    some coverage.
+    - If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is
+    covered by at least 75% individually.
 
-ALIASES
-  $ sfdx force:mdapi:beta:deploy
+  -s, --singlepackage  Indicates that the zip file points to a directory structure for a single package.
 
-EXAMPLES
-  Return a job ID you can use to check the deploy status:
+    By default, the CLI assumes the directory is structured for a set of packages.
 
-  $ sfdx force:mdapi:deploy -d some/path
+  -w, --wait=<value>  Number of minutes to wait for the command to finish; specify -1 to wait indefinitely.
 
-  Deploy and poll for 1000 minutes:
+    The default is 0 (returns immediately).
 
-  $ sfdx force:mdapi:deploy -d some/path -w 1000
+  --soapdeploy  Deploy metadata with SOAP API instead of REST API.
 
-  Deploy a ZIP file:
+    Because SOAP API has a lower .ZIP file size limit (400 MB uncompressed, 39 MB compressed), Salesforce recommends
+    REST API deployment. This flag provides backwards compatibility with API version 50.0 and earlier when deploy used
+    SOAP API by default.
 
-  $ sfdx force:mdapi:deploy -f stuff.zip
+  --verbose  Display verbose output of the deploy results.
 
-  Validate a deployment so the ID can be used for a quick deploy:
-
-  $ sfdx force:mdapi:deploy -d some/path -w 1000 -c --testlevel RunAllTestsInOrg
-
-  Quick deploy using a previously validated deployment:
-
-  $ sfdx force:mdapi:deploy -q MyValidatedId
+    Indicates that you want verbose output from the deploy operation.
 ```
 
-_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/mdapi/deploy.ts)_
+_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/mdapi/deploy.ts)_
 
-## `sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:deploy:cancel`
 
-cancel a metadata deployment
+Cancel a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:mdapi:deploy:cancel -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>]
 
 FLAGS
-  -i, --jobid=<value>                                                               job ID of the deployment you want to
-                                                                                    cancel; defaults to your most recent
-                                                                                    CLI deployment if not specified
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 33 minutes] wait time for
-                                                                                    command to finish in minutes
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -i, --jobid=<value>       Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment.
+  -o, --target-org=<value>  (required) Username or alias of the target org.
+  -w, --wait=<value>        [default: 33 minutes] Number of minutes for the command to complete and display results to
+                            the terminal window.
+  --api-version=<value>     Override the api version used for api requests made by this command
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  cancel a metadata deployment
+  Cancel a metadata deployment.
 
   Use this command to cancel a specified asynchronous metadata deployment. You can also specify a wait time (in minutes)
   to check for updates to the canceled deploy status.
 
+  Cancels an asynchronous metadata deployment.
+
 EXAMPLES
-  Deploy a directory of files to the org
+  Cancel a deployment and wait two minutes:
 
-    $ sfdx force:mdapi:deploy -d <directory>
+    $ sfdx force:mdapi:deploy:cancel --wait 2
 
-  Now cancel this deployment and wait two minutes
+  If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
-    $ sfdx force:mdapi:deploy:cancel -w 2
+    $ sfdx force:mdapi:deploy:cancel --jobid <jobid>
 
-  If you have multiple deployments in progress and want to cancel a specific one, specify the job ID
+FLAG DESCRIPTIONS
+  -w, --wait=<value>  Number of minutes for the command to complete and display results to the terminal window.
 
-    $ sfdx force:mdapi:deploy:cancel -i <jobid>
-
-  Check the status of the cancel job
-
-    $ sfdx force:mdapi:deploy:report
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/mdapi/deploy/cancel.ts)_
+_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/mdapi/deploy/cancel.ts)_
 
-## `sfdx force:mdapi:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:deploy:report`
 
-check the status of a metadata deployment
+Check the status of a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit]
-    [-u <string>] [--apiversion <string>] [--verbose] [--concise] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:mdapi:deploy:report -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>] [--verbose]
+    [--concise] [--resultsdir <value>] [--coverageformatters
+    clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
   -i, --jobid=<value>
-      job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; if not specified,
-      defaults to your most recent CLI deployment
+      Job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; defaults to your most
+      recent CLI deployment.
 
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
+  -o, --target-org=<value>
+      (required) Username or alias of the target org.
 
   -w, --wait=<value>
-      [default: 0 minutes] wait time for command to finish in minutes.  Use -1 to poll indefinitely
+      [default: 0 minutes] Number of minutes to wait for the command to finish; use -1 to poll indefinitely.
 
-  --apiversion=<value>
-      override the api version used for api requests made by this command
+  --api-version=<value>
+      Override the api version used for api requests made by this command
 
   --concise
-      omit success messages for smaller JSON output
+      Omit success messages for smaller JSON output.
 
-  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary
-      format of the code coverage results
-
-  --json
-      format output as json
+  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary...
+      Format of the code coverage results.
 
   --junit
-      output JUnit test results
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
+      Output JUnit test results.
 
   --resultsdir=<value>
-      output directory for code coverage and JUnit results; defaults to the deploy ID
+      Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
   --verbose
-      verbose output of deploy results
+      Verbose output of deploy results.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  check the status of a metadata deployment
+  Check the status of a metadata deployment.
 
-ALIASES
-  $ sfdx force:mdapi:beta:deploy:report
+  Specify the job ID for the deploy you want to check. The job ID is returned by the "force mdapi deploy" command when
+  run without the --wait parameter. You can also specify a wait time (minutes) to check for updates to the deploy
+  status.
 
 EXAMPLES
   Check the status of the most recent deployment
 
-  $ sfdx force:mdapi:deploy:report
+    $ sfdx force:mdapi:deploy:report
 
   Check the status of a deploy with job ID 1234 and wait for 10 minutes for the result:
 
-  $ sfdx force:mdapi:deploy:report -i 1234 -w 10
+    $ sfdx force:mdapi:deploy:report --jobid 1234 --wait 10
+
+FLAG DESCRIPTIONS
+  -i, --jobid=<value>
+
+    Job ID of the deployment to check; required if you’ve never deployed using Salesforce CLI; defaults to your most
+    recent CLI deployment.
+
+    The job ID (id field value for AsyncResult) of the deployment you want to check. The job ID is required if you
+    haven’t previously deployed using Salesforce CLI. If you deploy using Salesforce CLI and don’t specify a job ID, we
+    use the ID of the most recent metadata deployment.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/mdapi/deploy/report.ts)_
+_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/mdapi/deploy/report.ts)_
 
-## `sfdx force:mdapi:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:retrieve`
 
-retrieve metadata from an org using Metadata API
+Retrieve metadata from an org using Metadata API.
 
 ```
 USAGE
-  $ sfdx force:mdapi:retrieve -r <directory> [-k <filepath> | -d <directory> | -p <array>] [-s] [-n <string>] [-z] [-w
-    <minutes>] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:mdapi:retrieve -o <value> -r <value> [--json] [-k <value> | -d <value> | -p <value>] [-s] [-n <value>] [-z]
+    [-w <value>] [-a <value>] [--verbose]
 
 FLAGS
-  -a, --apiversion=<value>                                                          target API version for the retrieve
-  -d, --sourcedir=<value>                                                           source dir to use instead of the
-                                                                                    default package dir in
-                                                                                    sfdx-project.json
-  -k, --unpackaged=<value>                                                          file path of manifest of components
-                                                                                    to retrieve
-  -n, --zipfilename=<value>                                                         file name to use for the retrieved
-                                                                                    zip file
-  -p, --packagenames=<value>                                                        a comma-separated list of packages
-                                                                                    to retrieve
-  -r, --retrievetargetdir=<value>                                                   (required) directory root for the
-                                                                                    retrieved files
-  -s, --singlepackage                                                               indicates that the zip file points
-                                                                                    to a directory structure for a
-                                                                                    single package
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 1440 minutes] wait time
-                                                                                    for command to finish in minutes
-  -z, --unzip                                                                       extract all files from the retrieved
-                                                                                    zip file
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         verbose output of retrieve result
+  -a, --apiversion=<value>         Target API version for the retrieve.
+  -d, --sourcedir=<value>          Source directory to use instead of the default package directory specified in
+                                   sfdx-project.json.
+  -k, --unpackaged=<value>         Complete path for the manifest file that specifies the components to retrieve.
+  -n, --zipfilename=<value>        File name to use for the retrieved zip file.
+  -o, --target-org=<value>         (required) Username or alias of the target org.
+  -p, --packagenames=<value>...    Comma-separated list of packages to retrieve.
+  -r, --retrievetargetdir=<value>  (required) Root of the directory structure where the retrieved .zip or metadata files
+                                   are retrieved.
+  -s, --singlepackage              Specify that the zip file points to a directory structure for a single package.
+  -w, --wait=<value>               [default: 1440 minutes] Number of minutes to wait for the command to complete.
+  -z, --unzip                      Extract all files from the retrieved zip file.
+  --verbose                        Display verbose output of retrieve result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  retrieve metadata from an org using Metadata API
+  Retrieve metadata from an org using Metadata API.
 
-  Uses Metadata API to retrieve a .zip of XML files that represent metadata from the targeted org. The default target
-  username is the admin user for the default scratch org. You can retrieve and deploy up to 10,000 files or 400 MB (39
-  MB compressed) at one time.
-
-ALIASES
-  $ sfdx force:mdapi:beta:retrieve
+  This command uses Metadata API to retrieve a .zip of XML files that represent metadata from the targeted org. You can
+  retrieve and deploy up to 10,000 files or 400 MB (39 MB compressed) at one time.
 
 EXAMPLES
   Retrieve metadata in the default project directory into the target directory:
 
-  $ sfdx force:mdapi:retrieve -r path/to/retrieve/dir
+    $ sfdx force:mdapi:retrieve --retrievetargetdir path/to/retrieve/dir
 
   Retrieve metadata defined in the specified manifest into the target directory:
 
-  $ sfdx force:mdapi:retrieve -r path/to/retrieve/dir -k package.xml
+    $ sfdx force:mdapi:retrieve --retrievetargetdir path/to/retrieve/dir --unpackaged package.xml
 
   Retrieve metadata defined by the specified directory, name the retrieved zipfile and extract all contents
 
-  $ sfdx force:mdapi:retrieve -d path/to/apexClasses -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
+    $ sfdx force:mdapi:retrieve --sourcedir path/to/apexClasses --retrievetargetdir path/to/retrieve/dir --unzip \
+      --zipfilename apexClasses.zip
 
   Enqueue a retrieve request but do not wait for the metadata to be retrieved:
 
-  $ sfdx force:mdapi:retrieve -r path/to/retrieve/dir --wait 0
+    $ sfdx force:mdapi:retrieve --retrievetargetdir path/to/retrieve/dir --wait 0
+
+FLAG DESCRIPTIONS
+  -a, --apiversion=<value>  Target API version for the retrieve.
+
+    Use to override the default, which is the latest version supported by your CLI plug-in, with the version in your
+    package.xml file.
+
+  -s, --singlepackage  Specify that the zip file points to a directory structure for a single package.
+
+    By default, the CLI assumes the directory is structured for a set of packages.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/mdapi/retrieve.ts)_
+_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/mdapi/retrieve.ts)_
 
-## `sfdx force:mdapi:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:mdapi:retrieve:report`
 
-check the status of a metadata retrieval
+Check the status of a metadata retrieval.
 
 ```
 USAGE
-  $ sfdx force:mdapi:retrieve:report [-r <directory>] [-i <id>] [-n <string>] [-z] [-w <minutes>] [-u <string>] [--apiversion
-    <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:mdapi:retrieve:report -o <value> [--json] [--api-version <value>] [-r <value>] [-i <value>] [-n <value>] [-z] [-w
+    <value>] [--verbose]
 
 FLAGS
-  -i, --jobid=<value>                                                               job ID of the retrieve you want to
-                                                                                    check; defaults to your most recent
-                                                                                    CLI retrieval if not specified
-  -n, --zipfilename=<value>                                                         file name to use for the retrieved
-                                                                                    zip file
-  -r, --retrievetargetdir=<value>                                                   directory root for the retrieved
-                                                                                    files
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 1440 minutes] wait time
-                                                                                    for command to finish in minutes
-  -z, --unzip                                                                       extract all files from the retrieved
-                                                                                    zip file
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         verbose output of retrieve result
+  -i, --jobid=<value>              Job ID of the retrieve you want to check; defaults to your most recent CLI retrieval.
+  -n, --zipfilename=<value>        File name to use for the retrieved zip file.
+  -o, --target-org=<value>         (required) Username or alias of the target org.
+  -r, --retrievetargetdir=<value>  Root of the directory structure where the retrieved .zip or metadata files are
+                                   retrieved.
+  -w, --wait=<value>               [default: 1440 minutes] Number of minutes to wait for the command to complete.
+  -z, --unzip                      Extract all files from the retrieved zip file.
+  --api-version=<value>            Override the api version used for api requests made by this command
+  --verbose                        Display verbose output of retrieve result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  check the status of a metadata retrieval
+  Check the status of a metadata retrieval.
 
   Specify the job ID and a target directory for the retrieve you want to check. You can also specify a wait time
   (minutes) to check for updates to the retrieve status. If the retrieve was successful, the resulting zip file will be
   saved to the location passed in with the retrieve target parameter.
 
-ALIASES
-  $ sfdx force:mdapi:beta:retrieve:report
-
 EXAMPLES
   Poll until the metadata is retrieved (or timeout is reached) using data from the last force:mdapi:retrieve command:
 
-    sfdx force:mdapi:retrieve:report
+    $ sfdx force:mdapi:retrieve:report
 
-  Report the current status of the last retrieve command. If the retrieve is complete the zip file of metadata is written to the target directoy:
+  Report the current status of the last retrieve command. If the retrieve is complete the zip file of metadata is
+  written to the target directoy:
 
-    sfdx force:mdapi:retrieve:report -r path/to/retrieve/dir -w 0
+    $ sfdx force:mdapi:retrieve:report --retrievetargetdir path/to/retrieve/dir --wait 0
 
-  Poll until the metadata is retrieved (or timeout is reached) using the provided RetrieveID, naming the zip file and extracting all contents:
+  Poll until the metadata is retrieved (or timeout is reached) using the provided RetrieveID, naming the zip file and
+  extracting all contents:
 
-    sfdx force:mdapi:retrieve:report -i retrieveId -r path/to/retrieve/dir --unzip --zipfilename apexClasses.zip
+    $ sfdx force:mdapi:retrieve:report -i retrieveId --retrievetargetdir path/to/retrieve/dir --unzip --zipfilename \
+      apexClasses.zip
+
+FLAG DESCRIPTIONS
+  -i, --jobid=<value>  Job ID of the retrieve you want to check; defaults to your most recent CLI retrieval.
+
+    You must specify a --retrievetargetdir. Use with --wait to resume waiting.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/mdapi/retrieve/report.ts)_
+_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/mdapi/retrieve/report.ts)_
 
-## `sfdx force:source:beta:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:deploy`
 
-pull source from the scratch org to the project
-
-```
-USAGE
-  $ sfdx force:source:beta:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to the project
-
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=<value>
-      [default: 33 minutes] The number of minutes to wait for the command to complete and display results to the terminal
-      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
-      you. The default is 33 minutes.
-
-  --apiversion=<value>
-      override the api version used for api requests made by this command
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-
-DESCRIPTION
-  pull source from the scratch org to the project
-
-ALIASES
-  $ sfdx force:source:beta:pull
-```
-
-## `sfdx force:source:beta:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-push source to a scratch org from the project
+Deploy source to an org.
 
 ```
 USAGE
-  $ sfdx force:source:beta:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json]
-    [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to scratch org
-
-  -g, --ignorewarnings
-      deploy changes even if warnings are generated
-
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=<value>
-      [default: 33 minutes] Number of minutes to wait for the command to complete and display results to the terminal
-      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
-      you. The default is 33 minutes.
-
-  --apiversion=<value>
-      override the api version used for api requests made by this command
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-
-  --quiet
-      minimize json and sdtout output on success
-
-DESCRIPTION
-  push source to a scratch org from the project
-
-ALIASES
-  $ sfdx force:source:beta:push
-```
-
-## `sfdx force:source:beta:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-list local changes and/or changes in a scratch org
-
-```
-USAGE
-  $ sfdx force:source:beta:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -l, --local                                                                       list the changes that have been made
-                                                                                    locally
-  -r, --remote                                                                      list the changes that have been made
-                                                                                    in the scratch org
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --concise                                                                         show only the changes that will be
-                                                                                    pushed or pulled; omits files that
-                                                                                    are forceignored
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  list local changes and/or changes in a scratch org
-
-ALIASES
-  $ sfdx force:source:beta:status
-
-EXAMPLES
-  $ sfdx force:source:status -l
-
-  $ sfdx force:source:status -r
-
-  $ sfdx force:source:status
-
-  $ sfdx force:source:status -u me@example.com --json
-```
-
-## `sfdx force:source:beta:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-clear all local source tracking information
-
-```
-USAGE
-  $ sfdx force:source:beta:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -p, --noprompt                                                                    do not prompt for source tracking
-                                                                                    override confirmation
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  clear all local source tracking information
-
-  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
-
-  Clears all local source tracking information. When you next run force:source:status, the CLI displays all local and
-  remote files as changed, and any files with the same name are listed as conflicts.
-
-ALIASES
-  $ sfdx force:source:beta:tracking:clear
-```
-
-## `sfdx force:source:beta:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-reset local and remote source tracking
-
-```
-USAGE
-  $ sfdx force:source:beta:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -p, --noprompt                                                                    do not prompt for source tracking
-                                                                                    override confirmation
-  -r, --revision=<value>                                                            reset to a specific SourceMember
-                                                                                    revision counter number
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  reset local and remote source tracking
-
-  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
-
-  Resets local and remote source tracking so that the CLI no longer registers differences between your local files and
-  those in the org. When you next run force:source:status, the CLI returns no results, even though conflicts might
-  actually exist. The CLI then resumes tracking new source changes as usual.
-
-  Use the --revision parameter to reset source tracking to a specific revision number of an org source member. To get
-  the revision number, query the SourceMember Tooling API object with the force:data:soql:query command. For example:
-
-  $ sfdx force:data:soql:query -q "SELECT MemberName, MemberType, RevisionCounter FROM SourceMember" -t
-
-ALIASES
-  $ sfdx force:source:beta:tracking:reset
-```
-
-## `sfdx force:source:convert [-r <directory>] [-d <directory>] [-n <string>] [-p <array> | -x <string> | -m <array>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-convert source into Metadata API format
-
-```
-USAGE
-  $ sfdx force:source:convert [-r <directory>] [-d <directory>] [-n <string>] [-p <array> | -x <string> | -m <array>]
-    [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -d, --outputdir=<value>                                                           [default:
-                                                                                    metadataPackage_1660955655196]
-                                                                                    output directory to store the
-                                                                                    Metadata API–formatted files in
-  -m, --metadata=<value>                                                            comma-separated list of metadata
-                                                                                    component names to convert
-  -n, --packagename=<value>                                                         name of the package to associate
-                                                                                    with the metadata-formatted files
-  -p, --sourcepath=<value>                                                          comma-separated list of paths to the
-                                                                                    local source files to convert
-  -r, --rootdir=<value>                                                             a source directory other than the
-                                                                                    default package to convert
-  -x, --manifest=<value>                                                            file path to manifest (package.xml)
-                                                                                    of metadata types to convert.
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  convert source into Metadata API format
-
-  Converts source-formatted files into metadata that you can deploy using Metadata API.
-
-  To convert source-formatted files into the metadata format, so that you can deploy them using Metadata API,
-
-  run "sfdx force:source:convert". Then deploy the metadata using "sfdx force:mdapi:deploy".
-
-  To convert Metadata API–formatted files into the source format, run "sfdx force:mdapi:convert".
-
-  To specify a package name that includes spaces, enclose the name in single quotes.
-
-EXAMPLES
-  $ sfdx force:source:convert -r path/to/source
-
-  $ sfdx force:source:convert -r path/to/source -d path/to/outputdir -n 'My Package'
-```
-
-_See code: [src/commands/force/source/convert.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/convert.ts)_
-
-## `sfdx force:source:delete [-w <minutes>] [-l NoTestRun|RunLocalTests|RunAllTestsInOrg] [-r] [-m <array>] [-p <array>] [-f [-t | -c]] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-delete source from your project and from a non-source-tracked org
-
-```
-USAGE
-  $ sfdx force:source:delete [-w <minutes>] [-l NoTestRun|RunLocalTests|RunAllTestsInOrg] [-r] [-m <array>] [-p <array>]
-    [-f [-t | -c]] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -c, --checkonly                                                                   validate delete command but do not
-                                                                                    delete from the org or delete files
-                                                                                    locally
-  -f, --forceoverwrite                                                              ignore conflict warnings and
-                                                                                    overwrite changes to the org
-  -l, --testlevel=(NoTestRun|RunLocalTests|RunAllTestsInOrg)                        [default: NoTestRun] deployment
-                                                                                    testing level
-  -m, --metadata=<value>                                                            comma-separated list of names of
-                                                                                    metadata components to delete
-  -p, --sourcepath=<value>                                                          comma-separated list of source file
-                                                                                    paths to delete
-  -r, --noprompt                                                                    do not prompt for delete
-                                                                                    confirmation
-  -t, --tracksource                                                                 If the delete succeeds, update the
-                                                                                    source tracking information, similar
-                                                                                    to push
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 33 minutes] wait time for
-                                                                                    command to finish in minutes
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         verbose output of delete result
-
-DESCRIPTION
-  delete source from your project and from a non-source-tracked org
-
-  IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained
-  certain terms to avoid any effect on customer implementations.
-
-  Use this command to delete components from orgs that don’t have source tracking.
-
-  To remove deleted items from scratch orgs, which have change tracking, use "sfdx force:source:push".
-
-EXAMPLES
-  $ sfdx force:source:delete -m <metadata>
-
-  $ sfdx force:source:delete -p path/to/source
-```
-
-_See code: [src/commands/force/source/delete.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/delete.ts)_
-
-## `sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [-o] [-g] [--purgeondelete -x <filepath>] [-q <id> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -t] [-m <array>] [-p <array>] [--predestructivechanges <filepath> ] [--postdestructivechanges <filepath> ] [-f ] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-deploy source to an org
-
-```
-USAGE
-  $ sfdx force:source:deploy [--soapdeploy] [-w <minutes>] [-o] [-g] [--purgeondelete -x <filepath>] [-q <id> | -c | -l
-    NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <array> | -t] [-m <array>] [-p <array>]
-    [--predestructivechanges <filepath> ] [--postdestructivechanges <filepath> ] [-f ] [--resultsdir <directory>]
-    [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:deploy -u <value> [--json] [--api-version <value>] [--soapdeploy] [-w <value>] [-o] [-g]
+    [--purgeondelete -x <value>] [-q <value> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r
+    <value> | -t] [--verbose] [-m <value>] [-p <value>] [--predestructivechanges <value> ] [--postdestructivechanges
+    <value> ] [-f ] [--resultsdir <value>] [--coverageformatters
+    clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
   -c, --checkonly
-      validate deploy but don’t save to the org
+      Validate the deployed metadata and run all Apex tests, but don't save to the org.
 
   -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to the org
+      Ignore conflict warnings and overwrite changes to the org.
 
   -g, --ignorewarnings
-      whether a warning will allow a deployment to complete successfully
+      Allow a deployment to complete successfully even if there are warnings.
 
-  -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)
-      deployment testing level
+  -l, --testlevel=<option>
+      Deployment testing level.
+      <options: NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg>
 
-  -m, --metadata=<value>
-      comma-separated list of metadata component names
+  -m, --metadata=<value>...
+      Comma-separated list of metadata component names.
 
   -o, --ignoreerrors
-      ignore any errors and do not roll back deployment
+      Ignore any errors and don't roll back deployment.
 
-  -p, --sourcepath=<value>
-      comma-separated list of source file paths to deploy
+  -p, --sourcepath=<value>...
+      Comma-separated list of source file paths to deploy.
 
   -q, --validateddeployrequestid=<value>
-      deploy request ID of the validated deployment to run a Quick Deploy
+      Deploy request ID of the validated deployment to run a Quick Deploy.
 
-  -r, --runtests=<value>
-      tests to run if --testlevel RunSpecifiedTests
+  -r, --runtests=<value>...
+      Apex test classes to run if --testlevel RunSpecifiedTests.
 
   -t, --tracksource
-      if the deploy succeeds, update source tracking information; doesn't delete locally deleted files from org unless you
-      also specify --predestructivechanges or --postdestructivechanges
+      If the deploy succeeds, update source tracking information.
 
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
+  -u, --target-org=<value>
+      (required) Username or alias of the target org.
 
   -w, --wait=<value>
-      [default: 33 minutes] wait time for command to finish in minutes
+      [default: 33 minutes] Wait time for command to finish in minutes.
 
   -x, --manifest=<value>
-      file path for manifest (package.xml) of components to deploy
+      Complete path for the manifest (package.xml) file that specifies the components to deploy.
 
-  --apiversion=<value>
-      override the api version used for api requests made by this command
+  --api-version=<value>
+      Override the api version used for api requests made by this command
 
-  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary
-      format of the code coverage results
-
-  --json
-      format output as json
+  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary...
+      Format of the code coverage results.
 
   --junit
-      output JUnit test results
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
+      Output JUnit test results.
 
   --postdestructivechanges=<value>
-      file path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy
+      File path for a manifest (destructiveChangesPost.xml) of components to delete after the deploy.
 
   --predestructivechanges=<value>
-      file path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy
+      File path for a manifest (destructiveChangesPre.xml) of components to delete before the deploy.
 
   --purgeondelete
-      specify that deleted components in the destructive changes manifest file are immediately eligible for deletion
-      rather than being stored in the Recycle Bin
+      Specify that deleted components in the destructive changes manifest file are immediately eligible for deletion
+      rather than being stored in the Recycle Bin.
 
   --resultsdir=<value>
-      output directory for code coverage and JUnit results; defaults to the deploy ID
+      Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
   --soapdeploy
-      deploy metadata with SOAP API instead of REST API
+      Deploy metadata with SOAP API instead of REST API.
 
   --verbose
-      verbose output of deploy result
+      Specify verbose output about the deploy result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  deploy source to an org
+  Deploy source to an org.
 
-  IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained
-  certain terms to avoid any effect on customer implementations.
-
-  Use this command to deploy source (metadata that’s in source format) to an org.
-
-  To take advantage of change tracking with scratch orgs, use "sfdx force:source:push".
-
-  To deploy metadata that’s in metadata format, use "sfdx force:mdapi:deploy".
+  Use this command to deploy source (metadata that’s in source format) to an org. To take advantage of change tracking
+  with scratch orgs, use "force source push". To deploy metadata that’s in metadata format, use "force mdapi deploy".
 
   The source you deploy overwrites the corresponding metadata in your org. This command does not attempt to merge your
   source with the versions in your org.
 
   To run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue
-  to use the CLI.
-
-  To check the status of the job, use force:source:deploy:report.
+  to use the CLI. To check the status of the job, use "force source deploy report".
 
   If the comma-separated list you’re supplying contains spaces, enclose the entire comma-separated list in one set of
   double quotes. On Windows, if the list contains commas, also enclose the entire list in one set of double quotes.
 
-  If you use the --manifest, --predestructivechanges, or --postdestructivechanges parameters, run the
-  force:source:manifest:create command to easily generate the different types of manifest files.
+  If you use the --manifest, --predestructivechanges, or --postdestructivechanges parameters, run the "force source
+  manifest create" command to easily generate the different types of manifest files.
 
 EXAMPLES
-  To deploy the source files in a directory:
+  Deploy the source files in a directory:
 
-  	 $ sfdx force:source:deploy -p path/to/source
+    $ sfdx force:source:deploy --sourcepath path/to/source
 
-  To deploy a specific Apex class and the objects whose source is in a directory:
+  Deploy a specific Apex class and the objects whose source is in a directory:
 
-  	$ sfdx force:source:deploy -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+    $ sfdx force:source:deploy --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects"
 
-  To deploy source files in a comma-separated list that contains spaces:
+  Deploy source files in a comma-separated list that contains spaces:
 
-     $ sfdx force:source:deploy -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
+    $ sfdx force:source:deploy --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, \
+      path/to/apex/classes"
 
-  To deploy all Apex classes:
+  Deploy all Apex classes:
 
-     $ sfdx force:source:deploy -m ApexClass
+    $ sfdx force:source:deploy --metadata ApexClass
 
-  To deploy a specific Apex class:
+  Deploy a specific Apex class:
 
-     $ sfdx force:source:deploy -m ApexClass:MyApexClass
+    $ sfdx force:source:deploy --metadata ApexClass:MyApexClass
 
-  To deploy a specific Apex class and update source tracking files :
+  Deploy a specific Apex class and update source tracking files :
 
-     $ sfdx force:source:deploy -m ApexClass:MyApexClass --tracksource
+    $ sfdx force:source:deploy --metadata ApexClass:MyApexClass --tracksource
 
-  To deploy all custom objects and Apex classes:
+  Deploy all custom objects and Apex classes:
 
-     $ sfdx force:source:deploy -m "CustomObject,ApexClass"
+    $ sfdx force:source:deploy --metadata "CustomObject,ApexClass"
 
-  To deploy all Apex classes and two specific profiles (one of which has a space in its name):
+  Deploy all Apex classes and two specific profiles (one of which has a space in its name):
 
-     $ sfdx force:source:deploy -m "ApexClass, Profile:My Profile, Profile: AnotherProfile"
+    $ sfdx force:source:deploy --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
 
-  To deploy all components listed in a manifest:
+  Deploy all components listed in a manifest:
 
-     $ sfdx force:source:deploy -x path/to/package.xml
+    $ sfdx force:source:deploy --manifest path/to/package.xml
 
-  To run the tests that aren’t in any managed packages as part of a deployment:
+  Run the tests that aren’t in any managed packages as part of a deployment:
 
-     $ sfdx force:source:deploy -m ApexClass -l RunLocalTests
+    $ sfdx force:source:deploy --metadata ApexClass --testlevel RunLocalTests
 
-  To check whether a deployment would succeed (to prepare for Quick Deploy):
+  Check whether a deployment would succeed (to prepare for Quick Deploy):
 
-     $ sfdx force:source:deploy -m ApexClass -l RunAllTestsInOrg -c
+    $ sfdx force:source:deploy --metadata ApexClass --testlevel RunAllTestsInOrg -c
 
-  To deploy an already validated deployment (Quick Deploy):
+  Deploy an already validated deployment (Quick Deploy):
 
-      $ sfdx force:source:deploy -q 0Af9A00000FTM6pSAH`
+    $ sfdx force:source:deploy --validateddeployrequestid 0Af9A00000FTM6pSAH`
 
-  To run a destructive operation before the deploy occurs:
+  Run a destructive operation before the deploy occurs:
 
-      $ sfdx force:source:deploy --manifest package.xml --predestructivechanges destructiveChangesPre.xml
+    $ sfdx force:source:deploy --manifest package.xml --predestructivechanges destructiveChangesPre.xml
 
-  To run a destructive operation after the deploy occurs:
+  Run a destructive operation after the deploy occurs:
 
-      $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
+    $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
+
+FLAG DESCRIPTIONS
+  -c, --checkonly  Validate the deployed metadata and run all Apex tests, but don't save to the org.
+
+    IMPORTANT: Where possible, we changed noninclusive terms to align with our company value of Equality. We maintained
+    certain terms to avoid any effect on customer implementations.
+
+    If you change a field type from Master-Detail to Lookup or vice versa, that change isn’t supported when using the
+    --checkonly parameter to test a deployment (validation). This kind of change isn’t supported for test deployments to
+    avoid the risk of data loss or corruption. If a change that isn’t supported for test deployments is included in a
+    deployment package, the test deployment fails and issues an error.
+
+    If your deployment package changes a field type from Master-Detail to Lookup or vice versa, you can still validate
+    the changes prior to deploying to Production by performing a full deployment to another test Sandbox. A full
+    deployment includes a validation of the changes as part of the deployment process.
+
+    Note: A Metadata API deployment that includes Master-Detail relationships deletes all detail records in the Recycle
+    Bin in the following cases.
+
+    1. For a deployment with a new Master-Detail field, soft delete (send to the Recycle Bin) all detail records before
+    proceeding to deploy the Master-Detail field, or the deployment fails. During the deployment, detail records are
+    permanently deleted from the Recycle Bin and cannot be recovered.
+
+    2. For a deployment that converts a Lookup field relationship to a Master-Detail relationship, detail records must
+    reference a master record or be soft-deleted (sent to the Recycle Bin) for the deployment to succeed. However, a
+    successful deployment permanently deletes any detail records in the Recycle Bin.
+
+  -g, --ignorewarnings  Allow a deployment to complete successfully even if there are warnings.
+
+    If a warning occurs and ignoreWarnings is set to true, the success field in DeployMessage is true. When
+    ignoreWarnings is set to false, success is set to false, and the warning is treated like an error.
+
+  -l, --testlevel=NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg  Deployment testing level.
+
+    Valid values are:
+
+    - NoTestRun—No tests are run. This test level applies only to deployments to development environments, such as
+    sandbox, Developer Edition, or trial orgs. This test level is the default for development environments.
+
+    - RunSpecifiedTests—Runs only the tests that you specify in the --runtests option. Code coverage requirements differ
+    from the default coverage requirements when using this test level. Executed tests must comprise a minimum of 75%
+    code coverage for each class and trigger in the deployment package. This coverage is computed for each class and
+    trigger individually and is different than the overall coverage percentage.
+
+    - RunLocalTests—All tests in your org are run, except the ones that originate from installed managed and unlocked
+    packages. This test level is the default for production deployments that include Apex classes or triggers.
+
+    - RunAllTestsInOrg—All tests in your org are run, including tests of managed packages.
+
+    If you don’t specify a test level, the default behavior depends on the contents of your deployment package. For more
+    information, see “Running Tests in a Deployment” in the Metadata API Developer Guide.
+
+  -m, --metadata=<value>...  Comma-separated list of metadata component names.
+
+    If you specify this parameter, don’t specify --manifest or --sourcepath.
+
+  -o, --ignoreerrors  Ignore any errors and don't roll back deployment.
+
+    Keep this parameter set to false when deploying to a production org. If set to true, components without errors are
+    deployed, and components with errors are skipped.
+
+  -p, --sourcepath=<value>...  Comma-separated list of source file paths to deploy.
+
+    The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder
+    (in which case the operation is applied to all metadata types in the directory and its sub-directories).
+
+    If you specify this parameter, don’t specify --manifest or --metadata.
+
+  -q, --validateddeployrequestid=<value>  Deploy request ID of the validated deployment to run a Quick Deploy.
+
+    Deploying a validation helps you shorten your deployment time because tests aren’t rerun. If you have a recent
+    successful validation, you can deploy the validated components without running tests. A validation doesn’t save any
+    components in the org. You use a validation only to check the success or failure messages that you would receive
+    with an actual deployment. To validate your components, add the -c | --checkonly flag when you run "force mdapi
+    deploy". This flag sets the checkOnly="true" parameter for your deployment. Before deploying a recent validation,
+    ensure that the following requirements are met:
+
+    1. The components have been validated successfully for the target environment within the last 10 days.
+
+    2. As part of the validation, Apex tests in the target org have passed.
+
+    3. Code coverage requirements are met.
+
+    * If all tests in the org or all local tests are run, overall code coverage is at least 75%, and Apex triggers have
+    some coverage.
+
+    * If specific tests are run with the RunSpecifiedTests test level, each class and trigger that was deployed is
+    covered by at least 75% individually.
+
+  -t, --tracksource  If the deploy succeeds, update source tracking information.
+
+    Doesn't delete locally deleted files from org unless you also specify --predestructivechanges or
+    --postdestructivechanges.
+
+  -w, --wait=<value>  Wait time for command to finish in minutes.
+
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
+
+  -x, --manifest=<value>  Complete path for the manifest (package.xml) file that specifies the components to deploy.
+
+    All child components are included.
+
+    If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/deploy.ts)_
 
-## `sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:deploy:cancel`
 
-cancel a source deployment
+Cancel a source deployment.
 
 ```
 USAGE
-  $ sfdx force:source:deploy:cancel [-w <minutes>] [-i <id>] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:deploy:cancel -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>]
 
 FLAGS
-  -i, --jobid=<value>                                                               job ID of the deployment you want to
-                                                                                    cancel; defaults to your most recent
-                                                                                    CLI deployment if not specified
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 33 minutes] wait time for
-                                                                                    command to finish in minutes
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -i, --jobid=<value>       Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if
+                            not specified.
+  -o, --target-org=<value>  (required) Username or alias of the target org.
+  -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
+                            results.
+  --api-version=<value>     Override the api version used for api requests made by this command
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  cancel a source deployment
+  Cancel a source deployment.
 
   Use this command to cancel a specified asynchronous source deployment. You can also specify a wait time (in minutes)
   to check for updates to the canceled deploy status.
 
   To run the command asynchronously, set --wait to 0, which immediately returns the job ID. This way, you can continue
-  to use the CLI.
-
-  To check the status of the job, use force:source:deploy:report.
+  to use the CLI. To check the status of the job, use "force source deploy report".
 
 EXAMPLES
-  Deploy a directory of files to the org
+  Cancel a deployment and wait two minutes:
 
-    $ sfdx force:source:deploy -d <directory>
+    $ sfdx force:source:deploy:cancel --wait 2
 
-  Now cancel this deployment and wait two minutes
+  If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
-    $ sfdx force:source:deploy:cancel -w 2
+    $ sfdx force:source:deploy:cancel --jobid <jobid>
 
-  If you have multiple deployments in progress and want to cancel a specific one, specify the job ID
+FLAG DESCRIPTIONS
+  -w, --wait=<value>  Number of minutes to wait for the command to complete and display results.
 
-    $ sfdx force:source:deploy:cancel -i <jobid>
-
-  Check the status of the cancel job
-
-    $ sfdx force:source:deploy:report
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/deploy/cancel.ts)_
 
-## `sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit] [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:deploy:report`
 
-check the status of a metadata deployment
+Check the status of a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:source:deploy:report [-w <minutes>] [-i <id>] [--resultsdir <directory>] [--coverageformatters <array>] [--junit]
-    [-u <string>] [--apiversion <string>] [--verbose] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:deploy:report -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>] [--verbose]
+    [--resultsdir <value>] [--coverageformatters
+    clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
   -i, --jobid=<value>
-      job ID of the deployment you want to check; defaults to your most recent CLI deployment if not specified
+      Job ID of the deployment you want to check; defaults to your most recent CLI deployment.
 
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
+  -o, --target-org=<value>
+      (required) Username or alias of the target org.
 
   -w, --wait=<value>
-      [default: 33 minutes] wait time for command to finish in minutes
+      [default: 33 minutes] Number of minutes to wait for the command to complete and display results to the terminal
+      window.
 
-  --apiversion=<value>
-      override the api version used for api requests made by this command
+  --api-version=<value>
+      Override the api version used for api requests made by this command
 
-  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary
-      format of the code coverage results
-
-  --json
-      format output as json
+  --coverageformatters=clover,cobertura,html-spa,html,json,json-summary,lcovonly,none,teamcity,text,text-summary...
+      Format of the code coverage results.
 
   --junit
-      output JUnit test results
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
+      Output JUnit test results.
 
   --resultsdir=<value>
-      output directory for code coverage and JUnit results; defaults to the deploy ID
+      Output directory for code coverage and JUnit results; defaults to the deploy ID.
 
   --verbose
-      verbose output of deploy result
+      Verbose output of deploy result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  check the status of a metadata deployment
+  Check the status of a metadata deployment.
 
   Specify the job ID for the deploy you want to check. You can also specify a wait time (minutes) to check for updates
   to the deploy status.
 
 EXAMPLES
-  Deploy a directory of files to the org
+  Check the status of the most recent deployment on your default org:
 
-   $ sfdx force:source:deploy -d <directory>
+    $ sfdx force:source:deploy:report
 
-  Now cancel this deployment and wait two minutes
+  Check the status using the job ID; output JUnit test results and format code coverage results in the specified
+  format:
 
-   $ sfdx force:source:deploy:cancel -w 2
+    $ sfdx force:source:deploy:report --jobid <id> --junit --coverageformatters cobertura
 
-  If you have multiple deployments in progress and want to cancel a specific one, specify the job ID
+FLAG DESCRIPTIONS
+  -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
 
-   $ sfdx force:source:deploy:cancel -i <jobid>
-
-  Check the status of the cancel job
-
-   $ sfdx force:source:deploy:report
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/deploy/report.ts)_
 
-## `sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:pull`
 
-check your local project package directories for forceignored files
+Pull changed source from the org to your project to keep them in sync.
 
 ```
 USAGE
-  $ sfdx force:source:ignored:list [-p <filepath>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:pull -o <value> [--json] [--verbose] [--api-version <value>] [-f] [-w <value>]
 
 FLAGS
-  -p, --sourcepath=<value>                                                          file or directory of files that the
-                                                                                    command checks for foreceignored
-                                                                                    files
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -f, --forceoverwrite      Ignore conflict warnings; changes in the org overwrite changes in the project.
+  -o, --target-org=<value>  (required) Username or alias of the target org.
+  -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
+                            results to the terminal window.
+  --api-version=<value>     Override the api version used for api requests made by this command
+  --verbose                 Display additional details about the command results.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  check your local project package directories for forceignored files
-```
+  Pull changed source from the org to your project to keep them in sync.
 
-_See code: [src/commands/force/source/ignored/list.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/ignored/list.ts)_
-
-## `sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array> --fromorg <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-create a project manifest that lists the metadata components you want to deploy or retrieve
-
-```
-USAGE
-  $ sfdx force:source:manifest:create [-m <array>] [-p <array>] [-n <string> | -t pre|post|destroy|package] [-c <array> --fromorg
-    <string>] [-o <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -c, --includepackages=<value>                                                     comma-separated list of package
-                                                                                    types (managed, unlocked) whose
-                                                                                    metadata is included in the
-                                                                                    manifest; by default, metadata in
-                                                                                    packages is ignored
-  -m, --metadata=<value>                                                            comma-separated list of names of
-                                                                                    metadata components to include in
-                                                                                    the manifest
-  -n, --manifestname=<value>                                                        name of a custom manifest file to
-                                                                                    create
-  -o, --outputdir=<value>                                                           directory to save the created
-                                                                                    manifest
-  -p, --sourcepath=<value>                                                          comma-separated list of paths to the
-                                                                                    local source files to include in the
-                                                                                    manifest
-  -t, --manifesttype=(pre|post|destroy|package)                                     type of manifest to create; the type
-                                                                                    determines the name of the created
-                                                                                    file
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --fromorg=<value>                                                                 username or alias of the org that
-                                                                                    contains the metadata components
-                                                                                    from which to build a manifest
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  create a project manifest that lists the metadata components you want to deploy or retrieve
-
-  Create a manifest from a list of metadata components (--metadata) or from one or more local directories that contain
-  source files (--sourcepath). You can specify either of these parameters, not both.
-
-  Use --manifesttype to specify the type of manifest you want to create. The resulting manifest files have specific
-  names, such as the standard package.xml or destructiveChanges.xml to delete metadata. Valid values for this parameter,
-  and their respective file names, are:
-
-  package :  package.xml (default)
-
-  pre : destructiveChangesPre.xml
-
-  post : destructiveChangesPost.xml
-
-  destroy : destructiveChanges.xml
-
-  See https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy_deleting_files.htm for
-  information about these destructive manifest files.
-
-  Use --manifestname to specify a custom name for the generated manifest if the pre-defined ones don’t suit your needs.
-  You can specify either --manifesttype or --manifestname, but not both.
+  If the command detects a conflict, it displays the conflicts but does not complete the process. After reviewing the
+  conflict, rerun the command with the --forceoverwrite parameter.
 
 EXAMPLES
-  $ sfdx force:source:manifest:create -m ApexClass
+  Pull source from your default org:
 
-  $ sfdx force:source:manifest:create -m ApexClass:MyApexClass --manifesttype destroy
+    $ sfdx force:source:pull
 
-  $ sfdx force:source:manifest:create --sourcepath force-app --manifestname myNewManifest
+  Pull source from the org with alias "myscratch"; ignore any conflicts and overwrite the local project files with org
+  changes; wait for only 5 minutes:
 
-  $ sfdx force:source:manifest:create --fromorg test@myorg.com --includepackages unlocked
+    $ sfdx force:source:pull --target-org myscratch --wait 5 --forceoverwrite
+
+FLAG DESCRIPTIONS
+  -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
+
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/manifest/create.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/manifest/create.ts)_
+_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/pull.ts)_
 
-_See code: [src/commands/force/source/open.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/open.ts)_
+## `sfdx force:source:push`
 
-## `sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-pull source from the scratch org to the project
-
-```
-USAGE
-  $ sfdx force:source:pull [-f] [-w <minutes>] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to the project
-
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=<value>
-      [default: 33 minutes] The number of minutes to wait for the command to complete and display results to the terminal
-      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
-      you. The default is 33 minutes.
-
-  --apiversion=<value>
-      override the api version used for api requests made by this command
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-
-DESCRIPTION
-  pull source from the scratch org to the project
-
-ALIASES
-  $ sfdx force:source:beta:pull
-```
-
-_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/pull.ts)_
-
-## `sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-push source to a scratch org from the project
+Push changed source from your project to an org to keep them in sync.
 
 ```
 USAGE
-  $ sfdx force:source:push [-f] [-w <minutes>] [-g] [-u <string>] [--apiversion <string>] [--quiet] [--json]
-    [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:push -o <value> [--json] [--api-version <value>] [-f] [-w <value>] [-g] [--quiet]
 
 FLAGS
-  -f, --forceoverwrite
-      ignore conflict warnings and overwrite changes to scratch org
+  -f, --forceoverwrite      Ignore conflict warnings and push source anyway; changes in the project overwrite changes in
+                            the org.
+  -g, --ignorewarnings      Deploy changes even if warnings are generated.
+  -o, --target-org=<value>  (required) Username or alias of the target org.
+  -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
+                            results to the terminal window.
+  --api-version=<value>     Override the api version used for api requests made by this command
+  --quiet                   Minimize JSON and sdtout output on success.
 
-  -g, --ignorewarnings
-      deploy changes even if warnings are generated
-
-  -u, --targetusername=<value>
-      username or alias for the target org; overrides default target org
-
-  -w, --wait=<value>
-      [default: 33 minutes] Number of minutes to wait for the command to complete and display results to the terminal
-      window. If the command continues to run after the wait period, the CLI returns control of the terminal window to
-      you. The default is 33 minutes.
-
-  --apiversion=<value>
-      override the api version used for api requests made by this command
-
-  --json
-      format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)
-      [default: warn] logging level for this command invocation
-
-  --quiet
-      minimize json and sdtout output on success
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  push source to a scratch org from the project
+  Push changed source from your project to an org to keep them in sync.
 
-ALIASES
-  $ sfdx force:source:beta:push
+  If the command detects a conflict, it displays the conflicts but does not complete the process. After reviewing the
+  conflict, rerun the command with the --forceoverwrite parameter.
+
+EXAMPLES
+  Push source to your default org:
+
+    $ sfdx force:source:push
+
+  Push source to the org with alias "myscratch"; ignore any conflicts and overwrite with org with the local project
+  changes; wait for only 5 minutes:
+
+    $ sfdx force:source:push --target-org myscratch --wait 5 --forceoverwrite
+
+FLAG DESCRIPTIONS
+  -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
+
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/push.ts)_
+_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/push.ts)_
 
-## `sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>] [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:retrieve`
 
-retrieve source from an org
+Retrieve source from an org.
 
 ```
 USAGE
-  $ sfdx force:source:retrieve [-p <array> | -x <filepath> | -m <array>] [-w <minutes>] [-n <array>] [-f -t] [-u <string>]
-    [-a <string>] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:retrieve -o <value> [--json] [-a <value>] [-r <value> | -n <value> | -p <value>] [-w <value>] [-x
+    <value> | -m <value> | ] [-f -t] [--verbose]
 
 FLAGS
-  -a, --apiversion=<value>                                                          override the api version used for
-                                                                                    api requests made by this command
-  -f, --forceoverwrite                                                              ignore conflict warnings and
-                                                                                    overwrite changes to the project
-  -m, --metadata=<value>                                                            comma-separated list of metadata
-                                                                                    component names
-  -n, --packagenames=<value>                                                        a comma-separated list of packages
-                                                                                    to retrieve
-  -p, --sourcepath=<value>                                                          comma-separated list of source file
-                                                                                    paths to retrieve
-  -t, --tracksource                                                                 if the retrieve succeeds, update
-                                                                                    source tracking information; doesn't
-                                                                                    delete local files that were deleted
-                                                                                    in the org
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  -w, --wait=<value>                                                                [default: 33 minutes] wait time for
-                                                                                    command to finish in minutes
-  -x, --manifest=<value>                                                            file path for manifest (package.xml)
-                                                                                    of components to retrieve
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-  --verbose                                                                         verbose output of retrieve result
+  -a, --api-version=<value>        Override the api version used for api requests made by this command
+  -f, --forceoverwrite             Ignore conflict warnings and overwrite changes to the project.
+  -m, --metadata=<value>...        Comma-separated list of names of metadata components to retrieve from the org.
+  -n, --packagenames=<value>...    Comma-separated list of packages to retrieve.
+  -o, --target-org=<value>         (required) Username or alias of the target org.
+  -p, --sourcepath=<value>...      Comma-separated list of file paths for source to retrieve from the org.
+  -r, --retrievetargetdir=<value>  Root of the directory structure into which the source files are retrieved.
+  -t, --tracksource                If the retrieve succeeds, update source tracking information; doesn't delete local
+                                   files that were deleted in the org.
+  -w, --wait=<value>               [default: 33 minutes] Number of minutes to wait for the command to complete and
+                                   display results to the terminal window.
+  -x, --manifest=<value>           Complete path for the manifest (package.xml) file that specifies the components to
+                                   retrieve.
+  --verbose                        Verbose output of retrieve result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
-  retrieve source from an org
+  Retrieve source from an org.
 
-  Use this command to retrieve source (metadata that’s in source format) from an org.
-
-  To take advantage of change tracking with scratch orgs, use "sfdx force:source:pull".
-
-  To retrieve metadata that’s in metadata format, use "sfdx force:mdapi:retrieve".
+  Use this command to retrieve source (metadata that’s in source format) from an org. To take advantage of change
+  tracking with scratch orgs, use "force source pull". To retrieve metadata that’s in metadata format, use "force mdapi
+  retrieve".
 
   The source you retrieve overwrites the corresponding source files in your local project. This command does not attempt
   to merge the source from your org with your local source files.
@@ -1663,176 +1037,117 @@ DESCRIPTION
   double quotes. On Windows, if the list contains commas, also enclose it in one set of double quotes.
 
 EXAMPLES
-  To retrieve the source files in a directory:
+  Retrieve the source files in a directory from your default org:
 
-     $ sfdx force:source:retrieve -p path/to/source
+    $ sfdx force:source:retrieve --sourcepath path/to/source
 
-  To retrieve a specific Apex class and the objects whose source is in a directory:
+  Retrieve a specific Apex class and the objects whose source is in a directory from an org with alias "myscratch":
 
-     $ sfdx force:source:retrieve -p "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+    $ sfdx force:source:retrieve --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects" --target-org \
+      myscratch
 
-  To retrieve source files in a comma-separated list that contains spaces:
+  Retrieve source files in a comma-separated list that contains spaces:
 
-     $ sfdx force:source:retrieve -p "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, path/to/apex/classes"
+    $ sfdx force:source:retrieve --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, \
+      path/to/apex/classes"
 
-  To retrieve all Apex classes:
+  Retrieve all Apex classes:
 
-     $ sfdx force:source:retrieve -m ApexClass
+    $ sfdx force:source:retrieve --metadata ApexClass
 
-  To retrieve a specific Apex class:
+  Retrieve a specific Apex class:
 
-     $ sfdx force:source:retrieve -m ApexClass:MyApexClass
+    $ sfdx force:source:retrieve --metadata ApexClass:MyApexClass
 
-  To retrieve a specific Apex class and update source tracking files:
+  Retrieve a specific Apex class and update source tracking files:
 
-     $ sfdx force:source:retrieve -m ApexClass:MyApexClass -t
+    $ sfdx force:source:retrieve --metadata ApexClass:MyApexClass --tracksource
 
-  To retrieve all custom objects and Apex classes:
+  Retrieve all custom objects and Apex classes:
 
-     $ sfdx force:source:retrieve -m "CustomObject,ApexClass"
+    $ sfdx force:source:retrieve --metadata "CustomObject,ApexClass"
 
-  To retrieve all Apex classes and two specific profiles (one of which has a space in its name):
+  Retrieve all Apex classes and two specific profiles (one of which has a space in its name):
 
-     $ sfdx force:source:retrieve -m "ApexClass, Profile:My Profile, Profile: AnotherProfile"
+    $ sfdx force:source:retrieve --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
 
-  To retrieve all metadata components listed in a manifest:
+  Retrieve all metadata components listed in a manifest:
 
-     $ sfdx force:source:retrieve -x path/to/package.xml
+    $ sfdx force:source:retrieve --manifest path/to/package.xml
 
-  To retrieve metadata from a package or multiple packages:
+  Retrieve metadata from a package or multiple packages:
 
-     $ sfdx force:source:retrieve -n MyPackageName
+    $ sfdx force:source:retrieve --packagenames MyPackageName
+    $ sfdx force:source:retrieve --packagenames "Package1, PackageName With Spaces, Package3"
 
-     $ sfdx force:source:retrieve -n "Package1, PackageName With Spaces, Package3"
+  Retrieve all metadata from a package and specific components that aren’t in the package, specify both -n |
+  --packagenames and one other scoping parameter:
 
-  To retrieve all metadata from a package and specific components that aren’t in the package, specify both -n | --packagenames and one other scoping parameter:
+    $ sfdx force:source:retrieve --packagenames MyPackageName --sourcepath path/to/apex/classes
+    $ sfdx force:source:retrieve --packagenames MyPackageName --metadata ApexClass:MyApexClass
+    $ sfdx force:source:retrieve --packagenames MyPackageName --manifest path/to/package.xml
 
-     $ sfdx force:source:retrieve -n MyPackageName -p path/to/apex/classes
+  Retrieve source files to a given directory instead of the default package directory specified in sfdx-project.json:
 
-     $ sfdx force:source:retrieve -n MyPackageName -m ApexClass:MyApexClass
+    $ sfdx force:source:retrieve --metadata "StandardValueSet:TaskStatus" --retrievetargetdir path/to/unpackaged
 
-     $ sfdx force:source:retrieve -n MyPackageName -x path/to/package.xml
+FLAG DESCRIPTIONS
+  -m, --metadata=<value>...  Comma-separated list of names of metadata components to retrieve from the org.
+
+    If you specify this parameter, don’t specify --manifest or --sourcepath.
+
+  -p, --sourcepath=<value>...  Comma-separated list of file paths for source to retrieve from the org.
+
+    The supplied paths can be to a single file (in which case the operation is applied to only one file) or to a folder
+    (in which case the operation is applied to all source files in the directory and its sub-directories).
+
+    If you specify this parameter, don’t specify --manifest or --metadata.
+
+  -r, --retrievetargetdir=<value>  Root of the directory structure into which the source files are retrieved.
+
+    If the target directory matches one of the package directories in your sfdx-project.json file, the command fails.
+
+    Running the command multiple times with the same target adds new files and overwrites existing files.
+
+  -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
+
+    If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
+
+  -x, --manifest=<value>  Complete path for the manifest (package.xml) file that specifies the components to retrieve.
+
+    If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/retrieve.ts)_
 
-## `sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx force:source:status`
 
-list local changes and/or changes in a scratch org
+List changes that have been made locally, in an org, or both.
 
 ```
 USAGE
-  $ sfdx force:source:status [-l | -r] [-u <string>] [--apiversion <string>] [--concise] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx force:source:status -o <value> [--json] [--api-version <value>] [-l | -r] [--concise]
 
 FLAGS
-  -l, --local                                                                       list the changes that have been made
-                                                                                    locally
-  -r, --remote                                                                      list the changes that have been made
-                                                                                    in the scratch org
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --concise                                                                         show only the changes that will be
-                                                                                    pushed or pulled; omits files that
-                                                                                    are forceignored
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -l, --local               List the changes that have been made locally.
+  -o, --target-org=<value>  (required) Username or alias of the target org.
+  -r, --remote              List the changes that have been made in the org.
+  --api-version=<value>     Override the api version used for api requests made by this command
+  --concise                 Show only the changes that will be pushed or pulled; omits files that are forceignored.
 
-DESCRIPTION
-  list local changes and/or changes in a scratch org
-
-ALIASES
-  $ sfdx force:source:beta:status
+GLOBAL FLAGS
+  --json  Format output as json.
 
 EXAMPLES
-  $ sfdx force:source:status -l
+  List changes that have been made locally but not in the org with alias "myscratch":
 
-  $ sfdx force:source:status -r
+    $ sfdx force:source:status --local --target-org myscratch
 
-  $ sfdx force:source:status
+  List changes that have been made in your default org but aren't reflected in your local project:
 
-  $ sfdx force:source:status -u me@example.com --json
+    $ sfdx force:source:status --remote
 ```
 
-_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/status.ts)_
-
-## `sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-clear all local source tracking information
-
-```
-USAGE
-  $ sfdx force:source:tracking:clear [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -p, --noprompt                                                                    do not prompt for source tracking
-                                                                                    override confirmation
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  clear all local source tracking information
-
-  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
-
-  Clears all local source tracking information. When you next run force:source:status, the CLI displays all local and
-  remote files as changed, and any files with the same name are listed as conflicts.
-
-ALIASES
-  $ sfdx force:source:beta:tracking:clear
-```
-
-_See code: [src/commands/force/source/tracking/clear.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/tracking/clear.ts)_
-
-## `sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
-
-reset local and remote source tracking
-
-```
-USAGE
-  $ sfdx force:source:tracking:reset [-r <integer>] [-p] [-u <string>] [--apiversion <string>] [--json] [--loglevel
-    trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
-
-FLAGS
-  -p, --noprompt                                                                    do not prompt for source tracking
-                                                                                    override confirmation
-  -r, --revision=<value>                                                            reset to a specific SourceMember
-                                                                                    revision counter number
-  -u, --targetusername=<value>                                                      username or alias for the target
-                                                                                    org; overrides default target org
-  --apiversion=<value>                                                              override the api version used for
-                                                                                    api requests made by this command
-  --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
-
-DESCRIPTION
-  reset local and remote source tracking
-
-  WARNING: This command deletes or overwrites all existing source tracking files. Use with extreme caution.
-
-  Resets local and remote source tracking so that the CLI no longer registers differences between your local files and
-  those in the org. When you next run force:source:status, the CLI returns no results, even though conflicts might
-  actually exist. The CLI then resumes tracking new source changes as usual.
-
-  Use the --revision parameter to reset source tracking to a specific revision number of an org source member. To get
-  the revision number, query the SourceMember Tooling API object with the force:data:soql:query command. For example:
-
-  $ sfdx force:data:soql:query -q "SELECT MemberName, MemberType, RevisionCounter FROM SourceMember" -t
-
-ALIASES
-  $ sfdx force:source:beta:tracking:reset
-```
-
-_See code: [src/commands/force/source/tracking/reset.ts](https://github.com/salesforcecli/plugin-source/blob/v2.0.12/src/commands/force/source/tracking/reset.ts)_
+_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/2.10.46/src/commands/force/source/status.ts)_
 
 <!-- commandsstop -->
