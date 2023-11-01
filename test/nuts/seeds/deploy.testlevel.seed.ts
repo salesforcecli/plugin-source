@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
@@ -17,7 +18,7 @@ context('Deploy testlevel NUTs [name: %REPO_NAME%]', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
 

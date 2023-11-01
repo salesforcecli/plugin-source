@@ -5,6 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { getBoolean, getString } from '@salesforce/ts-types';
 import { Result } from '@salesforce/source-testkit/lib/types.js';
@@ -23,7 +24,7 @@ context('Async Deploy NUTs [name: %REPO_NAME%]', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
     // an initial deploy to initialize testkit source tracking
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });

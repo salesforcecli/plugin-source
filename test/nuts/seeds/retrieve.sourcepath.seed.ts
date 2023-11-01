@@ -6,9 +6,10 @@
  */
 
 import path from 'node:path';
+import { fileURLToPath } from 'node:url'; // DO NOT TOUCH. generateNuts.ts will insert these values
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { JsonMap } from '@salesforce/ts-types';
-import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js'; // DO NOT TOUCH. generateNuts.ts will insert these values
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
 const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
@@ -19,7 +20,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%]', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
     await testkit.trackGlobs(testkit.packageGlobs);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });

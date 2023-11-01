@@ -7,6 +7,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { Dictionary } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
@@ -16,7 +17,7 @@ context('MPD Retrieve NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
     await testkit.trackGlobs(testkit.packageGlobs);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });

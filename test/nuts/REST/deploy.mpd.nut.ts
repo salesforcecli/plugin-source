@@ -6,6 +6,7 @@
  */
 
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
@@ -76,7 +77,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
     process.env.SFDX_REST_DEPLOY = 'true';
     testkit = await SourceTestkit.create({
       repository: repo.gitUrl,
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
   });
 
