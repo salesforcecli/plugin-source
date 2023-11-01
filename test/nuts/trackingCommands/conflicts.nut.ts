@@ -48,15 +48,15 @@ describe('conflict detection and resolution', () => {
     const pushedSource = pushResult.jsonOutput?.result.pushedSource;
     expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
     expect(
-      pushedSource.every((r) => r.state !== ComponentStatus.Failed),
-      JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))
+      pushedSource?.every((r) => r.state !== ComponentStatus.Failed),
+      JSON.stringify(pushedSource?.filter((r) => r.state === ComponentStatus.Failed))
     ).to.equal(true);
   });
 
   it('edits a remote file', async () => {
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
     const app = await conn.singleRecordQuery<{ Id: string; Metadata: any }>(
@@ -74,9 +74,9 @@ describe('conflict detection and resolution', () => {
     });
     const result = execCmd<StatusResult[]>('force:source:status --json --remote', {
       ensureExitCode: 0,
-    }).jsonOutput.result;
+    }).jsonOutput?.result;
     expect(
-      result.filter((r) => r.type === 'CustomApplication'),
+      result?.filter((r) => r.type === 'CustomApplication'),
       JSON.stringify(result)
     ).to.have.lengthOf(1);
   });
@@ -135,7 +135,7 @@ describe('conflict detection and resolution', () => {
     );
     // Ensure JSON structure on push errors
     const json = pushResponse.jsonOutput;
-    expect(json.data).to.deep.equal([
+    expect(json?.data).to.deep.equal([
       {
         state: 'Conflict',
         fullName: 'EBikes',
@@ -143,13 +143,13 @@ describe('conflict detection and resolution', () => {
         filePath,
       },
     ]);
-    expect(json.code).to.equal(1);
-    expect(json.exitCode).to.equal(1);
-    expect(json.status).to.equal(1);
-    expect(json.name).to.equal('sourceConflictDetected');
-    expect(json.message).to.include("We couldn't complete the operation due to conflicts.");
-    expect(json.stack).to.include('sourceConflictDetected');
-    expect(json.context).to.equal('Push');
+    expect(json?.code).to.equal(1);
+    expect(json?.exitCode).to.equal(1);
+    expect(json?.status).to.equal(1);
+    expect(json?.name).to.equal('sourceConflictDetected');
+    expect(json?.message).to.include("We couldn't complete the operation due to conflicts.");
+    expect(json?.stack).to.include('sourceConflictDetected');
+    expect(json?.context).to.equal('Push');
     // @ts-expect-error it's SfCommand.Error
     expect(json.commandName).to.include('Push');
   });

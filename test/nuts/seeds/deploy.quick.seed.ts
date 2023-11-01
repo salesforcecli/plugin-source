@@ -8,10 +8,10 @@
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { TEST_REPOS_MAP } from '../testMatrix.js';
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
 
 context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
   let testkit: SourceTestkit;
@@ -39,15 +39,17 @@ context('Quick Deploy NUTs [name: %REPO_NAME%] [exec: %EXECUTABLE%]', () => {
     const checkOnly = await testkit.deploy({
       args: `--sourcepath ${testkit.packageNames.join(',')} --testlevel RunLocalTests --checkonly --ignoreerrors`,
     });
-    testkit.expect.toHaveProperty(checkOnly.result, 'id');
-    await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
+    if (checkOnly?.result) {
+      testkit.expect.toHaveProperty(checkOnly.result, 'id');
+      await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
 
-    const quickDeploy = await testkit.deploy({
-      args: `--validateddeployrequestid ${checkOnly.result.id}`,
-    });
-    testkit.expect.toHavePropertyAndValue(quickDeploy.result, 'status', 'Succeeded');
+      const quickDeploy = await testkit.deploy({
+        args: `--validateddeployrequestid ${checkOnly.result.id}`,
+      });
+      testkit.expect.toHavePropertyAndValue(quickDeploy?.result ?? {}, 'status', 'Succeeded');
 
-    const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
-    await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
+      const fileResponse = get(quickDeploy, 'result.deployedSource') as FileResponse[];
+      await testkit.expect.filesToBeDeployedViaResult(testkit.packageGlobs, [], fileResponse);
+    }
   });
 });

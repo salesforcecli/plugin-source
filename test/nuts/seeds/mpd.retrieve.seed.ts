@@ -74,11 +74,8 @@ context('MPD Retrieve NUTs', () => {
 
     beforeEach(async () => {
       await Promise.all(
-        Object.entries(originalState).map(([filename, contents]) => testkit.writeFile(filename, contents))
+        Object.entries(originalState).map(([filename, contents]) => testkit.writeFile(filename, contents as string))
       );
-      // for (const [filename, contents] of Object.entries(originalState)) {
-      //   await testkit.writeFile(filename, contents);
-      // }
     });
 
     describe('--metadata CustomLabels', () => {

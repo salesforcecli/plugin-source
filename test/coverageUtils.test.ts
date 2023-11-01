@@ -7,7 +7,7 @@
 import { expect } from 'chai';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
 import { AuthInfo, Connection } from '@salesforce/core';
-import { createSandbox, SinonSandbox } from 'sinon';
+import sinon from 'sinon';
 import chalk from 'chalk';
 import {
   prepCoverageForDisplay,
@@ -298,10 +298,10 @@ describe('transform md RunTestResult', () => {
   const testData = new MockTestOrgData();
   let sampleTestResult = getSampleTestResult();
 
-  let sandboxStub: SinonSandbox;
+  let sandboxStub: sinon.SinonSandbox;
   beforeEach(async () => {
     sampleTestResult = getSampleTestResult();
-    sandboxStub = createSandbox();
+    sandboxStub = sinon.createSandbox();
 
     $$.setConfigStubContents('StateAggregator', {
       contents: {

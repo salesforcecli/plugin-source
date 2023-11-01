@@ -87,9 +87,8 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    cmd.configAggregator = await (await ConfigAggregator.create({ customConfigMeta: ConfigMeta })).reload();
+
+    cmd.configAggregator = await (await ConfigAggregator.create({ customConfigMeta: ConfigMeta.default })).reload();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
     sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);

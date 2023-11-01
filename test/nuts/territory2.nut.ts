@@ -53,8 +53,8 @@ describe('territories', () => {
     it('deploy', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(deployResults.deployedSource.length).to.equal(8);
+      }).jsonOutput?.result;
+      expect(deployResults?.deployedSource.length).to.equal(8);
     });
 
     it('retrieve without local metadata', async () => {
@@ -63,8 +63,8 @@ describe('territories', () => {
       await fs.promises.mkdir(path.join(session.project.dir, 'force-app'));
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(retrieveResults.inboundFiles).to.have.length(8);
+      }).jsonOutput?.result;
+      expect(retrieveResults?.inboundFiles).to.have.length(8);
     });
   });
 

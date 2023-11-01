@@ -72,8 +72,8 @@ describe('metadata types that go in folders', () => {
       },
     ];
 
-    const getRelativeFileResponses = (resp: FileResponse[]) =>
-      resp.map((s) => {
+    const getRelativeFileResponses = (resp?: FileResponse[]) =>
+      resp?.map((s) => {
         // grab the last 2 directories with the file only
         s.filePath = s.filePath?.split(path.sep).slice(-3).join(path.sep);
         return s;
@@ -89,15 +89,15 @@ describe('metadata types that go in folders', () => {
 
     it('can deploy email templates via the manifest', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json').jsonOutput;
-      expect(deployResults.status, JSON.stringify(deployResults)).to.equal(0);
-      const deployedSource = getRelativeFileResponses(deployResults.result.deployedSource);
+      expect(deployResults?.status, JSON.stringify(deployResults)).to.equal(0);
+      const deployedSource = getRelativeFileResponses(deployResults?.result.deployedSource);
       expect(deployedSource).to.have.deep.members(getExpectedSource('Created'));
     });
 
     it('can retrieve email templates via the manifest', () => {
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json').jsonOutput;
-      expect(retrieveResults.status, JSON.stringify(retrieveResults)).to.equal(0);
-      const retrievedSource = getRelativeFileResponses(retrieveResults.result.inboundFiles);
+      expect(retrieveResults?.status, JSON.stringify(retrieveResults)).to.equal(0);
+      const retrievedSource = getRelativeFileResponses(retrieveResults?.result.inboundFiles);
       expect(retrievedSource).to.have.deep.members(getExpectedSource('Changed'));
     });
   });

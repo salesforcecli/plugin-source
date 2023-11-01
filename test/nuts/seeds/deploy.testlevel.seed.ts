@@ -6,10 +6,10 @@
  */
 
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { TEST_REPOS_MAP } from '../testMatrix.js';
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
 
 context('Deploy testlevel NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;

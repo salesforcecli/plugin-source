@@ -11,11 +11,11 @@ import { Result } from '@salesforce/source-testkit/lib/types.js';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
-import { TEST_REPOS_MAP } from '../testMatrix.js';
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 import { DeployCancelCommandResult } from '../../../src/formatters/deployCancelResultFormatter.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
 
 context('Async Deploy NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
@@ -52,19 +52,19 @@ context('Async Deploy NUTs [name: %REPO_NAME%]', () => {
         args: '--coverageformatters clover --junit',
       })) as Result<{ id: string; result: { id: string } }>;
 
-      testkit.expect.toHaveProperty(deploy.result, 'id');
-      testkit.expect.toHavePropertyAndNotValue(deploy.result, 'status', 'Succeeded');
+      testkit.expect.toHaveProperty(deploy?.result ?? {}, 'id');
+      testkit.expect.toHavePropertyAndNotValue(deploy?.result ?? {}, 'status', 'Succeeded');
 
-      const status = getBoolean(report.result, 'done');
+      const status = getBoolean(report?.result, 'done');
       if (status) {
         // if the deploy finished, expect changes and a 'succeeded' status
-        testkit.expect.toHavePropertyAndValue(report.result, 'status', 'Succeeded');
-        testkit.expect.toHaveProperty(report.result, 'numberComponentsDeployed');
-        testkit.expect.toHaveProperty(report.result, 'deployedSource');
-        testkit.expect.toHaveProperty(report.result, 'deploys');
+        testkit.expect.toHavePropertyAndValue(report?.result ?? {}, 'status', 'Succeeded');
+        testkit.expect.toHaveProperty(report?.result ?? {}, 'numberComponentsDeployed');
+        testkit.expect.toHaveProperty(report?.result ?? {}, 'deployedSource');
+        testkit.expect.toHaveProperty(report?.result ?? {}, 'deploys');
       } else {
         // the deploy could be InProgress, Pending, or Queued, at this point
-        expect(['Pending', 'InProgress', 'Queued']).to.include(getString(report.result, 'status'));
+        expect(['Pending', 'InProgress', 'Queued']).to.include(getString(report?.result, 'status'));
         await testkit.expect.filesToNotBeDeployed(testkit.packageGlobs);
       }
     });
@@ -77,25 +77,25 @@ context('Async Deploy NUTs [name: %REPO_NAME%]', () => {
         const deploy = await testkit.deploy({
           args: `--sourcepath ${testkit.packageNames.join(',')} --wait 0`,
         });
-        testkit.expect.toHaveProperty(deploy.result, 'id');
+        testkit.expect.toHaveProperty(deploy?.result ?? {}, 'id');
 
-        const result = execCmd<DeployCancelCommandResult>(`force:source:deploy:cancel -i ${deploy.result.id} --json`);
+        const result = execCmd<DeployCancelCommandResult>(`force:source:deploy:cancel -i ${deploy?.result.id} --json`);
 
-        if (result.jsonOutput.status === 0) {
+        if (result.jsonOutput?.status === 0) {
           // a successful cancel
-          const json = result.jsonOutput.result;
+          const json = result.jsonOutput?.result;
           expect(json).to.have.property('canceledBy');
           expect(json).to.have.property('status');
           expect(json.status).to.equal(RequestStatus.Canceled);
-          expect(json.id).to.equal(deploy.result.id);
-        } else if (result.jsonOutput.status === 1 && result.jsonOutput.result) {
+          expect(json.id).to.equal(deploy?.result?.id);
+        } else if (result.jsonOutput?.status === 1 && result.jsonOutput?.result) {
           // status = 1 because the deploy is in Succeeded status
-          const json = result.jsonOutput.result;
-          expect(json.status).to.equal(RequestStatus.Succeeded);
+          const json = result.jsonOutput?.result;
+          expect(json?.status).to.equal(RequestStatus.Succeeded);
         } else {
           // the other allowable error is that the server is telling us the deploy succeeded
-          expect(result.jsonOutput.name, JSON.stringify(result)).to.equal('CancelFailed');
-          expect(result.jsonOutput.message, JSON.stringify(result)).to.equal(
+          expect(result.jsonOutput?.name, JSON.stringify(result)).to.equal('CancelFailed');
+          expect(result.jsonOutput?.message, JSON.stringify(result)).to.equal(
             'The cancel command failed due to: INVALID_ID_FIELD: Deployment already completed'
           );
         }

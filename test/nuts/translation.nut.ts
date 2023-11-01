@@ -51,22 +51,22 @@ describe('translations', () => {
       await fs.promises.writeFile(fieldFile, original.replace('spanish', 'español'));
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
-      expect(statusResult[0].type).to.equal('CustomObjectTranslation');
+      expect(statusResult?.at(0)?.type).to.equal('CustomObjectTranslation');
     });
 
     it('push local change', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(pushResult.pushedSource.every((s) => s.type === 'CustomObjectTranslation')).to.be.true;
+      }).jsonOutput?.result;
+      expect(pushResult?.pushedSource.every((s) => s.type === 'CustomObjectTranslation')).to.be.true;
     });
 
     it('sees no local changes', () => {
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       expect(statusResult).to.deep.equal([]);
     });
   });
@@ -86,8 +86,8 @@ describe('translations', () => {
     it('deploy', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(deployResults.deployedSource.length).to.equal(7);
+      }).jsonOutput?.result;
+      expect(deployResults?.deployedSource.length).to.equal(7);
     });
 
     it('retrieve without local metadata', async () => {
@@ -96,8 +96,8 @@ describe('translations', () => {
       await fs.promises.mkdir(path.join(session.project.dir, 'force-app'));
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(retrieveResults.inboundFiles).to.have.length(7);
+      }).jsonOutput?.result;
+      expect(retrieveResults?.inboundFiles).to.have.length(7);
     });
   });
 

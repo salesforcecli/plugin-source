@@ -8,10 +8,10 @@
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { TEST_REPOS_MAP } from '../testMatrix.js';
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
 
 context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
@@ -51,7 +51,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
 
     it('should throw an error if the metadata is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      testkit.expect.errorToHaveName(deploy, 'SfError');
+      testkit.expect.errorToHaveName(deploy ?? {}, 'SfError');
     });
 
     it('should not deploy metadata outside of a package directory', async () => {

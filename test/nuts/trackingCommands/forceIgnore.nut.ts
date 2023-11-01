@@ -47,7 +47,7 @@ describe('forceignore changes', () => {
     originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
   });
@@ -72,7 +72,7 @@ describe('forceignore changes', () => {
     it('shows the file in status as ignored', () => {
       const output = execCmd<StatusResult>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       expect(output, JSON.stringify(output)).to.deep.include({
         state: 'Local Add',
         fullName: 'IgnoreTest',
@@ -115,7 +115,7 @@ describe('forceignore changes', () => {
 
       // all 4 files should have been pushed
       expect(unIgnoredOutput).to.have.length(4);
-      unIgnoredOutput.map((result) => {
+      unIgnoredOutput?.map((result) => {
         expect(result.type === 'ApexClass');
         expect(result.state === ComponentStatus.Created);
       });
@@ -144,14 +144,14 @@ describe('forceignore changes', () => {
       // gets file into source tracking
       const statusOutput = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(statusOutput.some((result) => result.fullName === 'CreatedClass')).to.equal(true);
+      }).jsonOutput?.result;
+      expect(statusOutput?.some((result) => result.fullName === 'CreatedClass')).to.equal(true);
 
       // pull doesn't retrieve that change
       const pullOutput = execCmd<PullResponse>('force:source:pull --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(pullOutput.pulledSource.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
+      }).jsonOutput?.result;
+      expect(pullOutput?.pulledSource.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
     });
   });
 });

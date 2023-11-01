@@ -53,7 +53,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
       assertDEBMeta(statusResult, 'B');
     });
@@ -77,7 +77,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
       assertViewHomeStatus(statusResult, 'B', 'CONTENT');
     });
@@ -100,7 +100,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
       assertViewHomeStatus(statusResult, 'B', 'META');
     });
@@ -123,7 +123,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const pulledSource = execCmd<PullResponse>('force:source:pull --forceoverwrite --json', {
         ensureExitCode: 0,
-      }).jsonOutput?.result.pulledSource;
+      }).jsonOutput?.result?.pulledSource;
 
       assertAllDEBAndTheirDECounts(pulledSource, 0, false);
     });
@@ -131,9 +131,9 @@ describe('deb -- tracking/push/pull', () => {
     it('should not see any local/remote changes in deb/de', () => {
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
-      expect(statusResult.every((s) => s.type !== TYPES.DE?.name && s.type !== TYPES.DEB.name)).to.be.true;
+      expect(statusResult?.every((s) => s.type !== TYPES.DE?.name && s.type !== TYPES.DEB.name)).to.be.true;
     });
   });
 
@@ -143,7 +143,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
       assertViewHomeStatus(statusResult, 'B', 'FR_VARIANT');
     });
@@ -159,7 +159,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local  --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
       assertDocumentDetailPageA(statusResult);
     });
@@ -178,7 +178,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
       assertDocumentDetailPageA(statusResult);
     });

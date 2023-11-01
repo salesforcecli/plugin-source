@@ -110,16 +110,15 @@ const apiVersionTest = async (doctor: SfDoctor): Promise<void> => {
 };
 
 // check sfdx-project.json for sourceApiVersion
-const getSourceApiVersion = async (): Promise<string> => {
+const getSourceApiVersion = async (): Promise<string | undefined> => {
   try {
     const project = SfProject.getInstance();
     const projectJson = await project.resolveProjectConfig();
-    return projectJson.sourceApiVersion as string;
+    return projectJson.sourceApiVersion as string | undefined;
   } catch (error) {
     const errMsg = (error as Error).message;
     getLogger().debug(`Cannot determine sourceApiVersion due to: ${errMsg}`);
   }
-  return '';
 };
 
 // check max API version for default orgs
@@ -139,7 +138,7 @@ const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: s
 //   Comparing undefined with undefined would return false.
 //   Comparing 55.0 with 55.0 would return false.
 //   Comparing 55.0 with 56.0 would return true.
-const diff = (version1: string, version2: string): boolean => {
+const diff = (version1: string | undefined, version2: string | undefined): boolean => {
   getLogger().debug(`Comparing API versions: [${version1},${version2}]`);
   return (version1?.length && version2?.length && version1 !== version2) as boolean;
 };

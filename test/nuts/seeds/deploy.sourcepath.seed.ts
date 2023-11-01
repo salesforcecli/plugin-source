@@ -9,10 +9,10 @@ import path from 'node:path';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { TEST_REPOS_MAP } from '../testMatrix.js';
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
 
 context('Deploy sourcepath NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
@@ -47,13 +47,13 @@ context('Deploy sourcepath NUTs [name: %REPO_NAME%]', () => {
 
     it('should throw an error if the sourcepath is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--sourcepath DOES_NOT_EXIST', exitCode: 1 });
-      testkit.expect.errorToHaveName(deploy, 'SfError');
+      testkit.expect.errorToHaveName(deploy ?? {}, 'SfError');
       try {
         // old message, can be removed after SDR strict mode PR is merged
-        testkit.expect.errorToHaveMessage(deploy, 'not a valid source file path');
+        testkit.expect.errorToHaveMessage(deploy ?? {}, 'not a valid source file path');
       } catch (e) {
         // new message
-        testkit.expect.errorToHaveMessage(deploy, 'File or folder not found');
+        testkit.expect.errorToHaveMessage(deploy ?? {}, 'File or folder not found');
       }
     });
   });

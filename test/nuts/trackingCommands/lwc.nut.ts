@@ -54,8 +54,8 @@ describe('lwc', () => {
     );
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result;
-    expect(result.find((r) => r.filePath === cssPathRelative)).to.have.property('actualState', 'Changed');
+    }).jsonOutput?.result;
+    expect(result?.find((r) => r.filePath === cssPathRelative)).to.have.property('actualState', 'Changed');
   });
 
   it('pushes lwc css change', () => {
@@ -63,7 +63,7 @@ describe('lwc', () => {
       ensureExitCode: 0,
     }).jsonOutput?.result.pushedSource;
     // we get a result for each bundle member, even though only one changed
-    expect(result.filter((r) => r.fullName === 'heroDetails')).to.have.length(4);
+    expect(result?.filter((r) => r.fullName === 'heroDetails')).to.have.length(4);
   });
 
   it('sees no local changes', () => {
@@ -98,10 +98,10 @@ describe('lwc', () => {
     const result = execCmd<PushResponse>('force:source:push --json', {
       ensureExitCode: 0,
     }).jsonOutput?.result.pushedSource;
-    const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
+    const bundleMembers = result?.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(4);
-    expect(bundleMembers.filter((r) => r.state === 'Deleted')).to.have.length(1);
-    expect(bundleMembers.filter((r) => r.state === 'Changed')).to.have.length(3);
+    expect(bundleMembers?.filter((r) => r.state === 'Deleted')).to.have.length(1);
+    expect(bundleMembers?.filter((r) => r.state === 'Changed')).to.have.length(3);
   });
 
   it('sees no local changes', () => {
@@ -129,9 +129,9 @@ describe('lwc', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
     }).jsonOutput?.result.filter((r) => r.origin === 'Local');
-    expect(result.filter(filterIgnored)).to.have.length(4);
-    expect(result.filter(filterIgnored).filter((r) => r.actualState === 'Deleted')).to.have.length(3);
-    expect(result.filter(filterIgnored).filter((r) => r.actualState === 'Changed')).to.have.length(1);
+    expect(result?.filter(filterIgnored)).to.have.length(4);
+    expect(result?.filter(filterIgnored).filter((r) => r.actualState === 'Deleted')).to.have.length(3);
+    expect(result?.filter(filterIgnored).filter((r) => r.actualState === 'Changed')).to.have.length(1);
   });
 
   it('push deletes the LWC remotely', () => {
@@ -139,10 +139,10 @@ describe('lwc', () => {
       ensureExitCode: 0,
     }).jsonOutput?.result.pushedSource;
     // there'll also be changes for the changed Hero component html, but we've already tested changing a bundle member
-    const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
+    const bundleMembers = result?.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(3);
     expect(
-      bundleMembers.every((r) => r.state === 'Deleted'),
+      bundleMembers?.every((r) => r.state === 'Deleted'),
       JSON.stringify(bundleMembers, undefined, 2)
     ).to.be.true;
   });

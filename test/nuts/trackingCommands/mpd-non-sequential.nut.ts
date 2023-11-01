@@ -31,7 +31,7 @@ describe('multiple pkgDirectories pushed as one deploy', () => {
 
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
   });
@@ -48,7 +48,7 @@ describe('multiple pkgDirectories pushed as one deploy', () => {
       }).jsonOutput?.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
       // the fields should be populated
-      expect(result.every((row) => row.type && row.fullName)).to.equal(true);
+      expect(result?.every((row) => row.type && row.fullName)).to.equal(true);
     });
 
     it('should have 2 deployments', async () => {

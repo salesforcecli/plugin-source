@@ -250,6 +250,8 @@ const testRepos: RepoConfig[] = [
  * 2. have normalized file paths
  */
 export const TEST_REPOS_MAP = new Map<string, RepoConfig>(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   Object.entries(keyBy(normalizeFilePaths(testRepos), 'gitUrl'))
 );
 

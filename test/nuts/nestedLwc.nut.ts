@@ -30,16 +30,16 @@ describe('Nested LWCs', () => {
   });
 
   it('pushes nested LWC', () => {
-    const pushResults = execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 0 }).jsonOutput.result;
-    expect(pushResults.pushedSource.some((r) => r.fullName === 'cmpA')).to.be.true;
-    expect(pushResults.pushedSource.some((r) => r.fullName === 'cmpB')).to.be.true;
+    const pushResults = execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 0 }).jsonOutput?.result;
+    expect(pushResults?.pushedSource.some((r) => r.fullName === 'cmpA')).to.be.true;
+    expect(pushResults?.pushedSource.some((r) => r.fullName === 'cmpB')).to.be.true;
   });
 
   it('deploys nested LWC', () => {
     const deployResults = execCmd<DeployCommandResult>('force:source:deploy --json -p force-app', { ensureExitCode: 0 })
-      .jsonOutput.result;
-    expect(deployResults.deployedSource.some((r) => r.fullName === 'cmpA')).to.be.true;
-    expect(deployResults.deployedSource.some((r) => r.fullName === 'cmpB')).to.be.true;
+      .jsonOutput?.result;
+    expect(deployResults?.deployedSource.some((r) => r.fullName === 'cmpA')).to.be.true;
+    expect(deployResults?.deployedSource.some((r) => r.fullName === 'cmpB')).to.be.true;
   });
 
   after(async () => {

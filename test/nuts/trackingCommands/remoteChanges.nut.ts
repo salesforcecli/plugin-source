@@ -38,7 +38,7 @@ describe('remote changes', () => {
     });
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
   });
@@ -55,8 +55,8 @@ describe('remote changes', () => {
       const pushedSource = pushResult.jsonOutput?.result.pushedSource;
       expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
       expect(
-        pushedSource.every((r) => r.state !== ComponentStatus.Failed),
-        JSON.stringify(pushedSource.filter((r) => r.state === ComponentStatus.Failed))
+        pushedSource?.every((r) => r.state !== ComponentStatus.Failed),
+        JSON.stringify(pushedSource?.filter((r) => r.state === ComponentStatus.Failed))
       ).to.equal(true);
     });
 
@@ -87,28 +87,28 @@ describe('remote changes', () => {
     it('can see the delete in status', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       // it shows up as one class on the server, but 2 files when pulled
       expect(
-        result.filter((r) => r.state.includes('Delete')),
+        result?.filter((r) => r.state.includes('Delete')),
         JSON.stringify(result)
       ).to.have.length(1);
     });
     it('does not see any change in local status', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(result.filter(filterIgnored)).to.deep.equal([]);
+      }).jsonOutput?.result;
+      expect(result?.filter(filterIgnored)).to.deep.equal([]);
     });
     it('can pull the delete', () => {
-      const result = execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 0 }).jsonOutput.result;
+      const result = execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 0 }).jsonOutput?.result;
       // ebikes ignore file doesn't catch this somehow on windows (probably that slash)
       // https://github.com/trailheadapps/ebikes-lwc/blob/3e5baf83d97bc71660feaa9922f8fed2e686f5f8/.forceignore#L136-L137
-      const filteredSource = result.pulledSource.filter((r) => !r.fullName.includes('prm_channel_reports_folder'));
+      const filteredSource = result?.pulledSource.filter((r) => !r.fullName.includes('prm_channel_reports_folder'));
       // the 2 files for the apexClass, and possibly one for the Profile (depending on whether it got created in time)
       expect(filteredSource).to.have.length.greaterThanOrEqual(2);
       expect(filteredSource).to.have.length.lessThanOrEqual(4);
-      result.pulledSource
+      result?.pulledSource
         .filter((r) => r.fullName === 'TestOrderController')
         .map((r) => expect(r.state).to.equal('Deleted'));
     });
@@ -127,13 +127,13 @@ describe('remote changes', () => {
     it('sees correct local and remote status', () => {
       const remoteResult = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(remoteResult.filter((r) => r.state.includes('Remote Deleted'))).to.deep.equal([]);
+      }).jsonOutput?.result;
+      expect(remoteResult?.filter((r) => r.state.includes('Remote Deleted'))).to.deep.equal([]);
 
       const localStatus = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(localStatus.filter(filterIgnored)).to.deep.equal([]);
+      }).jsonOutput?.result;
+      expect(localStatus?.filter(filterIgnored)).to.deep.equal([]);
     });
   });
 
@@ -152,32 +152,32 @@ describe('remote changes', () => {
     it('can see the add in status', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       expect(
-        result.some((r) => r.fullName === className),
+        result?.some((r) => r.fullName === className),
         JSON.stringify(result)
       ).to.equal(true);
     });
     it('can pull the add', () => {
-      const result = execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 0 }).jsonOutput.result;
+      const result = execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 0 }).jsonOutput?.result;
       // SDR marks all retrieves as 'Changed' even if it creates new local files.  This is different from toolbelt, which marked those as 'Created'
-      result.pulledSource
+      result?.pulledSource
         .filter((r) => r.fullName === className)
         .map((r) => expect(r.state, JSON.stringify(r)).to.equal('Created'));
     });
     it('sees correct local and remote status', () => {
       const remoteResult = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       expect(
-        remoteResult.filter((r) => r.fullName === className),
+        remoteResult?.filter((r) => r.fullName === className),
         JSON.stringify(remoteResult)
       ).deep.equal([]);
 
       const localStatus = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(localStatus.filter(filterIgnored)).to.deep.equal([]);
+      }).jsonOutput?.result;
+      expect(localStatus?.filter(filterIgnored)).to.deep.equal([]);
     });
   });
 

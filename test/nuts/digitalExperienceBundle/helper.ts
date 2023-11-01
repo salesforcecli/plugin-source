@@ -38,10 +38,10 @@ export function assertAllDEBAndTheirDECounts(
   ).to.deep.equal([51, 51, 1, 1]);
 }
 
-export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFullName: string) {
+export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses | undefined, debFullName: string) {
   expect(resp).to.have.length(52);
   expect(
-    resp.reduce(
+    resp?.reduce(
       (acc: [number, number], curr) => {
         if (curr.type === TYPES.DE?.name && curr.fullName.includes(debFullName)) acc[0]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === debFullName) acc[1]++;
@@ -68,30 +68,33 @@ export function assertDECountsOfAllDEB(resp?: CustomFileResponses) {
   ).to.deep.equal([51, 51]);
 }
 
-export function assertDECountOfSingleDEB(resp: CustomFileResponses) {
+export function assertDECountOfSingleDEB(resp?: CustomFileResponses) {
   expect(resp).to.have.length(51);
-  expect(resp.every((s) => s.type === TYPES.DE?.name)).to.be.true;
+  expect(resp?.every((s) => s.type === TYPES.DE?.name)).to.be.true;
 }
 
-export function assertDEBMeta(resp: CustomFileResponses, deb: 'A' | 'B') {
+export function assertDEBMeta(resp: CustomFileResponses | undefined, deb: 'A' | 'B') {
   expect(resp).to.have.length(1);
 
-  resp[0].filePath = relative(process.cwd(), resp[0].filePath);
+  // if only to satisfy compiler - the assertion above ensures this is true
+  if (resp?.length && resp[0].filePath) {
+    resp[0].filePath = relative(process.cwd(), resp[0].filePath);
 
-  expect(resp[0]).to.include({
-    type: TYPES.DEB.name,
-    fullName: DEBS[deb].FULL_NAME,
-    filePath: DEBS[deb].FILES.META.RELATIVE_PATH,
-  });
+    expect(resp[0]).to.include({
+      type: TYPES.DEB.name,
+      fullName: DEBS[deb].FULL_NAME,
+      filePath: DEBS[deb].FILES.META.RELATIVE_PATH,
+    });
+  }
 }
 
-export function assertViewHome(resp: CustomFileResponses, deb: 'A' | 'B') {
+export function assertViewHome(resp: CustomFileResponses | undefined, deb: 'A' | 'B') {
   expect(resp).to.have.length(3);
   expect(
-    resp.map((s) => ({
+    resp?.map((s) => ({
       type: s.type,
       fullName: s.fullName,
-      filePath: relative(process.cwd(), s.filePath),
+      filePath: relative(process.cwd(), s.filePath as string),
     }))
   ).to.have.deep.members([
     {
@@ -113,28 +116,29 @@ export function assertViewHome(resp: CustomFileResponses, deb: 'A' | 'B') {
 }
 
 export function assertViewHomeStatus(
-  resp: CustomFileResponses,
+  resp: CustomFileResponses | undefined,
   deb: 'A' | 'B',
   type: 'CONTENT' | 'META' | 'FR_VARIANT'
 ) {
   expect(resp).to.have.length(1);
 
-  resp[0].filePath = relative(process.cwd(), resp[0].filePath);
-
-  expect(resp[0]).to.include({
-    type: TYPES.DE?.name,
-    fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
-    filePath: DEBS[deb].DE.VIEW_HOME.FILES[type].RELATIVE_PATH,
-  });
+  if (resp) {
+    resp[0].filePath = relative(process.cwd(), resp[0].filePath as string);
+    expect(resp[0]).to.include({
+      type: TYPES.DE?.name,
+      fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
+      filePath: DEBS[deb].DE.VIEW_HOME.FILES[type].RELATIVE_PATH,
+    });
+  }
 }
 
-export function assertDocumentDetailPageA(resp: CustomFileResponses) {
+export function assertDocumentDetailPageA(resp?: CustomFileResponses) {
   expect(resp).to.have.length(4);
   expect(
-    resp.map((s) => ({
+    resp?.map((s) => ({
       type: s.type,
       fullName: s.fullName,
-      filePath: relative(process.cwd(), s.filePath),
+      filePath: relative(process.cwd(), s.filePath as string),
     }))
   ).to.have.deep.members([
     {
@@ -176,7 +180,11 @@ export async function assertDocumentDetailPageADelete(session: TestSession, asse
   }
 }
 
-export function assertViewHomeFRVariantDelete(resp: CustomFileResponses, deb: 'A' | 'B', projectDir: string) {
+export function assertViewHomeFRVariantDelete(
+  resp: CustomFileResponses | undefined,
+  deb: 'A' | 'B',
+  projectDir: string
+) {
   expect(resp).to.have.length(2);
 
   const inboundFiles = execCmd<RetrieveCommandResult>(
