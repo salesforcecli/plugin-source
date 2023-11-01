@@ -184,6 +184,8 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Test Failures [${this.result.response.details.runTestResult?.numFailures}]`));
       this.ux.table(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         tests.map((test: Failures) => ({
           name: test.name,
           methodName: test.methodName,
@@ -214,7 +216,7 @@ export class MdDeployResultFormatter extends ResultFormatter {
         }
       );
     }
-    maybePrintCodeCoverageTable(this.result.response.details?.runTestResult?.codeCoverage, this.ux);
+    maybePrintCodeCoverageTable(this.result.response.details?.runTestResult?.codeCoverage ?? [], this.ux);
   }
 
   protected verboseTestTime(): void {
@@ -235,5 +237,5 @@ const mdResponseSorter = (i: DeployMessage, j: DeployMessage): number => {
     }
     return i.fileName > j.fileName ? 1 : -1;
   }
-  return i.componentType > j.componentType ? 1 : -1;
+  return i.componentType ?? '' > (j.componentType ?? '') ? 1 : -1;
 };

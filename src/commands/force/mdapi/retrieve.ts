@@ -102,16 +102,16 @@ export class Retrieve extends SourceCommand {
     }),
   };
 
-  protected retrieveResult: RetrieveResult;
-  private sourceDir: string;
-  private retrieveTargetDir: string;
-  private zipFileName: string;
-  private unzip: boolean;
-  private wait: Duration;
-  private isAsync: boolean;
-  private mdapiRetrieve: MetadataApiRetrieve;
-  private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
-  private org: Org;
+  protected retrieveResult: RetrieveResult | undefined;
+  private sourceDir: string | undefined;
+  private retrieveTargetDir: string | undefined;
+  private zipFileName: string | undefined;
+  private unzip: boolean | undefined;
+  private wait: Duration | undefined;
+  private isAsync: boolean | undefined;
+  private mdapiRetrieve: MetadataApiRetrieve | undefined;
+  private flags!: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  private org!: Org | undefined;
   public async run(): Promise<RetrieveCommandCombinedResult> {
     this.flags = (await this.parse(Retrieve)).flags;
     this.org = this.flags['target-org'];
@@ -138,7 +138,7 @@ export class Retrieve extends SourceCommand {
       throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]), 'InvalidPackageNames');
     }
 
-    this.spinner.start(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
+    this.spinner.start(spinnerMessages.getMessage('retrieve.main', [this.org?.getUsername()]));
     this.spinner.status = spinnerMessages.getMessage('retrieve.componentSetBuild');
 
     this.componentSet = await ComponentSetBuilder.build({
@@ -148,14 +148,16 @@ export class Retrieve extends SourceCommand {
       apiversion: this.flags.apiversion,
       packagenames,
       sourcepath: this.sourceDir ? [this.sourceDir] : undefined,
-      manifest: manifest && {
-        manifestPath: manifest,
-        directoryPaths: [],
-      },
+      manifest: manifest
+        ? {
+            manifestPath: manifest,
+            directoryPaths: [],
+          }
+        : undefined,
     });
 
     await Lifecycle.getInstance().emit('preretrieve', { packageXmlPath: manifest });
-    const username = this.org.getUsername();
+    const username = this.org?.getUsername() ?? '';
     // eslint-disable-next-line @typescript-eslint/require-await
     Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
       this.log(
@@ -180,7 +182,7 @@ export class Retrieve extends SourceCommand {
     });
 
     Stash.set('MDAPI_RETRIEVE', {
-      jobid: this.mdapiRetrieve.id,
+      jobid: this.mdapiRetrieve.id ?? '',
       retrievetargetdir: this.retrieveTargetDir,
       zipfilename: this.zipFileName,
       unzip: this.unzip,
@@ -210,14 +212,14 @@ export class Retrieve extends SourceCommand {
       [RequestStatus.Canceling, 69],
     ]);
     if (!this.isAsync) {
-      this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
+      this.setExitCode(StatusCodeMap.get(this.retrieveResult?.response.status as RequestStatus) ?? 1);
     }
   }
 
   protected formatResult(): RetrieveCommandResult | RetrieveCommandAsyncResult {
     // async result
     if (this.isAsync) {
-      let cmdFlags = `--jobid ${this.mdapiRetrieve.id} --retrievetargetdir ${this.retrieveTargetDir}`;
+      let cmdFlags = `--jobid ${this.mdapiRetrieve?.id} --retrievetargetdir ${this.retrieveTargetDir}`;
       const targetusernameFlag = this.flags['target-org'];
       if (targetusernameFlag) {
         cmdFlags += ` --targetusername ${targetusernameFlag.getUsername()}`;
@@ -226,14 +228,14 @@ export class Retrieve extends SourceCommand {
       this.log(messages.getMessage('checkStatus', [cmdFlags]));
       return {
         done: false,
-        id: this.mdapiRetrieve.id,
+        id: this.mdapiRetrieve?.id ?? '',
         state: 'Queued',
         status: 'Queued',
         timedOut: true,
       };
     } else {
       const formatterOptions = {
-        waitTime: this.wait.quantity,
+        waitTime: this.wait?.quantity ?? '',
         verbose: this.flags.verbose ?? false,
         retrieveTargetDir: this.retrieveTargetDir,
         zipFileName: this.zipFileName,
@@ -241,6 +243,8 @@ export class Retrieve extends SourceCommand {
       };
       const formatter = new RetrieveResultFormatter(
         new Ux({ jsonEnabled: this.jsonEnabled() }),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         formatterOptions,
         this.retrieveResult
       );
@@ -258,6 +262,7 @@ export class Retrieve extends SourceCommand {
     } catch (error) {
       this.debug('No SFDX project found for default package directory');
     }
+    return '';
   }
 
   private resolveRootDir(rootDir?: string): string {

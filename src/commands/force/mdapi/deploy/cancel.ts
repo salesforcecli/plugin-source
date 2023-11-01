@@ -56,8 +56,8 @@ export class Cancel extends DeployCommand {
       summary: messages.getMessage('flags.jobid.summary'),
     }),
   };
-  private flags: Interfaces.InferredFlags<typeof Cancel.flags>;
-  private conn: Connection;
+  private flags!: Interfaces.InferredFlags<typeof Cancel.flags>;
+  private conn!: Connection;
 
   public async run(): Promise<DeployCancelCommandResult> {
     this.flags = (await this.parse(Cancel)).flags;

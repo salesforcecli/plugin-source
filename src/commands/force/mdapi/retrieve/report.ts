@@ -70,16 +70,16 @@ export class Report extends SourceCommand {
     }),
   };
 
-  protected retrieveResult: RetrieveResult;
-  protected retrieveStatus: MetadataApiRetrieveStatus;
-  private retrieveTargetDir: string;
-  private zipFileName: string;
-  private unzip: boolean;
-  private wait: Duration;
-  private isAsync: boolean;
-  private mdapiRetrieve: MetadataApiRetrieve;
-  private flags: Interfaces.InferredFlags<typeof Report.flags>;
-  private org: Org;
+  protected retrieveResult!: RetrieveResult;
+  protected retrieveStatus!: MetadataApiRetrieveStatus;
+  private retrieveTargetDir!: string;
+  private zipFileName!: string;
+  private unzip: boolean | undefined;
+  private wait!: Duration;
+  private isAsync!: boolean;
+  private mdapiRetrieve!: MetadataApiRetrieve;
+  private flags!: Interfaces.InferredFlags<typeof Report.flags>;
+  private org!: Org;
 
   public async run(): Promise<ReportCommandResult> {
     this.flags = (await this.parse(Report)).flags;
@@ -104,7 +104,7 @@ export class Report extends SourceCommand {
       retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);
       this.zipFileName = resolveZipFileName(mdRetrieveStash?.zipfilename);
-      this.unzip = mdRetrieveStash?.unzip;
+      this.unzip = mdRetrieveStash.unzip;
     } else {
       this.retrieveTargetDir = this.resolveOutputDir(this.flags.retrievetargetdir);
       this.zipFileName = resolveZipFileName(this.flags.zipfilename);
@@ -120,7 +120,7 @@ export class Report extends SourceCommand {
 
     this.mdapiRetrieve = new MetadataApiRetrieve({
       id: retrieveId,
-      usernameOrConnection: this.org.getUsername(),
+      usernameOrConnection: this.org.getUsername() as string,
       output: this.retrieveTargetDir,
       format: 'metadata',
       zipFileName: this.zipFileName,
@@ -181,7 +181,7 @@ export class Report extends SourceCommand {
     return formatter.getJson();
   }
 
-  private resolveOutputDir(dirPath: string): string {
+  private resolveOutputDir(dirPath?: string): string {
     return this.ensureFlagPath({
       flagName: 'retrievetargetdir',
       path: dirPath,

@@ -48,7 +48,7 @@ const apiVersionTest = async (doctor: SfDoctor): Promise<void> => {
 
   // check org-api-version from ConfigAggregator
   const aggregator = await ConfigAggregator.create();
-  const apiVersion = aggregator.getPropertyValue<string>(OrgConfigProperties.ORG_API_VERSION);
+  const apiVersion = aggregator.getPropertyValue<string>(OrgConfigProperties.ORG_API_VERSION) as string;
 
   const sourceApiVersion = await getSourceApiVersion();
 
@@ -119,10 +119,11 @@ const getSourceApiVersion = async (): Promise<string> => {
     const errMsg = (error as Error).message;
     getLogger().debug(`Cannot determine sourceApiVersion due to: ${errMsg}`);
   }
+  return '';
 };
 
 // check max API version for default orgs
-const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: string): Promise<string> => {
+const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: string): Promise<string | undefined> => {
   try {
     const org = await Org.create({ aliasOrUsername, aggregator });
     return await org.retrieveMaxApiVersion();
@@ -140,5 +141,5 @@ const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: s
 //   Comparing 55.0 with 56.0 would return true.
 const diff = (version1: string, version2: string): boolean => {
   getLogger().debug(`Comparing API versions: [${version1},${version2}]`);
-  return version1?.length && version2?.length && version1 !== version2;
+  return (version1?.length && version2?.length && version1 !== version2) as boolean;
 };

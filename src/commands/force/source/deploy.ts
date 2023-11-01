@@ -10,7 +10,7 @@ import { dirname } from 'node:path';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
-import { ComponentSetBuilder, DeployVersionData } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, ComponentSetBuilder, DeployVersionData } from '@salesforce/source-deploy-retrieve';
 import {
   arrayWithDeprecation,
   Flags,
@@ -163,9 +163,11 @@ export class Deploy extends DeployCommand {
     junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
-  protected tracking: SourceTracking;
+  protected tracking!: SourceTracking;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
-  private org: Org;
+  private org!: Org;
   public async run(): Promise<DeployCommandCombinedResult> {
     this.flags = (await this.parse(Deploy)).flags;
     this.org = await Org.create({ aliasOrUsername: this.flags['target-org'] });
@@ -192,6 +194,7 @@ export class Deploy extends DeployCommand {
   //   1. synchronous - deploy metadata and wait for the deploy to complete.
   //   2. asynchronous - deploy metadata and immediately return.
   //   3. recent validation - deploy metadata that's already been validated by the org
+  // eslint-disable-next-line complexity
   protected async deploy(): Promise<void> {
     const waitDuration = this.flags.wait;
     this.isAsync = waitDuration.quantity === 0;
@@ -211,12 +214,14 @@ export class Deploy extends DeployCommand {
         apiversion: this.flags['api-version'],
         sourceapiversion: await this.getSourceApiVersion(),
         sourcepath: this.flags.sourcepath,
-        manifest: this.flags.manifest && {
-          manifestPath: this.flags.manifest,
-          directoryPaths: this.getPackageDirs(),
-          destructiveChangesPre: this.flags.predestructivechanges,
-          destructiveChangesPost: this.flags.postdestructivechanges,
-        },
+        manifest: this.flags.manifest
+          ? {
+              manifestPath: this.flags.manifest,
+              directoryPaths: this.getPackageDirs(),
+              destructiveChangesPre: this.flags.predestructivechanges,
+              destructiveChangesPost: this.flags.postdestructivechanges,
+            }
+          : undefined,
         metadata: this.flags.metadata && {
           metadataEntries: this.flags.metadata,
           directoryPaths: this.getPackageDirs(),
@@ -242,7 +247,7 @@ export class Deploy extends DeployCommand {
       }
       // fire predeploy event for sync and async deploys
       await Lifecycle.getInstance().emit('predeploy', this.componentSet.toArray());
-      const username = this.org.getUsername();
+      const username = this.org.getUsername() ?? '';
       // eslint-disable-next-line @typescript-eslint/require-await
       Lifecycle.getInstance().on('apiVersionDeploy', async (apiData: DeployVersionData) => {
         this.log(
@@ -273,8 +278,10 @@ export class Deploy extends DeployCommand {
           ...(this.flags.runtests ? { runTests: this.flags.runtests } : {}),
         },
       });
-      this.asyncDeployResult = { id: deploy.id };
-      this.updateDeployId(deploy.id);
+      const id = deploy.id ?? '';
+
+      this.asyncDeployResult = { id };
+      this.updateDeployId(id);
 
       if (!this.isAsync) {
         // we're not print JSON output
@@ -318,7 +325,7 @@ export class Deploy extends DeployCommand {
       ? new DeployAsyncResultFormatter(
           new Ux({ jsonEnabled: this.jsonEnabled() }),
           formatterOptions,
-          this.asyncDeployResult
+          this.asyncDeployResult as AsyncResult
         )
       : new DeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 

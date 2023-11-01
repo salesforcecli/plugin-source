@@ -17,7 +17,10 @@ import { prepCoverageForDisplay } from '../coverageUtils.js';
  * @param coverageFromMdapiResult
  * @param ux
  */
-export const maybePrintCodeCoverageTable = (coverageFromMdapiResult: CodeCoverage | CodeCoverage[], ux: Ux): void => {
+export const maybePrintCodeCoverageTable = (
+  coverageFromMdapiResult: CodeCoverage | CodeCoverage[] | undefined,
+  ux: Ux
+): void => {
   const codeCoverage = ensureArray(coverageFromMdapiResult);
 
   if (codeCoverage.length) {

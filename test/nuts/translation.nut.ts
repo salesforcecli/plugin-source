@@ -141,7 +141,7 @@ describe('translations', () => {
               ensureExitCode: 0,
             }
           );
-          expect(result.jsonOutput.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
+          expect(result.jsonOutput?.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
         });
 
         it('can deploy COT', () => {

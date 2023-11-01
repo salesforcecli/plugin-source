@@ -42,7 +42,7 @@ export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFull
   expect(resp).to.have.length(52);
   expect(
     resp.reduce(
-      (acc: [number, number], curr: FileResponse) => {
+      (acc: [number, number], curr) => {
         if (curr.type === TYPES.DE?.name && curr.fullName.includes(debFullName)) acc[0]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === debFullName) acc[1]++;
         return acc;
@@ -53,11 +53,11 @@ export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFull
   ).to.deep.equal([51, 1]);
 }
 
-export function assertDECountsOfAllDEB(resp: CustomFileResponses) {
+export function assertDECountsOfAllDEB(resp?: CustomFileResponses) {
   expect(resp).to.have.length(102);
   expect(
-    resp.reduce(
-      (acc: [number, number], curr: FileResponse) => {
+    resp?.reduce(
+      (acc: [number, number], curr) => {
         if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
         if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
         return acc;
@@ -162,10 +162,12 @@ export function assertDocumentDetailPageA(resp: CustomFileResponses) {
 
 export async function assertDocumentDetailPageADelete(session: TestSession, assertDeleteInLocal: boolean) {
   expect(
-    await isNameObsolete(session.orgs.get('default').username, TYPES.DE?.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await isNameObsolete(session.orgs.get('default')!.username!, TYPES.DE.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
   ).to.be.true;
   expect(
-    await isNameObsolete(session.orgs.get('default').username, TYPES.DE?.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await isNameObsolete(session.orgs.get('default')!.username!, TYPES.DE.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
   ).to.be.true;
 
   if (assertDeleteInLocal) {
@@ -182,7 +184,7 @@ export function assertViewHomeFRVariantDelete(resp: CustomFileResponses, deb: 'A
     {
       ensureExitCode: 0,
     }
-  ).jsonOutput.result.inboundFiles;
+  ).jsonOutput?.result.inboundFiles;
 
   expect(inboundFiles).to.have.length(2);
   expect(fs.existsSync(join(projectDir, DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH))).to.be.false;
@@ -191,7 +193,7 @@ export function assertViewHomeFRVariantDelete(resp: CustomFileResponses, deb: 'A
 export function assertNoLocalChanges() {
   const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
     ensureExitCode: 0,
-  }).jsonOutput.result;
+  }).jsonOutput?.result;
   expect(statusResult).to.deep.equal([]);
 }
 

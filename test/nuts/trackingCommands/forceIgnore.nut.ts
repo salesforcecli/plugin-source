@@ -65,7 +65,7 @@ describe('forceignore changes', () => {
       // nothing should push
       const output = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
       expect(output).to.deep.equal([]);
     });
 
@@ -99,7 +99,7 @@ describe('forceignore changes', () => {
       // pushes with no results
       const ignoredOutput = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
       // nothing should have been pushed
       expect(ignoredOutput).to.deep.equal([]);
     });
@@ -111,7 +111,7 @@ describe('forceignore changes', () => {
       // verify file pushed in results
       const unIgnoredOutput = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
 
       // all 4 files should have been pushed
       expect(unIgnoredOutput).to.have.length(4);

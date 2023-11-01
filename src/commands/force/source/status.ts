@@ -18,7 +18,12 @@ import {
   SfCommand,
   Ux,
 } from '@salesforce/sf-plugins-core';
-import { StatusFormatter, StatusResult } from '../../../formatters/source/statusFormatter.js';
+import {
+  StatusFormatter,
+  StatusOrigin,
+  StatusResult,
+  StatusStateString,
+} from '../../../formatters/source/statusFormatter.js';
 import { trackingSetup } from '../../../trackingFunctions.js';
 
 Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
@@ -56,7 +61,7 @@ export default class Status extends SfCommand<StatusCommandResult> {
   public static readonly requiresProject = true;
   protected results = new Array<StatusResult>();
   protected localAdds: ChangeResult[] = [];
-  private flags: Interfaces.InferredFlags<typeof Status.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Status.flags>;
 
   public async run(): Promise<StatusCommandResult> {
     this.flags = (await this.parse(Status)).flags;
@@ -104,14 +109,14 @@ export default class Status extends SfCommand<StatusCommandResult> {
  */
 const resultConverter = (input: StatusOutputRow): StatusResult => {
   const { fullName, type, ignored, filePath, conflict } = input;
-  const origin = originMap.get(input.origin);
+  const origin = originMap.get(input.origin) as StatusOrigin;
   const actualState = stateMap.get(input.state);
   return {
     fullName,
     type,
     // this string became the place to store information.
     // The JSON now breaks out that info but preserves this property for backward compatibility
-    state: `${origin} ${actualState}${conflict ? ' (Conflict)' : ''}`,
+    state: `${origin} ${actualState}${conflict ? ' (Conflict)' : ''}` as StatusStateString,
     ignored,
     filePath,
     origin,

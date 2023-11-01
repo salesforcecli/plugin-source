@@ -62,10 +62,10 @@ export default class Pull extends SourceCommand {
 
   public static requiresProject = true;
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
-  protected tracking: SourceTracking | undefined;
-  protected retrieveResult: RetrieveResult | undefined;
-  protected deleteFileResponses: FileResponse[] | undefined;
-  private flags: Interfaces.InferredFlags<typeof Pull.flags> | undefined;
+  protected tracking!: SourceTracking;
+  protected retrieveResult!: RetrieveResult;
+  protected deleteFileResponses!: FileResponse[];
+  private flags!: Interfaces.InferredFlags<typeof Pull.flags>;
 
   public async run(): Promise<PullResponse> {
     this.flags = (await this.parse(Pull)).flags;
@@ -87,7 +87,7 @@ export default class Pull extends SourceCommand {
   protected async preChecks(): Promise<void> {
     this.spinner.start('Loading source tracking information');
     this.tracking = await trackingSetup({
-      ignoreConflicts: this.flags.forceoverwrite ?? false,
+      ignoreConflicts: this.flags?.forceoverwrite ?? false,
       org: this.flags['target-org'],
       project: this.project,
       ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
@@ -101,7 +101,7 @@ export default class Pull extends SourceCommand {
       state: 'delete',
       format: 'SourceComponent',
     });
-    this.deleteFileResponses = await this.tracking.deleteFilesAndUpdateTracking(changesToDelete);
+    this.deleteFileResponses = await this.tracking?.deleteFilesAndUpdateTracking(changesToDelete);
   }
 
   protected async retrieve(): Promise<void> {
@@ -115,7 +115,7 @@ export default class Pull extends SourceCommand {
     if (this.flags['api-version']) {
       componentSet.apiVersion = this.flags['api-version'];
     }
-    const username = this.flags['target-org'].getUsername();
+    const username = this.flags['target-org'].getUsername() as string;
     // eslint-disable-next-line @typescript-eslint/require-await
     Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
       this.log(

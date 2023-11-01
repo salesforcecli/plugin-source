@@ -74,8 +74,8 @@ export class Report extends DeployCommand {
     junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof Report.flags>;
-  private org: Org;
+  private flags!: Interfaces.InferredFlags<typeof Report.flags>;
+  private org!: Org;
 
   public async run(): Promise<MdDeployResult> {
     this.flags = (await this.parse(Report)).flags;

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
-import { DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import {
   arrayWithDeprecation,
   Flags,
@@ -137,8 +137,8 @@ export class Deploy extends DeployCommand {
     junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
-  private org: Org;
+  private flags!: Interfaces.InferredFlags<typeof Deploy.flags>;
+  private org!: Org;
 
   public async run(): Promise<DeployResult> {
     this.flags = (await this.parse(Deploy)).flags;
@@ -167,7 +167,7 @@ export class Deploy extends DeployCommand {
     const deploymentOptions = this.flags.zipfile
       ? { zipPath: this.flags.zipfile }
       : { mdapiPath: this.flags.deploydir };
-    const username = this.org.getUsername();
+    const username = this.org.getUsername() as string;
 
     // still here?  we need to deploy a zip file then
     const deploy = new MetadataApiDeploy({
@@ -200,7 +200,7 @@ export class Deploy extends DeployCommand {
       this.log(deployMessages.getMessage('apiVersionMsgBasic', [username, apiData.apiVersion, apiData.webService]));
     });
     await deploy.start();
-    this.asyncDeployResult = { id: deploy.id };
+    this.asyncDeployResult = deploy.id ? { id: deploy.id } : undefined;
     this.updateDeployId(deploy.id);
 
     if (!this.isAsync) {
@@ -237,7 +237,7 @@ export class Deploy extends DeployCommand {
       ? new MdDeployAsyncResultFormatter(
           new Ux({ jsonEnabled: this.jsonEnabled() }),
           formatterOptions,
-          this.asyncDeployResult
+          this.asyncDeployResult as AsyncResult
         )
       : new MdDeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 

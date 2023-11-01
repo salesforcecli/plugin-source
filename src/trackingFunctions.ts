@@ -56,7 +56,7 @@ export const filterConflictsByComponentSet = async ({
   ux: Ux;
 }): Promise<ChangeResult[]> => {
   const filteredConflicts = (await tracking.getConflicts()).filter((cr) =>
-    components.has({ fullName: cr.name, type: cr.type })
+    components.has({ fullName: cr.name as string, type: cr.type as string })
   );
   processConflicts(filteredConflicts, ux, messages.getMessage('conflictMsg'));
   return filteredConflicts;
@@ -101,10 +101,10 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
     tracking.updateLocalTracking({
       files: successes
         .filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted)
-        .map((fileResponse) => fileResponse.filePath),
+        .map((fileResponse) => fileResponse.filePath as string),
       deletedFiles: successes
         .filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted)
-        .map((fileResponse) => fileResponse.filePath),
+        .map((fileResponse) => fileResponse.filePath as string),
     }),
     tracking.updateRemoteTracking(
       successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
@@ -141,8 +141,8 @@ const processConflicts = (conflicts: ChangeResult[], ux: Ux, message: string): v
     c.filenames?.forEach((f) => {
       conflictMap.set(`${c.name}#${c.type}#${f}`, {
         state: 'Conflict',
-        fullName: c.name,
-        type: c.type,
+        fullName: c.name as string,
+        type: c.type as string,
         filePath: path.resolve(f),
       });
     });

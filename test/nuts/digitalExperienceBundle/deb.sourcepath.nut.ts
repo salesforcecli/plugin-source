@@ -53,7 +53,7 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
@@ -65,7 +65,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -78,7 +78,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_A);
       });
@@ -89,7 +89,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertViewHome(deployedSource, 'A');
       });
@@ -104,7 +104,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -117,7 +117,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A);
       });
@@ -128,7 +128,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertViewHome(inboundFiles, 'A');
       });
@@ -144,7 +144,7 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertViewHomeFRVariantDelete(deployedSource, 'A', session.project.dir);
     });
@@ -159,7 +159,7 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
     });
@@ -170,7 +170,7 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deletedSource;
+      ).jsonOutput?.result.deletedSource;
 
       assertDocumentDetailPageA(deletedSource);
       await assertDocumentDetailPageADelete(session, true);

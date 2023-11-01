@@ -200,9 +200,11 @@ export class DeployResultFormatter extends ResultFormatter {
         const fileResponses: FileResponse[] = [];
         this.fileResponses
           .filter((f) => f.state === 'Failed')
-          .map((f: FileResponse & { error: string }) => {
+          .map((f) => {
             fileResponses.push(f);
-            fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+            if ('error' in f) {
+              fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+            }
           });
         this.sortFileResponses(fileResponses);
         this.asRelativePaths(fileResponses);
@@ -224,6 +226,8 @@ export class DeployResultFormatter extends ResultFormatter {
         this.ux.log('');
         this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
         this.ux.table(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           failures.map((entry: FileResponseFailure) => ({
             fullName: entry.fullName,
             problemType: entry.problemType,
@@ -276,6 +280,8 @@ export class DeployResultFormatter extends ResultFormatter {
         chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
       );
       this.ux.table(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         tests.map((entry: Failures) => ({
           name: entry.name,
           methodName: entry.methodName,

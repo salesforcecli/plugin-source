@@ -57,7 +57,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('pushes the initial metadata to the org', () => {
       const resp = execCmd<PushResponse>('force:source:push --json');
       expect(resp.jsonOutput?.status, JSON.stringify(resp)).to.equal(0);
-      const pushedSource = resp.jsonOutput.result.pushedSource;
+      const pushedSource = resp.jsonOutput?.result.pushedSource;
       expect(pushedSource).to.be.an.instanceof(Array);
       expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
       expect(
@@ -139,7 +139,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('pushes the local delete to the org', () => {
       const result = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
       expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
     });
     it('sees no local changes', () => {

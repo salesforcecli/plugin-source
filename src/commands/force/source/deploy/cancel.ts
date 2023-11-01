@@ -55,6 +55,8 @@ export class Cancel extends DeployCommand {
     }),
   };
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private flags: Interfaces.InferredFlags<typeof Cancel.flags>;
 
   public async run(): Promise<DeployCancelCommandResult> {
@@ -79,7 +81,7 @@ export class Cancel extends DeployCommand {
   }
 
   protected resolveSuccess(): void {
-    const status = this.deployResult.response.status;
+    const status = this.deployResult?.response.status;
     if (status !== RequestStatus.Canceled) {
       this.setExitCode(1);
     }

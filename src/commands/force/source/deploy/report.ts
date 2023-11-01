@@ -74,6 +74,8 @@ export class Report extends DeployCommand {
     }),
     junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private flags: Interfaces.InferredFlags<typeof Report.flags>;
 
   public async run(): Promise<DeployReportCommandResult> {
@@ -102,10 +104,10 @@ export class Report extends DeployCommand {
       try {
         this.project = await SfProject.resolve();
         sourcepath = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+        this.componentSet = await ComponentSetBuilder.build({ sourcepath });
       } catch (err) {
         // ignore the error. this was just to get improved command output.
       }
-      this.componentSet = await ComponentSetBuilder.build({ sourcepath });
     }
 
     const waitDuration = this.flags.wait;

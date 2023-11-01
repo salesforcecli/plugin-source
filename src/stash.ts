@@ -86,8 +86,8 @@ export class Stash {
    * @param commandId The oclif Command.id.  E.g., `this.id`
    * @returns the `StashKey` to use for `Stash.get()` and `Stash.set()`
    */
-  public static getKey(commandId: keyof typeof Stash.keyMap): StashKey {
-    const key = Stash.keyMap[commandId] as StashKey;
+  public static getKey(commandId: string): StashKey {
+    const key = Stash.keyMap[commandId as keyof typeof Stash.keyMap] as StashKey;
     if (!key) {
       const messages = Messages.loadMessages('@salesforce/plugin-source', 'stash');
       throw new SfError(messages.getMessage('InvalidStashKey', [commandId]), 'InvalidStashKey');

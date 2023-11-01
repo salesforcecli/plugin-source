@@ -48,7 +48,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployComma
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {
-  protected displayDeployId = once((id: string) => {
+  protected displayDeployId = once((id?: string) => {
     if (!this.jsonEnabled()) {
       this.log(`Deploy ID: ${id}`);
     }
@@ -57,12 +57,12 @@ export abstract class DeployCommand extends SourceCommand {
   protected isRest = false;
   protected isAsync = false;
   protected asyncDeployResult: AsyncResult | undefined;
-  protected deployResult: DeployResult | undefined;
+  protected deployResult!: DeployResult;
   protected resultsDir: string | undefined;
-  protected updateDeployId = once((id: string) => {
+  protected updateDeployId = once((id?: string) => {
     this.displayDeployId(id);
-    const stashKey = Stash.getKey(this.id);
-    Stash.set(stashKey, { jobid: id });
+    const stashKey = Stash.getKey(this.id as string);
+    Stash.set(stashKey, { jobid: id ?? '' });
   });
 
   /**
@@ -99,7 +99,7 @@ export abstract class DeployCommand extends SourceCommand {
       [RequestStatus.Canceling, 69],
     ]);
     if (!this.isAsync) {
-      this.setExitCode(StatusCodeMap.get(this.deployResult?.response?.status as RequestStatus) ?? 1);
+      this.setExitCode(StatusCodeMap.get(this.deployResult?.response?.status) ?? 1);
     }
   }
 
@@ -118,7 +118,8 @@ export abstract class DeployCommand extends SourceCommand {
     if (id) {
       return id;
     } else {
-      const stash = Stash.get<DeployData>(Stash.getKey(this.id));
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const stash = Stash.get<DeployData>(Stash.getKey(this.id!));
       if (!stash) {
         throw new SfError(messages.getMessage('MissingDeployId'));
       }
@@ -130,7 +131,7 @@ export abstract class DeployCommand extends SourceCommand {
   //   1. SOAP is specified with the soapdeploy flag on the command
   //   2. The restDeploy SFDX config setting is explicitly true.
   protected isRestDeploy(soapdeploy = true): boolean {
-    if (soapdeploy === true) {
+    if (soapdeploy) {
       this.debug('soapdeploy flag === true.  Using SOAP');
       return false;
     }
@@ -290,7 +291,7 @@ export const resolveUsername = async (usernameOrAlias?: string): Promise<string>
   if (usernameOrAlias) return stateAggregator.aliases.resolveUsername(usernameOrAlias);
   // we didn't get a value, so let's see if the config has a default target org
   const configAggregator = await ConfigAggregator.create();
-  const defaultUsernameOrAlias: string = configAggregator.getPropertyValue('target-org');
+  const defaultUsernameOrAlias = configAggregator.getPropertyValue('target-org') as string;
   if (defaultUsernameOrAlias) return stateAggregator.aliases.resolveUsername(defaultUsernameOrAlias);
   throw new SfError(messages.getMessage('missingUsername'), 'MissingUsernameError');
 };

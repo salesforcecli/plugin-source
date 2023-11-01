@@ -70,9 +70,9 @@ export default class Push extends DeployCommand {
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private deployResults: DeployResult[] = [];
-  private tracking: SourceTracking;
-  private deletes: string[];
-  private flags: Interfaces.InferredFlags<typeof Push.flags>;
+  private tracking!: SourceTracking;
+  private deletes!: string[];
+  private flags!: Interfaces.InferredFlags<typeof Push.flags>;
 
   public async run(): Promise<PushResponse> {
     this.flags = (await this.parse(Push)).flags;
@@ -96,7 +96,7 @@ export default class Push extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    const username = this.flags['target-org'].getUsername();
+    const username = this.flags['target-org'].getUsername() as string;
     const isSequentialDeploy = getBoolean(
       await this.project.resolveProjectConfig(),
       'pushPackageDirectoriesSequentially',

@@ -51,7 +51,7 @@ export abstract class SourceCommand extends SfCommand<unknown> {
 
   protected async getSourceApiVersion(): Promise<Optional<string>> {
     const projectConfig = await this.project.resolveProjectConfig();
-    return getString(projectConfig, 'sourceApiVersion');
+    return getString(projectConfig, 'sourceApiVersion') as string;
   }
 
   /**

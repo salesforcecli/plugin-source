@@ -15,7 +15,8 @@ export const DEB_NUTS_PATH = join(process.cwd(), 'test', 'nuts', 'digitalExperie
 
 export const TYPES = {
   DEB: registry.types.digitalexperiencebundle,
-  DE: registry.types.digitalexperiencebundle.children?.types.digitalexperience,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  DE: registry.types.digitalexperiencebundle.children!.types.digitalexperience,
   DEC: registry.types.digitalexperienceconfig,
   NETWORK: registry.types.network,
   CUSTOM_SITE: registry.types.customsite,

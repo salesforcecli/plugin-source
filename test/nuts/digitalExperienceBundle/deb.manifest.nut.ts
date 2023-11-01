@@ -83,7 +83,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -94,7 +94,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountsOfAllDEB(deployedSource);
       });
@@ -107,7 +107,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountOfSingleDEB(deployedSource);
       });
@@ -118,7 +118,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_A);
       });
@@ -129,7 +129,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertViewHome(deployedSource, 'A');
       });
@@ -142,7 +142,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -153,7 +153,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -172,7 +172,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -183,7 +183,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountsOfAllDEB(inboundFiles);
       });
@@ -196,7 +196,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountOfSingleDEB(inboundFiles);
       });
@@ -207,7 +207,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A);
       });
@@ -218,7 +218,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertViewHome(inboundFiles, 'A');
       });
@@ -231,7 +231,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -242,7 +242,7 @@ describe('deb -- manifest option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -258,7 +258,7 @@ describe('deb -- manifest option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertViewHomeFRVariantDelete(deployedSource, 'A', session.project.dir);
     });
@@ -273,7 +273,7 @@ describe('deb -- manifest option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
     });
@@ -284,7 +284,7 @@ describe('deb -- manifest option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
       await assertDocumentDetailPageADelete(session, false);

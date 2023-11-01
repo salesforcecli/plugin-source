@@ -15,8 +15,10 @@ Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 type StatusActualState = 'Deleted' | 'Add' | 'Changed' | 'Unchanged';
-type StatusOrigin = 'Local' | 'Remote';
-type StatusStateString = `${StatusOrigin} ${StatusActualState}` | `${StatusOrigin} ${StatusActualState} (Conflict)`;
+export type StatusOrigin = 'Local' | 'Remote';
+export type StatusStateString =
+  | `${StatusOrigin} ${StatusActualState}`
+  | `${StatusOrigin} ${StatusActualState} (Conflict)`;
 export type StatusResult = {
   state: StatusStateString;
   fullName: string;

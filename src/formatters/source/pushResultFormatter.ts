@@ -13,6 +13,7 @@ import {
   ComponentStatus,
   DeployResult,
   FileResponse,
+  FileResponseFailure,
   MetadataResolver,
   SourceComponent,
   VirtualTreeContainer,
@@ -139,23 +140,26 @@ export class PushResultFormatter extends ResultFormatter {
 
     // there may be deletes not represented in the file responses (if bundle type)
     const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(this.deletes));
-    return this.deletes
-      .map((filePath) => {
-        const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
-        if (
-          cmp.type.strategies?.adapter === 'bundle' &&
-          contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content ?? ''))
-        ) {
-          return {
-            state: ComponentStatus.Deleted,
-            fullName: cmp.fullName,
-            type: cmp.type.name,
-            filePath,
-          } as FileResponse;
-        }
-      })
-      .filter((fileResponse) => fileResponse)
-      .concat(withoutUnchanged);
+    return (
+      this.deletes
+        .map((filePath) => {
+          const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
+          if (
+            cmp.type.strategies?.adapter === 'bundle' &&
+            contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content ?? ''))
+          ) {
+            return {
+              state: ComponentStatus.Deleted,
+              fullName: cmp.fullName,
+              type: cmp.type.name,
+              filePath,
+            } as FileResponse;
+          }
+        })
+        .filter((fileResponse) => fileResponse)
+        // we can be sure there's no undefined responses because of the filter above
+        .concat(withoutUnchanged) as FileResponse[]
+    );
   }
 
   protected displaySuccesses(): void {
@@ -207,16 +211,17 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    const failures = [];
+    const failures: FileResponseFailure[] = [];
     const fileResponseFailures: Map<string, string> = new Map<string, string>();
 
     if (this.fileResponses?.length) {
-      const fileResponses: FileResponse[] = [];
+      const fileResponses: FileResponseFailure[] = [];
       this.fileResponses
         .filter((f) => f.state === 'Failed')
-        .map((f: FileResponse & { error: string }) => {
-          fileResponses.push(f);
-          fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+        .map((f) => {
+          // we've filtered all of the file responses to failed errors with the state filter  above
+          fileResponses.push(f as FileResponseFailure);
+          fileResponseFailures.set(`${f.type}#${f.fullName}`, (f as FileResponseFailure).error);
         });
       this.sortFileResponses(fileResponses);
       this.asRelativePaths(fileResponses);
@@ -229,7 +234,9 @@ export class PushResultFormatter extends ResultFormatter {
       deployMessages.map((deployMessage) => {
         if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
           // duplicate the problem message to the error property for displaying in the table
-          failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+          failures.push(
+            Object.assign(deployMessage, { error: deployMessage.problem }) as unknown as FileResponseFailure
+          );
         }
       });
     }
@@ -238,6 +245,8 @@ export class PushResultFormatter extends ResultFormatter {
     }
     this.ux.log('');
     this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.ux.table(failures, {
       problemType: { header: 'Type' },
       fullName: { header: 'Name' },

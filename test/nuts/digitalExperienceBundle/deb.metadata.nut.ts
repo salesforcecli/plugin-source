@@ -50,7 +50,7 @@ describe('deb -- metadata option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
@@ -62,7 +62,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -73,7 +73,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountsOfAllDEB(deployedSource);
       });
@@ -86,7 +86,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountOfSingleDEB(deployedSource);
       });
@@ -97,7 +97,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_B);
       });
@@ -108,7 +108,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertViewHome(deployedSource, 'B');
       });
@@ -127,7 +127,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -138,7 +138,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountsOfAllDEB(inboundFiles);
       });
@@ -151,7 +151,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountOfSingleDEB(inboundFiles);
       });
@@ -162,7 +162,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_B);
       });
@@ -173,7 +173,7 @@ describe('deb -- metadata option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertViewHome(inboundFiles, 'B');
       });
@@ -189,7 +189,7 @@ describe('deb -- metadata option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertViewHomeFRVariantDelete(deployedSource, 'B', session.project.dir);
     });
@@ -204,7 +204,7 @@ describe('deb -- metadata option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
     });
@@ -215,7 +215,7 @@ describe('deb -- metadata option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deletedSource;
+      ).jsonOutput?.result.deletedSource;
 
       assertDocumentDetailPageA(deletedSource);
       await assertDocumentDetailPageADelete(session, true);

@@ -111,10 +111,10 @@ export class Retrieve extends SourceCommand {
     }),
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
-  protected retrieveResult: RetrieveResult;
-  protected tracking: SourceTracking;
-  private resolvedTargetDir: string;
-  private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  protected retrieveResult!: RetrieveResult;
+  protected tracking!: SourceTracking;
+  private resolvedTargetDir!: string;
+  private flags!: Interfaces.InferredFlags<typeof Retrieve.flags>;
   private registry = new RegistryAccess();
 
   public async run(): Promise<RetrieveCommandResult> {
@@ -150,7 +150,7 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const username = this.flags['target-org'].getUsername();
+    const username = this.flags['target-org'].getUsername() as string;
     // eslint-disable-next-line @typescript-eslint/require-await
     Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
       this.log(
@@ -168,10 +168,12 @@ export class Retrieve extends SourceCommand {
       sourceapiversion: await this.getSourceApiVersion(),
       packagenames: this.flags.packagenames,
       sourcepath: this.flags.sourcepath,
-      manifest: this.flags.manifest && {
-        manifestPath: this.flags.manifest,
-        directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
-      },
+      manifest: this.flags.manifest
+        ? {
+            manifestPath: this.flags.manifest,
+            directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
+          }
+        : undefined,
       metadata: this.flags.metadata && {
         metadataEntries: this.flags.metadata,
         directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
@@ -275,16 +277,16 @@ export class Retrieve extends SourceCommand {
   }
 
   private wantsToRetrieveCustomFields(): boolean {
-    const hasCustomField = this.componentSet.has({
+    const hasCustomField = this.componentSet?.has({
       type: this.registry.getTypeByName('CustomField'),
       fullName: ComponentSet.WILDCARD,
     });
 
-    const hasCustomObject = this.componentSet.has({
+    const hasCustomObject = this.componentSet?.has({
       type: this.registry.getTypeByName('CustomObject'),
       fullName: ComponentSet.WILDCARD,
     });
-    return hasCustomField && !hasCustomObject;
+    return (hasCustomField && !hasCustomObject) as boolean;
   }
 
   private async moveResultsForRetrieveTargetDir(): Promise<void> {

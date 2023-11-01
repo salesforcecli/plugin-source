@@ -52,7 +52,7 @@ describe('remote changes', () => {
     it('pushes to initiate the remote', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json');
       expect(pushResult.jsonOutput?.status, JSON.stringify(pushResult)).equals(0);
-      const pushedSource = pushResult.jsonOutput.result.pushedSource;
+      const pushedSource = pushResult.jsonOutput?.result.pushedSource;
       expect(pushedSource, JSON.stringify(pushedSource)).to.have.lengthOf(itemsInEBikesPush);
       expect(
         pushedSource.every((r) => r.state !== ComponentStatus.Failed),
