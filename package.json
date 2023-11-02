@@ -67,7 +67,7 @@
   "license": "BSD-3-Clause",
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "sf",
+    "bin": "sfdx",
     "devPlugins": [
       "@oclif/plugin-command-snapshot",
       "@oclif/plugin-help",
