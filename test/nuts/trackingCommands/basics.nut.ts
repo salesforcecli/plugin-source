@@ -49,6 +49,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('detects the initial metadata status', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(result).to.be.an.instanceof(Array);
       // the fields should be populated
@@ -68,11 +69,13 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('sees no local changes (all were committed from push), but profile updated in remote', () => {
       const localResult = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(localResult?.filter(filterIgnored)).to.deep.equal([]);
 
       const remoteResult = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(remoteResult?.some((item) => item.type === 'Profile')).to.equal(true);
     });
@@ -80,6 +83,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('can pull the remote profile', () => {
       const pullResult = execCmd<PullResponse>('force:source:pull --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(
         pullResult?.pulledSource?.some((item) => item?.type === 'Profile'),
@@ -90,6 +94,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('sees no local or remote changes', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(result?.filter((r) => r.type === 'Profile').filter(filterIgnored), JSON.stringify(result)).to.have.length(
         0
@@ -104,6 +109,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
       ]);
       const result = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(result?.filter(filterIgnored)).to.deep.equal([
         {
@@ -129,6 +135,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('does not see any change in remote status', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(
         result?.filter((r) => r.fullName === 'TestOrderController'),
@@ -139,12 +146,14 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
     it('pushes the local delete to the org', () => {
       const result = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
       expect(result, JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
     });
     it('sees no local changes', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(result?.filter(filterIgnored), JSON.stringify(result)).to.be.an.instanceof(Array).with.length(0);
     });
@@ -217,6 +226,7 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         it('sees no local changes', () => {
           const result = execCmd<StatusResult[]>('force:source:status --json --local', {
             ensureExitCode: 0,
+            cli: 'dev',
           }).jsonOutput?.result;
           expect(result?.filter(filterIgnored), JSON.stringify(result)).to.be.an.instanceof(Array).with.length(2);
         });

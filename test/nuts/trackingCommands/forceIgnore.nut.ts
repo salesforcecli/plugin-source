@@ -65,6 +65,7 @@ describe('forceignore changes', () => {
       // nothing should push
       const output = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
       expect(output).to.deep.equal([]);
     });
@@ -72,6 +73,7 @@ describe('forceignore changes', () => {
     it('shows the file in status as ignored', () => {
       const output = execCmd<StatusResult>('force:source:status --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(output, JSON.stringify(output)).to.deep.include({
         state: 'Local Add',
@@ -99,6 +101,7 @@ describe('forceignore changes', () => {
       // pushes with no results
       const ignoredOutput = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
       // nothing should have been pushed
       expect(ignoredOutput).to.deep.equal([]);
@@ -111,6 +114,7 @@ describe('forceignore changes', () => {
       // verify file pushed in results
       const unIgnoredOutput = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       // all 4 files should have been pushed
@@ -144,12 +148,14 @@ describe('forceignore changes', () => {
       // gets file into source tracking
       const statusOutput = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(statusOutput?.some((result) => result.fullName === 'CreatedClass')).to.equal(true);
 
       // pull doesn't retrieve that change
       const pullOutput = execCmd<PullResponse>('force:source:pull --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result;
       expect(pullOutput?.pulledSource.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
     });

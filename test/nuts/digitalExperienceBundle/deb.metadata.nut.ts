@@ -40,6 +40,7 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       );
     });
@@ -49,6 +50,7 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${METADATA.FULL_SITE_DEB_A_AND_B} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -61,6 +63,7 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -72,6 +75,7 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -85,6 +89,7 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.ALL_DE_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -96,6 +101,7 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.JUST_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -107,6 +113,7 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -126,6 +133,7 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -137,6 +145,7 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -150,6 +159,7 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.ALL_DE_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -161,6 +171,7 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.JUST_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -172,6 +183,7 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -188,6 +200,7 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -203,6 +216,7 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -214,6 +228,7 @@ describe('deb -- metadata option', () => {
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deletedSource;
 

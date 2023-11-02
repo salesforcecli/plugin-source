@@ -987,10 +987,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/cli-plugins-testkit@^5.0.0-dev.2":
-  version "5.0.0-dev.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.0.0-dev.2.tgz#735ebc0e15bec2cced49ebaba937184cbe33d1ee"
-  integrity sha512-fHvSBBCouzDRHQYif3csXKQ9Yb0esNvl++8+DKCem+CPcqdVgzVGOzF4SAkU+8+ChgkPNAG4Jr4qqHYPEXmoVQ==
+"@salesforce/cli-plugins-testkit@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.0.0.tgz#0ced85db4ca9f38ea0f486782c1e132fa43fe843"
+  integrity sha512-j0M7XC09ctpreFL6aPXkDIEZujlnNId4JMtTzfWA++Lpzj4PVj84zPBdXzGWSold/m9pf4EC7HZWaFS9kK/KVQ==
   dependencies:
     "@salesforce/core" "^5.3.10"
     "@salesforce/kit" "^3.0.15"

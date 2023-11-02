@@ -37,7 +37,7 @@ describe('CustomLabel source tracking', () => {
   });
 
   it('pushes to initiate the remote', () => {
-    execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 0 });
+    execCmd<PushResponse>('force:source:push --json', { ensureExitCode: 0, cli: 'dev' });
   });
 
   it("deletes the 'DeleteMe' CustomLabel", async () => {
@@ -62,7 +62,8 @@ describe('CustomLabel source tracking', () => {
     await conn.tooling.sobject('CustomLabel').delete(id);
     expect((await conn.tooling.query('SELECT Id FROM CustomLabel')).totalSize).to.equal(2);
 
-    const result = execCmd<PullResponse>('force:source:pull -f --json', { ensureExitCode: 0 }).jsonOutput?.result;
+    const result = execCmd<PullResponse>('force:source:pull -f --json', { ensureExitCode: 0, cli: 'dev' }).jsonOutput
+      ?.result;
     expect(result?.pulledSource.length).to.equal(1);
     expect(result?.pulledSource[0].state).to.equal('Deleted');
     expect(result?.pulledSource[0].fullName).to.equal('DeleteMe');
@@ -93,7 +94,7 @@ describe('CustomLabel source tracking', () => {
     await conn.tooling.sobject('CustomLabel').delete(ids[1]);
     expect((await conn.tooling.query('SELECT Id FROM CustomLabel')).totalSize).to.equal(0);
 
-    const result = execCmd<PullResponse>('force:source:pull', { ensureExitCode: 0 }).shellOutput.stdout;
+    const result = execCmd<PullResponse>('force:source:pull', { ensureExitCode: 0, cli: 'dev' }).shellOutput.stdout;
     expect(fs.existsSync(clFile)).to.be.false;
     expect(result).to.contain('KeepMe1');
     expect(result).to.contain('KeepMe2');

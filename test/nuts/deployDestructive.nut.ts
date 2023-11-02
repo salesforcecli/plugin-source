@@ -21,14 +21,16 @@ describe('source:deploy --destructive NUTs', () => {
     const pathToClass = path.join(testkit.projectDir, output, `${apexName}.cls`);
     execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output} --api-version 58.0`, {
       ensureExitCode: 0,
+      cli: 'dev',
     });
-    execCmd(`force:source:deploy -m ApexClass:${apexName}`, { ensureExitCode: 0 });
+    execCmd(`force:source:deploy -m ApexClass:${apexName}`, { ensureExitCode: 0, cli: 'dev' });
     return { apexName, output, pathToClass };
   };
 
   const createManifest = (metadata: string, manifesttype: string) => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype} --api-version 58.0`, {
       ensureExitCode: 0,
+      cli: 'dev',
     });
   };
 
@@ -37,7 +39,7 @@ describe('source:deploy --destructive NUTs', () => {
       nut: fileURLToPath(import.meta.url),
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
-    execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0 });
+    execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0, cli: 'dev' });
   });
 
   after(async () => {
@@ -55,6 +57,7 @@ describe('source:deploy --destructive NUTs', () => {
 
       execCmd('force:source:deploy --json --manifest package.xml --postdestructivechanges destructiveChangesPost.xml', {
         ensureExitCode: 0,
+        cli: 'dev',
       });
 
       deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
@@ -73,6 +76,7 @@ describe('source:deploy --destructive NUTs', () => {
 
       execCmd('force:source:deploy --json --manifest package.xml --predestructivechanges destructiveChangesPre.xml', {
         ensureExitCode: 0,
+        cli: 'dev',
       });
 
       deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
@@ -99,6 +103,7 @@ describe('source:deploy --destructive NUTs', () => {
         'force:source:deploy --json --manifest package.xml --postdestructivechanges destructiveChangesPost.xml --predestructivechanges destructiveChangesPre.xml',
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       );
 

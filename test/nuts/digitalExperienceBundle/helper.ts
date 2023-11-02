@@ -191,6 +191,7 @@ export function assertViewHomeFRVariantDelete(
     `force:source:retrieve --manifest ${DEBS[deb].DE.VIEW_HOME.MANIFEST} --json`,
     {
       ensureExitCode: 0,
+      cli: 'dev',
     }
   ).jsonOutput?.result.inboundFiles;
 
@@ -201,6 +202,7 @@ export function assertViewHomeFRVariantDelete(
 export function assertNoLocalChanges() {
   const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
     ensureExitCode: 0,
+    cli: 'dev',
   }).jsonOutput?.result;
   expect(statusResult).to.deep.equal([]);
 }

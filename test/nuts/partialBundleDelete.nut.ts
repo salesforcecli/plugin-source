@@ -125,7 +125,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       auraSrcDir = path.join(dreamhouseProj.dir, 'force-app', 'main', 'default', 'aura');
       lwcSrcDir = path.join(dreamhouseProj.dir, 'force-app', 'main', 'default', 'lwc');
 
-      execCmd(`force:source:deploy -p force-app -u ${scratchOrgUsername}`, { ensureExitCode: 0 });
+      execCmd(`force:source:deploy -p force-app -u ${scratchOrgUsername}`, { ensureExitCode: 0, cli: 'dev' });
     });
 
     // This test uses the dreamhouse-lwc repo to add a CSS file to an aura
@@ -142,7 +142,7 @@ describe('Partial Bundle Delete Retrieves', () => {
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${pageTemplatePath} -u ${scratchOrgUsername} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'dev' }
       );
 
       expect(fs.existsSync(testCssFile)).to.be.false;
@@ -175,7 +175,7 @@ describe('Partial Bundle Delete Retrieves', () => {
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${propertyTilePath} -u ${scratchOrgUsername} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'dev' }
       );
 
       expect(fs.existsSync(testCssFile)).to.be.false;
@@ -204,7 +204,7 @@ describe('Partial Bundle Delete Retrieves', () => {
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${brokerCardPath} -u ${scratchOrgUsername} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'dev' }
       );
 
       expect(fs.existsSync(testsDir)).to.be.true;

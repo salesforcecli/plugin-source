@@ -41,7 +41,7 @@ describe('deb -- manifest option', () => {
     it('should generate manifest for all debs using sourcepath', () => {
       execCmd(
         `force:source:manifest:create --sourcepath  ${DEBS_RELATIVE_PATH} --name ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'dev' }
       );
       expect(fs.existsSync(join(session.project.dir, STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN))).to.be.true;
     });
@@ -49,7 +49,7 @@ describe('deb -- manifest option', () => {
     it('should generate manifest for all debs using metadata', () => {
       execCmd(
         `force:source:manifest:create --metadata ${METADATA.ALL_DEBS} --name ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'dev' }
       );
       expect(fs.existsSync(join(session.project.dir, STORE.MANIFESTS.ALL_DEBS_METADATA_GEN))).to.be.true;
     });
@@ -61,6 +61,7 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       );
     });
@@ -70,6 +71,7 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.FULL_SITE_DEB_A_AND_B} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -82,6 +84,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -93,6 +96,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -106,6 +110,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DE_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -117,6 +122,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.JUST_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -128,6 +134,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -141,6 +148,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -152,6 +160,7 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -171,6 +180,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -182,6 +192,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -195,6 +206,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DE_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -206,6 +218,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.JUST_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -217,6 +230,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -230,6 +244,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -241,6 +256,7 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -257,6 +273,7 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -272,6 +289,7 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -283,6 +301,7 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.EMPTY_PACKAGE_XML} --predestructivechanges ${STORE.MANIFESTS.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 

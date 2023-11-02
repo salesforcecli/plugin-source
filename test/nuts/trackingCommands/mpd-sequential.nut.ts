@@ -58,6 +58,7 @@ describe('multiple pkgDirs deployed sequentially', () => {
     it('pushes using MPD', () => {
       const result = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
+        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
       // the fields should be populated
