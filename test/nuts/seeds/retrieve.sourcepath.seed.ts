@@ -23,7 +23,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%]', () => {
       nut: fileURLToPath(import.meta.url),
     });
     await testkit.trackGlobs(testkit.packageGlobs);
-    await testkit.deploy({ args: `--source-dir ${testkit.packageNames.join(',')}` });
+    await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
 
   after(async () => {
@@ -41,7 +41,7 @@ context('Retrieve Sourcepath NUTs [name: %REPO_NAME%]', () => {
       const toRetrieve = path.normalize(testCase.toRetrieve);
       it(`should retrieve ${toRetrieve}`, async () => {
         await testkit.modifyLocalGlobs(testCase.toVerify);
-        await testkit.retrieve({ args: `--source-dir ${toRetrieve}` });
+        await testkit.retrieve({ args: `--sourcepath ${toRetrieve}` });
         await testkit.expect.filesToBeChanged(testCase.toVerify, testCase.toIgnore);
       });
     }
