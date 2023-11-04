@@ -955,15 +955,15 @@
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.6"
 
-"@salesforce/cli-plugins-testkit@^4.3.1", "@salesforce/cli-plugins-testkit@^4.4.8":
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.4.8.tgz#0c4a7e371f319f63c27b23ba6b89e3341655ff87"
-  integrity sha512-8IuVupRX8APj9FEx8HjfRxYXeTrq78/Nstch2S6FhZXbDShzqBbVfQ3DVf2uDejxgU7rehah0mwcVyWYjTcBGA==
+"@salesforce/cli-plugins-testkit@^4.3.1", "@salesforce/cli-plugins-testkit@^4.4.12":
+  version "4.4.12"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.4.12.tgz#425132a4cd49b5aacb979df07af987b338ec00ae"
+  integrity sha512-k0jJYqB0PazmVyhNBau8FtJDa3+4EbhvD8F3u+yZ71jjPkp7YLKqtxfs1y7P3LCrmtel8JE3faHTfMaahdK96Q==
   dependencies:
-    "@salesforce/core" "^5.3.5"
-    "@salesforce/kit" "^3.0.13"
+    "@salesforce/core" "^5.3.10"
+    "@salesforce/kit" "^3.0.15"
     "@salesforce/ts-types" "^2.0.6"
-    "@types/shelljs" "^0.8.13"
+    "@types/shelljs" "^0.8.14"
     debug "^4.3.1"
     jszip "^3.10.1"
     shelljs "^0.8.4"
@@ -1595,7 +1595,7 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.3.tgz#9a726e116beb26c24f1ccd6850201e1246122e04"
   integrity sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==
 
-"@types/shelljs@^0.8.11", "@types/shelljs@^0.8.13":
+"@types/shelljs@^0.8.11", "@types/shelljs@^0.8.14":
   version "0.8.14"
   resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.8.14.tgz#87b8817b2397ffe97b86a4d844036ee0d2a1f0ca"
   integrity sha512-eqKaGPi60riuxI9pUVeCT02EGo94Y6HT119h7w5bXSELsis6+JqzdEy6H/w2xXl881wcN3VDnb/D0WlgSety5w==
