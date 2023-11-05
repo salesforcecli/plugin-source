@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { relative, resolve as pathResolve } from 'path';
+import { relative, resolve as pathResolve } from 'node:path';
 import * as chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';

@@ -8,8 +8,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { expect } from 'chai';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';

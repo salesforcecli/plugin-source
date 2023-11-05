@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join, relative } from 'path';
+import { join, relative } from 'node:path';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';

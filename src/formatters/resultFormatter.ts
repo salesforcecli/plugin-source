@@ -6,8 +6,8 @@
  */
 /* eslint-disable class-methods-use-this */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { Failures, FileProperties, FileResponse, Successes } from '@salesforce/source-deploy-retrieve';
 import { getNumber } from '@salesforce/ts-types';
 import * as chalk from 'chalk';
