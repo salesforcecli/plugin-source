@@ -955,12 +955,27 @@
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.6"
 
-"@salesforce/cli-plugins-testkit@^4.4.12", "@salesforce/cli-plugins-testkit@^4.4.8":
+"@salesforce/cli-plugins-testkit@^4.4.8":
   version "4.4.12"
   resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-4.4.12.tgz#425132a4cd49b5aacb979df07af987b338ec00ae"
   integrity sha512-k0jJYqB0PazmVyhNBau8FtJDa3+4EbhvD8F3u+yZ71jjPkp7YLKqtxfs1y7P3LCrmtel8JE3faHTfMaahdK96Q==
   dependencies:
     "@salesforce/core" "^5.3.10"
+    "@salesforce/kit" "^3.0.15"
+    "@salesforce/ts-types" "^2.0.6"
+    "@types/shelljs" "^0.8.14"
+    debug "^4.3.1"
+    jszip "^3.10.1"
+    shelljs "^0.8.4"
+    strip-ansi "6.0.1"
+    ts-retry-promise "^0.7.1"
+
+"@salesforce/cli-plugins-testkit@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.0.2.tgz#be35c0b449223ee50e395aba7e1b4ccb1a5e49d7"
+  integrity sha512-piHWPnbkwytudtc3VntfyECa3NzxngecM7/hka2rooLWs7NZCLcJoAEvYDWNRGgNa0Yw6gefBJVNivoVpfNSKQ==
+  dependencies:
+    "@salesforce/core" "^5.3.17"
     "@salesforce/kit" "^3.0.15"
     "@salesforce/ts-types" "^2.0.6"
     "@types/shelljs" "^0.8.14"
