@@ -59,7 +59,7 @@ describe('1k files in mdapi:deploy', () => {
   });
 
   it('should be able to handle a mdapi:deploy of 1k', () => {
-    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
+    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0, cli: 'sf' });
     const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
       ensureExitCode: 0,
     }).jsonOutput;
@@ -124,7 +124,7 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the stash.json', () => {
       const convertDir = 'mdConvert1';
-      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'sf' });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
@@ -134,7 +134,7 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
       const convertDir = 'mdConvert2';
-      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'sf' });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
@@ -154,8 +154,8 @@ describe('mdapi NUTs', () => {
       execCmd(pkgInstallCmd, { silent: true, cli: 'sf', ensureExitCode: 0 });
 
       // Create manifests for retrieve commands to use
-      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0 });
-      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0 });
+      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0, cli: 'sf' });
+      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0, cli: 'sf' });
     });
 
     describe('mdapi:retrieve (sync)', () => {
@@ -347,7 +347,7 @@ describe('mdapi NUTs', () => {
     before(async () => {
       const mdapiOut = 'mdapiOut';
       // make a mdapi directory from the project
-      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0 });
+      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0, cli: 'sf' });
       // make a zip from that
       const zip = createArchive('zip', { zlib: { level: 9 } });
       const output = fs.createWriteStream(path.join(session.project.dir, `${mdapiOut}.zip`));

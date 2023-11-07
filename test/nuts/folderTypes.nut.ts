@@ -83,6 +83,7 @@ describe('metadata types that go in folders', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');
       execCmd(`force:source:manifest:create -p ${pathToEmails} --json`, {
         ensureExitCode: 0,
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
@@ -112,6 +113,7 @@ describe('metadata types that go in folders', () => {
       const pathToReports = path.join('force-app', 'main', 'default', 'reports');
       execCmd(`force:source:manifest:create -p ${pathToReports} --json`, {
         ensureExitCode: 0,
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });

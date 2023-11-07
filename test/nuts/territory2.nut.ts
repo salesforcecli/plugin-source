@@ -46,6 +46,7 @@ describe('territories', () => {
     it('can generate manifest for territory types', () => {
       execCmd('force:source:manifest:create -p force-app --json', {
         ensureExitCode: 0,
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });

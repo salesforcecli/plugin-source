@@ -29,6 +29,7 @@ describe('source:deploy --destructive NUTs', () => {
   const createManifest = (metadata: string, manifesttype: string) => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype} --api-version 58.0`, {
       ensureExitCode: 0,
+      cli: 'sf',
     });
   };
 
