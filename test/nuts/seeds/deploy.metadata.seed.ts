@@ -25,7 +25,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
     // permset is only present in dreamhouse, not mpd
     if (REPO.gitUrl.includes('dreamhouse')) {
-      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse', cli: 'sf' });
     }
   });
 
