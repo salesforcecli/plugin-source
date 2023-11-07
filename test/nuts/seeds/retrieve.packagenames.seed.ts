@@ -42,13 +42,15 @@ context('Retrieve packagenames NUTs', () => {
     });
 
     it('should retrieve two installed packages', async () => {
-      execCmd(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
         silent: true,
         cli: 'sf',
+        ensureExitCode: 0,
       });
-      execCmd(`sfdx force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, {
+      execCmd(`force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, {
         silent: true,
         cli: 'sf',
+        ensureExitCode: 0,
       });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${ESCAPEROOM.name}"` });
@@ -56,9 +58,10 @@ context('Retrieve packagenames NUTs', () => {
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      execCmd(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
         silent: true,
         cli: 'sf',
+        ensureExitCode: 0,
       });
 
       await testkit.retrieve({

@@ -41,7 +41,7 @@ describe('forceignore changes', () => {
       ],
     });
 
-    execCmd(`force:apex:class:create -n IgnoreTest --outputdir ${classdir}`, { cli: 'sfdx' });
+    execCmd(`force:apex:class:create -n IgnoreTest --outputdir ${classdir}`, { cli: 'sf', ensureExitCode: 0 });
 
     originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
     conn = await Connection.create({
