@@ -93,7 +93,7 @@ context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
     for (const testCase of repo.deploy.manifest) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
+        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out`, cli: 'sf' });
         const packageXml = path.join('out', 'package.xml');
 
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });

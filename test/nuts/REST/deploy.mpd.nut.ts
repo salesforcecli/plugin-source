@@ -118,7 +118,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
     for (const manifest of repo.deploy.manifest) {
       const toDeploy = path.normalize(manifest.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
+        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out`, cli: 'sf' });
         const packageXml = path.join('out', 'package.xml');
 
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });

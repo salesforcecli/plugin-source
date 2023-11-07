@@ -187,7 +187,7 @@ describe('translations', () => {
 
   describe('mdapi format', () => {
     it('can convert COT/CFTs correctly', () => {
-      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0 });
+      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0, cli: 'sf' });
       // the CFTs shouldn't be written to mdapi format
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'fields'))).to.be.false;
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'objectTranslations'))).to.be.true;

@@ -119,6 +119,7 @@ describe('deb -- tracking/push/pull', () => {
     it('should pull all debs after clearing source tracking info', () => {
       execCmd<DeleteTrackingResult>('force:source:tracking:clear --noprompt', {
         ensureExitCode: 0,
+        cli: 'sf',
       });
 
       const pulledSource = execCmd<PullResponse>('force:source:pull --forceoverwrite --json', {

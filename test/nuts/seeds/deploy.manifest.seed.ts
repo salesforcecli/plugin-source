@@ -42,7 +42,7 @@ context('Deploy manifest NUTs [name: %REPO_NAME%]', () => {
     for (const testCase of REPO.deploy.manifest) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out` });
+        await testkit.convert({ args: `--sourcepath ${testCase.toDeploy} --outputdir out`, cli: 'sf' });
         const packageXml = path.join('out', 'package.xml');
 
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });

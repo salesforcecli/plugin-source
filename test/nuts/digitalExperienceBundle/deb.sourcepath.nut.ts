@@ -169,6 +169,7 @@ describe('deb -- sourcepath option', () => {
         `force:source:delete --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --noprompt --json`,
         {
           ensureExitCode: 0,
+          cli: 'sf',
         }
       ).jsonOutput.result.deletedSource;
 
