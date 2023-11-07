@@ -102,7 +102,7 @@ describe('lwc', () => {
     const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(4);
     expect(bundleMembers.filter((r) => r.state === ComponentStatus.Deleted)).to.have.length(1);
-    expect(bundleMembers.filter((r) => r.state === ComponentStatus.Failed)).to.have.length(3);
+    expect(bundleMembers.filter((r) => r.state === ComponentStatus.Changed)).to.have.length(3);
   });
 
   it('sees no local changes', () => {
