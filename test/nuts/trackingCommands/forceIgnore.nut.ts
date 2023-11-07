@@ -9,10 +9,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { expect } from 'chai';
-import * as shell from 'shelljs';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
@@ -92,9 +91,10 @@ describe('forceignore changes', () => {
       await fs.promises.writeFile(path.join(session.project.dir, '.forceignore'), newForceIgnore);
 
       // add a file in the local source
-      shell.exec(`sfdx force:apex:class:create -n UnIgnoreTest --outputdir ${classdir}`, {
+      execCmd(`force:apex:class:create -n UnIgnoreTest --outputdir ${classdir}`, {
         cwd: session.project.dir,
         silent: true,
+        cli: 'sf',
       });
       // pushes with no results
       const ignoredOutput = execCmd<PushResponse>('force:source:push --json', {

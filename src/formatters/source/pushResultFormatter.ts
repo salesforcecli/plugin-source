@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { relative, resolve as pathResolve } from 'path';
+import { relative, resolve as pathResolve } from 'node:path';
 import * as chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
@@ -104,7 +104,7 @@ export class PushResultFormatter extends ResultFormatter {
   protected correctFileResponses(): FileResponse[] {
     const withoutUnchanged = this.results.some((result) => result.getFileResponses().length)
       ? this.results.flatMap((result) =>
-          result.getFileResponses().filter((fileResponse) => fileResponse.state !== 'Unchanged')
+          result.getFileResponses().filter((fileResponse) => fileResponse.state !== ComponentStatus.Unchanged)
         )
       : [];
     if (!this.deletes.length) {
@@ -155,7 +155,7 @@ export class PushResultFormatter extends ResultFormatter {
       return;
     }
     if (this.isSuccess() && this.fileResponses?.length) {
-      const successes = this.fileResponses.filter((f) => f.state !== 'Failed');
+      const successes = this.fileResponses.filter((f) => f.state !== ComponentStatus.Failed);
       if (!successes.length) {
         return;
       }
@@ -205,7 +205,7 @@ export class PushResultFormatter extends ResultFormatter {
     if (this.fileResponses?.length) {
       const fileResponses: FileResponse[] = [];
       this.fileResponses
-        .filter((f) => f.state === 'Failed')
+        .filter((f) => f.state === ComponentStatus.Failed)
         .map((f: FileResponse & { error: string }) => {
           fileResponses.push(f);
           fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);

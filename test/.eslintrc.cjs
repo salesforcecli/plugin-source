@@ -19,5 +19,9 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     // Mocked out the methods that shouldn't do anything in the tests.
     '@typescript-eslint/no-empty-function': 'off',
+
+    // This rule requires the `strictNullChecks` compiler option to be turned on to function correctly  @typescript-eslint/prefer-nullish-coalescing
+    // we never got PS to strict nulls because it's not worth the effort
+    '@typescript-eslint/prefer-nullish-coalescing': 'off',
   },
 };

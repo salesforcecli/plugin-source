@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { Dictionary } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
@@ -52,7 +52,8 @@ context('MPD Retrieve NUTs', () => {
 
     let originalState: Dictionary<string>;
 
-    const filesAreInOriginalState = async () => Promise.all([
+    const filesAreInOriginalState = async () =>
+      Promise.all([
         testkit.expect.filesToContainString(myAppLabels, '<fullName>my_app_Label_1</fullName>'),
         testkit.expect.filesToNotContainString(forceAppLabels, '<fullName>my_app_Label_1</fullName>'),
         testkit.expect.filesToContainString(

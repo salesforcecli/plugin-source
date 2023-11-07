@@ -5,13 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import * as chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
+  ComponentStatus,
   DeployMessage,
   DeployResult,
   Failures,
@@ -107,7 +108,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected hasStatus(status: RequestStatus): boolean {
-    return getString(this.result, 'response.status') === status;
+    return this.result.response.status === status;
   }
 
   protected isRunTestsEnabled(): boolean {
@@ -170,7 +171,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected displayDeletions(): void {
-    const deletions = this.fileResponses.filter((f) => f.state === 'Deleted');
+    const deletions = this.fileResponses.filter((f) => f.state === ComponentStatus.Deleted);
     if (!deletions.length) {
       return;
     }
@@ -197,7 +198,7 @@ export class DeployResultFormatter extends ResultFormatter {
       if (this.fileResponses?.length) {
         const fileResponses: FileResponse[] = [];
         this.fileResponses
-          .filter((f) => f.state === 'Failed')
+          .filter((f) => f.state === ComponentStatus.Failed)
           .map((f: FileResponse & { error: string }) => {
             fileResponses.push(f);
             fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);

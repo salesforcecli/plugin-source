@@ -5,9 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { exec } from 'shelljs';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -91,7 +90,7 @@ describe('mdapi NUTs', () => {
     });
 
     execCmd('force:source:deploy -p force-app', { ensureExitCode: 0 });
-    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx', ensureExitCode: 0 });
+    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sf', ensureExitCode: 0 });
 
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
@@ -151,9 +150,8 @@ describe('mdapi NUTs', () => {
 
     before(() => {
       // Install the ElectronBranding package in the default org for retrieve commands to use
-      const pkgInstallCmd = `sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
-      const rv = exec(pkgInstallCmd, { silent: true });
-      expect(rv.code, 'Failed to install ElectronBranding package for tests').to.equal(0);
+      const pkgInstallCmd = `force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
+      execCmd(pkgInstallCmd, { silent: true, cli: 'sf', ensureExitCode: 0 });
 
       // Create manifests for retrieve commands to use
       execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0 });

@@ -5,10 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { expect } from 'chai';
-import * as shelljs from 'shelljs';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
@@ -152,11 +151,10 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
 
   describe('non-successes', () => {
     it('should throw an err when attempting to pull from a non scratch-org', () => {
-      const hubUsername = (
-        JSON.parse(shelljs.exec('sfdx force:config:get defaultdevhubusername --json', { silent: true })) as {
-          result: [{ location: string; value: string }];
-        }
-      ).result.find((config) => config.location === 'Local').value;
+      const hubUsername = execCmd<[{ location: string; value: string }]>(
+        'force:config:get defaultdevhubusername --json',
+        { silent: true, cli: 'sf' }
+      ).jsonOutput.result.find((config) => config.location === 'Local').value;
       const failure = execCmd(`force:source:status -u ${hubUsername} --remote --json`, {
         ensureExitCode: 1,
       }).jsonOutput as unknown as { name: string };
@@ -196,10 +194,12 @@ describe('end-to-end-test for tracking with an org (single packageDir)', () => {
         expect(failure).to.have.property('exitCode', 1);
         expect(failure).to.have.property('commandName', 'Push');
         expect(
-          failure.result.every((r) => r.type === 'ApexClass' && r.state === 'Failed' && r.problemType === 'Error')
+          failure.result.every(
+            (r) => r.type === 'ApexClass' && r.state === ComponentStatus.Failed && r.problemType === 'Error'
+          )
         ).to.equal(true);
         failure.result.forEach((f) => {
-          if (f.state === 'Failed') {
+          if (f.state === ComponentStatus.Failed) {
             expect(f.lineNumber).to.exist;
             expect(f.columnNumber).to.exist;
             expect(f.error).to.be.a('string');

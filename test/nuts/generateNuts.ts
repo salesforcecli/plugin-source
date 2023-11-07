@@ -5,9 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
-import * as shelljs from 'shelljs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { RepoConfig, TEST_REPOS_MAP } from './testMatrix';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
@@ -38,7 +37,7 @@ function generateNut(generatedDir: string, seedName: string, seedContents: strin
 
 function generateNuts(): void {
   const generatedDir = path.resolve(__dirname, 'generated');
-  shelljs.rm('-rf', generatedDir);
+  fs.rmSync(generatedDir, { recursive: true, force: true });
   fs.mkdirSync(generatedDir, { recursive: true });
   const seeds = getSeedFiles();
   for (const seed of seeds) {
