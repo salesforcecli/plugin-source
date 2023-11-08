@@ -10,7 +10,7 @@ import path from 'node:path';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
-import { create as createArchive } from 'archiver';
+import { create } from 'archiver';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
@@ -350,7 +350,7 @@ describe('mdapi NUTs', () => {
       // make a mdapi directory from the project
       execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0, cli: 'sf' });
       // make a zip from that
-      const zip = createArchive('zip', { zlib: { level: 9 } });
+      const zip = create('zip', { zlib: { level: 9 } });
       const output = fs.createWriteStream(path.join(session.project.dir, `${mdapiOut}.zip`));
       zip.pipe(output);
       // anywhere not at the root level is fine
