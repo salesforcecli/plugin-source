@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { dirname, resolve, extname } from 'path';
-import * as fs from 'fs';
+import { dirname, resolve, extname } from 'node:path';
+import * as fs from 'node:fs';
 import { Messages, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { getString, Optional } from '@salesforce/ts-types';

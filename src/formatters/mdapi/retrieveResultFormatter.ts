@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { join, parse } from 'path';
+import { join, parse } from 'node:path';
 import { blue } from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import {

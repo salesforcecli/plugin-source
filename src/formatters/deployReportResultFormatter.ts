@@ -6,7 +6,6 @@
  */
 
 import { MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve';
-import { getString } from '@salesforce/ts-types';
 import { SfError, Messages } from '@salesforce/core';
 import { DeployResultFormatter } from './deployResultFormatter';
 
@@ -16,7 +15,7 @@ export type DeployReportCommandResult = MetadataApiDeployStatus;
 
 export class DeployReportResultFormatter extends DeployResultFormatter {
   public display(): void {
-    const status = getString(this, 'result.response.status', 'unknown');
+    const status = this.result.response.status ?? 'unknown';
     this.ux.log(`Status: ${status}`);
     if (!this.isVerbose()) {
       const componentsTotal = this.getNumResult('numberComponentsTotal');

@@ -5,9 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { exec } from 'shelljs';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -60,7 +59,7 @@ describe('1k files in mdapi:deploy', () => {
   });
 
   it('should be able to handle a mdapi:deploy of 1k', () => {
-    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0 });
+    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0, cli: 'sf' });
     const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
       ensureExitCode: 0,
     }).jsonOutput;
@@ -91,7 +90,7 @@ describe('mdapi NUTs', () => {
     });
 
     execCmd('force:source:deploy -p force-app', { ensureExitCode: 0 });
-    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx', ensureExitCode: 0 });
+    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sf', ensureExitCode: 0 });
 
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
@@ -125,7 +124,7 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the stash.json', () => {
       const convertDir = 'mdConvert1';
-      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'sf' });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
@@ -135,7 +134,7 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
       const convertDir = 'mdConvert2';
-      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0 });
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'sf' });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
       }).jsonOutput;
@@ -151,13 +150,12 @@ describe('mdapi NUTs', () => {
 
     before(() => {
       // Install the ElectronBranding package in the default org for retrieve commands to use
-      const pkgInstallCmd = `sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
-      const rv = exec(pkgInstallCmd, { silent: true });
-      expect(rv.code, 'Failed to install ElectronBranding package for tests').to.equal(0);
+      const pkgInstallCmd = `force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
+      execCmd(pkgInstallCmd, { silent: true, cli: 'sf', ensureExitCode: 0 });
 
       // Create manifests for retrieve commands to use
-      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0 });
-      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0 });
+      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0, cli: 'sf' });
+      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0, cli: 'sf' });
     });
 
     describe('mdapi:retrieve (sync)', () => {
@@ -349,7 +347,7 @@ describe('mdapi NUTs', () => {
     before(async () => {
       const mdapiOut = 'mdapiOut';
       // make a mdapi directory from the project
-      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0 });
+      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0, cli: 'sf' });
       // make a zip from that
       const zip = createArchive('zip', { zlib: { level: 9 } });
       const output = fs.createWriteStream(path.join(session.project.dir, `${mdapiOut}.zip`));

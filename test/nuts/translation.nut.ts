@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { PushResponse } from '../../src/formatters/source/pushResultFormatter';
@@ -79,6 +79,7 @@ describe('translations', () => {
     it('can generate manifest for translation types', () => {
       execCmd('force:source:manifest:create -p force-app --json', {
         ensureExitCode: 0,
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
@@ -186,7 +187,7 @@ describe('translations', () => {
 
   describe('mdapi format', () => {
     it('can convert COT/CFTs correctly', () => {
-      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0 });
+      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0, cli: 'sf' });
       // the CFTs shouldn't be written to mdapi format
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'fields'))).to.be.false;
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'objectTranslations'))).to.be.true;

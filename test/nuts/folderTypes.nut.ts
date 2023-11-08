@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
@@ -83,6 +83,7 @@ describe('metadata types that go in folders', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');
       execCmd(`force:source:manifest:create -p ${pathToEmails} --json`, {
         ensureExitCode: 0,
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
@@ -112,6 +113,7 @@ describe('metadata types that go in folders', () => {
       const pathToReports = path.join('force-app', 'main', 'default', 'reports');
       execCmd(`force:source:manifest:create -p ${pathToReports} --json`, {
         ensureExitCode: 0,
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });

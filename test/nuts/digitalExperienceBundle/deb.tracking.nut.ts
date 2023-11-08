@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
-import { join } from 'path';
+import * as fs from 'node:fs';
+import { join } from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { DeleteTrackingResult } from '@salesforce/plugin-deploy-retrieve/lib/commands/project/delete/tracking';
@@ -119,6 +119,7 @@ describe('deb -- tracking/push/pull', () => {
     it('should pull all debs after clearing source tracking info', () => {
       execCmd<DeleteTrackingResult>('force:source:tracking:clear --noprompt', {
         ensureExitCode: 0,
+        cli: 'sf',
       });
 
       const pulledSource = execCmd<PullResponse>('force:source:pull --forceoverwrite --json', {

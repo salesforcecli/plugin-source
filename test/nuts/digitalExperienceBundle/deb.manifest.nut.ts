@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'fs';
-import { join } from 'path';
+import * as fs from 'node:fs';
+import { join } from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
@@ -41,7 +41,7 @@ describe('deb -- manifest option', () => {
     it('should generate manifest for all debs using sourcepath', () => {
       execCmd(
         `force:source:manifest:create --sourcepath  ${DEBS_RELATIVE_PATH} --name ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'sf' }
       );
       expect(fs.existsSync(join(session.project.dir, STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN))).to.be.true;
     });
@@ -49,7 +49,7 @@ describe('deb -- manifest option', () => {
     it('should generate manifest for all debs using metadata', () => {
       execCmd(
         `force:source:manifest:create --metadata ${METADATA.ALL_DEBS} --name ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
-        { ensureExitCode: 0 }
+        { ensureExitCode: 0, cli: 'sf' }
       );
       expect(fs.existsSync(join(session.project.dir, STORE.MANIFESTS.ALL_DEBS_METADATA_GEN))).to.be.true;
     });

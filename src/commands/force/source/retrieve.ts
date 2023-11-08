@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { dirname, join, resolve } from 'path';
-import * as fs from 'fs';
+import { dirname, join, resolve } from 'node:path';
+import * as fs from 'node:fs';
 
 import { Lifecycle, Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';

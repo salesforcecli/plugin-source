@@ -214,6 +214,7 @@ describe('deb -- metadata option', () => {
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
         {
           ensureExitCode: 0,
+          cli: 'sf',
         }
       ).jsonOutput.result.deletedSource;
 

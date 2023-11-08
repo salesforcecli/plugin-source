@@ -5,9 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { exec } from 'shelljs';
+import { execCmd } from '@salesforce/cli-plugins-testkit';
 
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const ESCAPEROOM = { id: '04t0P000000JFs1QAG', name: 'DFXP Escape Room' };
@@ -35,22 +35,34 @@ context('Retrieve packagenames NUTs', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true, cli: 'sf' });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });
 
     it('should retrieve two installed packages', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
-      exec(`sfdx force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, { silent: true });
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
+        silent: true,
+        cli: 'sf',
+        ensureExitCode: 0,
+      });
+      execCmd(`force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, {
+        silent: true,
+        cli: 'sf',
+        ensureExitCode: 0,
+      });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${ESCAPEROOM.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name, ESCAPEROOM.name]);
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
+        silent: true,
+        cli: 'sf',
+        ensureExitCode: 0,
+      });
 
       await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,

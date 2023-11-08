@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { JsonMap } from '@salesforce/ts-types';
 import { TEST_REPOS_MAP } from '../testMatrix';
@@ -41,7 +41,7 @@ context('Retrieve manifest NUTs [name: %REPO_NAME%]', () => {
       const convertDir = `convert_${i++}`;
       it(`should retrieve ${toRetrieve}`, async () => {
         // generate package.xml to use with the --manifest param
-        await testkit.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir ${convertDir}` });
+        await testkit.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir ${convertDir}`, cli: 'sf' });
         const packageXml = path.join(convertDir, 'package.xml');
 
         await testkit.modifyLocalGlobs(testCase.toVerify);

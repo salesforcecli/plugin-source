@@ -12,4 +12,9 @@ module.exports = {
     'plugin:sf-plugin/recommended',
   ],
   ignorePatterns: ['test/nuts/ebikes-lwc/**', 'test/nuts/nestedLWCProject/**'],
+  rules: {
+    // This rule requires the `strictNullChecks` compiler option to be turned on to function correctly  @typescript-eslint/prefer-nullish-coalescing
+    // we never got PS to strict nulls because it's not worth the effort
+    '@typescript-eslint/prefer-nullish-coalescing': 'off',
+  },
 };

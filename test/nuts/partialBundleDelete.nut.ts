@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { expect } from 'chai';
 import { TestSession, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection, SfProject } from '@salesforce/core';
@@ -13,6 +13,7 @@ import {
   ComponentSet,
   ComponentSetBuilder,
   ComponentSetOptions,
+  ComponentStatus,
   MetadataApiRetrieve,
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
@@ -149,7 +150,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       expect(inboundFiles).to.be.an('array').and.not.empty;
 
       // find the deleted entry for testFile.css
-      const deletedFileResponse = inboundFiles.find((fr) => fr.state === 'Deleted');
+      const deletedFileResponse = inboundFiles.find((fr) => fr.state === ComponentStatus.Deleted);
       expect(deletedFileResponse).to.deep.equal({
         fullName: 'pageTemplate_2_7_3',
         type: 'AuraDefinitionBundle',
@@ -182,7 +183,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       expect(inboundFiles).to.be.an('array').and.not.empty;
 
       // find the deleted entry for testFile.css
-      const deletedFileResponse = inboundFiles.find((fr) => fr.state === 'Deleted');
+      const deletedFileResponse = inboundFiles.find((fr) => fr.state === ComponentStatus.Deleted);
       expect(deletedFileResponse).to.deep.equal({
         fullName: 'propertyTile',
         type: 'LightningComponentBundle',

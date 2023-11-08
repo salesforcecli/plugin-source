@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import { set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
 
@@ -83,9 +83,7 @@ const testRepos: RepoConfig[] = [
           toIgnore: ['foo-bar/app/lwc/mycomponent/mycomponent.js-meta.xml'],
         },
       ],
-      retrievetargetdir: [
-        { toRetrieve: 'ApexClass', toVerify: ['targetdir/**/*.cls'] },
-      ],
+      retrievetargetdir: [{ toRetrieve: 'ApexClass', toVerify: ['targetdir/**/*.cls'] }],
     },
     convert: {
       sourcepath: [
@@ -196,10 +194,7 @@ const testRepos: RepoConfig[] = [
           ],
         },
       ],
-      retrievetargetdir: [
-        { toRetrieve: 'ApexClass', toVerify: ['targetdir/classes/*'] },
-      ],
-
+      retrievetargetdir: [{ toRetrieve: 'ApexClass', toVerify: ['targetdir/classes/*'] }],
     },
     convert: {
       sourcepath: [
