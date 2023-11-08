@@ -10,7 +10,7 @@ import path from 'node:path';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
-import { create } from 'archiver';
+import create from 'archiver';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
