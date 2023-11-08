@@ -7,11 +7,10 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import shelljs from 'shelljs';
 import { expect } from 'chai';
 import { execCmd, ExecCmdResult, TestSession } from '@salesforce/cli-plugins-testkit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
-import create from 'archiver';
+import { create as createArchive } from 'archiver';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
@@ -63,16 +62,15 @@ describe('1k files in mdapi:deploy', () => {
   });
 
   it('should be able to handle a mdapi:deploy of 1k', () => {
-    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0, cli: 'dev' });
+    execCmd('force:source:convert --outputdir mdapiFormat', { ensureExitCode: 0, cli: 'sf' });
     const res = execCmd<{ checkOnly: boolean; done: boolean }>('force:mdapi:deploy -d mdapiFormat -w 100 --json', {
       ensureExitCode: 0,
-      cli: 'dev',
     }).jsonOutput;
     expect(res?.status).to.equal(0);
     // check that the deploy actually happened, not just based on the exit code, otherwise something like
     // https://github.com/forcedotcom/cli/issues/1531 could happen
-    expect(res?.result?.checkOnly).to.be.false;
-    expect(res?.result?.done).to.be.true;
+    expect(res?.result.checkOnly).to.be.false;
+    expect(res?.result.done).to.be.true;
   });
 });
 describe('mdapi NUTs', () => {
@@ -94,8 +92,8 @@ describe('mdapi NUTs', () => {
       ],
     });
 
-    execCmd('force:source:deploy -p force-app', { ensureExitCode: 0, cli: 'dev' });
-    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sfdx', ensureExitCode: 0 });
+    execCmd('force:source:deploy -p force-app', { ensureExitCode: 0 });
+    execCmd('force:user:permset:assign -n dreamhouse', { cli: 'sf', ensureExitCode: 0 });
 
     process.env.SFDX_USE_PROGRESS_BAR = 'false';
   });
@@ -107,21 +105,21 @@ describe('mdapi NUTs', () => {
 
   describe('mdapi:deploy:cancel', () => {
     const cancelAssertions = (deployId: string | undefined, result: ExecCmdResult<DeployCancelCommandResult>): void => {
-      if (result?.jsonOutput?.status === 0) {
+      if (result.jsonOutput?.status === 0) {
         // a successful cancel
-        const json = result?.jsonOutput?.result;
+        const json = result.jsonOutput?.result;
         expect(json).to.have.property('canceledBy');
         expect(json).to.have.property('status');
         expect(json.status).to.equal(RequestStatus.Canceled);
         expect(json.id).to.equal(deployId);
-      } else if (result?.jsonOutput?.status === 1 && result?.jsonOutput.result) {
+      } else if (result.jsonOutput?.status === 1 && result.jsonOutput?.result) {
         // status = 1 because the deploy is in Succeeded status
-        const json = result?.jsonOutput?.result;
+        const json = result.jsonOutput?.result;
         expect(json.status).to.equal(RequestStatus.Succeeded);
       } else {
         // the other allowable error is that the server is telling us the deploy succeeded
-        expect(result?.jsonOutput?.name, JSON.stringify(result)).to.equal('CancelFailed');
-        expect(result?.jsonOutput?.message, JSON.stringify(result)).to.equal(
+        expect(result.jsonOutput?.name, JSON.stringify(result)).to.equal('CancelFailed');
+        expect(result.jsonOutput?.message, JSON.stringify(result)).to.equal(
           'The cancel command failed due to: INVALID_ID_FIELD: Deployment already completed'
         );
       }
@@ -129,24 +127,22 @@ describe('mdapi NUTs', () => {
 
     it('will cancel an mdapi deploy via the stash.json', () => {
       const convertDir = 'mdConvert1';
-      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'dev' });
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'sf' });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput;
       const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
-      cancelAssertions(deploy?.result?.id, result);
+      cancelAssertions(deploy?.result.id, result);
     });
 
     it('will cancel an mdapi deploy via the specified deploy id', () => {
       const convertDir = 'mdConvert2';
-      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'dev' });
+      execCmd(`force:source:convert --outputdir ${convertDir}`, { ensureExitCode: 0, cli: 'sf' });
       const deploy = execCmd<{ id: string }>(`force:mdapi:deploy -d ${convertDir} -w 0 --json`, {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput;
       const result = execCmd<DeployCancelCommandResult>('force:mdapi:deploy:cancel --json');
-      cancelAssertions(deploy?.result?.id, result);
+      cancelAssertions(deploy?.result.id, result);
     });
   });
 
@@ -157,13 +153,12 @@ describe('mdapi NUTs', () => {
 
     before(() => {
       // Install the ElectronBranding package in the default org for retrieve commands to use
-      const pkgInstallCmd = `sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
-      const rv = shelljs.exec(pkgInstallCmd, { silent: true });
-      expect(rv.code, 'Failed to install ElectronBranding package for tests').to.equal(0);
+      const pkgInstallCmd = `force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`;
+      execCmd(pkgInstallCmd, { silent: true, cli: 'sf', ensureExitCode: 0 });
 
       // Create manifests for retrieve commands to use
-      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0, cli: 'dev' });
-      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0, cli: 'dev' });
+      execCmd(`force:source:manifest:create -p force-app -n ${manifestPath}`, { ensureExitCode: 0, cli: 'sf' });
+      execCmd(`force:source:manifest:create -m ApexClass -n ${apexManifestPath}`, { ensureExitCode: 0, cli: 'sf' });
     });
 
     describe('mdapi:retrieve (sync)', () => {
@@ -171,7 +166,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveFromManifest';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath} --json`;
-        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify unpackaged.zip exists in retrieveTargetDir
         const retrievedZip = fs.existsSync(retrieveTargetDirPath);
@@ -196,7 +191,7 @@ describe('mdapi NUTs', () => {
         );
         const retrieveTargetDir = 'mdRetrieveFromManifest';
         const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${manifestPath}`;
-        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0, cli: 'dev' }).shellOutput;
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 }).shellOutput;
         expect(rv.stdout).to.include(`Retrieving v${targetApiVersion} metadata from`);
       });
 
@@ -204,7 +199,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveSinglePackage';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -p ${ELECTRON.name} --json`;
-        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify unpackaged.zip exists in retrieveTargetDir
         const retrievedZip = fs.existsSync(retrieveTargetDirPath);
@@ -223,7 +218,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveNamedZipAndUnzip';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const cmd = `force:mdapi:retrieve -w 10 -r ${retrieveTargetDir} -k ${apexManifestPath} -z -n ${zipName} --json`;
-        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv = execCmd<RetrieveCommandResult>(cmd, { ensureExitCode: 0 });
 
         // Verify apexClasses.zip exists in retrieveTargetDir
         const retrievedZip = fs.existsSync(path.join(retrieveTargetDirPath, zipName));
@@ -247,7 +242,7 @@ describe('mdapi NUTs', () => {
         const retrieveTargetDir = 'mdRetrieveReportAsync';
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const retrieveCmd = `force:mdapi:retrieve -r ${retrieveTargetDir} -k ${manifestPath} --json -w 0`;
-        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
 
         const result1 = rv1.jsonOutput?.result;
@@ -259,13 +254,12 @@ describe('mdapi NUTs', () => {
 
         // Async report, from stash
         let reportCmd = 'force:mdapi:retrieve:report -w 0 --json';
-        const rv2 = execCmd<RetrieveCommandAsyncResult>(reportCmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv2 = execCmd<RetrieveCommandAsyncResult>(reportCmd, { ensureExitCode: 0 });
         const result2 = rv2.jsonOutput?.result;
-
         let syncResult: RetrieveCommandResult | undefined;
 
         // It's possible that the async retrieve request is already done, so account for that
-        // and treat it like a sync result?.
+        // and treat it like a sync result.
         if (result2?.done) {
           syncResult = result2 as unknown as RetrieveCommandResult;
         } else {
@@ -278,7 +272,7 @@ describe('mdapi NUTs', () => {
 
           // Now sync report, from stash
           reportCmd = 'force:mdapi:retrieve:report -w 10 --json';
-          const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0, cli: 'dev' });
+          const rv3 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
           syncResult = rv3.jsonOutput?.result;
         }
         expect(syncResult?.status).to.equal(RequestStatus.Succeeded);
@@ -290,11 +284,10 @@ describe('mdapi NUTs', () => {
 
       it('retrieves report (sync) with overrides of stash', () => {
         const retrieveCmd = `force:mdapi:retrieve -r mdRetrieveReportTmp -k ${manifestPath} --json -w 0`;
-        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
 
         const result1 = rv1.jsonOutput?.result;
-
         const name = 'dreamhouse';
         const zipName = `${name}.zip`;
         const retrieveTargetDir = 'mdRetrieveReportOverrides';
@@ -302,7 +295,7 @@ describe('mdapi NUTs', () => {
         const extractPath = path.join(retrieveTargetDirPath, name);
 
         const reportCmd = `force:mdapi:retrieve:report -i ${result1?.id} -z -n ${zipName} -r ${retrieveTargetDir} --json`;
-        const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
         expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
 
         const result2 = rv2.jsonOutput?.result;
@@ -319,20 +312,20 @@ describe('mdapi NUTs', () => {
         expect(fs.readdirSync(extractPath)).to.deep.equal(['unpackaged']);
       });
 
-      it('retrieves report (sync) with all stashed params', () => {
+      it('retrieves ?report (sync) with all stashed params', () => {
         const name = 'dreamhouse';
         const zipName = `${name}.zip`;
-        const retrieveTargetDir = 'mdRetrieveReportStash';
+        const retrieveTargetDir = 'mdRetrieveReportStash.js';
+
         const retrieveTargetDirPath = path.join(session.project.dir, retrieveTargetDir);
         const extractPath = path.join(retrieveTargetDirPath, name);
         const retrieveCmd = `force:mdapi:retrieve -r ${retrieveTargetDir} -k ${manifestPath} -z -n ${zipName} --json -w 0`;
-        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv1 = execCmd<RetrieveCommandAsyncResult>(retrieveCmd, { ensureExitCode: 0 });
         expect(rv1.jsonOutput, JSON.stringify(rv1)).to.exist;
 
         const result1 = rv1.jsonOutput?.result;
-
         const reportCmd = 'force:mdapi:retrieve:report --json';
-        const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0, cli: 'dev' });
+        const rv2 = execCmd<RetrieveCommandResult>(reportCmd, { ensureExitCode: 0 });
         expect(rv2.jsonOutput, JSON.stringify(rv2)).to.exist;
 
         const result2 = rv2.jsonOutput?.result;
@@ -355,9 +348,9 @@ describe('mdapi NUTs', () => {
     before(async () => {
       const mdapiOut = 'mdapiOut';
       // make a mdapi directory from the project
-      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0, cli: 'dev' });
+      execCmd(`force:source:convert -p force-app --outputdir ${mdapiOut}`, { ensureExitCode: 0, cli: 'sf' });
       // make a zip from that
-      const zip = create('zip', { zlib: { level: 9 } });
+      const zip = createArchive('zip', { zlib: { level: 9 } });
       const output = fs.createWriteStream(path.join(session.project.dir, `${mdapiOut}.zip`));
       zip.pipe(output);
       // anywhere not at the root level is fine
@@ -372,7 +365,6 @@ describe('mdapi NUTs', () => {
             'force:mdapi:deploy --zipfile mdapiOut.zip --json --soapdeploy -u nonDefaultOrg --testlevel RunAllTestsInOrg',
             {
               ensureExitCode: 0,
-              cli: 'dev',
             }
           );
         });
@@ -387,7 +379,7 @@ describe('mdapi NUTs', () => {
           expect(reportCommandResponse?.result, JSON.stringify(reportCommandResponse)).to.have.property('status');
           expect(
             [RequestStatus.Pending, RequestStatus.Succeeded, RequestStatus.Failed, RequestStatus.InProgress].includes(
-              reportCommandResponse?.result?.status as RequestStatus
+              reportCommandResponse!.result.status
             )
           );
         });
@@ -395,7 +387,6 @@ describe('mdapi NUTs', () => {
         it('request non-verbose deploy report without a deployId', () => {
           const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 200 -u nonDefaultOrg', {
             ensureExitCode: 0,
-            cli: 'dev',
           }).shellOutput.stdout;
 
           // this output is a change from mdapi:deploy:report which returned NOTHING after the progress bar
@@ -408,7 +399,6 @@ describe('mdapi NUTs', () => {
             'force:mdapi:deploy:report --wait 200 -u nonDefaultOrg --verbose --coverageformatters clover --junit --resultsdir resultsdir',
             {
               ensureExitCode: 0,
-              cli: 'dev',
             }
           ).shellOutput.stdout;
           // has the basic table output
@@ -422,7 +412,6 @@ describe('mdapi NUTs', () => {
         it('async report without a deployId', () => {
           const reportCommandResponse = execCmd('force:mdapi:deploy:report --wait 0 -u nonDefaultOrg', {
             ensureExitCode: 0,
-            cli: 'dev',
           }).shellOutput.stdout;
 
           // this output is a change from mdapi:deploy:report which returned NOTHING after the progress bar
@@ -436,7 +425,7 @@ describe('mdapi NUTs', () => {
         it('should deploy a directory', () => {
           deployCommandResponse = execCmd<MdDeployResult>(
             'force:mdapi:deploy --deploydir mdapiOut --json --soapdeploy',
-            { ensureExitCode: 0, cli: 'dev' }
+            { ensureExitCode: 0 }
           ).jsonOutput?.result;
         });
         it('should fail report', () => {
@@ -453,7 +442,7 @@ describe('mdapi NUTs', () => {
         it('should check-only deploy a directory with tests', () => {
           deployCommandResponse = execCmd<MdDeployResult>(
             'force:mdapi:deploy --deploydir mdapiOut --json --soapdeploy --checkonly --testlevel RunAllTestsInOrg --wait 100',
-            { ensureExitCode: 0, cli: 'dev' }
+            { ensureExitCode: 0 }
           ).jsonOutput?.result;
         });
         it('should deploy validated Id', () => {
@@ -461,7 +450,6 @@ describe('mdapi NUTs', () => {
             `force:mdapi:deploy --wait -1 --validateddeployrequestid ${deployCommandResponse?.id} --ignorewarnings -o`,
             {
               ensureExitCode: 0,
-              cli: 'dev',
             }
           );
         });

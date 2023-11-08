@@ -5,8 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { join } from 'node:path';
 import path from 'node:path';
-import { dirname, join } from 'node:path';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sinon from 'sinon';
 import { expect } from 'chai';
@@ -22,9 +23,12 @@ import { Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { stubSfCommandUx, stubSpinner, stubUx } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+
 import { Retrieve } from '../../../src/commands/force/source/retrieve.js';
+
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../../src/formatters/retrieveResultFormatter.js';
 import { getRetrieveResult } from './retrieveResponses.js';
+
 import { exampleSourceComponent } from './testConsts.js';
 
 Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));

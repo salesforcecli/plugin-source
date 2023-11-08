@@ -6,7 +6,6 @@
  */
 
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
@@ -77,7 +76,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
     process.env.SFDX_REST_DEPLOY = 'true';
     testkit = await SourceTestkit.create({
       repository: repo.gitUrl,
-      nut: fileURLToPath(import.meta.url),
+      nut: __filename,
     });
   });
 
@@ -119,7 +118,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
     for (const manifest of repo.deploy.manifest) {
       const toDeploy = path.normalize(manifest.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
+        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out`, cli: 'sf' });
         const packageXml = path.join('out', 'package.xml');
 
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });

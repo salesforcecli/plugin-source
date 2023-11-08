@@ -6,7 +6,6 @@
  */
 
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
@@ -51,7 +50,7 @@ context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
     process.env.SFDX_REST_DEPLOY = 'true';
     testkit = await SourceTestkit.create({
       repository: repo.gitUrl,
-      nut: fileURLToPath(import.meta.url),
+      nut: __filename,
     });
     await testkit.deploy({ args: '-p force-app' });
   });
@@ -94,7 +93,7 @@ context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
     for (const testCase of repo.deploy.manifest) {
       const toDeploy = path.normalize(testCase.toDeploy);
       it(`should deploy ${toDeploy}`, async () => {
-        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out` });
+        await testkit.convert({ args: `--sourcepath ${toDeploy} --outputdir out`, cli: 'sf' });
         const packageXml = path.join('out', 'package.xml');
 
         const res = await testkit.deploy({ args: `--manifest ${packageXml}` });
@@ -120,7 +119,7 @@ context(`REST Deploy NUTs [name: ${repo.name}]`, () => {
       // deploy all metadata to the org so that we can run tests
       await testkit.deploy({ args: '--sourcepath force-app' });
       // running tests requires a special permission in the 'dreamhouse' permission set
-      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse', cli: 'sf' });
 
       const checkOnly = (await testkit.deploy({
         args: '--sourcepath force-app/main/default/classes --testlevel RunLocalTests --checkonly --ignoreerrors --wait 0',

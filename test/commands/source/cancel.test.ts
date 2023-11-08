@@ -13,11 +13,14 @@ import { ConfigFile, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel.js';
+
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter.js';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
 import { Stash } from '../../../src/stash.js';
+
 import { getDeployResult } from './deployResponses.js';
 
 describe('force:source:deploy:cancel', () => {

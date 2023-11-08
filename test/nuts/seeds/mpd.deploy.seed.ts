@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
 context('MPD Deploy NUTs', () => {
@@ -14,7 +13,7 @@ context('MPD Deploy NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      nut: fileURLToPath(import.meta.url),
+      nut: __filename,
     });
   });
 

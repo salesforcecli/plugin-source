@@ -74,7 +74,6 @@ describe('conflict detection and resolution', () => {
     });
     const result = execCmd<StatusResult[]>('force:source:status --json --remote', {
       ensureExitCode: 0,
-      cli: 'dev',
     }).jsonOutput?.result;
     expect(
       result?.filter((r) => r.type === 'CustomApplication'),
@@ -98,7 +97,6 @@ describe('conflict detection and resolution', () => {
   it('can see the conflict in status', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-      cli: 'dev',
     }).jsonOutput?.result.filter((app) => app.type === 'CustomApplication');
     // json is not sorted.  This relies on the implementation of getConflicts()
     expect(result).to.deep.equal([
@@ -159,6 +157,6 @@ describe('conflict detection and resolution', () => {
     execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 1 });
   });
   it('can push with forceoverwrite', () => {
-    execCmd<PushResponse>('force:source:push --json --forceoverwrite', { ensureExitCode: 0, cli: 'dev' });
+    execCmd<PushResponse>('force:source:push --json --forceoverwrite', { ensureExitCode: 0 });
   });
 });

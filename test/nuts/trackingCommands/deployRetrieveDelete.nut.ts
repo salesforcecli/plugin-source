@@ -39,7 +39,6 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     it('detects the initial metadata status', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(result).to.be.an.instanceof(Array);
       // the fields should be populated
@@ -48,7 +47,6 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     it('deploy the initial metadata to the org with tracking', () => {
       const result = execCmd<DeployCommandResult>('force:source:deploy -p force-app,my-app,foo-bar/app -t --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(result?.deployedSource).to.be.an.instanceof(Array);
       expect(result?.deployedSource, JSON.stringify(result)).to.have.length.greaterThan(10);
@@ -60,13 +58,11 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     it('sees no local changes (all were committed from deploy), but profile updated in remote', () => {
       const localResult = execCmd<StatusResult[]>('force:source:status --json --local', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(localResult).to.deep.equal([]);
 
       const remoteResult = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(remoteResult?.some((item) => item.type === 'Profile')).to.equal(true);
     });
@@ -75,7 +71,6 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     it('can retrieve the remote profile', () => {
       const retrieveResult = execCmd<RetrieveCommandResult>('force:source:retrieve -m Profile:Admin -t --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(
         retrieveResult?.inboundFiles.some((item) => item.type === 'Profile'),
@@ -86,7 +81,6 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     it('sees no local or remote changes', () => {
       const result = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(
         result?.filter((r) => r.type === 'Profile'),
@@ -99,14 +93,12 @@ describe('-t flag for deploy, retrieve, and delete', () => {
     it("won't confuse -o/-u", () => {
       execCmd<DeployCommandResult>(`force:source:deploy -p force-app,my-app,foo-bar/app -o --json`, {
         ensureExitCode: 0,
-        cli: 'dev',
       });
 
       execCmd<DeployCommandResult>(
         `force:source:deploy -p force-app,my-app,foo-bar/app -o -u ${session.orgs.get('default')?.username} --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       );
 
@@ -116,7 +108,6 @@ describe('-t flag for deploy, retrieve, and delete', () => {
         } --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       );
 
@@ -126,7 +117,6 @@ describe('-t flag for deploy, retrieve, and delete', () => {
         } --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       );
     });

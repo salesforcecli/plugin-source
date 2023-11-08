@@ -7,17 +7,18 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { expect } from 'chai';
-import { execCmd, TestProject, TestSession } from '@salesforce/cli-plugins-testkit';
+import { TestSession, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection, SfProject } from '@salesforce/core';
 import {
   ComponentSet,
   ComponentSetBuilder,
   ComponentSetOptions,
+  ComponentStatus,
   MetadataApiRetrieve,
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
 import { TestContext } from '@salesforce/core/lib/testSetup.js';
-import { ComponentStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types.js';
+
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
 import { Retrieve } from '../../src/commands/force/source/retrieve.js';
 
@@ -97,7 +98,13 @@ describe('Partial Bundle Delete Retrieves', () => {
       );
       return compSet;
     });
-    const result = await Retrieve.run(['-p', forgotPasswordDE, '--json', '-o', scratchOrgUsername ?? '']);
+    const result: RetrieveCommandResult = await Retrieve.run([
+      '-p',
+      forgotPasswordDE,
+      '--json',
+      '-o',
+      scratchOrgUsername ?? '',
+    ]);
 
     // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
@@ -125,7 +132,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       auraSrcDir = path.join(dreamhouseProj.dir, 'force-app', 'main', 'default', 'aura');
       lwcSrcDir = path.join(dreamhouseProj.dir, 'force-app', 'main', 'default', 'lwc');
 
-      execCmd(`force:source:deploy -p force-app -u ${scratchOrgUsername}`, { ensureExitCode: 0, cli: 'dev' });
+      execCmd(`force:source:deploy -p force-app -u ${scratchOrgUsername}`, { ensureExitCode: 0 });
     });
 
     // This test uses the dreamhouse-lwc repo to add a CSS file to an aura
@@ -142,7 +149,7 @@ describe('Partial Bundle Delete Retrieves', () => {
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${pageTemplatePath} -u ${scratchOrgUsername} --json`,
-        { ensureExitCode: 0, cli: 'dev' }
+        { ensureExitCode: 0 }
       );
 
       expect(fs.existsSync(testCssFile)).to.be.false;
@@ -175,7 +182,7 @@ describe('Partial Bundle Delete Retrieves', () => {
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${propertyTilePath} -u ${scratchOrgUsername} --json`,
-        { ensureExitCode: 0, cli: 'dev' }
+        { ensureExitCode: 0 }
       );
 
       expect(fs.existsSync(testCssFile)).to.be.false;
@@ -204,7 +211,7 @@ describe('Partial Bundle Delete Retrieves', () => {
 
       const result = execCmd<RetrieveCommandResult>(
         `force:source:retrieve -p ${brokerCardPath} -u ${scratchOrgUsername} --json`,
-        { ensureExitCode: 0, cli: 'dev' }
+        { ensureExitCode: 0 }
       );
 
       expect(fs.existsSync(testsDir)).to.be.true;

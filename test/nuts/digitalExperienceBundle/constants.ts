@@ -8,14 +8,13 @@
 import { join } from 'node:path';
 import { TestSessionOptions } from '@salesforce/cli-plugins-testkit/lib/testSession.js';
 import { registry } from '@salesforce/source-deploy-retrieve';
-import { META_XML_SUFFIX } from '@salesforce/source-deploy-retrieve/lib/src/common/index.js';
+import { META_XML_SUFFIX } from '@salesforce/source-deploy-retrieve/lib/src/common';
 
 export const SOURCE_BASE_RELATIVE_PATH = join('force-app', 'main', 'default');
 export const DEB_NUTS_PATH = join(process.cwd(), 'test', 'nuts', 'digitalExperienceBundle');
 
 export const TYPES = {
   DEB: registry.types.digitalexperiencebundle,
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   DE: registry.types.digitalexperiencebundle.children!.types.digitalexperience,
   DEC: registry.types.digitalexperienceconfig,
   NETWORK: registry.types.network,
@@ -123,12 +122,12 @@ export const STORE = {
 
 export const METADATA = {
   ALL_DEBS: TYPES.DEB.name,
-  ALL_DE: TYPES.DE?.name,
-  ALL_DE_OF_DEB_B: `${TYPES.DE?.name}:${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}.*`,
+  ALL_DE: TYPES.DE.name,
+  ALL_DE_OF_DEB_B: `${TYPES.DE.name}:${DIR_NAMES.SITE}/${DIR_NAMES.DEB_B}.*`,
   FULL_SITE_DEB_A_AND_B: `${TYPES.DEB.name},${TYPES.DEC.name},${TYPES.NETWORK.name},${TYPES.CUSTOM_SITE.name}`,
   JUST_DEB_B: `${TYPES.DEB.name}:${FULL_NAMES.DEB_B}`,
-  DE_VIEW_HOME_OF_DEB_B: `${TYPES.DE?.name}:${FULL_NAMES.DE_VIEW_HOME_B}`,
-  DE_DOCUMENT_DETAIL_PAGE_A: `${TYPES.DE?.name}:${FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A},${TYPES.DE?.name}:${FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A}`,
+  DE_VIEW_HOME_OF_DEB_B: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_HOME_B}`,
+  DE_DOCUMENT_DETAIL_PAGE_A: `${TYPES.DE.name}:${FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A},${TYPES.DE.name}:${FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A}`,
 } as const;
 
 export const DEBS = {

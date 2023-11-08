@@ -24,7 +24,7 @@ context('Deploy testlevel NUTs [name: %REPO_NAME%]', () => {
 
     if (REPO.gitUrl.includes('dreamhouse')) {
       // running tests requires a special permission in the 'dreamhouse' permission set
-      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse' });
+      await testkit.assignPermissionSet({ args: '--permsetname dreamhouse', cli: 'sf' });
     }
   });
 

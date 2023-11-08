@@ -43,7 +43,6 @@ describe('deb -- sourcepath option', () => {
         `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       );
     });
@@ -53,7 +52,6 @@ describe('deb -- sourcepath option', () => {
         `force:source:deploy --sourcepath ${DEBS_RELATIVE_PATH},${DIR_RELATIVE_PATHS.DIGITAL_EXPERIENCE_CONFIGS},${DIR_RELATIVE_PATHS.NETWORKS},${DIR_RELATIVE_PATHS.SITES} --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -66,7 +64,6 @@ describe('deb -- sourcepath option', () => {
           `force:source:deploy --sourcepath ${DEBS_RELATIVE_PATH} --json`,
           {
             ensureExitCode: 0,
-            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -80,7 +77,6 @@ describe('deb -- sourcepath option', () => {
           `force:source:deploy --sourcepath ${DEB_A_RELATIVE_PATH} --json`,
           {
             ensureExitCode: 0,
-            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -92,7 +88,6 @@ describe('deb -- sourcepath option', () => {
           `force:source:deploy --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_HOME_A} --json`,
           {
             ensureExitCode: 0,
-            cli: 'dev',
           }
         ).jsonOutput?.result.deployedSource;
 
@@ -108,7 +103,6 @@ describe('deb -- sourcepath option', () => {
           `force:source:retrieve --sourcepath ${DEBS_RELATIVE_PATH} --json`,
           {
             ensureExitCode: 0,
-            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -122,7 +116,6 @@ describe('deb -- sourcepath option', () => {
           `force:source:retrieve --sourcepath ${DEB_A_RELATIVE_PATH} --json`,
           {
             ensureExitCode: 0,
-            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -134,7 +127,6 @@ describe('deb -- sourcepath option', () => {
           `force:source:retrieve --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_HOME_A} --json`,
           {
             ensureExitCode: 0,
-            cli: 'dev',
           }
         ).jsonOutput?.result.inboundFiles;
 
@@ -151,7 +143,6 @@ describe('deb -- sourcepath option', () => {
         `force:source:deploy --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_HOME_A} --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -167,7 +158,6 @@ describe('deb -- sourcepath option', () => {
         `force:source:deploy --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       ).jsonOutput?.result.deployedSource;
 
@@ -179,7 +169,7 @@ describe('deb -- sourcepath option', () => {
         `force:source:delete --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --noprompt --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
+          cli: 'sf',
         }
       ).jsonOutput?.result.deletedSource;
 

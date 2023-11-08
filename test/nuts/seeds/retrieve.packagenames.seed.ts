@@ -6,9 +6,8 @@
  */
 
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import shelljs from 'shelljs';
+import { execCmd } from '@salesforce/cli-plugins-testkit';
 
 const ELECTRON = { id: '04t6A000002zgKSQAY', name: 'ElectronBranding' };
 const ESCAPEROOM = { id: '04t0P000000JFs1QAG', name: 'DFXP Escape Room' };
@@ -19,7 +18,7 @@ context('Retrieve packagenames NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      nut: fileURLToPath(import.meta.url),
+      nut: __filename,
     });
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
   });
@@ -36,16 +35,22 @@ context('Retrieve packagenames NUTs', () => {
 
   describe('--packagenames flag', () => {
     it('should retrieve an installed package', async () => {
-      shelljs.exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true, cli: 'sf' });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}"` });
       await testkit.expect.packagesToBeRetrieved([ELECTRON.name]);
     });
 
     it('should retrieve two installed packages', async () => {
-      shelljs.exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
-      shelljs.exec(`sfdx force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, {
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
         silent: true,
+        cli: 'sf',
+        ensureExitCode: 0,
+      });
+      execCmd(`force:package:install --noprompt --package ${ESCAPEROOM.id} --wait 5 --json`, {
+        silent: true,
+        cli: 'sf',
+        ensureExitCode: 0,
       });
 
       await testkit.retrieve({ args: `--packagenames "${ELECTRON.name}, ${ESCAPEROOM.name}"` });
@@ -53,7 +58,11 @@ context('Retrieve packagenames NUTs', () => {
     });
 
     it('should retrieve an installed package and sourcepath', async () => {
-      shelljs.exec(`sfdx force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, { silent: true });
+      execCmd(`force:package:install --noprompt --package ${ELECTRON.id} --wait 5 --json`, {
+        silent: true,
+        cli: 'sf',
+        ensureExitCode: 0,
+      });
 
       await testkit.retrieve({
         args: `--packagenames "${ELECTRON.name}" --sourcepath "${path.join('force-app', 'main', 'default', 'apex')}"`,

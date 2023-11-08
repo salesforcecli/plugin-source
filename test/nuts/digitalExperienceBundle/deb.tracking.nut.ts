@@ -41,7 +41,6 @@ describe('deb -- tracking/push/pull', () => {
     it('should push the whole project', () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       assertAllDEBAndTheirDECounts(pushedSource, 10);
@@ -54,16 +53,13 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
-
       assertDEBMeta(statusResult, 'B');
     });
 
     it('should push local change in deb_b', () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       assertDEBMeta(pushedSource, 'B');
@@ -80,16 +76,13 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
-
       assertViewHomeStatus(statusResult, 'B', 'CONTENT');
     });
 
     it('should push local change in de_view_home_content of deb_b', () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       assertViewHome(pushedSource, 'B');
@@ -105,16 +98,13 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
-
       assertViewHomeStatus(statusResult, 'B', 'META');
     });
 
     it('should push local change in de_view_home_meta of deb_b', () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       assertViewHome(pushedSource, 'B');
@@ -126,13 +116,12 @@ describe('deb -- tracking/push/pull', () => {
     it('should pull all debs after clearing source tracking info', () => {
       execCmd<DeleteTrackingResult>('force:source:tracking:clear --noprompt', {
         ensureExitCode: 0,
-        cli: 'dev',
+        cli: 'sf',
       });
 
       const pulledSource = execCmd<PullResponse>('force:source:pull --forceoverwrite --json', {
         ensureExitCode: 0,
-        cli: 'dev',
-      }).jsonOutput?.result?.pulledSource;
+      }).jsonOutput?.result.pulledSource;
 
       assertAllDEBAndTheirDECounts(pulledSource, 0, false);
     });
@@ -140,7 +129,6 @@ describe('deb -- tracking/push/pull', () => {
     it('should not see any local/remote changes in deb/de', () => {
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
 
       expect(statusResult?.every((s) => s.type !== TYPES.DE?.name && s.type !== TYPES.DEB.name)).to.be.true;
@@ -153,9 +141,7 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
-
       assertViewHomeStatus(statusResult, 'B', 'FR_VARIANT');
     });
 
@@ -170,16 +156,13 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local  --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
-
       assertDocumentDetailPageA(statusResult);
     });
 
     it('should push locally added page (view and route de components) in deb_a', () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       assertDocumentDetailPageA(pushedSource);
@@ -191,16 +174,13 @@ describe('deb -- tracking/push/pull', () => {
 
       const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
-
       assertDocumentDetailPageA(statusResult);
     });
 
     it('should push local delete change in deb_a [locally deleted page (view and route de components)]', async () => {
       const pushedSource = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result.pushedSource;
 
       assertDocumentDetailPageA(pushedSource);

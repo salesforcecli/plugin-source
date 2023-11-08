@@ -21,7 +21,7 @@ import { DeployCommandResult } from '../../../src/formatters/deployResultFormatt
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
 import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter.js';
 import { Stash } from '../../../src/stash.js';
-import { getDeployResponse, getDeployResult } from './deployResponses.js';
+import { getDeployResult, getDeployResponse } from './deployResponses.js';
 
 describe('force:source:report', () => {
   const $$ = new TestContext();

@@ -104,7 +104,7 @@ export class PullResultFormatter extends ResultFormatter {
   }
 
   protected hasStatus(status: RequestStatus): boolean {
-    return getString(this.result, 'response.status') === status;
+    return this.result?.response?.status === status;
   }
 
   protected hasComponents(): boolean {

@@ -6,7 +6,7 @@
  */
 
 import path from 'node:path';
-import { keyBy, set } from '@salesforce/kit';
+import { set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
 
 /**

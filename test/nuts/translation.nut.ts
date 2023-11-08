@@ -42,7 +42,6 @@ describe('translations', () => {
     it('can deploy the whole project', () => {
       execCmd('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       });
     });
 
@@ -52,7 +51,6 @@ describe('translations', () => {
       await fs.promises.writeFile(fieldFile, original.replace('spanish', 'español'));
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
 
       expect(statusResult?.at(0)?.type).to.equal('CustomObjectTranslation');
@@ -61,7 +59,6 @@ describe('translations', () => {
     it('push local change', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(pushResult?.pushedSource.every((s) => s.type === 'CustomObjectTranslation')).to.be.true;
     });
@@ -69,7 +66,6 @@ describe('translations', () => {
     it('sees no local changes', () => {
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(statusResult).to.deep.equal([]);
     });
@@ -83,7 +79,7 @@ describe('translations', () => {
     it('can generate manifest for translation types', () => {
       execCmd('force:source:manifest:create -p force-app --json', {
         ensureExitCode: 0,
-        cli: 'dev',
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
@@ -91,7 +87,6 @@ describe('translations', () => {
     it('deploy', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(deployResults?.deployedSource.length).to.equal(7);
     });
@@ -102,7 +97,6 @@ describe('translations', () => {
       await fs.promises.mkdir(path.join(session.project.dir, 'force-app'));
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
-        cli: 'dev',
       }).jsonOutput?.result;
       expect(retrieveResults?.inboundFiles).to.have.length(7);
     });
@@ -113,7 +107,6 @@ describe('translations', () => {
       it('can deploy all metadata items', () => {
         execCmd('force:source:deploy -m CustomFieldTranslation,CustomObjectTranslation --json', {
           ensureExitCode: 0,
-          cli: 'dev',
         });
       });
     });
@@ -122,7 +115,6 @@ describe('translations', () => {
       it('can retrieve all metadata items', () => {
         execCmd('force:source:retrieve -m CustomFieldTranslation,CustomObjectTranslation --json', {
           ensureExitCode: 0,
-          cli: 'dev',
         });
       });
     });
@@ -133,7 +125,6 @@ describe('translations', () => {
       it('can deploy the whole project', () => {
         execCmd('force:source:deploy -p force-app --json', {
           ensureExitCode: 0,
-          cli: 'dev',
         });
       });
 
@@ -141,7 +132,6 @@ describe('translations', () => {
         it('can deploy COT', () => {
           execCmd(`force:source:deploy -p ${translationPath} --json`, {
             ensureExitCode: 0,
-            cli: 'dev',
           });
         });
 
@@ -150,7 +140,6 @@ describe('translations', () => {
             `force:source:deploy -p ${path.join(translationPath, 'customField__c.fieldTranslation-meta.xml')} --json`,
             {
               ensureExitCode: 0,
-              cli: 'dev',
             }
           );
           expect(result.jsonOutput?.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
@@ -161,7 +150,6 @@ describe('translations', () => {
             `force:source:deploy -p ${path.join(translationPath, 'customField__c.fieldTranslation-meta.xml')} --json`,
             {
               ensureExitCode: 0,
-              cli: 'dev',
             }
           );
         });
@@ -172,7 +160,6 @@ describe('translations', () => {
       it('can retrieve the whole project', () => {
         execCmd('force:source:retrieve -p force-app --json', {
           ensureExitCode: 0,
-          cli: 'dev',
         });
       });
 
@@ -180,7 +167,6 @@ describe('translations', () => {
         it('can retrieve COT', () => {
           execCmd(`force:source:retrieve -p ${translationPath} --json`, {
             ensureExitCode: 0,
-            cli: 'dev',
           });
         });
 
@@ -192,7 +178,6 @@ describe('translations', () => {
             )} --json`,
             {
               ensureExitCode: 0,
-              cli: 'dev',
             }
           );
         });
@@ -202,7 +187,7 @@ describe('translations', () => {
 
   describe('mdapi format', () => {
     it('can convert COT/CFTs correctly', () => {
-      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0, cli: 'dev' });
+      execCmd('force:source:convert --outputdir mdapi', { ensureExitCode: 0, cli: 'sf' });
       // the CFTs shouldn't be written to mdapi format
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'fields'))).to.be.false;
       expect(fs.existsSync(path.join(session.project.dir, 'mdapi', 'objectTranslations'))).to.be.true;

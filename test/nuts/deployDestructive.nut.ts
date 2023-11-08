@@ -6,7 +6,6 @@
  */
 
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
@@ -21,25 +20,25 @@ describe('source:deploy --destructive NUTs', () => {
     const pathToClass = path.join(testkit.projectDir, output, `${apexName}.cls`);
     execCmd(`force:apex:class:create --classname ${apexName} --outputdir ${output} --api-version 58.0`, {
       ensureExitCode: 0,
-      cli: 'dev',
+      cli: 'sf',
     });
-    execCmd(`force:source:deploy -m ApexClass:${apexName}`, { ensureExitCode: 0, cli: 'dev' });
+    execCmd(`force:source:deploy -m ApexClass:${apexName}`, { ensureExitCode: 0 });
     return { apexName, output, pathToClass };
   };
 
   const createManifest = (metadata: string, manifesttype: string) => {
     execCmd(`force:source:manifest:create --metadata ${metadata} --manifesttype ${manifesttype} --api-version 58.0`, {
       ensureExitCode: 0,
-      cli: 'dev',
+      cli: 'sf',
     });
   };
 
   before(async () => {
     testkit = await SourceTestkit.create({
-      nut: fileURLToPath(import.meta.url),
+      nut: __filename,
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
-    execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0, cli: 'dev' });
+    execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0 });
   });
 
   after(async () => {
@@ -57,7 +56,6 @@ describe('source:deploy --destructive NUTs', () => {
 
       execCmd('force:source:deploy --json --manifest package.xml --postdestructivechanges destructiveChangesPost.xml', {
         ensureExitCode: 0,
-        cli: 'dev',
       });
 
       deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
@@ -76,7 +74,6 @@ describe('source:deploy --destructive NUTs', () => {
 
       execCmd('force:source:deploy --json --manifest package.xml --predestructivechanges destructiveChangesPre.xml', {
         ensureExitCode: 0,
-        cli: 'dev',
       });
 
       deleted = await isNameObsolete(testkit.username, 'ApexClass', apexName);
@@ -88,10 +85,8 @@ describe('source:deploy --destructive NUTs', () => {
     it('should delete a class, then deploy and then delete an ApexClass', async () => {
       const pre = createApexClass('pre').apexName;
       const post = createApexClass('post').apexName;
-      let [preDeleted, postDeleted] = await Promise.all([
-        isNameObsolete(testkit.username, 'ApexClass', pre),
-        isNameObsolete(testkit.username, 'ApexClass', post),
-      ]);
+      let preDeleted = await isNameObsolete(testkit.username, 'ApexClass', pre);
+      let postDeleted = await isNameObsolete(testkit.username, 'ApexClass', post);
 
       expect(preDeleted).to.be.false;
       expect(postDeleted).to.be.false;
@@ -103,7 +98,6 @@ describe('source:deploy --destructive NUTs', () => {
         'force:source:deploy --json --manifest package.xml --postdestructivechanges destructiveChangesPost.xml --predestructivechanges destructiveChangesPre.xml',
         {
           ensureExitCode: 0,
-          cli: 'dev',
         }
       );
 

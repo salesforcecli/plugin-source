@@ -14,6 +14,7 @@ import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
 import { asString, get, getBoolean, getNumber, getString } from '@salesforce/ts-types';
 import {
+  ComponentStatus,
   DeployMessage,
   DeployResult,
   Failures,
@@ -24,7 +25,6 @@ import {
   Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ComponentStatus } from '@salesforce/source-deploy-retrieve/lib/src/client/types.js';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter.js';
 import { maybePrintCodeCoverageTable } from './codeCoverageTable.js';
@@ -110,7 +110,7 @@ export class DeployResultFormatter extends ResultFormatter {
   }
 
   protected hasStatus(status: RequestStatus): boolean {
-    return getString(this.result, 'response.status') === status;
+    return this.result.response.status === status;
   }
 
   protected isRunTestsEnabled(): boolean {
@@ -318,7 +318,7 @@ export class DeployResultFormatter extends ResultFormatter {
 
   protected verboseTestTime(): void {
     if (
-      this.result.response?.details?.runTestResult?.successes ??
+      this.result.response?.details?.runTestResult?.successes ||
       this.result?.response?.details?.runTestResult?.failures
     ) {
       this.ux.log('');

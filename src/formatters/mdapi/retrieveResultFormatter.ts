@@ -22,7 +22,7 @@ export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> &
 
 export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
   retrieveTargetDir: string;
-  zipFileName: string;
+  zipFileName?: string;
   unzip?: boolean;
 }
 
@@ -66,7 +66,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
     if (this.isSuccess()) {
       this.ux.log(`Wrote retrieve zip to ${this.zipFilePath}`);
       if (this.options.unzip) {
-        const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName).name);
+        const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName ?? '').name);
         this.ux.log(`Extracted ${this.options.zipFileName} to: ${extractPath}`);
       }
       if (this.options.verbose) {

@@ -15,9 +15,11 @@ import { Config } from '@oclif/core';
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+
 import { Report } from '../../../src/commands/force/mdapi/retrieve/report.js';
 import { Stash } from '../../../src/stash.js';
-import { getRetrieveResponse, getRetrieveResult } from '../source/retrieveResponses.js';
+
+import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses.js';
 
 describe('force:mdapi:retrieve:report', () => {
   const $$ = new TestContext();
