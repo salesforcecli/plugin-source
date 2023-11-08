@@ -1,3 +1,9 @@
+# [2.11.0](https://github.com/salesforcecli/plugin-source/compare/2.10.46...2.11.0) (2023-11-08)
+
+### Features
+
+- use new not-config-file stl ([#999](https://github.com/salesforcecli/plugin-source/issues/999)) ([5821898](https://github.com/salesforcecli/plugin-source/commit/5821898972c1698b517ec5f53d21f75c72b427fd))
+
 ## [2.10.46](https://github.com/salesforcecli/plugin-source/compare/2.10.45...2.10.46) (2023-10-28)
 
 ### Bug Fixes
