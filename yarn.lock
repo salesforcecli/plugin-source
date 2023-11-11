@@ -794,6 +794,38 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
+"@oclif/core@^3.10.6":
+  version "3.10.8"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.10.8.tgz#8a855841107576b88a2ebe2e20e6e0d7ee885713"
+  integrity sha512-DRiEiXUvijq/1dXL80/sFGdhTjejFiUzxURW7N310TEKlONujas66KhLATfF/nG3mICqTCU0f9B+VNfLtZoGqw==
+  dependencies:
+    ansi-escapes "^4.3.2"
+    ansi-styles "^4.3.0"
+    cardinal "^2.1.1"
+    chalk "^4.1.2"
+    clean-stack "^3.0.1"
+    cli-progress "^3.12.0"
+    debug "^4.3.4"
+    ejs "^3.1.9"
+    get-package-type "^0.1.0"
+    globby "^11.1.0"
+    hyperlinker "^1.0.0"
+    indent-string "^4.0.0"
+    is-wsl "^2.2.0"
+    js-yaml "^3.14.1"
+    natural-orderby "^2.0.3"
+    object-treeify "^1.1.33"
+    password-prompt "^1.1.2"
+    slice-ansi "^4.0.0"
+    string-width "^4.2.3"
+    strip-ansi "^6.0.1"
+    supports-color "^8.1.1"
+    supports-hyperlinks "^2.2.0"
+    tsconfck "^3.0.0"
+    widest-line "^3.1.0"
+    wordwrap "^1.0.0"
+    wrap-ansi "^7.0.0"
+
 "@oclif/plugin-command-snapshot@^4.0.14":
   version "4.0.14"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-command-snapshot/-/plugin-command-snapshot-4.0.14.tgz#7fe19c34871443dbfea1cb301b06ca20cc9a4d97"
@@ -1156,11 +1188,12 @@
     shelljs "^0.8.4"
     sinon "^10.0.0"
 
-"@salesforce/source-tracking@^4.2.20", "@salesforce/source-tracking@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-4.3.0.tgz#dc281b260d28f831042475468aa0b0350d7328a7"
-  integrity sha512-1ysyxU7lLi2pQNgEQbLpfSciLhsYrYwVu+VEq+tCXzm0TfmyscT1a1vcyykOzztpWMtKNQW/HdJEaAPBPd9FVg==
+"@salesforce/source-tracking@^4.2.20", "@salesforce/source-tracking@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-tracking/-/source-tracking-4.4.0.tgz#ea00eff7240f9284983060ba3462e19c320103f6"
+  integrity sha512-v/jMbOgFfY8k/TS2UnnplEo4XqhNOGRYAVlO9ipTqAVHpLuKS4SXbp/8Vi11o3yWvBYj8neeQ0nz/TXpgmdxeQ==
   dependencies:
+    "@oclif/core" "^3.10.6"
     "@salesforce/core" "^5.3.18"
     "@salesforce/kit" "^3.0.15"
     "@salesforce/source-deploy-retrieve" "^9.8.4"
@@ -3166,7 +3199,7 @@ ecdsa-sig-formatter@1.0.11:
   dependencies:
     safe-buffer "^5.0.1"
 
-ejs@^3.1.8:
+ejs@^3.1.8, ejs@^3.1.9:
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.9.tgz#03c9e8777fe12686a9effcef22303ca3d8eeb361"
   integrity sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==
@@ -7942,6 +7975,11 @@ ts-retry-promise@^0.7.0, ts-retry-promise@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/ts-retry-promise/-/ts-retry-promise-0.7.1.tgz#176d6eee6415f07b6c7c286d3657355e284a6906"
   integrity sha512-NhHOCZ2AQORvH42hOPO5UZxShlcuiRtm7P2jIq2L2RY3PBxw2mLnUsEdHrIslVBFya1v5aZmrR55lWkzo13LrQ==
+
+tsconfck@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/tsconfck/-/tsconfck-3.0.0.tgz#b469f1ced12973bbec3209a55ed8de3bb04223c9"
+  integrity sha512-w3wnsIrJNi7avf4Zb0VjOoodoO0woEqGgZGQm+LHH9przdUI+XDKsWAXwxHA1DaRTjeuZNcregSzr7RaA8zG9A==
 
 tsconfig-paths@^3.14.2:
   version "3.14.2"
