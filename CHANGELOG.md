@@ -1,3 +1,9 @@
+## [2.11.2](https://github.com/salesforcecli/plugin-source/compare/2.11.1...2.11.2) (2023-11-11)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve from 9.8.4 to 9.8.5 ([#1003](https://github.com/salesforcecli/plugin-source/issues/1003)) ([5390c52](https://github.com/salesforcecli/plugin-source/commit/5390c52e4654b2480aac5ee59ad69b911e8fd73a))
+
 ## [2.11.1](https://github.com/salesforcecli/plugin-source/compare/2.11.0...2.11.1) (2023-11-11)
 
 ### Bug Fixes
