@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (--version)
-@salesforce/plugin-source/2.11.3 linux-x64 node-v18.18.2
+@salesforce/plugin-source/2.11.4 linux-x64 node-v18.18.2
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -107,8 +107,8 @@ Deploy metadata to an org using Metadata API.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy -u <value> [--json] [--api-version <value>] [-d <value>] [-w <value>] [-o] [-g] [-q <value>
-    | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -c] [--verbose] [-f <value>] [-s]
+  $ sfdx force:mdapi:deploy -u <value> [--api-version <value>] [-d <value>] [-w <value>] [-o] [-g] [-q <value> | -l
+    NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -c] [--verbose] [-f <value>] [-s]
     [--soapdeploy] [--purgeondelete] [--concise] [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
@@ -171,9 +171,6 @@ FLAGS
 
   --verbose
       Display verbose output of the deploy results.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 EXAMPLES
   Return a job ID you can use to check the deploy status:
@@ -299,7 +296,7 @@ FLAG DESCRIPTIONS
     Indicates that you want verbose output from the deploy operation.
 ```
 
-_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/mdapi/deploy.ts)_
+_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/deploy.ts)_
 
 ## `sfdx force:mdapi:deploy:cancel`
 
@@ -307,7 +304,7 @@ Cancel a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy:cancel -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>]
+  $ sfdx force:mdapi:deploy:cancel -o <value> [--api-version <value>] [-w <value>] [-i <value>]
 
 FLAGS
   -i, --jobid=<value>       Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment.
@@ -315,9 +312,6 @@ FLAGS
   -w, --wait=<value>        [default: 33 minutes] Number of minutes for the command to complete and display results to
                             the terminal window.
   --api-version=<value>     Override the api version used for api requests made by this command
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Cancel a metadata deployment.
@@ -342,7 +336,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/mdapi/deploy/cancel.ts)_
+_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/deploy/cancel.ts)_
 
 ## `sfdx force:mdapi:deploy:report`
 
@@ -350,8 +344,8 @@ Check the status of a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy:report -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>] [--verbose]
-    [--concise] [--resultsdir <value>] [--coverageformatters
+  $ sfdx force:mdapi:deploy:report -o <value> [--api-version <value>] [-w <value>] [-i <value>] [--verbose] [--concise]
+    [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
@@ -383,9 +377,6 @@ FLAGS
   --verbose
       Verbose output of deploy results.
 
-GLOBAL FLAGS
-  --json  Format output as json.
-
 DESCRIPTION
   Check the status of a metadata deployment.
 
@@ -413,7 +404,7 @@ FLAG DESCRIPTIONS
     use the ID of the most recent metadata deployment.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/mdapi/deploy/report.ts)_
+_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/deploy/report.ts)_
 
 ## `sfdx force:mdapi:retrieve`
 
@@ -421,8 +412,8 @@ Retrieve metadata from an org using Metadata API.
 
 ```
 USAGE
-  $ sfdx force:mdapi:retrieve -o <value> -r <value> [--json] [-k <value> | -d <value> | -p <value>] [-s] [-n <value>] [-z]
-    [-w <value>] [-a <value>] [--verbose]
+  $ sfdx force:mdapi:retrieve -o <value> -r <value> [-k <value> | -d <value> | -p <value>] [-s] [-n <value>] [-z] [-w
+    <value>] [-a <value>] [--verbose]
 
 FLAGS
   -a, --apiversion=<value>         Target API version for the retrieve.
@@ -438,9 +429,6 @@ FLAGS
   -w, --wait=<value>               [default: 1440 minutes] Number of minutes to wait for the command to complete.
   -z, --unzip                      Extract all files from the retrieved zip file.
   --verbose                        Display verbose output of retrieve result.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Retrieve metadata from an org using Metadata API.
@@ -477,7 +465,7 @@ FLAG DESCRIPTIONS
     By default, the CLI assumes the directory is structured for a set of packages.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/mdapi/retrieve.ts)_
+_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/retrieve.ts)_
 
 ## `sfdx force:mdapi:retrieve:report`
 
@@ -485,8 +473,8 @@ Check the status of a metadata retrieval.
 
 ```
 USAGE
-  $ sfdx force:mdapi:retrieve:report -o <value> [--json] [--api-version <value>] [-r <value>] [-i <value>] [-n <value>] [-z] [-w
-    <value>] [--verbose]
+  $ sfdx force:mdapi:retrieve:report -o <value> [--api-version <value>] [-r <value>] [-i <value>] [-n <value>] [-z] [-w <value>]
+    [--verbose]
 
 FLAGS
   -i, --jobid=<value>              Job ID of the retrieve you want to check; defaults to your most recent CLI retrieval.
@@ -498,9 +486,6 @@ FLAGS
   -z, --unzip                      Extract all files from the retrieved zip file.
   --api-version=<value>            Override the api version used for api requests made by this command
   --verbose                        Display verbose output of retrieve result.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Check the status of a metadata retrieval.
@@ -531,7 +516,7 @@ FLAG DESCRIPTIONS
     You must specify a --retrievetargetdir. Use with --wait to resume waiting.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/mdapi/retrieve/report.ts)_
+_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/retrieve/report.ts)_
 
 ## `sfdx force:source:deploy`
 
@@ -539,10 +524,10 @@ Deploy source to an org.
 
 ```
 USAGE
-  $ sfdx force:source:deploy -u <value> [--json] [--api-version <value>] [--soapdeploy] [-w <value>] [-o] [-g]
-    [--purgeondelete -x <value>] [-q <value> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r
-    <value> | -t] [--verbose] [-m <value>] [-p <value>] [--predestructivechanges <value> ] [--postdestructivechanges
-    <value> ] [-f ] [--resultsdir <value>] [--coverageformatters
+  $ sfdx force:source:deploy -u <value> [--api-version <value>] [--soapdeploy] [-w <value>] [-o] [-g] [--purgeondelete -x
+    <value>] [-q <value> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -t]
+    [--verbose] [-m <value>] [-p <value>] [--predestructivechanges <value> ] [--postdestructivechanges <value> ] [-f ]
+    [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
@@ -613,9 +598,6 @@ FLAGS
 
   --verbose
       Specify verbose output about the deploy result.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Deploy source to an org.
@@ -797,7 +779,7 @@ FLAG DESCRIPTIONS
     If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/deploy.ts)_
 
 ## `sfdx force:source:deploy:cancel`
 
@@ -805,7 +787,7 @@ Cancel a source deployment.
 
 ```
 USAGE
-  $ sfdx force:source:deploy:cancel -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>]
+  $ sfdx force:source:deploy:cancel -o <value> [--api-version <value>] [-w <value>] [-i <value>]
 
 FLAGS
   -i, --jobid=<value>       Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if
@@ -814,9 +796,6 @@ FLAGS
   -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
                             results.
   --api-version=<value>     Override the api version used for api requests made by this command
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Cancel a source deployment.
@@ -842,7 +821,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/deploy/cancel.ts)_
 
 ## `sfdx force:source:deploy:report`
 
@@ -850,8 +829,8 @@ Check the status of a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:source:deploy:report -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>] [--verbose]
-    [--resultsdir <value>] [--coverageformatters
+  $ sfdx force:source:deploy:report -o <value> [--api-version <value>] [-w <value>] [-i <value>] [--verbose] [--resultsdir
+    <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
@@ -880,9 +859,6 @@ FLAGS
   --verbose
       Verbose output of deploy result.
 
-GLOBAL FLAGS
-  --json  Format output as json.
-
 DESCRIPTION
   Check the status of a metadata deployment.
 
@@ -905,7 +881,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/deploy/report.ts)_
 
 ## `sfdx force:source:pull`
 
@@ -913,7 +889,7 @@ Pull changed source from the org to your project to keep them in sync.
 
 ```
 USAGE
-  $ sfdx force:source:pull -o <value> [--json] [--verbose] [--api-version <value>] [-f] [-w <value>]
+  $ sfdx force:source:pull -o <value> [--verbose] [--api-version <value>] [-f] [-w <value>]
 
 FLAGS
   -f, --forceoverwrite      Ignore conflict warnings; changes in the org overwrite changes in the project.
@@ -922,9 +898,6 @@ FLAGS
                             results to the terminal window.
   --api-version=<value>     Override the api version used for api requests made by this command
   --verbose                 Display additional details about the command results.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Pull changed source from the org to your project to keep them in sync.
@@ -948,7 +921,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/pull.ts)_
+_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/pull.ts)_
 
 ## `sfdx force:source:push`
 
@@ -956,7 +929,7 @@ Push changed source from your project to an org to keep them in sync.
 
 ```
 USAGE
-  $ sfdx force:source:push -o <value> [--json] [--api-version <value>] [-f] [-w <value>] [-g] [--quiet]
+  $ sfdx force:source:push -o <value> [--api-version <value>] [-f] [-w <value>] [-g] [--quiet]
 
 FLAGS
   -f, --forceoverwrite      Ignore conflict warnings and push source anyway; changes in the project overwrite changes in
@@ -967,9 +940,6 @@ FLAGS
                             results to the terminal window.
   --api-version=<value>     Override the api version used for api requests made by this command
   --quiet                   Minimize JSON and sdtout output on success.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Push changed source from your project to an org to keep them in sync.
@@ -993,7 +963,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/push.ts)_
+_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/push.ts)_
 
 ## `sfdx force:source:retrieve`
 
@@ -1001,8 +971,8 @@ Retrieve source from an org.
 
 ```
 USAGE
-  $ sfdx force:source:retrieve -o <value> [--json] [-a <value>] [-r <value> | -n <value> | -p <value>] [-w <value>] [-x
-    <value> | -m <value> | ] [-f -t] [--verbose]
+  $ sfdx force:source:retrieve -o <value> [-a <value>] [-r <value> | -n <value> | -p <value>] [-w <value>] [-x <value> | -m
+    <value> | ] [-f -t] [--verbose]
 
 FLAGS
   -a, --api-version=<value>        Override the api version used for api requests made by this command
@@ -1019,9 +989,6 @@ FLAGS
   -x, --manifest=<value>           Complete path for the manifest (package.xml) file that specifies the components to
                                    retrieve.
   --verbose                        Verbose output of retrieve result.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 DESCRIPTION
   Retrieve source from an org.
@@ -1118,7 +1085,7 @@ FLAG DESCRIPTIONS
     If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/retrieve.ts)_
 
 ## `sfdx force:source:status`
 
@@ -1126,7 +1093,7 @@ List changes that have been made locally, in an org, or both.
 
 ```
 USAGE
-  $ sfdx force:source:status -o <value> [--json] [--api-version <value>] [-l | -r] [--concise]
+  $ sfdx force:source:status -o <value> [--api-version <value>] [-l | -r] [--concise]
 
 FLAGS
   -l, --local               List the changes that have been made locally.
@@ -1134,9 +1101,6 @@ FLAGS
   -r, --remote              List the changes that have been made in the org.
   --api-version=<value>     Override the api version used for api requests made by this command
   --concise                 Show only the changes that will be pushed or pulled; omits files that are forceignored.
-
-GLOBAL FLAGS
-  --json  Format output as json.
 
 EXAMPLES
   List changes that have been made locally but not in the org with alias "myscratch":
@@ -1148,6 +1112,6 @@ EXAMPLES
     $ sfdx force:source:status --remote
 ```
 
-_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.3/src/commands/force/source/status.ts)_
+_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/status.ts)_
 
 <!-- commandsstop -->

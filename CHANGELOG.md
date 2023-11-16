@@ -1,3 +1,9 @@
+## [2.11.4](https://github.com/salesforcecli/plugin-source/compare/2.11.3...2.11.4) (2023-11-16)
+
+### Bug Fixes
+
+- devScripts update ([#1006](https://github.com/salesforcecli/plugin-source/issues/1006)) + core v6 ([5206a3b](https://github.com/salesforcecli/plugin-source/commit/5206a3b413345e4e1d2ef83a89201c8ce6058db6))
+
 ## [2.11.3](https://github.com/salesforcecli/plugin-source/compare/2.11.2...2.11.3) (2023-11-12)
 
 ### Bug Fixes
