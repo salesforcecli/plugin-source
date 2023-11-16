@@ -14,7 +14,6 @@ import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/co
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
-import ConfigMeta, { ConfigVars } from '@salesforce/plugin-deploy-retrieve/lib/configMeta';
 import { Deploy } from '../../../src/commands/force/source/deploy';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
 import {
@@ -86,7 +85,26 @@ describe('force:source:deploy', () => {
   const runDeployCmd = async (params: string[], options?: { sourceApiVersion?: string }) => {
     const cmd = new TestDeploy(params, oclifConfigStub);
     cmd.project = SfProject.getInstance();
-    cmd.configAggregator = await (await ConfigAggregator.create({ customConfigMeta: ConfigMeta })).reload();
+    cmd.configAggregator =
+      await // this is simplified from https://github.com/salesforcecli/plugin-deploy-retrieve/blob/d481ac1d79e29e20302924e688be7ec75df22957/src/configMeta.ts#L24-L25
+      // as a workaround for
+      // 1. PDR being ESM before plugin-source
+      // 2. lib/configMeta.js not being in the top-level exports
+      (
+        await ConfigAggregator.create({
+          customConfigMeta: [
+            {
+              key: 'org-metadata-rest-deploy',
+              description: 'foo',
+              hidden: true,
+              input: {
+                validator: (value: string): boolean => typeof value === 'string' && ['true', 'false'].includes(value),
+                failedMessage: 'boo!',
+              },
+            },
+          ],
+        })
+      ).reload();
     sandbox.stub(cmd.project, 'getDefaultPackage').returns({ name: '', path: '', fullPath: defaultDir });
     sandbox.stub(cmd.project, 'getUniquePackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
     sandbox.stub(cmd.project, 'getPackageDirectories').returns([{ fullPath: defaultDir, path: '', name: '' }]);
@@ -416,7 +434,7 @@ describe('force:source:deploy', () => {
       });
 
       it('should REST deploy with config', async () => {
-        await $$.stubConfig({ [ConfigVars.ORG_METADATA_REST_DEPLOY]: 'true', 'target-org': testOrg.username });
+        await $$.stubConfig({ 'org-metadata-rest-deploy': 'true', 'target-org': testOrg.username });
 
         const manifest = 'package.xml';
         const result = await runDeployCmd(['--manifest', manifest, '--json']);
