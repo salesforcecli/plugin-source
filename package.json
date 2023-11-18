@@ -23,7 +23,7 @@
     "@oclif/plugin-help": "^5.2.20",
     "@salesforce/cli-plugins-testkit": "^5.0.2",
     "@salesforce/dev-scripts": "^7.1.1",
-    "@salesforce/plugin-command-reference": "^3.0.45",
+    "@salesforce/plugin-command-reference": "^3.0.46",
     "@salesforce/plugin-deploy-retrieve": "^2.1.1",
     "@salesforce/plugin-info": "^2.6.51",
     "@salesforce/source-testkit": "^2.1.65",
