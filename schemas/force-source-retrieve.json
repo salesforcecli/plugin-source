@@ -200,17 +200,7 @@
           "type": "string"
         },
         "manageableState": {
-          "type": "string",
-          "enum": [
-            "beta",
-            "deleted",
-            "deprecated",
-            "deprecatedEditable",
-            "installed",
-            "installedEditable",
-            "released",
-            "unmanaged"
-          ]
+          "$ref": "#/definitions/ManageableState"
         },
         "namespacePrefix": {
           "type": "string"
@@ -232,6 +222,19 @@
         "type"
       ],
       "additionalProperties": false
+    },
+    "ManageableState": {
+      "type": "string",
+      "enum": [
+        "beta",
+        "deleted",
+        "deprecated",
+        "deprecatedEditable",
+        "installed",
+        "installedEditable",
+        "released",
+        "unmanaged"
+      ]
     },
     "RequestStatus": {
       "type": "string",

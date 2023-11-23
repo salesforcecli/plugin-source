@@ -1,3 +1,27 @@
+## [2.11.4](https://github.com/salesforcecli/plugin-source/compare/2.11.3...2.11.4) (2023-11-16)
+
+### Bug Fixes
+
+- devScripts update ([#1006](https://github.com/salesforcecli/plugin-source/issues/1006)) + core v6 ([5206a3b](https://github.com/salesforcecli/plugin-source/commit/5206a3b413345e4e1d2ef83a89201c8ce6058db6))
+
+## [2.11.3](https://github.com/salesforcecli/plugin-source/compare/2.11.2...2.11.3) (2023-11-12)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 5.3.18 to 5.3.20 ([#1000](https://github.com/salesforcecli/plugin-source/issues/1000)) ([51d3de8](https://github.com/salesforcecli/plugin-source/commit/51d3de8234c11d481c7eef0b2817d30fc8f39831))
+
+## [2.11.2](https://github.com/salesforcecli/plugin-source/compare/2.11.1...2.11.2) (2023-11-11)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve from 9.8.4 to 9.8.5 ([#1003](https://github.com/salesforcecli/plugin-source/issues/1003)) ([5390c52](https://github.com/salesforcecli/plugin-source/commit/5390c52e4654b2480aac5ee59ad69b911e8fd73a))
+
+## [2.11.1](https://github.com/salesforcecli/plugin-source/compare/2.11.0...2.11.1) (2023-11-11)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 4.3.0 to 4.4.0 ([#1004](https://github.com/salesforcecli/plugin-source/issues/1004)) ([723bdef](https://github.com/salesforcecli/plugin-source/commit/723bdef1b2c13eff1ea2978c45a097dde661b6ba))
+
 # [2.11.0](https://github.com/salesforcecli/plugin-source/compare/2.10.46...2.11.0) (2023-11-08)
 
 ### Features
