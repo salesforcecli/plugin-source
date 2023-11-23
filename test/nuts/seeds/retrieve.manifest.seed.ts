@@ -42,7 +42,7 @@ context('Retrieve manifest NUTs [name: %REPO_NAME%]', () => {
       const convertDir = `convert_${i++}`;
       it(`should retrieve ${toRetrieve}`, async () => {
         // generate package.xml to use with the --manifest param
-        await testkit.convert({ args: `--sourcepath ${testCase.toRetrieve} --outputdir ${convertDir}` });
+        await testkit.convert({ cli: 'sf', args: `--sourcepath ${testCase.toRetrieve} --outputdir ${convertDir}` });
         const packageXml = path.join(convertDir, 'package.xml');
 
         await testkit.modifyLocalGlobs(testCase.toVerify);
