@@ -7,7 +7,7 @@
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { ConfigAggregator, Lifecycle, Logger, Messages, SfProject, OrgConfigProperties, Org } from '@salesforce/core';
-import { SfDoctor } from '@salesforce/plugin-info';
+import type { SfDoctor } from '@salesforce/plugin-info';
 type HookFunction = (options: { doctor: SfDoctor }) => Promise<[void]>;
 
 let logger: Logger;
