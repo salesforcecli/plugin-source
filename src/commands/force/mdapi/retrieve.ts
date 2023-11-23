@@ -15,7 +15,7 @@ import {
   RetrieveResult,
   RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
-import { Optional } from '@salesforce/ts-types';
+import { Optional, ensure } from '@salesforce/ts-types';
 import {
   arrayWithDeprecation,
   Flags,
@@ -107,7 +107,8 @@ export class Retrieve extends SourceCommand {
   private retrieveTargetDir: string | undefined;
   private zipFileName: string | undefined;
   private unzip: boolean | undefined;
-  private wait: Duration | undefined;
+  // will be set to `flags.wait` (which has a default value) when executed.
+  private wait!: Duration;
   private isAsync: boolean | undefined;
   private mdapiRetrieve: MetadataApiRetrieve | undefined;
   private flags!: Interfaces.InferredFlags<typeof Retrieve.flags>;
@@ -235,18 +236,16 @@ export class Retrieve extends SourceCommand {
       };
     } else {
       const formatterOptions = {
-        waitTime: this.wait?.quantity ?? '',
+        waitTime: this.wait.quantity,
         verbose: this.flags.verbose ?? false,
-        retrieveTargetDir: this.retrieveTargetDir,
+        retrieveTargetDir: this.retrieveTargetDir ?? '',
         zipFileName: this.zipFileName,
         unzip: this.unzip,
       };
       const formatter = new RetrieveResultFormatter(
         new Ux({ jsonEnabled: this.jsonEnabled() }),
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         formatterOptions,
-        this.retrieveResult
+        ensure(this.retrieveResult)
       );
 
       if (!this.jsonEnabled()) {

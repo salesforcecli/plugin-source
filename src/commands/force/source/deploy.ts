@@ -164,9 +164,7 @@ export class Deploy extends DeployCommand {
   };
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
   protected tracking!: SourceTracking;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
+  private flags!: Interfaces.InferredFlags<typeof Deploy.flags>;
   private org!: Org;
   public async run(): Promise<DeployCommandCombinedResult> {
     this.flags = (await this.parse(Deploy)).flags;

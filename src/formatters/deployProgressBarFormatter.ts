@@ -9,7 +9,6 @@ import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { once } from '@salesforce/kit';
 import { ux as coreUx } from '@oclif/core';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ProgressBar } from '../types.js';
 import { ProgressFormatter } from './progressFormatter.js';
 
 export class DeployProgressBarFormatter extends ProgressFormatter {
@@ -18,14 +17,13 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
     linewrap: true,
-  }) as ProgressBar;
+  });
   public constructor(ux: Ux) {
     super(ux);
   }
 
   // displays the progress of the Deployment
   public progress(deploy: MetadataApiDeploy): void {
-    this.initProgressBar();
     const startProgressBar = once((componentTotal: number) => {
       this.progressBar.start(componentTotal, 0);
     });
@@ -53,7 +51,7 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
       // the server initially returns the number of customfields (n) + 1 - but once the deploy has finished
       // it calculates the correct number of fields deployed n, and so we are left with a progress bar at n/(n+1)
       // so if the progress bar total is different from what was actually deployed, set the total to be accurate
-      if (this.progressBar.total !== deployed) {
+      if (this.progressBar.getTotal() !== deployed) {
         this.progressBar.setTotal(deployed);
       }
 
@@ -69,15 +67,5 @@ export class DeployProgressBarFormatter extends ProgressFormatter {
       this.progressBar.stop();
       throw error;
     });
-  }
-
-  // used to initialize the progress bar
-  protected initProgressBar(): void {
-    this.progressBar = coreUx.progress({
-      format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
-      barCompleteChar: '\u2588',
-      barIncompleteChar: '\u2591',
-      linewrap: true,
-    }) as ProgressBar;
   }
 }
