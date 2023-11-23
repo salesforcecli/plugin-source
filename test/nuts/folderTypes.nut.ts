@@ -123,11 +123,11 @@ describe('metadata types that go in folders', () => {
     });
 
     it('can deploy reports via the manifest', () => {
-      execCmd('project deploy start -x package.xml --json', { ensureExitCode: 0 });
+      execCmd('force:source:deploy -x package.xml --json', { ensureExitCode: 0, cli: 'dev' });
     });
 
     it('can retrieve reports via the manifest', () => {
-      execCmd('project retrieve start -x package.xml --json', { ensureExitCode: 0 });
+      execCmd('force:source:retrieve -x package.xml --json', { ensureExitCode: 0, cli: 'dev' });
     });
   });
 });
