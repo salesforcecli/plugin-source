@@ -223,12 +223,13 @@ describe('deb -- metadata option', () => {
       assertDocumentDetailPageA(deployedSource);
     });
 
+    // TODO: `force:source:delete` lives in PDR (and same NUT exists there), should we delete this?
     it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
         {
           ensureExitCode: 0,
-          cli: 'dev',
+          cli: 'sf',
         }
       ).jsonOutput?.result.deletedSource;
 

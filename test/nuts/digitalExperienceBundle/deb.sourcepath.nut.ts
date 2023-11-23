@@ -164,6 +164,7 @@ describe('deb -- sourcepath option', () => {
       assertDocumentDetailPageA(deployedSource);
     });
 
+    // TODO: `force:source:delete` lives in PDR (and same NUT exists there), should we delete this?
     it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --noprompt --json`,
