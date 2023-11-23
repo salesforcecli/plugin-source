@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
@@ -79,11 +79,13 @@ describe('metadata types that go in folders', () => {
         return s;
       });
 
+    // `force:source:manifest:create` is now in PDR.
+    // we run this with `sf` to generate the manifest for the next tests
     it('can generate manifest for just the emailTemplates', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');
       execCmd(`force:source:manifest:create -p ${pathToEmails} --json`, {
         ensureExitCode: 0,
-        cli: 'dev',
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
@@ -108,22 +110,24 @@ describe('metadata types that go in folders', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
+    // `force:source:manifest:create` is now in PDR.
+    // we run this with `sf` to generate the manifest for the next tests
     it('can generate manifest for just the reports', () => {
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.false;
       const pathToReports = path.join('force-app', 'main', 'default', 'reports');
       execCmd(`force:source:manifest:create -p ${pathToReports} --json`, {
         ensureExitCode: 0,
-        cli: 'dev',
+        cli: 'sf',
       });
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.true;
     });
 
     it('can deploy reports via the manifest', () => {
-      execCmd('force:source:deploy -x package.xml --json', { ensureExitCode: 0, cli: 'dev' });
+      execCmd('project deploy start -x package.xml --json', { ensureExitCode: 0 });
     });
 
     it('can retrieve reports via the manifest', () => {
-      execCmd('force:source:retrieve -x package.xml --json', { ensureExitCode: 0, cli: 'dev' });
+      execCmd('project retrieve start -x package.xml --json', { ensureExitCode: 0 });
     });
   });
 });
