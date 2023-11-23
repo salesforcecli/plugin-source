@@ -8,7 +8,6 @@ import fs from 'node:fs';
 import { join } from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { DeleteTrackingResult } from '@salesforce/plugin-deploy-retrieve/lib/commands/project/delete/tracking.js';
 import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
 import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
 import { PullResponse } from '../../../src/formatters/source/pullFormatter.js';
@@ -25,6 +24,12 @@ import {
   deleteDocumentDetailPageAInLocal,
   deleteViewHomeFRVariantInLocal,
 } from './helper.js';
+
+// copied from PDR:
+// https://github.com/salesforcecli/plugin-deploy-retrieve/blob/6a8428afb4b78b09cc398636fa2555efda014af5/src/commands/project/delete/tracking.ts#L24
+type DeleteTrackingResult = {
+  clearedFiles: string[];
+};
 
 describe('deb -- tracking/push/pull', () => {
   let session: TestSession;
