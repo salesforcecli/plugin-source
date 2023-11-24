@@ -4,11 +4,13 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { ConfigFile, Logger, Messages, SfError } from '@salesforce/core';
 import { JsonMap, Optional } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 
 interface StashFile {
   isGlobal: boolean;
@@ -85,7 +87,7 @@ export class Stash {
    * @returns the `StashKey` to use for `Stash.get()` and `Stash.set()`
    */
   public static getKey(commandId: string): StashKey {
-    const key = Stash.keyMap[commandId] as StashKey;
+    const key = Stash.keyMap[commandId as keyof typeof Stash.keyMap] as StashKey;
     if (!key) {
       const messages = Messages.loadMessages('@salesforce/plugin-source', 'stash');
       throw new SfError(messages.getMessage('InvalidStashKey', [commandId]), 'InvalidStashKey');

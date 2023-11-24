@@ -4,12 +4,12 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
+import { DeployCommandResult } from '../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
 
 describe('territories', () => {
   let session: TestSession;
@@ -54,8 +54,8 @@ describe('territories', () => {
     it('deploy', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(deployResults.deployedSource.length).to.equal(8);
+      }).jsonOutput?.result;
+      expect(deployResults?.deployedSource.length).to.equal(8);
     });
 
     it('retrieve without local metadata', async () => {
@@ -64,8 +64,8 @@ describe('territories', () => {
       await fs.promises.mkdir(path.join(session.project.dir, 'force-app'));
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(retrieveResults.inboundFiles).to.have.length(8);
+      }).jsonOutput?.result;
+      expect(retrieveResults?.inboundFiles).to.have.length(8);
     });
   });
 

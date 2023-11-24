@@ -5,7 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { blue, yellow } from 'chalk';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
@@ -18,9 +20,9 @@ import {
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export type PullResponse = { pulledSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };
@@ -45,6 +47,9 @@ export class PullResultFormatter extends ResultFormatter {
     this.warnings = ensureArray(warnMessages);
     if (this.result?.response?.zipFile) {
       // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
+      // ts-ignore required because we're deleting a required property
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       delete this.result.response.zipFile;
     }
   }
@@ -83,7 +88,7 @@ export class PullResultFormatter extends ResultFormatter {
     }
 
     if (this.isSuccess()) {
-      this.ux.styledHeader(blue(messages.getMessage('retrievedSourceHeader')));
+      this.ux.styledHeader(chalk.blue(messages.getMessage('retrievedSourceHeader')));
       const retrievedFiles = this.fileResponses.filter((fr) => fr.state !== ComponentStatus.Failed);
       if (retrievedFiles?.length) {
         this.displaySuccesses(retrievedFiles);
@@ -107,7 +112,7 @@ export class PullResultFormatter extends ResultFormatter {
   }
 
   private displayWarnings(): void {
-    this.ux.styledHeader(yellow(messages.getMessage('retrievedSourceWarningsHeader')));
+    this.ux.styledHeader(chalk.yellow(messages.getMessage('retrievedSourceWarningsHeader')));
     this.ux.table(this.warnings, { fileName: { header: 'FILE NAME' }, problem: { header: 'PROBLEM' } });
     this.ux.log();
   }

@@ -5,15 +5,16 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
-import { RepoConfig, TEST_REPOS_MAP } from './testMatrix';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { RepoConfig, TEST_REPOS_MAP } from './testMatrix.js';
 
 const SEED_FILTER = process.env.PLUGIN_SOURCE_SEED_FILTER || '';
 const SEED_EXCLUDE = process.env.PLUGIN_SOURCE_SEED_EXCLUDE;
 
 function getSeedFiles(): string[] {
-  const seedDir = path.join(__dirname, 'seeds');
+  const seedDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'seeds');
   const files = fs.readdirSync(seedDir);
   return files
     .filter((f) => f.endsWith('.seed.ts'))
@@ -31,12 +32,12 @@ function generateNut(generatedDir: string, seedName: string, seedContents: strin
   const nutFileName = repoName ? `${seedName}.${repoName}.nut.ts` : `${seedName}.nut.ts`;
   const nutFilePath = path.join(generatedDir, nutFileName);
 
-  const contents = seedContents.replace(/%REPO_URL%/g, repo?.gitUrl).replace(/%REPO_NAME%/g, repoName);
+  const contents = seedContents.replace(/%REPO_URL%/g, repo?.gitUrl ?? '').replace(/%REPO_NAME%/g, repoName);
   fs.writeFileSync(nutFilePath, contents);
 }
 
 function generateNuts(): void {
-  const generatedDir = path.resolve(__dirname, 'generated');
+  const generatedDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'generated');
   fs.rmSync(generatedDir, { recursive: true, force: true });
   fs.mkdirSync(generatedDir, { recursive: true });
   const seeds = getSeedFiles();

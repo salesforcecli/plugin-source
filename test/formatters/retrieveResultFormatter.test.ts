@@ -6,15 +6,15 @@
  */
 
 import { join, relative } from 'node:path';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { cloneJson, ensureArray } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { getRetrieveResult } from '../commands/source/retrieveResponses';
-import { RetrieveCommandResult, RetrieveResultFormatter } from '../../src/formatters/retrieveResultFormatter';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { getRetrieveResult } from '../commands/source/retrieveResponses.js';
+import { RetrieveCommandResult, RetrieveResultFormatter } from '../../src/formatters/retrieveResultFormatter.js';
 
 describe('RetrieveResultFormatter', () => {
   const sandbox = new TestContext().SANDBOX;
@@ -25,7 +25,7 @@ describe('RetrieveResultFormatter', () => {
   const retrieveResultEmpty = getRetrieveResult('empty');
   const retrieveResultWarnings = getRetrieveResult('warnings');
 
-  let ux;
+  let ux: Ux;
   let logStub: sinon.SinonStub;
   let styledHeaderStub: sinon.SinonStub;
   let tableStub: sinon.SinonStub;
@@ -42,6 +42,9 @@ describe('RetrieveResultFormatter', () => {
     logStub = sandbox.stub();
     styledHeaderStub = sandbox.stub();
     tableStub = sandbox.stub();
+    // ux is a stubbed Ux
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     ux = stubInterface<Ux>(sandbox, {
       log: logStub,
       styledHeader: styledHeaderStub,
@@ -61,7 +64,7 @@ describe('RetrieveResultFormatter', () => {
         warnings: [],
         response: cloneJson(retrieveResultSuccess.response),
       };
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultSuccess);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
 
@@ -72,7 +75,7 @@ describe('RetrieveResultFormatter', () => {
         warnings: [],
         response: cloneJson(retrieveResultFailure.response),
       };
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultFailure);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultFailure);
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
     });
 
@@ -83,7 +86,7 @@ describe('RetrieveResultFormatter', () => {
         warnings: [],
         response: cloneJson(retrieveResultInProgress.response),
       };
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultInProgress);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultInProgress);
       expect(formatter.getJson()).to.deep.equal(expectedInProgressResults);
     });
 
@@ -95,7 +98,7 @@ describe('RetrieveResultFormatter', () => {
         warnings: [],
         response: cloneJson(retrieveResultSuccess.response),
       };
-      const formatter = new RetrieveResultFormatter(ux as Ux, { packages: [testPkg] }, retrieveResultSuccess);
+      const formatter = new RetrieveResultFormatter(ux, { packages: [testPkg] }, retrieveResultSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
 
@@ -108,14 +111,14 @@ describe('RetrieveResultFormatter', () => {
         warnings,
         response: cloneJson(retrieveResultWarnings.response),
       };
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultWarnings);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultWarnings);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
     });
   });
 
   describe('display', () => {
     it('should output as expected for a success', () => {
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultSuccess);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultSuccess);
       formatter.display();
       expect(styledHeaderStub.called).to.equal(true);
       expect(logStub.called).to.equal(false);
@@ -128,7 +131,7 @@ describe('RetrieveResultFormatter', () => {
 
     it('should output as expected for an InProgress', () => {
       const options = { waitTime: 33 };
-      const formatter = new RetrieveResultFormatter(ux as Ux, options, retrieveResultInProgress);
+      const formatter = new RetrieveResultFormatter(ux, options, retrieveResultInProgress);
       formatter.display();
       expect(styledHeaderStub.called).to.equal(false);
       expect(logStub.called).to.equal(true);
@@ -139,7 +142,7 @@ describe('RetrieveResultFormatter', () => {
     });
 
     it('should output as expected for a Failure', () => {
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultFailure);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultFailure);
       sandbox.stub(formatter, 'isSuccess').returns(false);
 
       formatter.display();
@@ -149,7 +152,7 @@ describe('RetrieveResultFormatter', () => {
     });
 
     it('should output as expected for warnings', () => {
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultWarnings);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultWarnings);
       formatter.display();
       // Should call styledHeader for warnings and the standard "Retrieved Source" header
       expect(styledHeaderStub.calledTwice).to.equal(true);
@@ -162,7 +165,7 @@ describe('RetrieveResultFormatter', () => {
     });
 
     it('should output a message when no results were returned', () => {
-      const formatter = new RetrieveResultFormatter(ux as Ux, {}, retrieveResultEmpty);
+      const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultEmpty);
       formatter.display();
       expect(styledHeaderStub.called).to.equal(true);
       expect(logStub.called).to.equal(true);

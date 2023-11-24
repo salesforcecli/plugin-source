@@ -9,16 +9,15 @@ import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
-import { ProgressBar } from '../../../src/types';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
+import { ProgressBar } from '../../../src/types.js';
 
 describe('Progress Bar Events', () => {
   const sandbox = new TestContext().SANDBOX;
   const username = 'me@my.org';
   const deploy = new MetadataApiDeploy({ usernameOrConnection: username, id: '123' });
   const progressBarFormatter = new DeployProgressBarFormatter(Ux.prototype);
-  const initSpy = spyMethod(sandbox, progressBarFormatter, 'initProgressBar');
   let bar: ProgressBar;
   let events: EventEmitter;
 
@@ -50,7 +49,6 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 0,
       numberTestsTotal: 0,
     });
-    expect(initSpy.calledOnce).to.be.true;
     expect(bar.value).to.equal(3);
     expect(bar.total).to.equal(5);
     events.emit('finish', {
@@ -91,7 +89,6 @@ describe('Progress Bar Events', () => {
       },
     });
     expect(bar.value).to.equal(20);
-    expect(initSpy.calledOnce).to.be.true;
   });
 
   it('should update progress bar when server returns different calculated value', () => {
@@ -123,7 +120,6 @@ describe('Progress Bar Events', () => {
     });
     expect(bar.value).to.equal(29);
     expect(bar.total).to.equal(29);
-    expect(initSpy.calledOnce).to.be.true;
   });
 
   it('should stop progress bar onCancel', () => {

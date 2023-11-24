@@ -5,8 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   AsyncResult,
   ComponentSet,
@@ -14,6 +15,7 @@ import {
   MetadataApiDeploy,
   MetadataApiDeployStatus,
   RequestStatus,
+  RunTestResult,
 } from '@salesforce/source-deploy-retrieve';
 import {
   ConfigAggregator,
@@ -26,7 +28,7 @@ import {
   StatusResult,
 } from '@salesforce/core';
 import { AnyJson, getBoolean } from '@salesforce/ts-types';
-import { Duration, once, ensureArray } from '@salesforce/kit';
+import { Duration, ensureArray, once } from '@salesforce/kit';
 import {
   CoverageReporter,
   CoverageReporterOptions,
@@ -35,18 +37,18 @@ import {
   JUnitReporter,
 } from '@salesforce/apex-node';
 import { Flags } from '@salesforce/sf-plugins-core';
-import { SourceCommand } from './sourceCommand';
-import { DeployData, Stash } from './stash';
-import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResult } from './coverageUtils';
+import { SourceCommand } from './sourceCommand.js';
+import { DeployData, Stash } from './stash.js';
+import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResult } from './coverageUtils.js';
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(path.dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 
 export abstract class DeployCommand extends SourceCommand {
-  protected displayDeployId = once((id: string) => {
+  protected displayDeployId = once((id?: string) => {
     if (!this.jsonEnabled()) {
       this.log(`Deploy ID: ${id}`);
     }
@@ -54,19 +56,19 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected isRest = false;
   protected isAsync = false;
-  protected asyncDeployResult: AsyncResult;
-
-  protected deployResult: DeployResult;
-  protected resultsDir: string;
-  protected updateDeployId = once((id: string) => {
+  protected asyncDeployResult: AsyncResult | undefined;
+  protected deployResult!: DeployResult;
+  protected resultsDir: string | undefined;
+  protected updateDeployId = once((id?: string) => {
     this.displayDeployId(id);
-    const stashKey = Stash.getKey(this.id);
-    Stash.set(stashKey, { jobid: id });
+    const stashKey = Stash.getKey(this.id as string);
+    Stash.set(stashKey, { jobid: id ?? '' });
   });
 
   /**
    * Request a report of an in-progress or completed deployment.
    *
+   * @param conn a Connection to the org
    * @param id the Deploy ID of a deployment request
    * @returns DeployResult
    */
@@ -77,7 +79,7 @@ export abstract class DeployCommand extends SourceCommand {
     const res = await conn.metadata.checkDeployStatus(deployId, true);
 
     const deployStatus = res as unknown as MetadataApiDeployStatus;
-    const componentSet = this.componentSet || new ComponentSet();
+    const componentSet = this.componentSet ?? new ComponentSet();
     return new DeployResult(deployStatus, componentSet);
   }
 
@@ -97,25 +99,27 @@ export abstract class DeployCommand extends SourceCommand {
       [RequestStatus.Canceling, 69],
     ]);
     if (!this.isAsync) {
-      this.setExitCode(StatusCodeMap.get(this.deployResult.response?.status) ?? 1);
+      this.setExitCode(StatusCodeMap.get(this.deployResult?.response?.status) ?? 1);
     }
   }
 
   /**
    * This method is here to provide a workaround to stubbing a constructor in the tests.
    *
+   * @param conn
    * @param id
    */
   // eslint-disable-next-line class-methods-use-this
   protected createDeploy(conn: Connection, id?: string): MetadataApiDeploy {
-    return new MetadataApiDeploy({ usernameOrConnection: conn.getUsername(), id });
+    return new MetadataApiDeploy({ usernameOrConnection: conn.getUsername() ?? '', id });
   }
 
   protected resolveDeployId(id?: string): string {
     if (id) {
       return id;
     } else {
-      const stash = Stash.get<DeployData>(Stash.getKey(this.id));
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const stash = Stash.get<DeployData>(Stash.getKey(this.id!));
       if (!stash) {
         throw new SfError(messages.getMessage('MissingDeployId'));
       }
@@ -127,7 +131,7 @@ export abstract class DeployCommand extends SourceCommand {
   //   1. SOAP is specified with the soapdeploy flag on the command
   //   2. The restDeploy SFDX config setting is explicitly true.
   protected isRestDeploy(soapdeploy = true): boolean {
-    if (soapdeploy === true) {
+    if (soapdeploy) {
       this.debug('soapdeploy flag === true.  Using SOAP');
       return false;
     }
@@ -160,7 +164,7 @@ export abstract class DeployCommand extends SourceCommand {
       poll: async (): Promise<StatusResult> => {
         const deployResult = await this.report(connection, deployId);
         return {
-          completed: getBoolean(deployResult, 'response.done'),
+          completed: getBoolean(deployResult, 'response.done') as boolean,
           payload: deployResult as unknown as AnyJson,
         };
       },
@@ -182,8 +186,8 @@ export abstract class DeployCommand extends SourceCommand {
 
   protected maybeCreateRequestedReports(options: { coverageformatters: string[]; junit: boolean; org: Org }): void {
     // only generate reports if test results are present
-    if (this.deployResult.response?.numberTestsTotal) {
-      if (options.coverageformatters) {
+    if (this.deployResult?.response?.numberTestsTotal) {
+      if (options.coverageformatters && this.resultsDir) {
         createCoverageReport(this.deployResult, options.coverageformatters, 'no-map', this.resultsDir);
       }
       if (options.junit) {
@@ -195,9 +199,9 @@ export abstract class DeployCommand extends SourceCommand {
   protected createJunitResults(deployResult: DeployResult, org: Org): void {
     const testResult = transformDeployTestsResultsToTestResult(
       org.getConnection(),
-      deployResult.response?.details?.runTestResult
+      deployResult.response?.details?.runTestResult as RunTestResult
     );
-    if (testResult.summary.testsRan > 0) {
+    if (testResult.summary.testsRan > 0 && this.resultsDir) {
       const jUnitReporter = new JUnitReporter();
       const junitResults = jUnitReporter.format(testResult);
 
@@ -211,7 +215,7 @@ export abstract class DeployCommand extends SourceCommand {
   protected resolveOutputDir(
     coverageFormatters: string[],
     junit: boolean,
-    resultsDir: string,
+    resultsDir: string | undefined,
     deployId: string,
     noThrow: boolean
   ): string {
@@ -226,7 +230,7 @@ export abstract class DeployCommand extends SourceCommand {
         throw new SfError(messages.getMessage('resultsDirMissing'));
       }
     }
-    return undefined;
+    return '';
   }
 }
 
@@ -287,7 +291,7 @@ export const resolveUsername = async (usernameOrAlias?: string): Promise<string>
   if (usernameOrAlias) return stateAggregator.aliases.resolveUsername(usernameOrAlias);
   // we didn't get a value, so let's see if the config has a default target org
   const configAggregator = await ConfigAggregator.create();
-  const defaultUsernameOrAlias: string = configAggregator.getPropertyValue('target-org');
+  const defaultUsernameOrAlias = configAggregator.getPropertyValue('target-org') as string;
   if (defaultUsernameOrAlias) return stateAggregator.aliases.resolveUsername(defaultUsernameOrAlias);
   throw new SfError(messages.getMessage('missingUsername'), 'MissingUsernameError');
 };

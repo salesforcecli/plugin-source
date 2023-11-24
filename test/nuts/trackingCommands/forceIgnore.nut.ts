@@ -9,16 +9,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
-import { PullResponse } from '../../../src/formatters/source/pullFormatter';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter.js';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
 
 let session: TestSession;
 const classdir = 'force-app/main/default/classes';
@@ -46,7 +46,7 @@ describe('forceignore changes', () => {
     originalForceIgnore = await fs.promises.readFile(path.join(session.project.dir, '.forceignore'), 'utf8');
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
   });
@@ -64,14 +64,14 @@ describe('forceignore changes', () => {
       // nothing should push
       const output = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
       expect(output).to.deep.equal([]);
     });
 
     it('shows the file in status as ignored', () => {
       const output = execCmd<StatusResult>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       expect(output, JSON.stringify(output)).to.deep.include({
         state: 'Local Add',
         fullName: 'IgnoreTest',
@@ -99,7 +99,7 @@ describe('forceignore changes', () => {
       // pushes with no results
       const ignoredOutput = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
       // nothing should have been pushed
       expect(ignoredOutput).to.deep.equal([]);
     });
@@ -111,11 +111,11 @@ describe('forceignore changes', () => {
       // verify file pushed in results
       const unIgnoredOutput = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
 
       // all 4 files should have been pushed
       expect(unIgnoredOutput).to.have.length(4);
-      unIgnoredOutput.map((result) => {
+      unIgnoredOutput?.map((result) => {
         expect(result.type === 'ApexClass');
         expect(result.state === ComponentStatus.Created);
       });
@@ -144,14 +144,14 @@ describe('forceignore changes', () => {
       // gets file into source tracking
       const statusOutput = execCmd<StatusResult[]>('force:source:status --json --remote', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(statusOutput.some((result) => result.fullName === 'CreatedClass')).to.equal(true);
+      }).jsonOutput?.result;
+      expect(statusOutput?.some((result) => result.fullName === 'CreatedClass')).to.equal(true);
 
       // pull doesn't retrieve that change
       const pullOutput = execCmd<PullResponse>('force:source:pull --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(pullOutput.pulledSource.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
+      }).jsonOutput?.result;
+      expect(pullOutput?.pulledSource.some((result) => result.fullName === 'CreatedClass')).to.equal(false);
     });
   });
 });

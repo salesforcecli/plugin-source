@@ -16,7 +16,7 @@ import { ensureArray } from '@salesforce/kit';
  */
 export async function promisesQueue<T>(
   sourceQueue: T[],
-  producer: (T) => Promise<T | T[]>,
+  producer: (arg0: T) => Promise<T | T[]>,
   concurrency: number,
   queueResults = false
 ): Promise<T[]> {

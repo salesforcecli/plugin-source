@@ -5,14 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
-import { PullResponse } from '../../../src/formatters/source/pullFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
+import { PullResponse } from '../../../src/formatters/source/pullFormatter.js';
 
 let session: TestSession;
 describe('CustomLabel source tracking', () => {
@@ -51,7 +51,7 @@ describe('CustomLabel source tracking', () => {
     );
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
     const id = (
@@ -62,10 +62,11 @@ describe('CustomLabel source tracking', () => {
     await conn.tooling.sobject('CustomLabel').delete(id);
     expect((await conn.tooling.query('SELECT Id FROM CustomLabel')).totalSize).to.equal(2);
 
-    const result = execCmd<PullResponse>('force:source:pull -f --json', { ensureExitCode: 0 }).jsonOutput.result;
-    expect(result.pulledSource.length).to.equal(1);
-    expect(result.pulledSource[0].state).to.equal('Deleted');
-    expect(result.pulledSource[0].fullName).to.equal('DeleteMe');
+    const result = execCmd<PullResponse>('force:source:pull -f --json', { ensureExitCode: 0, cli: 'dev' }).jsonOutput
+      ?.result;
+    expect(result?.pulledSource.length).to.equal(1);
+    expect(result?.pulledSource[0].state).to.equal('Deleted');
+    expect(result?.pulledSource[0].fullName).to.equal('DeleteMe');
     expect(fs.existsSync(clFile)).to.be.true;
     expect(fs.readFileSync(clFile, { encoding: 'utf-8' })).to.not.include('DeleteMe');
     expect(fs.readFileSync(clFile, { encoding: 'utf-8' })).to.include('KeepMe1');
@@ -82,7 +83,7 @@ describe('CustomLabel source tracking', () => {
     );
     const conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
     const ids = (await conn.tooling.query<{ Id: string }>('SELECT Id FROM CustomLabel')).records.map((r) => r.Id);

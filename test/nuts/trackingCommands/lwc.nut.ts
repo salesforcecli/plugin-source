@@ -5,13 +5,13 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { ComponentStatus } from '@salesforce/source-deploy-retrieve';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
 
 let session: TestSession;
 let cssPathAbsolute: string;
@@ -55,23 +55,23 @@ describe('lwc', () => {
     );
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result;
-    expect(result.find((r) => r.filePath === cssPathRelative)).to.have.property('actualState', 'Changed');
+    }).jsonOutput?.result;
+    expect(result?.find((r) => r.filePath === cssPathRelative)).to.have.property('actualState', 'Changed');
   });
 
   it('pushes lwc css change', () => {
     const result = execCmd<PushResponse>('force:source:push --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.pushedSource;
+    }).jsonOutput?.result.pushedSource;
     // we get a result for each bundle member, even though only one changed
-    expect(result.filter((r) => r.fullName === 'heroDetails')).to.have.length(4);
+    expect(result?.filter((r) => r.fullName === 'heroDetails')).to.have.length(4);
   });
 
   it('sees no local changes', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
     })
-      .jsonOutput.result.filter((r) => r.origin === 'Local')
+      .jsonOutput?.result.filter((r) => r.origin === 'Local')
       .filter(filterIgnored);
     expect(result).to.have.length(0);
   });
@@ -81,7 +81,7 @@ describe('lwc', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
     })
-      .jsonOutput.result.filter(filterIgnored)
+      .jsonOutput?.result.filter(filterIgnored)
       .find((r) => r.filePath === cssPathRelative);
     expect(result).to.deep.equal({
       fullName: 'heroDetails',
@@ -98,18 +98,18 @@ describe('lwc', () => {
   it('pushes lwc subcomponent delete', () => {
     const result = execCmd<PushResponse>('force:source:push --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.pushedSource;
-    const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
+    }).jsonOutput?.result.pushedSource;
+    const bundleMembers = result?.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(4);
-    expect(bundleMembers.filter((r) => r.state === ComponentStatus.Deleted)).to.have.length(1);
-    expect(bundleMembers.filter((r) => r.state === ComponentStatus.Changed)).to.have.length(3);
+    expect(bundleMembers?.filter((r) => r.state === ComponentStatus.Deleted)).to.have.length(1);
+    expect(bundleMembers?.filter((r) => r.state === ComponentStatus.Changed)).to.have.length(3);
   });
 
   it('sees no local changes', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
     })
-      .jsonOutput.result.filter((r) => r.origin === 'Local')
+      .jsonOutput?.result.filter((r) => r.origin === 'Local')
       .filter(filterIgnored);
     expect(result).to.have.length(0);
   });
@@ -129,21 +129,21 @@ describe('lwc', () => {
     );
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.filter((r) => r.origin === 'Local');
-    expect(result.filter(filterIgnored)).to.have.length(4);
-    expect(result.filter(filterIgnored).filter((r) => r.actualState === 'Deleted')).to.have.length(3);
-    expect(result.filter(filterIgnored).filter((r) => r.actualState === 'Changed')).to.have.length(1);
+    }).jsonOutput?.result.filter((r) => r.origin === 'Local');
+    expect(result?.filter(filterIgnored)).to.have.length(4);
+    expect(result?.filter(filterIgnored).filter((r) => r.actualState === 'Deleted')).to.have.length(3);
+    expect(result?.filter(filterIgnored).filter((r) => r.actualState === 'Changed')).to.have.length(1);
   });
 
   it('push deletes the LWC remotely', () => {
     const result = execCmd<PushResponse>('force:source:push --json', {
       ensureExitCode: 0,
-    }).jsonOutput.result.pushedSource;
+    }).jsonOutput?.result.pushedSource;
     // there'll also be changes for the changed Hero component html, but we've already tested changing a bundle member
-    const bundleMembers = result.filter((r) => r.fullName === 'heroDetails');
+    const bundleMembers = result?.filter((r) => r.fullName === 'heroDetails');
     expect(bundleMembers).to.have.length(3);
     expect(
-      bundleMembers.every((r) => r.state === ComponentStatus.Deleted),
+      bundleMembers?.every((r) => r.state === ComponentStatus.Deleted),
       JSON.stringify(bundleMembers, undefined, 2)
     ).to.be.true;
   });
@@ -152,7 +152,7 @@ describe('lwc', () => {
     const result = execCmd<StatusResult[]>('force:source:status --json', {
       ensureExitCode: 0,
     })
-      .jsonOutput.result.filter((r) => r.origin === 'Local')
+      .jsonOutput?.result.filter((r) => r.origin === 'Local')
       .filter(filterIgnored);
     expect(result).to.have.length(0);
   });

@@ -5,13 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { TEST_REPOS_MAP } from '../testMatrix';
+import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
-const REPO = TEST_REPOS_MAP.get('%REPO_URL%');
+const REPO = TEST_REPOS_MAP.get('%REPO_URL%') as RepoConfig;
 
 context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
   let testkit: SourceTestkit;
@@ -19,7 +20,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: REPO.gitUrl,
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
     // some deploys reference other metadata not included in the deploy, if it's not already in the org it will fail
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
@@ -51,7 +52,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
 
     it('should throw an error if the metadata is not valid', async () => {
       const deploy = await testkit.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      testkit.expect.errorToHaveName(deploy, 'SfError');
+      testkit.expect.errorToHaveName(deploy ?? {}, 'SfError');
     });
 
     it('should not deploy metadata outside of a package directory', async () => {

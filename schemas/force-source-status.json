@@ -12,25 +12,7 @@
       "type": "object",
       "properties": {
         "state": {
-          "type": "string",
-          "enum": [
-            "Local Deleted",
-            "Local Add",
-            "Local Changed",
-            "Local Unchanged",
-            "Remote Deleted",
-            "Remote Add",
-            "Remote Changed",
-            "Remote Unchanged",
-            "Local Deleted (Conflict)",
-            "Local Add (Conflict)",
-            "Local Changed (Conflict)",
-            "Local Unchanged (Conflict)",
-            "Remote Deleted (Conflict)",
-            "Remote Add (Conflict)",
-            "Remote Changed (Conflict)",
-            "Remote Unchanged (Conflict)"
-          ]
+          "$ref": "#/definitions/StatusStateString"
         },
         "fullName": {
           "type": "string"
@@ -52,12 +34,36 @@
           "enum": ["Deleted", "Add", "Changed", "Unchanged"]
         },
         "origin": {
-          "type": "string",
-          "enum": ["Local", "Remote"]
+          "$ref": "#/definitions/StatusOrigin"
         }
       },
       "required": ["state", "fullName", "type", "origin"],
       "additionalProperties": false
+    },
+    "StatusStateString": {
+      "type": "string",
+      "enum": [
+        "Local Deleted",
+        "Local Add",
+        "Local Changed",
+        "Local Unchanged",
+        "Remote Deleted",
+        "Remote Add",
+        "Remote Changed",
+        "Remote Unchanged",
+        "Local Deleted (Conflict)",
+        "Local Add (Conflict)",
+        "Local Changed (Conflict)",
+        "Local Unchanged (Conflict)",
+        "Remote Deleted (Conflict)",
+        "Remote Add (Conflict)",
+        "Remote Changed (Conflict)",
+        "Remote Unchanged (Conflict)"
+      ]
+    },
+    "StatusOrigin": {
+      "type": "string",
+      "enum": ["Local", "Remote"]
     }
   }
 }

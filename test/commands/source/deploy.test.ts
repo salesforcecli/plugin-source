@@ -6,27 +6,29 @@
  */
 
 import { join } from 'node:path';
-import * as sinon from 'sinon';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import { AnyJson } from '@salesforce/ts-types';
 import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
-import { Deploy } from '../../../src/commands/force/source/deploy';
-import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { Deploy } from '../../../src/commands/force/source/deploy.js';
+import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter.js';
 import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
-} from '../../../src/formatters/source/deployAsyncResultFormatter';
-import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
-import { getDeployResult } from './deployResponses';
-import { exampleSourceComponent } from './testConsts';
+} from '../../../src/formatters/source/deployAsyncResultFormatter.js';
+import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter.js';
+import { getDeployResult } from './deployResponses.js';
+import { exampleSourceComponent } from './testConsts.js';
 
-Messages.importMessagesDirectory(__dirname);
-
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 describe('force:source:deploy', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();
@@ -98,7 +100,7 @@ describe('force:source:deploy', () => {
               description: 'foo',
               hidden: true,
               input: {
-                validator: (value: string): boolean => typeof value === 'string' && ['true', 'false'].includes(value),
+                validator: (value: AnyJson): boolean => typeof value === 'string' && ['true', 'false'].includes(value),
                 failedMessage: 'boo!',
               },
             },
@@ -187,8 +189,8 @@ describe('force:source:deploy', () => {
     const predeploy = lifecycleEmitStub.getCalls().find((call) => call.args[0] === 'predeploy');
     const postdeploy = lifecycleEmitStub.getCalls().find((call) => call.args[0] === 'postdeploy');
 
-    expect(predeploy.args[1]).to.deep.equal([exampleSourceComponent]);
-    expect(postdeploy.args[1]).to.deep.equal(deployResult);
+    expect(predeploy?.args[1]).to.deep.equal([exampleSourceComponent]);
+    expect(postdeploy?.args[1]).to.deep.equal(deployResult);
   };
 
   const ensureProgressBar = (callCount: number) => {

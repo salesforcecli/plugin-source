@@ -4,14 +4,16 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { relative, resolve as pathResolve } from 'node:path';
-import * as chalk from 'chalk';
+import { dirname, relative, resolve as pathResolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
 import {
   ComponentStatus,
   DeployResult,
   FileResponse,
+  FileResponseFailure,
   MetadataResolver,
   SourceComponent,
   VirtualTreeContainer,
@@ -19,9 +21,9 @@ import {
 import { isString } from '@salesforce/ts-types';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
+import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export type PushResponse = {
@@ -52,7 +54,14 @@ export class PushResultFormatter extends ResultFormatter {
   public getJson(): PushResponse {
     // throws a particular json structure.
     if (process.exitCode !== 0) {
-      const error = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const error: SfError & {
+        result: FileResponse[];
+        commandName: string;
+        context: string;
+        partialSuccess: FileResponse[];
+      } = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
       const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
       error.setData(errorData);
       error['result'] = errorData;
@@ -123,31 +132,34 @@ export class PushResultFormatter extends ResultFormatter {
     }
     // "content" property of the bundles as a string
     const contentFilePathFromDeployedBundles = this.componentsFromFilenames(
-      bundlesDeployed.map((fileResponse) => fileResponse.filePath)
+      // the .filter(isString) should ensure only strings are present, but TS isn't finding that
+      bundlesDeployed.map((fileResponse) => fileResponse.filePath as string)
     )
       .map((c) => c.content)
       .filter(isString);
 
     // there may be deletes not represented in the file responses (if bundle type)
     const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(this.deletes));
-    return this.deletes
-      .map((filePath) => {
-        const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
-        if (
-          cmp instanceof SourceComponent &&
-          cmp.type.strategies?.adapter === 'bundle' &&
-          contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content))
-        ) {
-          return {
-            state: ComponentStatus.Deleted,
-            fullName: cmp.fullName,
-            type: cmp.type.name,
-            filePath,
-          } as FileResponse;
-        }
-      })
-      .filter((fileResponse) => fileResponse)
-      .concat(withoutUnchanged);
+    return (
+      this.deletes
+        .map((filePath) => {
+          const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
+          if (
+            cmp.type.strategies?.adapter === 'bundle' &&
+            contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content ?? ''))
+          ) {
+            return {
+              state: ComponentStatus.Deleted,
+              fullName: cmp.fullName,
+              type: cmp.type.name,
+              filePath,
+            } as FileResponse;
+          }
+        })
+        .filter((fileResponse) => fileResponse)
+        // we can be sure there's no undefined responses because of the filter above
+        .concat(withoutUnchanged) as FileResponse[]
+    );
   }
 
   protected displaySuccesses(): void {
@@ -199,16 +211,17 @@ export class PushResultFormatter extends ResultFormatter {
   }
 
   protected displayFailures(): void {
-    const failures = [];
+    const failures: FileResponseFailure[] = [];
     const fileResponseFailures: Map<string, string> = new Map<string, string>();
 
     if (this.fileResponses?.length) {
-      const fileResponses: FileResponse[] = [];
+      const fileResponses: FileResponseFailure[] = [];
       this.fileResponses
         .filter((f) => f.state === ComponentStatus.Failed)
-        .map((f: FileResponse & { error: string }) => {
-          fileResponses.push(f);
-          fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+        .map((f) => {
+          // we've filtered all of the file responses to failed errors with the state filter  above
+          fileResponses.push(f as FileResponseFailure);
+          fileResponseFailures.set(`${f.type}#${f.fullName}`, (f as FileResponseFailure).error);
         });
       this.sortFileResponses(fileResponses);
       this.asRelativePaths(fileResponses);
@@ -221,7 +234,9 @@ export class PushResultFormatter extends ResultFormatter {
       deployMessages.map((deployMessage) => {
         if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
           // duplicate the problem message to the error property for displaying in the table
-          failures.push(Object.assign(deployMessage, { error: deployMessage.problem }));
+          failures.push(
+            Object.assign(deployMessage, { error: deployMessage.problem }) as unknown as FileResponseFailure
+          );
         }
       });
     }
@@ -230,6 +245,8 @@ export class PushResultFormatter extends ResultFormatter {
     }
     this.ux.log('');
     this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.ux.table(failures, {
       problemType: { header: 'Type' },
       fullName: { header: 'Name' },
@@ -240,9 +257,7 @@ export class PushResultFormatter extends ResultFormatter {
 
   private componentsFromFilenames(filenames: string[]): SourceComponent[] {
     const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(filenames));
-    return filenames
-      .flatMap((filename) => this.resolveComponentsOrWarn(filename, resolver))
-      .filter((cmp) => cmp instanceof SourceComponent);
+    return filenames.flatMap((filename) => this.resolveComponentsOrWarn(filename, resolver));
   }
 
   private resolveComponentsOrWarn(filename: string, resolver: MetadataResolver): SourceComponent[] {
@@ -263,7 +278,7 @@ export const mergeReplacements = (results: DeployResult[]): DeployResult['replac
       if (!merged.has(key)) {
         merged.set(key, value);
       } else {
-        merged.set(key, Array.from(new Set([...merged.get(key), ...value])));
+        merged.set(key, Array.from(new Set([...(merged.get(key) ?? []), ...value])));
       }
     });
   });

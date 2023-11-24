@@ -4,6 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Lifecycle, Messages, Org, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
@@ -13,7 +15,7 @@ import {
   RetrieveResult,
   RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
-import { Optional } from '@salesforce/ts-types';
+import { Optional, ensure } from '@salesforce/ts-types';
 import {
   arrayWithDeprecation,
   Flags,
@@ -22,15 +24,15 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { resolveZipFileName, SourceCommand } from '../../../sourceCommand';
-import { Stash } from '../../../stash';
+import { resolveZipFileName, SourceCommand } from '../../../sourceCommand.js';
+import { Stash } from '../../../stash.js';
 import {
   RetrieveCommandAsyncResult,
   RetrieveCommandResult,
   RetrieveResultFormatter,
-} from '../../../formatters/mdapi/retrieveResultFormatter';
+} from '../../../formatters/mdapi/retrieveResultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -100,16 +102,17 @@ export class Retrieve extends SourceCommand {
     }),
   };
 
-  protected retrieveResult: RetrieveResult;
-  private sourceDir: string;
-  private retrieveTargetDir: string;
-  private zipFileName: string;
-  private unzip: boolean;
-  private wait: Duration;
-  private isAsync: boolean;
-  private mdapiRetrieve: MetadataApiRetrieve;
-  private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
-  private org: Org;
+  protected retrieveResult: RetrieveResult | undefined;
+  private sourceDir: string | undefined;
+  private retrieveTargetDir: string | undefined;
+  private zipFileName: string | undefined;
+  private unzip: boolean | undefined;
+  // will be set to `flags.wait` (which has a default value) when executed.
+  private wait!: Duration;
+  private isAsync: boolean | undefined;
+  private mdapiRetrieve: MetadataApiRetrieve | undefined;
+  private flags!: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  private org!: Org | undefined;
   public async run(): Promise<RetrieveCommandCombinedResult> {
     this.flags = (await this.parse(Retrieve)).flags;
     this.org = this.flags['target-org'];
@@ -136,7 +139,7 @@ export class Retrieve extends SourceCommand {
       throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]), 'InvalidPackageNames');
     }
 
-    this.spinner.start(spinnerMessages.getMessage('retrieve.main', [this.org.getUsername()]));
+    this.spinner.start(spinnerMessages.getMessage('retrieve.main', [this.org?.getUsername()]));
     this.spinner.status = spinnerMessages.getMessage('retrieve.componentSetBuild');
 
     this.componentSet = await ComponentSetBuilder.build({
@@ -146,14 +149,16 @@ export class Retrieve extends SourceCommand {
       apiversion: this.flags.apiversion,
       packagenames,
       sourcepath: this.sourceDir ? [this.sourceDir] : undefined,
-      manifest: manifest && {
-        manifestPath: manifest,
-        directoryPaths: [],
-      },
+      manifest: manifest
+        ? {
+            manifestPath: manifest,
+            directoryPaths: [],
+          }
+        : undefined,
     });
 
     await Lifecycle.getInstance().emit('preretrieve', { packageXmlPath: manifest });
-    const username = this.org.getUsername();
+    const username = this.org?.getUsername() ?? '';
     // eslint-disable-next-line @typescript-eslint/require-await
     Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
       this.log(
@@ -178,7 +183,7 @@ export class Retrieve extends SourceCommand {
     });
 
     Stash.set('MDAPI_RETRIEVE', {
-      jobid: this.mdapiRetrieve.id,
+      jobid: this.mdapiRetrieve.id ?? '',
       retrievetargetdir: this.retrieveTargetDir,
       zipfilename: this.zipFileName,
       unzip: this.unzip,
@@ -208,14 +213,14 @@ export class Retrieve extends SourceCommand {
       [RequestStatus.Canceling, 69],
     ]);
     if (!this.isAsync) {
-      this.setExitCode(StatusCodeMap.get(this.retrieveResult.response.status) ?? 1);
+      this.setExitCode(StatusCodeMap.get(this.retrieveResult?.response.status as RequestStatus) ?? 1);
     }
   }
 
   protected formatResult(): RetrieveCommandResult | RetrieveCommandAsyncResult {
     // async result
     if (this.isAsync) {
-      let cmdFlags = `--jobid ${this.mdapiRetrieve.id} --retrievetargetdir ${this.retrieveTargetDir}`;
+      let cmdFlags = `--jobid ${this.mdapiRetrieve?.id} --retrievetargetdir ${this.retrieveTargetDir}`;
       const targetusernameFlag = this.flags['target-org'];
       if (targetusernameFlag) {
         cmdFlags += ` --targetusername ${targetusernameFlag.getUsername()}`;
@@ -224,7 +229,7 @@ export class Retrieve extends SourceCommand {
       this.log(messages.getMessage('checkStatus', [cmdFlags]));
       return {
         done: false,
-        id: this.mdapiRetrieve.id,
+        id: this.mdapiRetrieve?.id ?? '',
         state: 'Queued',
         status: 'Queued',
         timedOut: true,
@@ -233,14 +238,14 @@ export class Retrieve extends SourceCommand {
       const formatterOptions = {
         waitTime: this.wait.quantity,
         verbose: this.flags.verbose ?? false,
-        retrieveTargetDir: this.retrieveTargetDir,
+        retrieveTargetDir: this.retrieveTargetDir ?? '',
         zipFileName: this.zipFileName,
         unzip: this.unzip,
       };
       const formatter = new RetrieveResultFormatter(
         new Ux({ jsonEnabled: this.jsonEnabled() }),
         formatterOptions,
-        this.retrieveResult
+        ensure(this.retrieveResult)
       );
 
       if (!this.jsonEnabled()) {
@@ -256,6 +261,7 @@ export class Retrieve extends SourceCommand {
     } catch (error) {
       this.debug('No SFDX project found for default package directory');
     }
+    return '';
   }
 
   private resolveRootDir(rootDir?: string): string {

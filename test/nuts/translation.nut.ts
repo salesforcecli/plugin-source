@@ -4,14 +4,14 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
-import { PushResponse } from '../../src/formatters/source/pushResultFormatter';
-import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
-import { StatusResult } from '../../src/formatters/source/statusFormatter';
+import { PushResponse } from '../../src/formatters/source/pushResultFormatter.js';
+import { DeployCommandResult } from '../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
+import { StatusResult } from '../../src/formatters/source/statusFormatter.js';
 
 describe('translations', () => {
   let session: TestSession;
@@ -51,22 +51,22 @@ describe('translations', () => {
       await fs.promises.writeFile(fieldFile, original.replace('spanish', 'español'));
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
 
-      expect(statusResult[0].type).to.equal('CustomObjectTranslation');
+      expect(statusResult?.at(0)?.type).to.equal('CustomObjectTranslation');
     });
 
     it('push local change', () => {
       const pushResult = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(pushResult.pushedSource.every((s) => s.type === 'CustomObjectTranslation')).to.be.true;
+      }).jsonOutput?.result;
+      expect(pushResult?.pushedSource.every((s) => s.type === 'CustomObjectTranslation')).to.be.true;
     });
 
     it('sees no local changes', () => {
       const statusResult = execCmd<StatusResult[]>('force:source:status --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
+      }).jsonOutput?.result;
       expect(statusResult).to.deep.equal([]);
     });
   });
@@ -87,8 +87,8 @@ describe('translations', () => {
     it('deploy', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(deployResults.deployedSource.length).to.equal(7);
+      }).jsonOutput?.result;
+      expect(deployResults?.deployedSource.length).to.equal(7);
     });
 
     it('retrieve without local metadata', async () => {
@@ -97,8 +97,8 @@ describe('translations', () => {
       await fs.promises.mkdir(path.join(session.project.dir, 'force-app'));
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result;
-      expect(retrieveResults.inboundFiles).to.have.length(7);
+      }).jsonOutput?.result;
+      expect(retrieveResults?.inboundFiles).to.have.length(7);
     });
   });
 
@@ -142,7 +142,7 @@ describe('translations', () => {
               ensureExitCode: 0,
             }
           );
-          expect(result.jsonOutput.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
+          expect(result.jsonOutput?.result.deployedSource.some((d) => d.type === 'CustomObjectTranslation')).to.be.true;
         });
 
         it('can deploy COT', () => {

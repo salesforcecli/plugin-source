@@ -5,19 +5,21 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as sinon from 'sinon';
+import fs from 'node:fs';
+import path from 'node:path';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
 
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
-import { Report } from '../../../src/commands/force/mdapi/retrieve/report';
-import { Stash } from '../../../src/stash';
-import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+
+import { Report } from '../../../src/commands/force/mdapi/retrieve/report.js';
+import { Stash } from '../../../src/stash.js';
+
+import { getRetrieveResult, getRetrieveResponse } from '../source/retrieveResponses.js';
 
 describe('force:mdapi:retrieve:report', () => {
   const $$ = new TestContext();

@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { join, parse } from 'node:path';
-import { blue } from 'chalk';
+import chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
@@ -15,8 +15,8 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { RetrieveFormatter } from '../retrieveFormatter';
-import { ResultFormatterOptions } from '../resultFormatter';
+import { RetrieveFormatter } from '../retrieveFormatter.js';
+import { ResultFormatterOptions } from '../resultFormatter.js';
 
 export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string };
 
@@ -40,7 +40,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
   public constructor(ux: Ux, public options: RetrieveResultFormatterOptions, result: RetrieveResult) {
     super(ux, options, result);
     this.options.zipFileName ??= 'unpackaged.zip';
-    this.zipFilePath = join(options.retrieveTargetDir, options.zipFileName);
+    this.zipFilePath = join(options.retrieveTargetDir, this.options.zipFileName);
   }
 
   /**
@@ -66,7 +66,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
     if (this.isSuccess()) {
       this.ux.log(`Wrote retrieve zip to ${this.zipFilePath}`);
       if (this.options.unzip) {
-        const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName).name);
+        const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName ?? '').name);
         this.ux.log(`Extracted ${this.options.zipFileName} to: ${extractPath}`);
       }
       if (this.options.verbose) {
@@ -87,7 +87,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
     this.sortFileProperties(retrievedFiles);
 
     this.ux.log('');
-    this.ux.styledHeader(blue(`Components Retrieved [${retrievedFiles.length}]`));
+    this.ux.styledHeader(chalk.blue(`Components Retrieved [${retrievedFiles.length}]`));
     this.ux.table(retrievedFiles, {
       type: { header: 'TYPE' },
       fileName: { header: 'FILE' },

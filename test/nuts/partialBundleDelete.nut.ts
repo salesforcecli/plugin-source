@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { expect } from 'chai';
 import { TestSession, TestProject, execCmd } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection, SfProject } from '@salesforce/core';
@@ -17,9 +17,10 @@ import {
   MetadataApiRetrieve,
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
-import { TestContext } from '@salesforce/core/lib/testSetup';
-import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
-import { Retrieve } from '../../src/commands/force/source/retrieve';
+import { TestContext } from '@salesforce/core/lib/testSetup.js';
+
+import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
+import { Retrieve } from '../../src/commands/force/source/retrieve.js';
 
 describe('Partial Bundle Delete Retrieves', () => {
   let session: TestSession;
@@ -41,7 +42,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       ],
     });
     projectPath = path.join(session.project.dir, 'force-app', 'main', 'default');
-    scratchOrgUsername = session.orgs.get('default').username;
+    scratchOrgUsername = session.orgs.get('default')?.username;
   });
 
   after(async () => {
@@ -74,7 +75,7 @@ describe('Partial Bundle Delete Retrieves', () => {
     // Create an actual connection to the org we created for the TestSession, then stub
     // retrieve() and checkRetrieveStatus() and others to simulate retrieving a partial bundle delete.
     const connection = await Connection.create({
-      authInfo: await AuthInfo.create(session.orgs.get(scratchOrgUsername)),
+      authInfo: await AuthInfo.create(session.orgs.get(scratchOrgUsername ?? '')),
     });
     sandbox
       .stub(SfProject.prototype, 'getDefaultPackage')
@@ -97,7 +98,13 @@ describe('Partial Bundle Delete Retrieves', () => {
       );
       return compSet;
     });
-    const result = await Retrieve.run(['-p', forgotPasswordDE, '--json', '-o', scratchOrgUsername]);
+    const result: RetrieveCommandResult = await Retrieve.run([
+      '-p',
+      forgotPasswordDE,
+      '--json',
+      '-o',
+      scratchOrgUsername ?? '',
+    ]);
 
     // SDR retrieval code should remove this file
     expect(fs.existsSync(forgotPasswordTranslationFile)).to.be.false;
@@ -150,7 +157,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       expect(inboundFiles).to.be.an('array').and.not.empty;
 
       // find the deleted entry for testFile.css
-      const deletedFileResponse = inboundFiles.find((fr) => fr.state === ComponentStatus.Deleted);
+      const deletedFileResponse = inboundFiles?.find((fr) => fr.state === ComponentStatus.Deleted);
       expect(deletedFileResponse).to.deep.equal({
         fullName: 'pageTemplate_2_7_3',
         type: 'AuraDefinitionBundle',
@@ -183,7 +190,7 @@ describe('Partial Bundle Delete Retrieves', () => {
       expect(inboundFiles).to.be.an('array').and.not.empty;
 
       // find the deleted entry for testFile.css
-      const deletedFileResponse = inboundFiles.find((fr) => fr.state === ComponentStatus.Deleted);
+      const deletedFileResponse = inboundFiles?.find((fr) => fr.state === ComponentStatus.Deleted);
       expect(deletedFileResponse).to.deep.equal({
         fullName: 'propertyTile',
         type: 'LightningComponentBundle',

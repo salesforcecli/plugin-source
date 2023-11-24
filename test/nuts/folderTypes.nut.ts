@@ -9,8 +9,8 @@ import * as path from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { DeployCommandResult } from '../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter';
+import { DeployCommandResult } from '../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
 
 describe('metadata types that go in folders', () => {
   let session: TestSession;
@@ -72,13 +72,15 @@ describe('metadata types that go in folders', () => {
       },
     ];
 
-    const getRelativeFileResponses = (resp: FileResponse[]) =>
-      resp.map((s) => {
+    const getRelativeFileResponses = (resp?: FileResponse[]) =>
+      resp?.map((s) => {
         // grab the last 2 directories with the file only
-        s.filePath = s.filePath.split(path.sep).slice(-3).join(path.sep);
+        s.filePath = s.filePath?.split(path.sep).slice(-3).join(path.sep);
         return s;
       });
 
+    // `force:source:manifest:create` is now in PDR.
+    // we run this with `sf` to generate the manifest for the next tests
     it('can generate manifest for just the emailTemplates', () => {
       const pathToEmails = path.join('force-app', 'main', 'default', 'email');
       execCmd(`force:source:manifest:create -p ${pathToEmails} --json`, {
@@ -90,15 +92,15 @@ describe('metadata types that go in folders', () => {
 
     it('can deploy email templates via the manifest', () => {
       const deployResults = execCmd<DeployCommandResult>('force:source:deploy -x package.xml --json').jsonOutput;
-      expect(deployResults.status, JSON.stringify(deployResults)).to.equal(0);
-      const deployedSource = getRelativeFileResponses(deployResults.result.deployedSource);
+      expect(deployResults?.status, JSON.stringify(deployResults)).to.equal(0);
+      const deployedSource = getRelativeFileResponses(deployResults?.result.deployedSource);
       expect(deployedSource).to.have.deep.members(getExpectedSource('Created'));
     });
 
     it('can retrieve email templates via the manifest', () => {
       const retrieveResults = execCmd<RetrieveCommandResult>('force:source:retrieve -x package.xml --json').jsonOutput;
-      expect(retrieveResults.status, JSON.stringify(retrieveResults)).to.equal(0);
-      const retrievedSource = getRelativeFileResponses(retrieveResults.result.inboundFiles);
+      expect(retrieveResults?.status, JSON.stringify(retrieveResults)).to.equal(0);
+      const retrievedSource = getRelativeFileResponses(retrieveResults?.result.inboundFiles);
       expect(retrievedSource).to.have.deep.members(getExpectedSource('Changed'));
     });
   });
@@ -108,6 +110,8 @@ describe('metadata types that go in folders', () => {
       await fs.promises.unlink(path.join(session.project.dir, 'package.xml'));
     });
 
+    // `force:source:manifest:create` is now in PDR.
+    // we run this with `sf` to generate the manifest for the next tests
     it('can generate manifest for just the reports', () => {
       expect(fs.existsSync(path.join(session.project.dir, 'package.xml'))).to.be.false;
       const pathToReports = path.join('force-app', 'main', 'default', 'reports');
@@ -119,11 +123,11 @@ describe('metadata types that go in folders', () => {
     });
 
     it('can deploy reports via the manifest', () => {
-      execCmd('force:source:deploy -x package.xml --json', { ensureExitCode: 0 });
+      execCmd('force:source:deploy -x package.xml --json', { ensureExitCode: 0, cli: 'dev' });
     });
 
     it('can retrieve reports via the manifest', () => {
-      execCmd('force:source:retrieve -x package.xml --json', { ensureExitCode: 0 });
+      execCmd('force:source:retrieve -x package.xml --json', { ensureExitCode: 0, cli: 'dev' });
     });
   });
 });

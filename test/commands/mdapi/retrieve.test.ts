@@ -5,21 +5,20 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as sinon from 'sinon';
+import fs from 'node:fs';
+import path from 'node:path';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { Lifecycle, SfProject } from '@salesforce/core';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config } from '@oclif/core';
-
 import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
-import { Retrieve } from '../../../src/commands/force/mdapi/retrieve';
-import { Stash, StashData } from '../../../src/stash';
-import { getRetrieveResult } from '../source/retrieveResponses';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { Retrieve } from '../../../src/commands/force/mdapi/retrieve.js';
+import { Stash, StashData } from '../../../src/stash.js';
+import { getRetrieveResult } from '../source/retrieveResponses.js';
 
 describe('force:mdapi:retrieve', () => {
   const $$ = new TestContext();

@@ -6,9 +6,9 @@
  */
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { beforeEach } from 'mocha';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
-import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, TEST_SESSION_OPTIONS, TYPES } from './constants';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
+import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, TEST_SESSION_OPTIONS, TYPES } from './constants.js';
 import {
   assertAllDEBAndTheirDECounts,
   assertDECountOfSingleDEB,
@@ -21,7 +21,7 @@ import {
   createDocumentDetailPageAInLocal,
   deleteLocalSource,
   deleteViewHomeFRVariantInLocal,
-} from './helper';
+} from './helper.js';
 
 describe('deb -- metadata option', () => {
   let session: TestSession;
@@ -40,6 +40,7 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       );
     });
@@ -49,8 +50,9 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${METADATA.FULL_SITE_DEB_A_AND_B} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
@@ -61,8 +63,9 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -72,8 +75,9 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountsOfAllDEB(deployedSource);
       });
@@ -85,8 +89,9 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.ALL_DE_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountOfSingleDEB(deployedSource);
       });
@@ -96,8 +101,9 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.JUST_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_B);
       });
@@ -107,8 +113,9 @@ describe('deb -- metadata option', () => {
           `force:source:deploy --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertViewHome(deployedSource, 'B');
       });
@@ -126,8 +133,9 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -137,8 +145,9 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountsOfAllDEB(inboundFiles);
       });
@@ -150,8 +159,9 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.ALL_DE_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountOfSingleDEB(inboundFiles);
       });
@@ -161,8 +171,9 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.JUST_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_B);
       });
@@ -172,8 +183,9 @@ describe('deb -- metadata option', () => {
           `force:source:retrieve --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertViewHome(inboundFiles, 'B');
       });
@@ -188,8 +200,9 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${METADATA.DE_VIEW_HOME_OF_DEB_B} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertViewHomeFRVariantDelete(deployedSource, 'B', session.project.dir);
     });
@@ -203,12 +216,14 @@ describe('deb -- metadata option', () => {
         `force:source:deploy --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
     });
 
+    // TODO: `force:source:delete` lives in PDR (and same NUT exists there), should we delete this?
     it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --metadata ${METADATA.DE_DOCUMENT_DETAIL_PAGE_A} --noprompt --json`,
@@ -216,7 +231,7 @@ describe('deb -- metadata option', () => {
           ensureExitCode: 0,
           cli: 'sf',
         }
-      ).jsonOutput.result.deletedSource;
+      ).jsonOutput?.result.deletedSource;
 
       assertDocumentDetailPageA(deletedSource);
       await assertDocumentDetailPageADelete(session, true);

@@ -10,6 +10,7 @@ import {
   DeployMessage,
   MetadataApiDeployStatus,
   RequestStatus,
+  RunTestResult,
 } from '@salesforce/source-deploy-retrieve';
 import { cloneJson, ensureArray } from '@salesforce/kit';
 
@@ -122,9 +123,10 @@ export const getDeployResponse = (
     delete response.details.componentFailures.id;
     response.details.componentFailures.problemType = 'Error';
     response.details.componentFailures.problem = 'This component has some problems';
-    response.details.runTestResult.numFailures = '1';
     response.runTestsEnabled = true;
     response.numberTestErrors = 1;
+    response.details.runTestResult = {} as RunTestResult;
+    response.details.runTestResult.numFailures = '1';
     response.details.runTestResult.successes = [];
     response.details.runTestResult.failures = [
       {
@@ -164,6 +166,7 @@ export const getDeployResponse = (
     delete response.details.componentFailures.id;
     response.details.componentFailures.problemType = 'Error';
     response.details.componentFailures.problem = 'This component has some problems';
+    response.details.runTestResult = {} as RunTestResult;
     response.details.runTestResult.numFailures = '0';
     response.runTestsEnabled = true;
     response.numberTestErrors = 0;
@@ -201,6 +204,7 @@ export const getDeployResponse = (
     delete response.details.componentFailures.id;
     response.details.componentFailures.problemType = 'Error';
     response.details.componentFailures.problem = 'This component has some problems';
+    response.details.runTestResult = {} as RunTestResult;
     response.details.runTestResult.numFailures = '2';
     response.runTestsEnabled = true;
     response.numberTestErrors = 2;
@@ -299,7 +303,7 @@ export const getDeployResult = (
     getFileResponses() {
       let fileProps: DeployMessage[] = [];
       if (type === 'failed') {
-        const failures = response.details.componentFailures || [];
+        const failures = response.details.componentFailures ?? [];
         fileProps = ensureArray(failures);
         return fileProps.map((comp) => ({
           fullName: comp.fullName,

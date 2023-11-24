@@ -4,9 +4,10 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { ConfigAggregator, Lifecycle, Logger, Messages, SfProject, OrgConfigProperties, Org } from '@salesforce/core';
-import { SfDoctor } from '@salesforce/plugin-info';
-
+import type { SfDoctor } from '@salesforce/plugin-info';
 type HookFunction = (options: { doctor: SfDoctor }) => Promise<[void]>;
 
 let logger: Logger;
@@ -18,7 +19,7 @@ const getLogger = (): Logger => {
 };
 
 const pluginName = '@salesforce/plugin-source';
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages(pluginName, 'diagnostics');
 
 export const hook: HookFunction = async (options) => {
@@ -47,7 +48,7 @@ const apiVersionTest = async (doctor: SfDoctor): Promise<void> => {
 
   // check org-api-version from ConfigAggregator
   const aggregator = await ConfigAggregator.create();
-  const apiVersion = aggregator.getPropertyValue<string>(OrgConfigProperties.ORG_API_VERSION);
+  const apiVersion = aggregator.getPropertyValue<string>(OrgConfigProperties.ORG_API_VERSION) as string;
 
   const sourceApiVersion = await getSourceApiVersion();
 
@@ -109,11 +110,11 @@ const apiVersionTest = async (doctor: SfDoctor): Promise<void> => {
 };
 
 // check sfdx-project.json for sourceApiVersion
-const getSourceApiVersion = async (): Promise<string> => {
+const getSourceApiVersion = async (): Promise<string | undefined> => {
   try {
     const project = SfProject.getInstance();
     const projectJson = await project.resolveProjectConfig();
-    return projectJson.sourceApiVersion as string;
+    return projectJson.sourceApiVersion as string | undefined;
   } catch (error) {
     const errMsg = (error as Error).message;
     getLogger().debug(`Cannot determine sourceApiVersion due to: ${errMsg}`);
@@ -121,7 +122,7 @@ const getSourceApiVersion = async (): Promise<string> => {
 };
 
 // check max API version for default orgs
-const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: string): Promise<string> => {
+const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: string): Promise<string | undefined> => {
   try {
     const org = await Org.create({ aliasOrUsername, aggregator });
     return await org.retrieveMaxApiVersion();
@@ -137,7 +138,7 @@ const getMaxApiVersion = async (aggregator: ConfigAggregator, aliasOrUsername: s
 //   Comparing undefined with undefined would return false.
 //   Comparing 55.0 with 55.0 would return false.
 //   Comparing 55.0 with 56.0 would return true.
-const diff = (version1: string, version2: string): boolean => {
+const diff = (version1: string | undefined, version2: string | undefined): boolean => {
   getLogger().debug(`Comparing API versions: [${version1},${version2}]`);
-  return version1?.length && version2?.length && version1 !== version2;
+  return (version1?.length && version2?.length && version1 !== version2) as boolean;
 };

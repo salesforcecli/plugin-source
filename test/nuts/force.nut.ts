@@ -20,13 +20,14 @@ describe('force command', () => {
     });
   });
   it('returns an apiVersion in JSON', () => {
-    const result = execCmd<{ apiVersion: string }>('force --json', { ensureExitCode: 0 }).jsonOutput.result;
+    const result = execCmd<{ apiVersion: string }>('force --json', { ensureExitCode: 0, cli: 'dev' }).jsonOutput
+      ?.result;
     expect(result).to.be.an('object').that.has.all.keys('apiVersion');
-    expect(result.apiVersion).to.match(/^\d{2,}\.0$/);
-    expect(parseInt(result.apiVersion, 10)).to.be.greaterThan(53);
+    expect(result?.apiVersion).to.match(/^\d{2,}\.0$/);
+    expect(parseInt(result?.apiVersion ?? '', 10)).to.be.greaterThan(53);
   });
   it('executes the cloud/links without JSON', () => {
-    const result = execCmd('force', { ensureExitCode: 0 }).shellOutput as string;
+    const result = execCmd('force', { ensureExitCode: 0, cli: 'dev' }).shellOutput as string;
     expect(result).to.include('Salesforce CLI Release Notes');
   });
 

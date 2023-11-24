@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { ComponentStatus, DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -18,14 +20,14 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { DeployCommand } from '../../../deployCommand';
-import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter';
-import { ProgressFormatter } from '../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-import { trackingSetup, updateTracking } from '../../../trackingFunctions';
+import { DeployCommand } from '../../../deployCommand.js';
+import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter.js';
+import { ProgressFormatter } from '../../../formatters/progressFormatter.js';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
+import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
@@ -68,9 +70,9 @@ export default class Push extends DeployCommand {
   protected readonly lifecycleEventNames = ['predeploy', 'postdeploy'];
 
   private deployResults: DeployResult[] = [];
-  private tracking: SourceTracking;
-  private deletes: string[];
-  private flags: Interfaces.InferredFlags<typeof Push.flags>;
+  private tracking!: SourceTracking;
+  private deletes!: string[];
+  private flags!: Interfaces.InferredFlags<typeof Push.flags>;
 
   public async run(): Promise<PushResponse> {
     this.flags = (await this.parse(Push)).flags;
@@ -94,7 +96,7 @@ export default class Push extends DeployCommand {
   }
 
   protected async deploy(): Promise<void> {
-    const username = this.flags['target-org'].getUsername();
+    const username = this.flags['target-org'].getUsername() as string;
     const isSequentialDeploy = getBoolean(
       await this.project.resolveProjectConfig(),
       'pushPackageDirectoriesSequentially',

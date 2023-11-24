@@ -5,29 +5,29 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { join, relative } from 'node:path';
-import * as fs from 'node:fs';
+import fs from 'node:fs';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { StatusResult } from '../../../src/formatters/source/statusFormatter';
-import { isNameObsolete } from '../shared/isNameObsolete';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
-import { DEBS, DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants';
+import { StatusResult } from '../../../src/formatters/source/statusFormatter.js';
+import { isNameObsolete } from '../shared/isNameObsolete.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
+import { DEBS, DIR_RELATIVE_PATHS, FILE_RELATIVE_PATHS, FULL_NAMES, STORE, TYPES } from './constants.js';
 
 type CustomFileResponses = Array<Pick<FileResponse, 'filePath' | 'fullName' | 'type'>>;
 
 export function assertAllDEBAndTheirDECounts(
-  resp: CustomFileResponses,
+  resp: CustomFileResponses | undefined,
   otherComponentsCount = 0,
   assertTotalCount = true
 ) {
   if (assertTotalCount) expect(resp).to.have.length(104 + otherComponentsCount);
 
   expect(
-    resp.reduce(
-      (acc: [number, number, number, number], curr: FileResponse) => {
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
+    resp?.reduce(
+      (acc: [number, number, number, number], curr) => {
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === FULL_NAMES.DEB_A) acc[2]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === FULL_NAMES.DEB_B) acc[3]++;
         return acc;
@@ -38,12 +38,12 @@ export function assertAllDEBAndTheirDECounts(
   ).to.deep.equal([51, 51, 1, 1]);
 }
 
-export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFullName: string) {
+export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses | undefined, debFullName: string) {
   expect(resp).to.have.length(52);
   expect(
-    resp.reduce(
-      (acc: [number, number], curr: FileResponse) => {
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(debFullName)) acc[0]++;
+    resp?.reduce(
+      (acc: [number, number], curr) => {
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(debFullName)) acc[0]++;
         if (curr.type === TYPES.DEB.name && curr.fullName === debFullName) acc[1]++;
         return acc;
       },
@@ -53,13 +53,13 @@ export function assertSingleDEBAndItsDECounts(resp: CustomFileResponses, debFull
   ).to.deep.equal([51, 1]);
 }
 
-export function assertDECountsOfAllDEB(resp: CustomFileResponses) {
+export function assertDECountsOfAllDEB(resp?: CustomFileResponses) {
   expect(resp).to.have.length(102);
   expect(
-    resp.reduce(
-      (acc: [number, number], curr: FileResponse) => {
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
-        if (curr.type === TYPES.DE.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
+    resp?.reduce(
+      (acc: [number, number], curr) => {
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_A)) acc[0]++;
+        if (curr.type === TYPES.DE?.name && curr.fullName.includes(FULL_NAMES.DEB_B)) acc[1]++;
         return acc;
       },
       [0, 0]
@@ -68,44 +68,47 @@ export function assertDECountsOfAllDEB(resp: CustomFileResponses) {
   ).to.deep.equal([51, 51]);
 }
 
-export function assertDECountOfSingleDEB(resp: CustomFileResponses) {
+export function assertDECountOfSingleDEB(resp?: CustomFileResponses) {
   expect(resp).to.have.length(51);
-  expect(resp.every((s) => s.type === TYPES.DE.name)).to.be.true;
+  expect(resp?.every((s) => s.type === TYPES.DE?.name)).to.be.true;
 }
 
-export function assertDEBMeta(resp: CustomFileResponses, deb: 'A' | 'B') {
+export function assertDEBMeta(resp: CustomFileResponses | undefined, deb: 'A' | 'B') {
   expect(resp).to.have.length(1);
 
-  resp[0].filePath = relative(process.cwd(), resp[0].filePath);
+  // if only to satisfy compiler - the assertion above ensures this is true
+  if (resp?.length && resp[0].filePath) {
+    resp[0].filePath = relative(process.cwd(), resp[0].filePath);
 
-  expect(resp[0]).to.include({
-    type: TYPES.DEB.name,
-    fullName: DEBS[deb].FULL_NAME,
-    filePath: DEBS[deb].FILES.META.RELATIVE_PATH,
-  });
+    expect(resp[0]).to.include({
+      type: TYPES.DEB.name,
+      fullName: DEBS[deb].FULL_NAME,
+      filePath: DEBS[deb].FILES.META.RELATIVE_PATH,
+    });
+  }
 }
 
-export function assertViewHome(resp: CustomFileResponses, deb: 'A' | 'B') {
+export function assertViewHome(resp: CustomFileResponses | undefined, deb: 'A' | 'B') {
   expect(resp).to.have.length(3);
   expect(
-    resp.map((s) => ({
+    resp?.map((s) => ({
       type: s.type,
       fullName: s.fullName,
-      filePath: relative(process.cwd(), s.filePath),
+      filePath: relative(process.cwd(), s.filePath as string),
     }))
   ).to.have.deep.members([
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
       filePath: DEBS[deb].DE.VIEW_HOME.FILES.CONTENT.RELATIVE_PATH,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
       filePath: DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
       filePath: DEBS[deb].DE.VIEW_HOME.FILES.META.RELATIVE_PATH,
     },
@@ -113,47 +116,48 @@ export function assertViewHome(resp: CustomFileResponses, deb: 'A' | 'B') {
 }
 
 export function assertViewHomeStatus(
-  resp: CustomFileResponses,
+  resp: CustomFileResponses | undefined,
   deb: 'A' | 'B',
   type: 'CONTENT' | 'META' | 'FR_VARIANT'
 ) {
   expect(resp).to.have.length(1);
 
-  resp[0].filePath = relative(process.cwd(), resp[0].filePath);
-
-  expect(resp[0]).to.include({
-    type: TYPES.DE.name,
-    fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
-    filePath: DEBS[deb].DE.VIEW_HOME.FILES[type].RELATIVE_PATH,
-  });
+  if (resp) {
+    resp[0].filePath = relative(process.cwd(), resp[0].filePath as string);
+    expect(resp[0]).to.include({
+      type: TYPES.DE?.name,
+      fullName: DEBS[deb].DE.VIEW_HOME.FULL_NAME,
+      filePath: DEBS[deb].DE.VIEW_HOME.FILES[type].RELATIVE_PATH,
+    });
+  }
 }
 
-export function assertDocumentDetailPageA(resp: CustomFileResponses) {
+export function assertDocumentDetailPageA(resp?: CustomFileResponses) {
   expect(resp).to.have.length(4);
   expect(
-    resp.map((s) => ({
+    resp?.map((s) => ({
       type: s.type,
       fullName: s.fullName,
-      filePath: relative(process.cwd(), s.filePath),
+      filePath: relative(process.cwd(), s.filePath as string),
     }))
   ).to.have.deep.members([
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_META_A,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_CONTENT_A,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_META_A,
     },
     {
-      type: TYPES.DE.name,
+      type: TYPES.DE?.name,
       fullName: FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A,
       filePath: FILE_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_CONTENT_A,
     },
@@ -162,10 +166,12 @@ export function assertDocumentDetailPageA(resp: CustomFileResponses) {
 
 export async function assertDocumentDetailPageADelete(session: TestSession, assertDeleteInLocal: boolean) {
   expect(
-    await isNameObsolete(session.orgs.get('default').username, TYPES.DE.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await isNameObsolete(session.orgs.get('default')!.username!, TYPES.DE.name, FULL_NAMES.DE_VIEW_DOCUMENT_DETAIL_A)
   ).to.be.true;
   expect(
-    await isNameObsolete(session.orgs.get('default').username, TYPES.DE.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await isNameObsolete(session.orgs.get('default')!.username!, TYPES.DE.name, FULL_NAMES.DE_ROUTE_DOCUMENT_DETAIL_A)
   ).to.be.true;
 
   if (assertDeleteInLocal) {
@@ -174,15 +180,20 @@ export async function assertDocumentDetailPageADelete(session: TestSession, asse
   }
 }
 
-export function assertViewHomeFRVariantDelete(resp: CustomFileResponses, deb: 'A' | 'B', projectDir: string) {
+export function assertViewHomeFRVariantDelete(
+  resp: CustomFileResponses | undefined,
+  deb: 'A' | 'B',
+  projectDir: string
+) {
   expect(resp).to.have.length(2);
 
   const inboundFiles = execCmd<RetrieveCommandResult>(
     `force:source:retrieve --manifest ${DEBS[deb].DE.VIEW_HOME.MANIFEST} --json`,
     {
       ensureExitCode: 0,
+      cli: 'dev',
     }
-  ).jsonOutput.result.inboundFiles;
+  ).jsonOutput?.result.inboundFiles;
 
   expect(inboundFiles).to.have.length(2);
   expect(fs.existsSync(join(projectDir, DEBS[deb].DE.VIEW_HOME.FILES.FR_VARIANT.RELATIVE_PATH))).to.be.false;
@@ -191,7 +202,8 @@ export function assertViewHomeFRVariantDelete(resp: CustomFileResponses, deb: 'A
 export function assertNoLocalChanges() {
   const statusResult = execCmd<StatusResult[]>('force:source:status --local --json', {
     ensureExitCode: 0,
-  }).jsonOutput.result;
+    cli: 'dev',
+  }).jsonOutput?.result;
   expect(statusResult).to.deep.equal([]);
 }
 

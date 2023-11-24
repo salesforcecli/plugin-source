@@ -1,9 +1,8 @@
 {
   "name": "@salesforce/plugin-source",
   "description": "Commands to interact with source formatted metadata",
-  "version": "2.11.4",
+  "version": "3.0.0",
   "author": "Salesforce",
-  "main": "lib/index.js",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
     "@oclif/core": "^3.11.0",
@@ -13,47 +12,48 @@
     "@salesforce/sf-plugins-core": "^5.0.1",
     "@salesforce/source-deploy-retrieve": "^10.0.0",
     "@salesforce/source-tracking": "^5.0.0",
-    "chalk": "^4.1.2",
-    "got": "^11.8.6",
-    "proxy-agent": "^6.3.1",
-    "tslib": "^2"
+    "chalk": "^5.3.0",
+    "got": "^13.0.0",
+    "proxy-agent": "^6.3.1"
   },
   "devDependencies": {
-    "@oclif/plugin-command-snapshot": "^4.0.16",
-    "@oclif/plugin-help": "^5.2.20",
+    "@oclif/plugin-command-snapshot": "^5.0.1",
+    "@oclif/plugin-help": "^6.0.5",
     "@salesforce/cli-plugins-testkit": "^5.0.2",
     "@salesforce/dev-scripts": "^7.1.1",
     "@salesforce/plugin-command-reference": "^3.0.46",
-    "@salesforce/plugin-deploy-retrieve": "^2.1.2",
-    "@salesforce/plugin-info": "^2.6.51",
-    "@salesforce/source-testkit": "^2.1.65",
+    "@salesforce/plugin-info": "^2.6.50",
+    "@salesforce/source-testkit": "^2.1.62",
     "@salesforce/ts-sinon": "1.4.19",
-    "@swc/core": "1.3.96",
     "@types/archiver": "^5.3.2",
     "archiver": "^5.3.2",
     "chai-each": "^0.0.1",
     "cross-env": "^7.0.3",
     "eslint-plugin-sf-plugin": "^1.16.15",
-    "oclif": "^3.16.0",
+    "fast-glob": "^3.3.1",
+    "oclif": "^4.0.3",
     "shx": "0.3.4",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "typescript": "^5.2.2"
   },
   "config": {},
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "files": [
     "/lib",
     "/messages",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/oclif.lock"
   ],
   "homepage": "https://github.com/salesforcecli/plugin-source",
   "keywords": [
     "force",
     "salesforce",
-    "sfdx",
     "salesforcedx",
+    "sf",
+    "sf-plugin",
+    "sfdx",
     "sfdx-plugin"
   ],
   "license": "BSD-3-Clause",
@@ -64,7 +64,10 @@
       "@oclif/plugin-command-snapshot",
       "@oclif/plugin-help",
       "@salesforce/plugin-command-reference",
-      "@salesforce/plugin-deploy-retrieve"
+      "@salesforce/plugin-deploy-retrieve",
+      "@salesforce/plugin-templates",
+      "@salesforce/plugin-settings",
+      "@salesforce/plugin-user"
     ],
     "topics": {
       "force": {
@@ -95,7 +98,9 @@
     },
     "hooks": {
       "sf-doctor-@salesforce/plugin-source": "./lib/hooks/diagnostics"
-    }
+    },
+    "flexibleTaxonomy": true,
+    "topicSeparator": " "
   },
   "repository": "salesforcecli/plugin-source",
   "scripts": {
@@ -111,20 +116,20 @@
     "prepack": "sf-prepack",
     "prepare": "sf-install",
     "test": "wireit",
-    "test:nuts": "ts-node ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 1200000 --parallel --retries 0",
+    "test:nuts": "node --loader ts-node/esm ./test/nuts/generateNuts.ts && nyc mocha \"**/*.nut.ts\"  --slow 4500 --timeout 1200000 --parallel --retries 0",
     "test:nuts:deb": "mocha \"test/nuts/digitalExperienceBundle/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
-    "test:nuts:deploy": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy PLUGIN_SOURCE_SEED_EXCLUDE=async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
-    "test:nuts:deploy:async": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.async ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy PLUGIN_SOURCE_SEED_EXCLUDE=async node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy:async": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.async node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
     "test:nuts:deploy:destructive": "mocha \"test/nuts/deployDestructive.nut.ts\" --slow 3000 --timeout 1200000 --retries 0 --jobs 20",
-    "test:nuts:deploy:manifest": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.manifest ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
-    "test:nuts:deploy:metadata": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.metadata ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
-    "test:nuts:deploy:quick": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.quick ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy:manifest": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.manifest node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy:metadata": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.metadata node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy:quick": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.quick node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
     "test:nuts:deploy:rest": "mocha \"test/nuts/REST/*.nut.ts\" --slow 3000 --timeout 1200000 --retries 0 --parallel --jobs 20",
-    "test:nuts:deploy:sourcepath": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.sourcepath ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
-    "test:nuts:deploy:testlevel": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.testlevel ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy:sourcepath": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.sourcepath node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:deploy:testlevel": "cross-env PLUGIN_SOURCE_SEED_FILTER=deploy.testlevel node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
     "test:nuts:mdapi": "mocha \"test/nuts/mdapi.nut.ts\" --slow 3000 --timeout 1200000 --retries 0 --jobs 20",
-    "test:nuts:retrieve": "cross-env PLUGIN_SOURCE_SEED_FILTER=retrieve ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
-    "test:nuts:retrieve:metadata": "cross-env PLUGIN_SOURCE_SEED_FILTER=retrieve.metadata ts-node ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:retrieve": "cross-env PLUGIN_SOURCE_SEED_FILTER=retrieve node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
+    "test:nuts:retrieve:metadata": "cross-env PLUGIN_SOURCE_SEED_FILTER=retrieve.metadata node --loader ts-node/esm ./test/nuts/generateNuts.ts && mocha \"test/nuts/generated/*.nut.ts\" --slow 4500 --timeout 1200000 --parallel --retries 0 --jobs 20",
     "test:nuts:specialTypes": "mocha \"test/nuts/territory2.nut.ts\" \"test/nuts/folderTypes.nut.ts\" \"test/nuts/translation.nut.ts\" \"test/nuts/nestedLwc.nut.ts\" \"test/nuts/partialBundleDelete.nut.ts\" --slow 4500 --timeout 1200000 --retries 0 --parallel --jobs 20",
     "test:nuts:specialTypes:folders": "mocha \"test/nuts/folderTypes.nut.ts\" --slow 4500 --timeout 1200000 --jobs 20",
     "test:nuts:specialTypes:nestedLwc": "mocha \"test/nuts/nestedLwc.nut.ts\" --slow 3000 --timeout 1200000 --retries 0 --jobs 20 ",
@@ -221,7 +226,7 @@
       "output": []
     },
     "test:command-reference": {
-      "command": "\"./bin/dev\" commandreference:generate --erroronwarnings",
+      "command": "ts-node \"./bin/dev.js\" commandreference:generate --erroronwarnings",
       "files": [
         "src/**/*.ts",
         "messages/**",
@@ -232,7 +237,7 @@
       ]
     },
     "test:deprecation-policy": {
-      "command": "\"./bin/dev\" snapshot:compare",
+      "command": "ts-node \"./bin/dev.js\" snapshot:compare",
       "files": [
         "src/**/*.ts"
       ],
@@ -242,12 +247,14 @@
       ]
     },
     "test:json-schema": {
-      "command": "\"./bin/dev\" schema:compare",
+      "command": "ts-node \"./bin/dev.js\" schema:compare",
       "files": [
         "src/**/*.ts",
         "schemas"
       ],
       "output": []
     }
-  }
+  },
+  "exports": "./lib/index.js",
+  "type": "module"
 }

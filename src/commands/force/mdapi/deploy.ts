@@ -4,9 +4,11 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
-import { DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
+import { AsyncResult, DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import {
   arrayWithDeprecation,
   Flags,
@@ -21,16 +23,16 @@ import {
   reportsFormatters,
   targetUsernameFlag,
   TestLevel,
-} from '../../../deployCommand';
-import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter';
-import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter';
-import { ProgressFormatter } from '../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter';
-import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter';
-import { ResultFormatterOptions } from '../../../formatters/resultFormatter';
+} from '../../../deployCommand.js';
+import { DeployCommandAsyncResult } from '../../../formatters/source/deployAsyncResultFormatter.js';
+import { MdDeployResult, MdDeployResultFormatter } from '../../../formatters/mdapi/mdDeployResultFormatter.js';
+import { ProgressFormatter } from '../../../formatters/progressFormatter.js';
+import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
+import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter.js';
+import { ResultFormatterOptions } from '../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
@@ -135,8 +137,8 @@ export class Deploy extends DeployCommand {
     junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
 
-  private flags: Interfaces.InferredFlags<typeof Deploy.flags>;
-  private org: Org;
+  private flags!: Interfaces.InferredFlags<typeof Deploy.flags>;
+  private org!: Org;
 
   public async run(): Promise<DeployResult> {
     this.flags = (await this.parse(Deploy)).flags;
@@ -165,7 +167,7 @@ export class Deploy extends DeployCommand {
     const deploymentOptions = this.flags.zipfile
       ? { zipPath: this.flags.zipfile }
       : { mdapiPath: this.flags.deploydir };
-    const username = this.org.getUsername();
+    const username = this.org.getUsername() as string;
 
     // still here?  we need to deploy a zip file then
     const deploy = new MetadataApiDeploy({
@@ -198,7 +200,7 @@ export class Deploy extends DeployCommand {
       this.log(deployMessages.getMessage('apiVersionMsgBasic', [username, apiData.apiVersion, apiData.webService]));
     });
     await deploy.start();
-    this.asyncDeployResult = { id: deploy.id };
+    this.asyncDeployResult = deploy.id ? { id: deploy.id } : undefined;
     this.updateDeployId(deploy.id);
 
     if (!this.isAsync) {
@@ -235,7 +237,7 @@ export class Deploy extends DeployCommand {
       ? new MdDeployAsyncResultFormatter(
           new Ux({ jsonEnabled: this.jsonEnabled() }),
           formatterOptions,
-          this.asyncDeployResult
+          this.asyncDeployResult as AsyncResult
         )
       : new MdDeployResultFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), formatterOptions, this.deployResult);
 

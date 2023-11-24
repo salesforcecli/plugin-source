@@ -5,7 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { yellow } from 'chalk';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages, SfError } from '@salesforce/core';
 import { get } from '@salesforce/ts-types';
 import {
@@ -17,18 +18,20 @@ import {
 
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
-
-Messages.importMessagesDirectory(__dirname);
+import chalk from 'chalk';
+import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 
 export abstract class RetrieveFormatter extends ResultFormatter {
   protected warnings: RetrieveMessage[];
   protected result: MetadataApiRetrieveStatus;
   protected messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
-  public constructor(ux: Ux, public options: ResultFormatterOptions, result: RetrieveResult) {
+  protected constructor(ux: Ux, public options: ResultFormatterOptions, result: RetrieveResult) {
     super(ux, options);
     // zipFile can become massive and unwieldy with JSON parsing/terminal output and, isn't useful
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     delete result.response.zipFile;
     this.result = result.response;
 
@@ -41,7 +44,7 @@ export abstract class RetrieveFormatter extends ResultFormatter {
   }
 
   protected displayWarnings(): void {
-    this.ux.styledHeader(yellow(this.messages.getMessage('retrievedSourceWarningsHeader')));
+    this.ux.styledHeader(chalk.yellow(this.messages.getMessage('retrievedSourceWarningsHeader')));
     this.ux.table(this.warnings, { fileName: { header: 'FILE NAME' }, problem: { header: 'PROBLEM' } });
     this.ux.log();
   }

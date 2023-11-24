@@ -5,8 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as chalk from 'chalk';
+import path from 'node:path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
 import { ensureArray } from '@salesforce/kit';
@@ -23,11 +25,11 @@ import {
   Successes,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter, ResultFormatterOptions } from './resultFormatter';
-import { MdDeployResult } from './mdapi/mdDeployResultFormatter';
-import { maybePrintCodeCoverageTable } from './codeCoverageTable';
+import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
+import { MdDeployResult } from './mdapi/mdDeployResultFormatter.js';
+import { maybePrintCodeCoverageTable } from './codeCoverageTable.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export type DeployCommandResult = {
@@ -199,9 +201,11 @@ export class DeployResultFormatter extends ResultFormatter {
         const fileResponses: FileResponse[] = [];
         this.fileResponses
           .filter((f) => f.state === ComponentStatus.Failed)
-          .map((f: FileResponse & { error: string }) => {
+          .map((f) => {
             fileResponses.push(f);
-            fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+            if ('error' in f) {
+              fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
+            }
           });
         this.sortFileResponses(fileResponses);
         this.asRelativePaths(fileResponses);
@@ -223,6 +227,8 @@ export class DeployResultFormatter extends ResultFormatter {
         this.ux.log('');
         this.ux.styledHeader(chalk.red(`Component Failures [${failures.length}]`));
         this.ux.table(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           failures.map((entry: FileResponseFailure) => ({
             fullName: entry.fullName,
             problemType: entry.problemType,
@@ -275,6 +281,8 @@ export class DeployResultFormatter extends ResultFormatter {
         chalk.red(`Test Failures [${asString(this.result.response.details.runTestResult?.numFailures)}]`)
       );
       this.ux.table(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         tests.map((entry: Failures) => ({
           name: entry.name,
           methodName: entry.methodName,

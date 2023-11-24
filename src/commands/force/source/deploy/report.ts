@@ -5,6 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages, SfProject } from '@salesforce/core';
 
 import { Duration, env } from '@salesforce/kit';
@@ -18,17 +20,17 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand';
+import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand.js';
 import {
   DeployReportCommandResult,
   DeployReportResultFormatter,
-} from '../../../../formatters/deployReportResultFormatter';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter';
-import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter';
-import { ResultFormatterOptions } from '../../../../formatters/resultFormatter';
+} from '../../../../formatters/deployReportResultFormatter.js';
+import { ProgressFormatter } from '../../../../formatters/progressFormatter.js';
+import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter.js';
+import { ResultFormatterOptions } from '../../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
 
 const replacement = 'project deploy report';
@@ -72,6 +74,8 @@ export class Report extends DeployCommand {
     }),
     junit: Flags.boolean({ summary: messages.getMessage('flags.junit.summary') }),
   };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private flags: Interfaces.InferredFlags<typeof Report.flags>;
 
   public async run(): Promise<DeployReportCommandResult> {
@@ -100,10 +104,10 @@ export class Report extends DeployCommand {
       try {
         this.project = await SfProject.resolve();
         sourcepath = this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+        this.componentSet = await ComponentSetBuilder.build({ sourcepath });
       } catch (err) {
         // ignore the error. this was just to get improved command output.
       }
-      this.componentSet = await ComponentSetBuilder.build({ sourcepath });
     }
 
     const waitDuration = this.flags.wait;

@@ -5,13 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
 import { get } from '@salesforce/ts-types';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { expect } from 'chai';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { DeployReportCommandResult } from '../../../src/formatters/deployReportResultFormatter';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { DeployReportCommandResult } from '../../../src/formatters/deployReportResultFormatter.js';
 
 const repo = {
   name: 'sample-project-multiple-packages',
@@ -76,7 +77,7 @@ context(`MPD REST Deploy NUTs [name: ${repo.name}]`, () => {
     process.env.SFDX_REST_DEPLOY = 'true';
     testkit = await SourceTestkit.create({
       repository: repo.gitUrl,
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
   });
 

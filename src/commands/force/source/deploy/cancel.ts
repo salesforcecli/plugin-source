@@ -4,6 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -15,13 +17,13 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { DeployCommand } from '../../../../deployCommand';
+import { DeployCommand } from '../../../../deployCommand.js';
 import {
   DeployCancelCommandResult,
   DeployCancelResultFormatter,
-} from '../../../../formatters/deployCancelResultFormatter';
+} from '../../../../formatters/deployCancelResultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'cancel');
 
 const replacement = 'project deploy cancel';
@@ -53,6 +55,8 @@ export class Cancel extends DeployCommand {
     }),
   };
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   private flags: Interfaces.InferredFlags<typeof Cancel.flags>;
 
   public async run(): Promise<DeployCancelCommandResult> {
@@ -77,7 +81,7 @@ export class Cancel extends DeployCommand {
   }
 
   protected resolveSuccess(): void {
-    const status = this.deployResult.response.status;
+    const status = this.deployResult?.response.status;
     if (status !== RequestStatus.Canceled) {
       this.setExitCode(1);
     }

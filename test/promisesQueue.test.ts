@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { expect } from 'chai';
-import { promisesQueue } from '../src/promiseQueue';
+import { promisesQueue } from '../src/promiseQueue.js';
 describe('promisesQueue', () => {
   const numberResolver = (n: number) => Promise.resolve(n);
   it('should handle 0 queue entries', async () => {

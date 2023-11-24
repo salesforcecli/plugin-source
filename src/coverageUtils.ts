@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { CodeCoverage, Failures, RunTestResult, Successes } from '@salesforce/source-deploy-retrieve';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import {
   ApexCodeCoverageAggregate,
   ApexCodeCoverageAggregateRecord,
@@ -109,8 +109,8 @@ export function transformDeployTestsResultsToTestResult(
       commandTimeInMs: 0,
       failRate: ((numTestFailures / numTestsRun) * 100).toFixed(2) + '%',
       failing: numTestFailures,
-      hostname: connection.getConnectionOptions().instanceUrl,
-      orgId: connection.getAuthInfoFields().orgId,
+      hostname: connection.getConnectionOptions().instanceUrl ?? '',
+      orgId: connection.getAuthInfoFields().orgId ?? '',
       outcome: '',
       passRate: numTestFailures === 0 ? '100%' : ((1 - numTestFailures / numTestsRun) * 100).toFixed(2) + '%',
       passing: numTestsRun - numTestFailures,
@@ -121,8 +121,8 @@ export function transformDeployTestsResultsToTestResult(
       testStartTime: new Date().toISOString(),
       testTotalTimeInMs: parseFloat(runTestResult.totalTime),
       testsRan: numTestsRun,
-      userId: connection.getConnectionOptions().userId,
-      username: connection.getUsername(),
+      userId: connection.getConnectionOptions().userId ?? '',
+      username: connection.getUsername() ?? '',
     },
     tests: [
       ...mapTestResults(ensureArray(runTestResult.successes)),

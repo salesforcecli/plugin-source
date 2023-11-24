@@ -1,4 +1,3 @@
-@@ -0,0 +1,3 @@
 @echo off
 
-node "%~dp0\dev" %*
+node --loader ts-node/esm --no-warnings=ExperimentalWarning "%~dp0\dev" %*

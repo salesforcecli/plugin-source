@@ -6,8 +6,9 @@
  */
 
 import { dirname, join, resolve } from 'node:path';
-import * as fs from 'node:fs';
+import fs from 'node:fs';
 
+import { fileURLToPath } from 'node:url';
 import { Lifecycle, Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
@@ -29,16 +30,16 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { AlphabetLowercase } from '@oclif/core/lib/interfaces';
-import { SourceCommand } from '../../../sourceCommand';
+import { SourceCommand } from '../../../sourceCommand.js';
 import {
   PackageRetrieval,
   RetrieveCommandResult,
   RetrieveResultFormatter,
-} from '../../../formatters/retrieveResultFormatter';
-import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions';
-import { promisesQueue } from '../../../promiseQueue';
+} from '../../../formatters/retrieveResultFormatter.js';
+import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions.js';
+import { promisesQueue } from '../../../promiseQueue.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -110,10 +111,10 @@ export class Retrieve extends SourceCommand {
     }),
   };
   protected readonly lifecycleEventNames = ['preretrieve', 'postretrieve'];
-  protected retrieveResult: RetrieveResult;
-  protected tracking: SourceTracking;
-  private resolvedTargetDir: string;
-  private flags: Interfaces.InferredFlags<typeof Retrieve.flags>;
+  protected retrieveResult!: RetrieveResult;
+  protected tracking!: SourceTracking;
+  private resolvedTargetDir!: string;
+  private flags!: Interfaces.InferredFlags<typeof Retrieve.flags>;
   private registry = new RegistryAccess();
 
   public async run(): Promise<RetrieveCommandResult> {
@@ -149,7 +150,7 @@ export class Retrieve extends SourceCommand {
   }
 
   protected async retrieve(): Promise<void> {
-    const username = this.flags['target-org'].getUsername();
+    const username = this.flags['target-org'].getUsername() as string;
     // eslint-disable-next-line @typescript-eslint/require-await
     Lifecycle.getInstance().on('apiVersionRetrieve', async (apiData: RetrieveVersionData) => {
       this.log(
@@ -167,17 +168,19 @@ export class Retrieve extends SourceCommand {
       sourceapiversion: await this.getSourceApiVersion(),
       packagenames: this.flags.packagenames,
       sourcepath: this.flags.sourcepath,
-      manifest: this.flags.manifest && {
-        manifestPath: this.flags.manifest,
-        directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
-      },
+      manifest: this.flags.manifest
+        ? {
+            manifestPath: this.flags.manifest,
+            directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
+          }
+        : undefined,
       metadata: this.flags.metadata && {
         metadataEntries: this.flags.metadata,
         directoryPaths: this.flags.retrievetargetdir ? [] : this.getPackageDirs(),
       },
     });
 
-    if (this.flags.manifest || this.flags.metadata) {
+    if (this.flags.manifest ?? this.flags.metadata) {
       if (this.wantsToRetrieveCustomFields()) {
         this.warn(messages.getMessage('wantsToRetrieveCustomFields'));
         this.componentSet.add({
@@ -274,16 +277,16 @@ export class Retrieve extends SourceCommand {
   }
 
   private wantsToRetrieveCustomFields(): boolean {
-    const hasCustomField = this.componentSet.has({
+    const hasCustomField = this.componentSet?.has({
       type: this.registry.getTypeByName('CustomField'),
       fullName: ComponentSet.WILDCARD,
     });
 
-    const hasCustomObject = this.componentSet.has({
+    const hasCustomObject = this.componentSet?.has({
       type: this.registry.getTypeByName('CustomObject'),
       fullName: ComponentSet.WILDCARD,
     });
-    return hasCustomField && !hasCustomObject;
+    return (hasCustomField && !hasCustomObject) as boolean;
   }
 
   private async moveResultsForRetrieveTargetDir(): Promise<void> {

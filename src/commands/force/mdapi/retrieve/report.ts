@@ -4,6 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Messages, Org, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -15,15 +17,15 @@ import {
   Ux,
 } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
-import { resolveZipFileName, SourceCommand } from '../../../../sourceCommand';
-import { Stash, MdRetrieveData } from '../../../../stash';
+import { resolveZipFileName, SourceCommand } from '../../../../sourceCommand.js';
+import { Stash, MdRetrieveData } from '../../../../stash.js';
 import {
   RetrieveCommandResult,
   RetrieveCommandAsyncResult,
   RetrieveResultFormatter,
-} from '../../../../formatters/mdapi/retrieveResultFormatter';
+} from '../../../../formatters/mdapi/retrieveResultFormatter.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 export type ReportCommandResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
@@ -68,16 +70,16 @@ export class Report extends SourceCommand {
     }),
   };
 
-  protected retrieveResult: RetrieveResult;
-  protected retrieveStatus: MetadataApiRetrieveStatus;
-  private retrieveTargetDir: string;
-  private zipFileName: string;
-  private unzip: boolean;
-  private wait: Duration;
-  private isAsync: boolean;
-  private mdapiRetrieve: MetadataApiRetrieve;
-  private flags: Interfaces.InferredFlags<typeof Report.flags>;
-  private org: Org;
+  protected retrieveResult!: RetrieveResult;
+  protected retrieveStatus!: MetadataApiRetrieveStatus;
+  private retrieveTargetDir!: string;
+  private zipFileName!: string;
+  private unzip: boolean | undefined;
+  private wait!: Duration;
+  private isAsync!: boolean;
+  private mdapiRetrieve!: MetadataApiRetrieve;
+  private flags!: Interfaces.InferredFlags<typeof Report.flags>;
+  private org!: Org;
 
   public async run(): Promise<ReportCommandResult> {
     this.flags = (await this.parse(Report)).flags;
@@ -102,7 +104,7 @@ export class Report extends SourceCommand {
       retrieveId = mdRetrieveStash.jobid;
       this.retrieveTargetDir = this.resolveOutputDir(mdRetrieveStash?.retrievetargetdir);
       this.zipFileName = resolveZipFileName(mdRetrieveStash?.zipfilename);
-      this.unzip = mdRetrieveStash?.unzip;
+      this.unzip = mdRetrieveStash.unzip;
     } else {
       this.retrieveTargetDir = this.resolveOutputDir(this.flags.retrievetargetdir);
       this.zipFileName = resolveZipFileName(this.flags.zipfilename);
@@ -118,7 +120,7 @@ export class Report extends SourceCommand {
 
     this.mdapiRetrieve = new MetadataApiRetrieve({
       id: retrieveId,
-      usernameOrConnection: this.org.getUsername(),
+      usernameOrConnection: this.org.getUsername() as string,
       output: this.retrieveTargetDir,
       format: 'metadata',
       zipFileName: this.zipFileName,
@@ -179,7 +181,7 @@ export class Report extends SourceCommand {
     return formatter.getJson();
   }
 
-  private resolveOutputDir(dirPath: string): string {
+  private resolveOutputDir(dirPath?: string): string {
     return this.ensureFlagPath({
       flagName: 'retrievetargetdir',
       path: dirPath,

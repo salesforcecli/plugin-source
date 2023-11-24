@@ -7,8 +7,8 @@
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { CodeCoverage } from '@salesforce/source-deploy-retrieve';
-import chalk = require('chalk');
-import { prepCoverageForDisplay } from '../coverageUtils';
+import chalk from 'chalk';
+import { prepCoverageForDisplay } from '../coverageUtils.js';
 
 /**
  * prints a table of formatted code coverage results if there are any
@@ -17,7 +17,10 @@ import { prepCoverageForDisplay } from '../coverageUtils';
  * @param coverageFromMdapiResult
  * @param ux
  */
-export const maybePrintCodeCoverageTable = (coverageFromMdapiResult: CodeCoverage | CodeCoverage[], ux: Ux): void => {
+export const maybePrintCodeCoverageTable = (
+  coverageFromMdapiResult: CodeCoverage | CodeCoverage[] | undefined,
+  ux: Ux
+): void => {
   const codeCoverage = ensureArray(coverageFromMdapiResult);
 
   if (codeCoverage.length) {

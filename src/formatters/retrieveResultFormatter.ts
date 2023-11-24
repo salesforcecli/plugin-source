@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { blue } from 'chalk';
+import chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import {
   RetrieveResult,
@@ -16,8 +16,8 @@ import {
   RetrieveMessage,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { RetrieveFormatter } from './retrieveFormatter';
-import { ResultFormatterOptions } from './resultFormatter';
+import { RetrieveFormatter } from './retrieveFormatter.js';
+import { ResultFormatterOptions } from './resultFormatter.js';
 
 export interface PackageRetrieval {
   name: string;
@@ -42,7 +42,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
   public constructor(ux: Ux, options: RetrieveResultFormatterOptions, result: RetrieveResult) {
     super(ux, options, result);
     this.fileResponses = result?.getFileResponses ? result.getFileResponses() : [];
-    this.packages = options.packages || [];
+    this.packages = options.packages ?? [];
   }
 
   /**
@@ -70,7 +70,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
     }
 
     if (this.isSuccess()) {
-      this.ux.styledHeader(blue(this.messages.getMessage('retrievedSourceHeader')));
+      this.ux.styledHeader(chalk.blue(this.messages.getMessage('retrievedSourceHeader')));
       const retrievedFiles = this.fileResponses.filter((fr) => fr.state !== ComponentStatus.Failed);
       if (retrievedFiles?.length) {
         this.displaySuccesses(retrievedFiles);
@@ -87,7 +87,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
     // Display any package retrievals
     if (this.packages?.length) {
       this.ux.log('');
-      this.ux.styledHeader(blue('Retrieved Packages'));
+      this.ux.styledHeader(chalk.blue('Retrieved Packages'));
       this.packages.forEach((pkg) => {
         this.ux.log(`${pkg.name} package converted and retrieved to: ${pkg.path}`);
       });

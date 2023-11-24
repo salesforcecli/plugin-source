@@ -5,8 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { Dictionary } from '@salesforce/ts-types';
 import { SourceTestkit } from '@salesforce/source-testkit';
 
@@ -16,7 +17,7 @@ context('MPD Retrieve NUTs', () => {
   before(async () => {
     testkit = await SourceTestkit.create({
       repository: 'https://github.com/salesforcecli/sample-project-multiple-packages.git',
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
     });
     await testkit.trackGlobs(testkit.packageGlobs);
     await testkit.deploy({ args: `--sourcepath ${testkit.packageNames.join(',')}` });
@@ -74,11 +75,8 @@ context('MPD Retrieve NUTs', () => {
 
     beforeEach(async () => {
       await Promise.all(
-        Object.entries(originalState).map(([filename, contents]) => testkit.writeFile(filename, contents))
+        Object.entries(originalState).map(([filename, contents]) => testkit.writeFile(filename, contents as string))
       );
-      // for (const [filename, contents] of Object.entries(originalState)) {
-      //   await testkit.writeFile(filename, contents);
-      // }
     });
 
     describe('--metadata CustomLabels', () => {

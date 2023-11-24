@@ -5,11 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { expect } from 'chai';
 import { execCmd } from '@salesforce/cli-plugins-testkit';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { isNameObsolete } from './shared/isNameObsolete';
+import { isNameObsolete } from './shared/isNameObsolete.js';
 
 describe('source:deploy --destructive NUTs', () => {
   let testkit: SourceTestkit;
@@ -35,7 +36,7 @@ describe('source:deploy --destructive NUTs', () => {
 
   before(async () => {
     testkit = await SourceTestkit.create({
-      nut: __filename,
+      nut: fileURLToPath(import.meta.url),
       repository: 'https://github.com/trailheadapps/dreamhouse-lwc.git',
     });
     execCmd('force:source:deploy --sourcepath force-app', { ensureExitCode: 0 });

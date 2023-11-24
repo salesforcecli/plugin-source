@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
+import path from 'node:path';
 import { set, keyBy } from '@salesforce/kit';
 import { get, getString, isString } from '@salesforce/ts-types';
 
@@ -250,6 +250,8 @@ const testRepos: RepoConfig[] = [
  * 2. have normalized file paths
  */
 export const TEST_REPOS_MAP = new Map<string, RepoConfig>(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   Object.entries(keyBy(normalizeFilePaths(testRepos), 'gitUrl'))
 );
 

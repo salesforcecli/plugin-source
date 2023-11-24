@@ -8,7 +8,7 @@
 import { getString } from '@salesforce/ts-types';
 import { DeployResult, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { ResultFormatter } from './resultFormatter';
+import { ResultFormatter } from './resultFormatter.js';
 
 export type DeployCancelCommandResult = MetadataApiDeployStatus;
 

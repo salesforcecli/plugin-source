@@ -5,7 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as chalk from 'chalk';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+import chalk from 'chalk';
 import { getNumber } from '@salesforce/ts-types';
 import { Messages, SfError } from '@salesforce/core';
 import {
@@ -18,10 +20,10 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions } from '../resultFormatter';
-import { maybePrintCodeCoverageTable } from '../codeCoverageTable';
+import { CoverageResultsFileInfo, ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
+import { maybePrintCodeCoverageTable } from '../codeCoverageTable.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 export type MdDeployResult = {
@@ -182,6 +184,8 @@ export class MdDeployResultFormatter extends ResultFormatter {
       this.ux.log('');
       this.ux.styledHeader(chalk.red(`Test Failures [${this.result.response.details.runTestResult?.numFailures}]`));
       this.ux.table(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         tests.map((test: Failures) => ({
           name: test.name,
           methodName: test.methodName,
@@ -212,12 +216,12 @@ export class MdDeployResultFormatter extends ResultFormatter {
         }
       );
     }
-    maybePrintCodeCoverageTable(this.result.response.details?.runTestResult?.codeCoverage, this.ux);
+    maybePrintCodeCoverageTable(this.result.response.details?.runTestResult?.codeCoverage ?? [], this.ux);
   }
 
   protected verboseTestTime(): void {
     if (
-      this.result.response?.details?.runTestResult?.successes ||
+      this.result.response?.details?.runTestResult?.successes ??
       this.result?.response?.details?.runTestResult?.failures
     ) {
       this.ux.log('');
@@ -233,5 +237,5 @@ const mdResponseSorter = (i: DeployMessage, j: DeployMessage): number => {
     }
     return i.fileName > j.fileName ? 1 : -1;
   }
-  return i.componentType > j.componentType ? 1 : -1;
+  return i.componentType ?? '' > (j.componentType ?? '') ? 1 : -1;
 };

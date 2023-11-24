@@ -4,14 +4,14 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as fs from 'node:fs';
+import fs from 'node:fs';
 import { join } from 'node:path';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
-import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, STORE, TEST_SESSION_OPTIONS, TYPES } from './constants';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
+import { DEBS_RELATIVE_PATH, FULL_NAMES, METADATA, STORE, TEST_SESSION_OPTIONS, TYPES } from './constants.js';
 import {
   assertAllDEBAndTheirDECounts,
   assertDECountOfSingleDEB,
@@ -24,7 +24,7 @@ import {
   createDocumentDetailPageAInLocal,
   deleteLocalSource,
   deleteViewHomeFRVariantInLocal,
-} from './helper';
+} from './helper.js';
 
 describe('deb -- manifest option', () => {
   let session: TestSession;
@@ -39,6 +39,8 @@ describe('deb -- manifest option', () => {
 
   describe('generate manifest', () => {
     it('should generate manifest for all debs using sourcepath', () => {
+      // `force:source:manifest:create` is now in PDR.
+      // we run this with `sf` to generate the manifest for the next tests
       execCmd(
         `force:source:manifest:create --sourcepath  ${DEBS_RELATIVE_PATH} --name ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
         { ensureExitCode: 0, cli: 'sf' }
@@ -47,6 +49,8 @@ describe('deb -- manifest option', () => {
     });
 
     it('should generate manifest for all debs using metadata', () => {
+      // `force:source:manifest:create` is now in PDR.
+      // we run this with `sf` to generate the manifest for the next tests
       execCmd(
         `force:source:manifest:create --metadata ${METADATA.ALL_DEBS} --name ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
         { ensureExitCode: 0, cli: 'sf' }
@@ -61,6 +65,7 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --metadata ${TYPES.APEX_PAGE.name},${TYPES.APEX_CLASS.name} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
       );
     });
@@ -70,8 +75,9 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.FULL_SITE_DEB_A_AND_B} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
@@ -82,8 +88,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -93,8 +100,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountsOfAllDEB(deployedSource);
       });
@@ -106,8 +114,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DE_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertDECountOfSingleDEB(deployedSource);
       });
@@ -117,8 +126,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.JUST_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_A);
       });
@@ -128,8 +138,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertViewHome(deployedSource, 'A');
       });
@@ -141,8 +152,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -152,8 +164,9 @@ describe('deb -- manifest option', () => {
           `force:source:deploy --manifest ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -171,8 +184,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DEBS} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -182,8 +196,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DE} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountsOfAllDEB(inboundFiles);
       });
@@ -195,8 +210,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DE_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertDECountOfSingleDEB(inboundFiles);
       });
@@ -206,8 +222,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.JUST_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A);
       });
@@ -217,8 +234,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertViewHome(inboundFiles, 'A');
       });
@@ -230,8 +248,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DEBS_SOURCE_PATH_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -241,8 +260,9 @@ describe('deb -- manifest option', () => {
           `force:source:retrieve --manifest ${STORE.MANIFESTS.ALL_DEBS_METADATA_GEN} --json`,
           {
             ensureExitCode: 0,
+            cli: 'dev',
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -257,8 +277,9 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.DE_VIEW_HOME_OF_DEB_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertViewHomeFRVariantDelete(deployedSource, 'A', session.project.dir);
     });
@@ -272,8 +293,9 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
     });
@@ -283,8 +305,9 @@ describe('deb -- manifest option', () => {
         `force:source:deploy --manifest ${STORE.MANIFESTS.EMPTY_PACKAGE_XML} --predestructivechanges ${STORE.MANIFESTS.DE_DOCUMENT_DETAIL_PAGE_A} --json`,
         {
           ensureExitCode: 0,
+          cli: 'dev',
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
       await assertDocumentDetailPageADelete(session, false);

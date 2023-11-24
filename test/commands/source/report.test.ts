@@ -6,7 +6,7 @@
  */
 
 import { join } from 'node:path';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile, SfProject } from '@salesforce/core';
@@ -14,14 +14,14 @@ import { Config } from '@oclif/core';
 
 import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup';
-import { Report } from '../../../src/commands/force/source/deploy/report';
-import { DeployReportResultFormatter } from '../../../src/formatters/deployReportResultFormatter';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter';
-import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter';
-import { Stash } from '../../../src/stash';
-import { getDeployResult, getDeployResponse } from './deployResponses';
+import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { Report } from '../../../src/commands/force/source/deploy/report.js';
+import { DeployReportResultFormatter } from '../../../src/formatters/deployReportResultFormatter.js';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
+import { DeployProgressStatusFormatter } from '../../../src/formatters/deployProgressStatusFormatter.js';
+import { Stash } from '../../../src/stash.js';
+import { getDeployResult, getDeployResponse } from './deployResponses.js';
 
 describe('force:source:report', () => {
   const $$ = new TestContext();

@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { AuthInfo, Connection } from '@salesforce/core';
 import { expect } from 'chai';
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { PushResponse } from '../../../src/formatters/source/pushResultFormatter';
+import { PushResponse } from '../../../src/formatters/source/pushResultFormatter.js';
 
 let session: TestSession;
 let conn: Connection;
@@ -44,7 +44,7 @@ describe('multiple pkgDirs deployed sequentially', () => {
 
     conn = await Connection.create({
       authInfo: await AuthInfo.create({
-        username: session.orgs.get('default').username,
+        username: session.orgs.get('default')?.username,
       }),
     });
   });
@@ -58,10 +58,10 @@ describe('multiple pkgDirs deployed sequentially', () => {
     it('pushes using MPD', () => {
       const result = execCmd<PushResponse>('force:source:push --json', {
         ensureExitCode: 0,
-      }).jsonOutput.result.pushedSource;
+      }).jsonOutput?.result.pushedSource;
       expect(result).to.be.an.instanceof(Array);
       // the fields should be populated
-      expect(result.every((row) => row.type && row.fullName)).to.equal(true);
+      expect(result?.every((row) => row.type && row.fullName)).to.equal(true);
     });
 
     it('should have 4 deployments', async () => {

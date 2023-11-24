@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
-import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter';
-import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter';
+import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
+import { RetrieveCommandResult } from '../../../src/formatters/retrieveResultFormatter.js';
 import {
   DEB_A_RELATIVE_PATH,
   DEBS_RELATIVE_PATH,
@@ -14,7 +14,7 @@ import {
   FULL_NAMES,
   TEST_SESSION_OPTIONS,
   TYPES,
-} from './constants';
+} from './constants.js';
 import {
   assertAllDEBAndTheirDECounts,
   assertDocumentDetailPageA,
@@ -24,7 +24,7 @@ import {
   assertViewHomeFRVariantDelete,
   createDocumentDetailPageAInLocal,
   deleteViewHomeFRVariantInLocal,
-} from './helper';
+} from './helper.js';
 
 describe('deb -- sourcepath option', () => {
   let session: TestSession;
@@ -53,7 +53,7 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertAllDEBAndTheirDECounts(deployedSource, 6);
     });
@@ -65,7 +65,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertAllDEBAndTheirDECounts(deployedSource);
       });
@@ -78,7 +78,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertSingleDEBAndItsDECounts(deployedSource, FULL_NAMES.DEB_A);
       });
@@ -89,7 +89,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.deployedSource;
+        ).jsonOutput?.result.deployedSource;
 
         assertViewHome(deployedSource, 'A');
       });
@@ -104,7 +104,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertAllDEBAndTheirDECounts(inboundFiles);
       });
@@ -117,7 +117,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertSingleDEBAndItsDECounts(inboundFiles, FULL_NAMES.DEB_A);
       });
@@ -128,7 +128,7 @@ describe('deb -- sourcepath option', () => {
           {
             ensureExitCode: 0,
           }
-        ).jsonOutput.result.inboundFiles;
+        ).jsonOutput?.result.inboundFiles;
 
         assertViewHome(inboundFiles, 'A');
       });
@@ -144,7 +144,7 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertViewHomeFRVariantDelete(deployedSource, 'A', session.project.dir);
     });
@@ -159,11 +159,12 @@ describe('deb -- sourcepath option', () => {
         {
           ensureExitCode: 0,
         }
-      ).jsonOutput.result.deployedSource;
+      ).jsonOutput?.result.deployedSource;
 
       assertDocumentDetailPageA(deployedSource);
     });
 
+    // TODO: `force:source:delete` lives in PDR (and same NUT exists there), should we delete this?
     it('should delete the page (view and route de components) of deb_a', async () => {
       const deletedSource = execCmd<DeployCommandResult>(
         `force:source:delete --sourcepath ${DIR_RELATIVE_PATHS.DE_VIEW_DOCUMENT_DETAIL_A},${DIR_RELATIVE_PATHS.DE_ROUTE_DOCUMENT_DETAIL_A} --noprompt --json`,
@@ -171,7 +172,7 @@ describe('deb -- sourcepath option', () => {
           ensureExitCode: 0,
           cli: 'sf',
         }
-      ).jsonOutput.result.deletedSource;
+      ).jsonOutput?.result.deletedSource;
 
       assertDocumentDetailPageA(deletedSource);
       await assertDocumentDetailPageADelete(session, true);
