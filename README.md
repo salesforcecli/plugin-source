@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (--version)
-@salesforce/plugin-source/2.11.4 linux-x64 node-v18.18.2
+@salesforce/plugin-source/2.11.5 linux-x64 node-v18.18.2
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -88,27 +88,27 @@ USAGE
 
 <!-- commands -->
 
-- [`sfdx force:mdapi:deploy`](#sfdx-forcemdapideploy)
-- [`sfdx force:mdapi:deploy:cancel`](#sfdx-forcemdapideploycancel)
-- [`sfdx force:mdapi:deploy:report`](#sfdx-forcemdapideployreport)
-- [`sfdx force:mdapi:retrieve`](#sfdx-forcemdapiretrieve)
-- [`sfdx force:mdapi:retrieve:report`](#sfdx-forcemdapiretrievereport)
-- [`sfdx force:source:deploy`](#sfdx-forcesourcedeploy)
-- [`sfdx force:source:deploy:cancel`](#sfdx-forcesourcedeploycancel)
-- [`sfdx force:source:deploy:report`](#sfdx-forcesourcedeployreport)
-- [`sfdx force:source:pull`](#sfdx-forcesourcepull)
-- [`sfdx force:source:push`](#sfdx-forcesourcepush)
-- [`sfdx force:source:retrieve`](#sfdx-forcesourceretrieve)
-- [`sfdx force:source:status`](#sfdx-forcesourcestatus)
+- [`sfdx force mdapi deploy`](#sfdx-force-mdapi-deploy)
+- [`sfdx force mdapi deploy cancel`](#sfdx-force-mdapi-deploy-cancel)
+- [`sfdx force mdapi deploy report`](#sfdx-force-mdapi-deploy-report)
+- [`sfdx force mdapi retrieve`](#sfdx-force-mdapi-retrieve)
+- [`sfdx force mdapi retrieve report`](#sfdx-force-mdapi-retrieve-report)
+- [`sfdx force source deploy`](#sfdx-force-source-deploy)
+- [`sfdx force source deploy cancel`](#sfdx-force-source-deploy-cancel)
+- [`sfdx force source deploy report`](#sfdx-force-source-deploy-report)
+- [`sfdx force source pull`](#sfdx-force-source-pull)
+- [`sfdx force source push`](#sfdx-force-source-push)
+- [`sfdx force source retrieve`](#sfdx-force-source-retrieve)
+- [`sfdx force source status`](#sfdx-force-source-status)
 
-## `sfdx force:mdapi:deploy`
+## `sfdx force mdapi deploy`
 
 Deploy metadata to an org using Metadata API.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy -u <value> [--api-version <value>] [-d <value>] [-w <value>] [-o] [-g] [-q <value> | -l
-    NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -c] [--verbose] [-f <value>] [-s]
+  $ sfdx force mdapi deploy -u <value> [--json] [--api-version <value>] [-d <value>] [-w <value>] [-o] [-g] [-q <value>
+    | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -c] [--verbose] [-f <value>] [-s]
     [--soapdeploy] [--purgeondelete] [--concise] [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
@@ -172,26 +172,29 @@ FLAGS
   --verbose
       Display verbose output of the deploy results.
 
+GLOBAL FLAGS
+  --json  Format output as json.
+
 EXAMPLES
   Return a job ID you can use to check the deploy status:
 
-    $ sfdx force:mdapi:deploy --deploydir some/path
+    $ sfdx force mdapi deploy --deploydir some/path
 
   Deploy and poll for 1000 minutes:
 
-    $ sfdx force:mdapi:deploy --deploydir some/path --wait 1000
+    $ sfdx force mdapi deploy --deploydir some/path --wait 1000
 
   Deploy a ZIP file:
 
-    $ sfdx force:mdapi:deploy --zipfile stuff.zip
+    $ sfdx force mdapi deploy --zipfile stuff.zip
 
   Validate a deployment so the ID can be used for a quick deploy:
 
-    $ sfdx force:mdapi:deploy --deploydir some/path --wait 1000 --checkonly --testlevel RunAllTestsInOrg
+    $ sfdx force mdapi deploy --deploydir some/path --wait 1000 --checkonly --testlevel RunAllTestsInOrg
 
   Quick deploy using a previously validated deployment:
 
-    $ sfdx force:mdapi:deploy --validateddeployrequestid MyValidatedId
+    $ sfdx force mdapi deploy --validateddeployrequestid MyValidatedId
 
 FLAG DESCRIPTIONS
   -c, --checkonly
@@ -296,22 +299,25 @@ FLAG DESCRIPTIONS
     Indicates that you want verbose output from the deploy operation.
 ```
 
-_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/deploy.ts)_
+_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/mdapi/deploy.ts)_
 
-## `sfdx force:mdapi:deploy:cancel`
+## `sfdx force mdapi deploy cancel`
 
 Cancel a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy:cancel -o <value> [--api-version <value>] [-w <value>] [-i <value>]
+  $ sfdx force mdapi deploy cancel -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>]
 
 FLAGS
-  -i, --jobid=<value>       Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment.
-  -o, --target-org=<value>  (required) Username or alias of the target org.
-  -w, --wait=<value>        [default: 33 minutes] Number of minutes for the command to complete and display results to
-                            the terminal window.
-  --api-version=<value>     Override the api version used for api requests made by this command
+  -i, --jobid=<value>        Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment.
+  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -w, --wait=<value>         [default: 33 minutes] Number of minutes for the command to complete and display results to
+                             the terminal window.
+      --api-version=<value>  Override the api version used for api requests made by this command
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Cancel a metadata deployment.
@@ -324,11 +330,11 @@ DESCRIPTION
 EXAMPLES
   Cancel a deployment and wait two minutes:
 
-    $ sfdx force:mdapi:deploy:cancel --wait 2
+    $ sfdx force mdapi deploy cancel --wait 2
 
   If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
-    $ sfdx force:mdapi:deploy:cancel --jobid <jobid>
+    $ sfdx force mdapi deploy cancel --jobid <jobid>
 
 FLAG DESCRIPTIONS
   -w, --wait=<value>  Number of minutes for the command to complete and display results to the terminal window.
@@ -336,16 +342,16 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/deploy/cancel.ts)_
+_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/mdapi/deploy/cancel.ts)_
 
-## `sfdx force:mdapi:deploy:report`
+## `sfdx force mdapi deploy report`
 
 Check the status of a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:mdapi:deploy:report -o <value> [--api-version <value>] [-w <value>] [-i <value>] [--verbose] [--concise]
-    [--resultsdir <value>] [--coverageformatters
+  $ sfdx force mdapi deploy report -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>] [--verbose]
+    [--concise] [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
@@ -377,6 +383,9 @@ FLAGS
   --verbose
       Verbose output of deploy results.
 
+GLOBAL FLAGS
+  --json  Format output as json.
+
 DESCRIPTION
   Check the status of a metadata deployment.
 
@@ -387,11 +396,11 @@ DESCRIPTION
 EXAMPLES
   Check the status of the most recent deployment
 
-    $ sfdx force:mdapi:deploy:report
+    $ sfdx force mdapi deploy report
 
   Check the status of a deploy with job ID 1234 and wait for 10 minutes for the result:
 
-    $ sfdx force:mdapi:deploy:report --jobid 1234 --wait 10
+    $ sfdx force mdapi deploy report --jobid 1234 --wait 10
 
 FLAG DESCRIPTIONS
   -i, --jobid=<value>
@@ -404,16 +413,16 @@ FLAG DESCRIPTIONS
     use the ID of the most recent metadata deployment.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/deploy/report.ts)_
+_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/mdapi/deploy/report.ts)_
 
-## `sfdx force:mdapi:retrieve`
+## `sfdx force mdapi retrieve`
 
 Retrieve metadata from an org using Metadata API.
 
 ```
 USAGE
-  $ sfdx force:mdapi:retrieve -o <value> -r <value> [-k <value> | -d <value> | -p <value>] [-s] [-n <value>] [-z] [-w
-    <value>] [-a <value>] [--verbose]
+  $ sfdx force mdapi retrieve -o <value> -r <value> [--json] [-k <value> | -d <value> | -p <value>] [-s] [-n <value>] [-z]
+    [-w <value>] [-a <value>] [--verbose]
 
 FLAGS
   -a, --apiversion=<value>         Target API version for the retrieve.
@@ -428,7 +437,10 @@ FLAGS
   -s, --singlepackage              Specify that the zip file points to a directory structure for a single package.
   -w, --wait=<value>               [default: 1440 minutes] Number of minutes to wait for the command to complete.
   -z, --unzip                      Extract all files from the retrieved zip file.
-  --verbose                        Display verbose output of retrieve result.
+      --verbose                    Display verbose output of retrieve result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Retrieve metadata from an org using Metadata API.
@@ -439,20 +451,20 @@ DESCRIPTION
 EXAMPLES
   Retrieve metadata in the default project directory into the target directory:
 
-    $ sfdx force:mdapi:retrieve --retrievetargetdir path/to/retrieve/dir
+    $ sfdx force mdapi retrieve --retrievetargetdir path/to/retrieve/dir
 
   Retrieve metadata defined in the specified manifest into the target directory:
 
-    $ sfdx force:mdapi:retrieve --retrievetargetdir path/to/retrieve/dir --unpackaged package.xml
+    $ sfdx force mdapi retrieve --retrievetargetdir path/to/retrieve/dir --unpackaged package.xml
 
   Retrieve metadata defined by the specified directory, name the retrieved zipfile and extract all contents
 
-    $ sfdx force:mdapi:retrieve --sourcedir path/to/apexClasses --retrievetargetdir path/to/retrieve/dir --unzip \
+    $ sfdx force mdapi retrieve --sourcedir path/to/apexClasses --retrievetargetdir path/to/retrieve/dir --unzip \
       --zipfilename apexClasses.zip
 
   Enqueue a retrieve request but do not wait for the metadata to be retrieved:
 
-    $ sfdx force:mdapi:retrieve --retrievetargetdir path/to/retrieve/dir --wait 0
+    $ sfdx force mdapi retrieve --retrievetargetdir path/to/retrieve/dir --wait 0
 
 FLAG DESCRIPTIONS
   -a, --apiversion=<value>  Target API version for the retrieve.
@@ -465,16 +477,16 @@ FLAG DESCRIPTIONS
     By default, the CLI assumes the directory is structured for a set of packages.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/retrieve.ts)_
+_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/mdapi/retrieve.ts)_
 
-## `sfdx force:mdapi:retrieve:report`
+## `sfdx force mdapi retrieve report`
 
 Check the status of a metadata retrieval.
 
 ```
 USAGE
-  $ sfdx force:mdapi:retrieve:report -o <value> [--api-version <value>] [-r <value>] [-i <value>] [-n <value>] [-z] [-w <value>]
-    [--verbose]
+  $ sfdx force mdapi retrieve report -o <value> [--json] [--api-version <value>] [-r <value>] [-i <value>] [-n <value>] [-z] [-w
+    <value>] [--verbose]
 
 FLAGS
   -i, --jobid=<value>              Job ID of the retrieve you want to check; defaults to your most recent CLI retrieval.
@@ -484,8 +496,11 @@ FLAGS
                                    retrieved.
   -w, --wait=<value>               [default: 1440 minutes] Number of minutes to wait for the command to complete.
   -z, --unzip                      Extract all files from the retrieved zip file.
-  --api-version=<value>            Override the api version used for api requests made by this command
-  --verbose                        Display verbose output of retrieve result.
+      --api-version=<value>        Override the api version used for api requests made by this command
+      --verbose                    Display verbose output of retrieve result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Check the status of a metadata retrieval.
@@ -497,17 +512,17 @@ DESCRIPTION
 EXAMPLES
   Poll until the metadata is retrieved (or timeout is reached) using data from the last force:mdapi:retrieve command:
 
-    $ sfdx force:mdapi:retrieve:report
+    $ sfdx force mdapi retrieve report
 
   Report the current status of the last retrieve command. If the retrieve is complete the zip file of metadata is
   written to the target directoy:
 
-    $ sfdx force:mdapi:retrieve:report --retrievetargetdir path/to/retrieve/dir --wait 0
+    $ sfdx force mdapi retrieve report --retrievetargetdir path/to/retrieve/dir --wait 0
 
   Poll until the metadata is retrieved (or timeout is reached) using the provided RetrieveID, naming the zip file and
   extracting all contents:
 
-    $ sfdx force:mdapi:retrieve:report -i retrieveId --retrievetargetdir path/to/retrieve/dir --unzip --zipfilename \
+    $ sfdx force mdapi retrieve report -i retrieveId --retrievetargetdir path/to/retrieve/dir --unzip --zipfilename \
       apexClasses.zip
 
 FLAG DESCRIPTIONS
@@ -516,18 +531,18 @@ FLAG DESCRIPTIONS
     You must specify a --retrievetargetdir. Use with --wait to resume waiting.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/mdapi/retrieve/report.ts)_
+_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/mdapi/retrieve/report.ts)_
 
-## `sfdx force:source:deploy`
+## `sfdx force source deploy`
 
 Deploy source to an org.
 
 ```
 USAGE
-  $ sfdx force:source:deploy -u <value> [--api-version <value>] [--soapdeploy] [-w <value>] [-o] [-g] [--purgeondelete -x
-    <value>] [-q <value> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r <value> | -t]
-    [--verbose] [-m <value>] [-p <value>] [--predestructivechanges <value> ] [--postdestructivechanges <value> ] [-f ]
-    [--resultsdir <value>] [--coverageformatters
+  $ sfdx force source deploy -u <value> [--json] [--api-version <value>] [--soapdeploy] [-w <value>] [-o] [-g]
+    [--purgeondelete -x <value>] [-q <value> | -c | -l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg | -r
+    <value> | -t] [--verbose] [-m <value>] [-p <value>] [--predestructivechanges <value> ] [--postdestructivechanges
+    <value> ] [-f ] [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
@@ -599,6 +614,9 @@ FLAGS
   --verbose
       Specify verbose output about the deploy result.
 
+GLOBAL FLAGS
+  --json  Format output as json.
+
 DESCRIPTION
   Deploy source to an org.
 
@@ -620,60 +638,60 @@ DESCRIPTION
 EXAMPLES
   Deploy the source files in a directory:
 
-    $ sfdx force:source:deploy --sourcepath path/to/source
+    $ sfdx force source deploy --sourcepath path/to/source
 
   Deploy a specific Apex class and the objects whose source is in a directory:
 
-    $ sfdx force:source:deploy --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects"
+    $ sfdx force source deploy --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects"
 
   Deploy source files in a comma-separated list that contains spaces:
 
-    $ sfdx force:source:deploy --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, \
+    $ sfdx force source deploy --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, \
       path/to/apex/classes"
 
   Deploy all Apex classes:
 
-    $ sfdx force:source:deploy --metadata ApexClass
+    $ sfdx force source deploy --metadata ApexClass
 
   Deploy a specific Apex class:
 
-    $ sfdx force:source:deploy --metadata ApexClass:MyApexClass
+    $ sfdx force source deploy --metadata ApexClass:MyApexClass
 
   Deploy a specific Apex class and update source tracking files :
 
-    $ sfdx force:source:deploy --metadata ApexClass:MyApexClass --tracksource
+    $ sfdx force source deploy --metadata ApexClass:MyApexClass --tracksource
 
   Deploy all custom objects and Apex classes:
 
-    $ sfdx force:source:deploy --metadata "CustomObject,ApexClass"
+    $ sfdx force source deploy --metadata "CustomObject,ApexClass"
 
   Deploy all Apex classes and two specific profiles (one of which has a space in its name):
 
-    $ sfdx force:source:deploy --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
+    $ sfdx force source deploy --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
 
   Deploy all components listed in a manifest:
 
-    $ sfdx force:source:deploy --manifest path/to/package.xml
+    $ sfdx force source deploy --manifest path/to/package.xml
 
   Run the tests that aren’t in any managed packages as part of a deployment:
 
-    $ sfdx force:source:deploy --metadata ApexClass --testlevel RunLocalTests
+    $ sfdx force source deploy --metadata ApexClass --testlevel RunLocalTests
 
   Check whether a deployment would succeed (to prepare for Quick Deploy):
 
-    $ sfdx force:source:deploy --metadata ApexClass --testlevel RunAllTestsInOrg -c
+    $ sfdx force source deploy --metadata ApexClass --testlevel RunAllTestsInOrg -c
 
   Deploy an already validated deployment (Quick Deploy):
 
-    $ sfdx force:source:deploy --validateddeployrequestid 0Af9A00000FTM6pSAH`
+    $ sfdx force source deploy --validateddeployrequestid 0Af9A00000FTM6pSAH`
 
   Run a destructive operation before the deploy occurs:
 
-    $ sfdx force:source:deploy --manifest package.xml --predestructivechanges destructiveChangesPre.xml
+    $ sfdx force source deploy --manifest package.xml --predestructivechanges destructiveChangesPre.xml
 
   Run a destructive operation after the deploy occurs:
 
-    $ sfdx force:source:deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
+    $ sfdx force source deploy --manifest package.xml --postdestructivechanges destructiveChangesPost.xml
 
 FLAG DESCRIPTIONS
   -c, --checkonly  Validate the deployed metadata and run all Apex tests, but don't save to the org.
@@ -779,23 +797,26 @@ FLAG DESCRIPTIONS
     If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/deploy.ts)_
 
-## `sfdx force:source:deploy:cancel`
+## `sfdx force source deploy cancel`
 
 Cancel a source deployment.
 
 ```
 USAGE
-  $ sfdx force:source:deploy:cancel -o <value> [--api-version <value>] [-w <value>] [-i <value>]
+  $ sfdx force source deploy cancel -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>]
 
 FLAGS
-  -i, --jobid=<value>       Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if
-                            not specified.
-  -o, --target-org=<value>  (required) Username or alias of the target org.
-  -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
-                            results.
-  --api-version=<value>     Override the api version used for api requests made by this command
+  -i, --jobid=<value>        Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if
+                             not specified.
+  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -w, --wait=<value>         [default: 33 minutes] Number of minutes to wait for the command to complete and display
+                             results.
+      --api-version=<value>  Override the api version used for api requests made by this command
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Cancel a source deployment.
@@ -809,11 +830,11 @@ DESCRIPTION
 EXAMPLES
   Cancel a deployment and wait two minutes:
 
-    $ sfdx force:source:deploy:cancel --wait 2
+    $ sfdx force source deploy cancel --wait 2
 
   If you have multiple deployments in progress and want to cancel a specific one, specify the job ID:
 
-    $ sfdx force:source:deploy:cancel --jobid <jobid>
+    $ sfdx force source deploy cancel --jobid <jobid>
 
 FLAG DESCRIPTIONS
   -w, --wait=<value>  Number of minutes to wait for the command to complete and display results.
@@ -821,16 +842,16 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/deploy/cancel.ts)_
 
-## `sfdx force:source:deploy:report`
+## `sfdx force source deploy report`
 
 Check the status of a metadata deployment.
 
 ```
 USAGE
-  $ sfdx force:source:deploy:report -o <value> [--api-version <value>] [-w <value>] [-i <value>] [--verbose] [--resultsdir
-    <value>] [--coverageformatters
+  $ sfdx force source deploy report -o <value> [--json] [--api-version <value>] [-w <value>] [-i <value>] [--verbose]
+    [--resultsdir <value>] [--coverageformatters
     clover|cobertura|html-spa|html|json|json-summary|lcovonly|none|teamcity|text|text-summary] [--junit]
 
 FLAGS
@@ -859,6 +880,9 @@ FLAGS
   --verbose
       Verbose output of deploy result.
 
+GLOBAL FLAGS
+  --json  Format output as json.
+
 DESCRIPTION
   Check the status of a metadata deployment.
 
@@ -868,12 +892,12 @@ DESCRIPTION
 EXAMPLES
   Check the status of the most recent deployment on your default org:
 
-    $ sfdx force:source:deploy:report
+    $ sfdx force source deploy report
 
   Check the status using the job ID; output JUnit test results and format code coverage results in the specified
   format:
 
-    $ sfdx force:source:deploy:report --jobid <id> --junit --coverageformatters cobertura
+    $ sfdx force source deploy report --jobid <id> --junit --coverageformatters cobertura
 
 FLAG DESCRIPTIONS
   -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
@@ -881,23 +905,26 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/deploy/report.ts)_
 
-## `sfdx force:source:pull`
+## `sfdx force source pull`
 
 Pull changed source from the org to your project to keep them in sync.
 
 ```
 USAGE
-  $ sfdx force:source:pull -o <value> [--verbose] [--api-version <value>] [-f] [-w <value>]
+  $ sfdx force source pull -o <value> [--json] [--verbose] [--api-version <value>] [-f] [-w <value>]
 
 FLAGS
-  -f, --forceoverwrite      Ignore conflict warnings; changes in the org overwrite changes in the project.
-  -o, --target-org=<value>  (required) Username or alias of the target org.
-  -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
-                            results to the terminal window.
-  --api-version=<value>     Override the api version used for api requests made by this command
-  --verbose                 Display additional details about the command results.
+  -f, --forceoverwrite       Ignore conflict warnings; changes in the org overwrite changes in the project.
+  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -w, --wait=<value>         [default: 33 minutes] Number of minutes to wait for the command to complete and display
+                             results to the terminal window.
+      --api-version=<value>  Override the api version used for api requests made by this command
+      --verbose              Display additional details about the command results.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Pull changed source from the org to your project to keep them in sync.
@@ -908,12 +935,12 @@ DESCRIPTION
 EXAMPLES
   Pull source from your default org:
 
-    $ sfdx force:source:pull
+    $ sfdx force source pull
 
   Pull source from the org with alias "myscratch"; ignore any conflicts and overwrite the local project files with org
   changes; wait for only 5 minutes:
 
-    $ sfdx force:source:pull --target-org myscratch --wait 5 --forceoverwrite
+    $ sfdx force source pull --target-org myscratch --wait 5 --forceoverwrite
 
 FLAG DESCRIPTIONS
   -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
@@ -921,25 +948,28 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/pull.ts)_
+_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/pull.ts)_
 
-## `sfdx force:source:push`
+## `sfdx force source push`
 
 Push changed source from your project to an org to keep them in sync.
 
 ```
 USAGE
-  $ sfdx force:source:push -o <value> [--api-version <value>] [-f] [-w <value>] [-g] [--quiet]
+  $ sfdx force source push -o <value> [--json] [--api-version <value>] [-f] [-w <value>] [-g] [--quiet]
 
 FLAGS
-  -f, --forceoverwrite      Ignore conflict warnings and push source anyway; changes in the project overwrite changes in
-                            the org.
-  -g, --ignorewarnings      Deploy changes even if warnings are generated.
-  -o, --target-org=<value>  (required) Username or alias of the target org.
-  -w, --wait=<value>        [default: 33 minutes] Number of minutes to wait for the command to complete and display
-                            results to the terminal window.
-  --api-version=<value>     Override the api version used for api requests made by this command
-  --quiet                   Minimize JSON and sdtout output on success.
+  -f, --forceoverwrite       Ignore conflict warnings and push source anyway; changes in the project overwrite changes
+                             in the org.
+  -g, --ignorewarnings       Deploy changes even if warnings are generated.
+  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -w, --wait=<value>         [default: 33 minutes] Number of minutes to wait for the command to complete and display
+                             results to the terminal window.
+      --api-version=<value>  Override the api version used for api requests made by this command
+      --quiet                Minimize JSON and sdtout output on success.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Push changed source from your project to an org to keep them in sync.
@@ -950,12 +980,12 @@ DESCRIPTION
 EXAMPLES
   Push source to your default org:
 
-    $ sfdx force:source:push
+    $ sfdx force source push
 
   Push source to the org with alias "myscratch"; ignore any conflicts and overwrite with org with the local project
   changes; wait for only 5 minutes:
 
-    $ sfdx force:source:push --target-org myscratch --wait 5 --forceoverwrite
+    $ sfdx force source push --target-org myscratch --wait 5 --forceoverwrite
 
 FLAG DESCRIPTIONS
   -w, --wait=<value>  Number of minutes to wait for the command to complete and display results to the terminal window.
@@ -963,16 +993,16 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/push.ts)_
+_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/push.ts)_
 
-## `sfdx force:source:retrieve`
+## `sfdx force source retrieve`
 
 Retrieve source from an org.
 
 ```
 USAGE
-  $ sfdx force:source:retrieve -o <value> [-a <value>] [-r <value> | -n <value> | -p <value>] [-w <value>] [-x <value> | -m
-    <value> | ] [-f -t] [--verbose]
+  $ sfdx force source retrieve -o <value> [--json] [-a <value>] [-r <value> | -n <value> | -p <value>] [-w <value>] [-x
+    <value> | -m <value> | ] [-f -t] [--verbose]
 
 FLAGS
   -a, --api-version=<value>        Override the api version used for api requests made by this command
@@ -988,7 +1018,10 @@ FLAGS
                                    display results to the terminal window.
   -x, --manifest=<value>           Complete path for the manifest (package.xml) file that specifies the components to
                                    retrieve.
-  --verbose                        Verbose output of retrieve result.
+      --verbose                    Verbose output of retrieve result.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Retrieve source from an org.
@@ -1006,57 +1039,57 @@ DESCRIPTION
 EXAMPLES
   Retrieve the source files in a directory from your default org:
 
-    $ sfdx force:source:retrieve --sourcepath path/to/source
+    $ sfdx force source retrieve --sourcepath path/to/source
 
   Retrieve a specific Apex class and the objects whose source is in a directory from an org with alias "myscratch":
 
-    $ sfdx force:source:retrieve --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects" --target-org \
+    $ sfdx force source retrieve --sourcepath "path/to/apex/classes/MyClass.cls,path/to/source/objects" --target-org \
       myscratch
 
   Retrieve source files in a comma-separated list that contains spaces:
 
-    $ sfdx force:source:retrieve --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, \
+    $ sfdx force source retrieve --sourcepath "path/to/objects/MyCustomObject/fields/MyField.field-meta.xml, \
       path/to/apex/classes"
 
   Retrieve all Apex classes:
 
-    $ sfdx force:source:retrieve --metadata ApexClass
+    $ sfdx force source retrieve --metadata ApexClass
 
   Retrieve a specific Apex class:
 
-    $ sfdx force:source:retrieve --metadata ApexClass:MyApexClass
+    $ sfdx force source retrieve --metadata ApexClass:MyApexClass
 
   Retrieve a specific Apex class and update source tracking files:
 
-    $ sfdx force:source:retrieve --metadata ApexClass:MyApexClass --tracksource
+    $ sfdx force source retrieve --metadata ApexClass:MyApexClass --tracksource
 
   Retrieve all custom objects and Apex classes:
 
-    $ sfdx force:source:retrieve --metadata "CustomObject,ApexClass"
+    $ sfdx force source retrieve --metadata "CustomObject,ApexClass"
 
   Retrieve all Apex classes and two specific profiles (one of which has a space in its name):
 
-    $ sfdx force:source:retrieve --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
+    $ sfdx force source retrieve --metadata "ApexClass, Profile:My Profile, Profile: AnotherProfile"
 
   Retrieve all metadata components listed in a manifest:
 
-    $ sfdx force:source:retrieve --manifest path/to/package.xml
+    $ sfdx force source retrieve --manifest path/to/package.xml
 
   Retrieve metadata from a package or multiple packages:
 
-    $ sfdx force:source:retrieve --packagenames MyPackageName
-    $ sfdx force:source:retrieve --packagenames "Package1, PackageName With Spaces, Package3"
+    $ sfdx force source retrieve --packagenames MyPackageName
+    $ sfdx force source retrieve --packagenames "Package1, PackageName With Spaces, Package3"
 
   Retrieve all metadata from a package and specific components that aren’t in the package, specify both -n |
   --packagenames and one other scoping parameter:
 
-    $ sfdx force:source:retrieve --packagenames MyPackageName --sourcepath path/to/apex/classes
-    $ sfdx force:source:retrieve --packagenames MyPackageName --metadata ApexClass:MyApexClass
-    $ sfdx force:source:retrieve --packagenames MyPackageName --manifest path/to/package.xml
+    $ sfdx force source retrieve --packagenames MyPackageName --sourcepath path/to/apex/classes
+    $ sfdx force source retrieve --packagenames MyPackageName --metadata ApexClass:MyApexClass
+    $ sfdx force source retrieve --packagenames MyPackageName --manifest path/to/package.xml
 
   Retrieve source files to a given directory instead of the default package directory specified in sfdx-project.json:
 
-    $ sfdx force:source:retrieve --metadata "StandardValueSet:TaskStatus" --retrievetargetdir path/to/unpackaged
+    $ sfdx force source retrieve --metadata "StandardValueSet:TaskStatus" --retrievetargetdir path/to/unpackaged
 
 FLAG DESCRIPTIONS
   -m, --metadata=<value>...  Comma-separated list of names of metadata components to retrieve from the org.
@@ -1085,33 +1118,36 @@ FLAG DESCRIPTIONS
     If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/retrieve.ts)_
 
-## `sfdx force:source:status`
+## `sfdx force source status`
 
 List changes that have been made locally, in an org, or both.
 
 ```
 USAGE
-  $ sfdx force:source:status -o <value> [--api-version <value>] [-l | -r] [--concise]
+  $ sfdx force source status -o <value> [--json] [--api-version <value>] [-l | -r] [--concise]
 
 FLAGS
-  -l, --local               List the changes that have been made locally.
-  -o, --target-org=<value>  (required) Username or alias of the target org.
-  -r, --remote              List the changes that have been made in the org.
-  --api-version=<value>     Override the api version used for api requests made by this command
-  --concise                 Show only the changes that will be pushed or pulled; omits files that are forceignored.
+  -l, --local                List the changes that have been made locally.
+  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -r, --remote               List the changes that have been made in the org.
+      --api-version=<value>  Override the api version used for api requests made by this command
+      --concise              Show only the changes that will be pushed or pulled; omits files that are forceignored.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 EXAMPLES
   List changes that have been made locally but not in the org with alias "myscratch":
 
-    $ sfdx force:source:status --local --target-org myscratch
+    $ sfdx force source status --local --target-org myscratch
 
   List changes that have been made in your default org but aren't reflected in your local project:
 
-    $ sfdx force:source:status --remote
+    $ sfdx force source status --remote
 ```
 
-_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.4/src/commands/force/source/status.ts)_
+_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/2.11.5/src/commands/force/source/status.ts)_
 
 <!-- commandsstop -->
