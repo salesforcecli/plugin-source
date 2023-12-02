@@ -1164,33 +1164,15 @@
     minimatch "^5.1.6"
     proxy-agent "^6.3.1"
 
-"@salesforce/source-deploy-retrieve@^9.8.6":
-  version "9.8.6"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-9.8.6.tgz#3b9240bc776a44bc740e59acbd86da3072f3efdc"
-  integrity sha512-avsfR/hB54ZdSOI3bYdUqRPQbjExKEwAZfsIbs6N1vtidPrc1TSHvloCZhY0Clou+vLgjabIHEHVyQJUln0FKA==
-  dependencies:
-    "@salesforce/core" "^5.3.17"
-    "@salesforce/kit" "^3.0.15"
-    "@salesforce/ts-types" "^2.0.9"
-    fast-levenshtein "^3.0.0"
-    fast-xml-parser "^4.3.2"
-    got "^11.8.6"
-    graceful-fs "^4.2.11"
-    ignore "^5.2.4"
-    jszip "^3.10.1"
-    mime "2.6.0"
-    minimatch "^5.1.6"
-    proxy-agent "^6.3.1"
-
-"@salesforce/source-testkit@^2.1.62":
-  version "2.1.65"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.65.tgz#4cec6ab2921431791cff4185ad2ee2b9de99776a"
-  integrity sha512-9UljnUaebMzLpBb92ilQsaewsoxtncJduxwwCCbi52VejE47BauLNGBOM2B3kF8pw81bNrV94qZwqOlHUG6xsQ==
+"@salesforce/source-testkit@^2.1.66":
+  version "2.1.66"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.66.tgz#7ca1bc7b4d4443301e3977127c881bf42177ac8e"
+  integrity sha512-cPbTJiGBy5DNXRufOm27aUePQ8qPt/fHmocInFTw/85EGCNdH8Yom6//ZTF/Il1DTPvV4MVz3egrJ7T1w+dfSw==
   dependencies:
     "@salesforce/cli-plugins-testkit" "^5.0.4"
-    "@salesforce/core" "^5.3.20"
+    "@salesforce/core" "^6.2.0"
     "@salesforce/kit" "^3.0.15"
-    "@salesforce/source-deploy-retrieve" "^9.8.6"
+    "@salesforce/source-deploy-retrieve" "^10.0.0"
     "@salesforce/ts-types" "^2.0.9"
     archiver "^5.3.2"
     chai-each "^0.0.1"
