@@ -20,7 +20,7 @@
     "@oclif/plugin-command-snapshot": "^5.0.2",
     "@oclif/plugin-help": "^6.0.7",
     "@salesforce/cli-plugins-testkit": "^5.0.2",
-    "@salesforce/dev-scripts": "^7.1.1",
+    "@salesforce/dev-scripts": "^8.0.0",
     "@salesforce/plugin-command-reference": "^3.0.46",
     "@salesforce/plugin-info": "^2.6.50",
     "@salesforce/source-testkit": "^2.1.66",
