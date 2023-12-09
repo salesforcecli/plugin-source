@@ -773,10 +773,10 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^3.0.4", "@oclif/core@^3.10.8", "@oclif/core@^3.11.0", "@oclif/core@^3.13.1", "@oclif/core@^3.3.1":
-  version "3.13.1"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.13.1.tgz#dbd5e604ec78a716a33bfa6fec6c988a507b7f38"
-  integrity sha512-bpnF6BL+j7D0k0T+dZ4g7LwcZzctCoKjIYm8zcSNgrItS2pgIlvsRf8SdkGNu6djzRD7vzM657ZO9fWU6goz0g==
+"@oclif/core@^3.0.4", "@oclif/core@^3.10.8", "@oclif/core@^3.11.0", "@oclif/core@^3.12.0", "@oclif/core@^3.13.1", "@oclif/core@^3.3.1":
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.14.1.tgz#634fc96124068e47b720d62f3b278d818a07495e"
+  integrity sha512-HLFL2s45DFdqYI2CFjVS/CIQ4cQ4yZqH0XqO9nnwcRWYboz2rEW/vLmidjIYGDjh6xA/k5psiAL3O1KEjqSHuQ==
   dependencies:
     ansi-escapes "^4.3.2"
     ansi-styles "^4.3.0"
@@ -1134,13 +1134,13 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/sf-plugins-core@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-5.0.1.tgz#16b085eda99e28f2607957954d6ac957a8d0a0eb"
-  integrity sha512-gKUhAP9DDUlB4bjr0a6bsWiM16hn/n1cW8BglhYHAow8UJ0OQBxx+dfvAO0ftXmfzg82IZdMViiDmQXt0Z+e6A==
+"@salesforce/sf-plugins-core@^5.0.7":
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-5.0.7.tgz#7014df537ce8a9052f395f7cc48907920334d7ce"
+  integrity sha512-blyjmtbe0KKyoMRCOlxVrtv3G5L/AaIDFohpXTy5322qv2aLELI83fe5DNp1oTtIK/m83CwM3EnZCF3Xc7Lj4Q==
   dependencies:
-    "@oclif/core" "^3.11.0"
-    "@salesforce/core" "^6.1.0"
+    "@oclif/core" "^3.12.0"
+    "@salesforce/core" "^6.2.2"
     "@salesforce/kit" "^3.0.15"
     "@salesforce/ts-types" "^2.0.9"
     "@types/inquirer" "^8.2.3"
