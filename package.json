@@ -7,7 +7,7 @@
   "dependencies": {
     "@oclif/core": "^3.13.1",
     "@salesforce/apex-node": "^2.1.2",
-    "@salesforce/core": "^6.2.2",
+    "@salesforce/core": "^6.4.0",
     "@salesforce/kit": "^3.0.15",
     "@salesforce/sf-plugins-core": "^5.0.1",
     "@salesforce/source-deploy-retrieve": "^10.0.0",
@@ -20,7 +20,7 @@
     "@oclif/plugin-command-snapshot": "^5.0.3",
     "@oclif/plugin-help": "^6.0.7",
     "@salesforce/cli-plugins-testkit": "^5.0.2",
-    "@salesforce/dev-scripts": "^8.1.1",
+    "@salesforce/dev-scripts": "^8.1.2",
     "@salesforce/plugin-command-reference": "^3.0.46",
     "@salesforce/plugin-info": "^2.6.50",
     "@salesforce/source-testkit": "^2.1.66",
