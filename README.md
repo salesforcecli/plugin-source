@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (--version)
-@salesforce/plugin-source/3.0.5 linux-x64 node-v18.19.0
+@salesforce/plugin-source/3.0.6 linux-x64 node-v18.19.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -299,7 +299,7 @@ FLAG DESCRIPTIONS
     Indicates that you want verbose output from the deploy operation.
 ```
 
-_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/mdapi/deploy.ts)_
+_See code: [src/commands/force/mdapi/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/mdapi/deploy.ts)_
 
 ## `sfdx force mdapi deploy cancel`
 
@@ -311,7 +311,8 @@ USAGE
 
 FLAGS
   -i, --jobid=<value>        Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment.
-  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -o, --target-org=<value>   (required) Username or alias of the target org. Not required if the `target-org`
+                             configuration variable is already set.
   -w, --wait=<value>         [default: 33 minutes] Number of minutes for the command to complete and display results to
                              the terminal window.
       --api-version=<value>  Override the api version used for api requests made by this command
@@ -342,7 +343,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/mdapi/deploy/cancel.ts)_
+_See code: [src/commands/force/mdapi/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/mdapi/deploy/cancel.ts)_
 
 ## `sfdx force mdapi deploy report`
 
@@ -360,7 +361,8 @@ FLAGS
       recent CLI deployment.
 
   -o, --target-org=<value>
-      (required) Username or alias of the target org.
+      (required) Username or alias of the target org. Not required if the `target-org` configuration variable is already
+      set.
 
   -w, --wait=<value>
       [default: 0 minutes] Number of minutes to wait for the command to finish; use -1 to poll indefinitely.
@@ -413,7 +415,7 @@ FLAG DESCRIPTIONS
     use the ID of the most recent metadata deployment.
 ```
 
-_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/mdapi/deploy/report.ts)_
+_See code: [src/commands/force/mdapi/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/mdapi/deploy/report.ts)_
 
 ## `sfdx force mdapi retrieve`
 
@@ -430,7 +432,8 @@ FLAGS
                                    sfdx-project.json.
   -k, --unpackaged=<value>         Complete path for the manifest file that specifies the components to retrieve.
   -n, --zipfilename=<value>        File name to use for the retrieved zip file.
-  -o, --target-org=<value>         (required) Username or alias of the target org.
+  -o, --target-org=<value>         (required) Username or alias of the target org. Not required if the `target-org`
+                                   configuration variable is already set.
   -p, --packagenames=<value>...    Comma-separated list of packages to retrieve.
   -r, --retrievetargetdir=<value>  (required) Root of the directory structure where the retrieved .zip or metadata files
                                    are retrieved.
@@ -477,7 +480,7 @@ FLAG DESCRIPTIONS
     By default, the CLI assumes the directory is structured for a set of packages.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/mdapi/retrieve.ts)_
+_See code: [src/commands/force/mdapi/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/mdapi/retrieve.ts)_
 
 ## `sfdx force mdapi retrieve report`
 
@@ -491,7 +494,8 @@ USAGE
 FLAGS
   -i, --jobid=<value>              Job ID of the retrieve you want to check; defaults to your most recent CLI retrieval.
   -n, --zipfilename=<value>        File name to use for the retrieved zip file.
-  -o, --target-org=<value>         (required) Username or alias of the target org.
+  -o, --target-org=<value>         (required) Username or alias of the target org. Not required if the `target-org`
+                                   configuration variable is already set.
   -r, --retrievetargetdir=<value>  Root of the directory structure where the retrieved .zip or metadata files are
                                    retrieved.
   -w, --wait=<value>               [default: 1440 minutes] Number of minutes to wait for the command to complete.
@@ -531,7 +535,7 @@ FLAG DESCRIPTIONS
     You must specify a --retrievetargetdir. Use with --wait to resume waiting.
 ```
 
-_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/mdapi/retrieve/report.ts)_
+_See code: [src/commands/force/mdapi/retrieve/report.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/mdapi/retrieve/report.ts)_
 
 ## `sfdx force source deploy`
 
@@ -797,7 +801,7 @@ FLAG DESCRIPTIONS
     If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/deploy.ts)_
+_See code: [src/commands/force/source/deploy.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/deploy.ts)_
 
 ## `sfdx force source deploy cancel`
 
@@ -810,7 +814,8 @@ USAGE
 FLAGS
   -i, --jobid=<value>        Job ID of the deployment you want to cancel; defaults to your most recent CLI deployment if
                              not specified.
-  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -o, --target-org=<value>   (required) Username or alias of the target org. Not required if the `target-org`
+                             configuration variable is already set.
   -w, --wait=<value>         [default: 33 minutes] Number of minutes to wait for the command to complete and display
                              results.
       --api-version=<value>  Override the api version used for api requests made by this command
@@ -842,7 +847,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/deploy/cancel.ts)_
+_See code: [src/commands/force/source/deploy/cancel.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/deploy/cancel.ts)_
 
 ## `sfdx force source deploy report`
 
@@ -859,7 +864,8 @@ FLAGS
       Job ID of the deployment you want to check; defaults to your most recent CLI deployment.
 
   -o, --target-org=<value>
-      (required) Username or alias of the target org.
+      (required) Username or alias of the target org. Not required if the `target-org` configuration variable is already
+      set.
 
   -w, --wait=<value>
       [default: 33 minutes] Number of minutes to wait for the command to complete and display results to the terminal
@@ -905,7 +911,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/deploy/report.ts)_
+_See code: [src/commands/force/source/deploy/report.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/deploy/report.ts)_
 
 ## `sfdx force source pull`
 
@@ -917,7 +923,8 @@ USAGE
 
 FLAGS
   -f, --forceoverwrite       Ignore conflict warnings; changes in the org overwrite changes in the project.
-  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -o, --target-org=<value>   (required) Username or alias of the target org. Not required if the `target-org`
+                             configuration variable is already set.
   -w, --wait=<value>         [default: 33 minutes] Number of minutes to wait for the command to complete and display
                              results to the terminal window.
       --api-version=<value>  Override the api version used for api requests made by this command
@@ -948,7 +955,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/pull.ts)_
+_See code: [src/commands/force/source/pull.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/pull.ts)_
 
 ## `sfdx force source push`
 
@@ -962,7 +969,8 @@ FLAGS
   -f, --forceoverwrite       Ignore conflict warnings and push source anyway; changes in the project overwrite changes
                              in the org.
   -g, --ignorewarnings       Deploy changes even if warnings are generated.
-  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -o, --target-org=<value>   (required) Username or alias of the target org. Not required if the `target-org`
+                             configuration variable is already set.
   -w, --wait=<value>         [default: 33 minutes] Number of minutes to wait for the command to complete and display
                              results to the terminal window.
       --api-version=<value>  Override the api version used for api requests made by this command
@@ -993,7 +1001,7 @@ FLAG DESCRIPTIONS
     If the command continues to run after the wait period, the CLI returns control of the terminal window to you.
 ```
 
-_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/push.ts)_
+_See code: [src/commands/force/source/push.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/push.ts)_
 
 ## `sfdx force source retrieve`
 
@@ -1009,7 +1017,8 @@ FLAGS
   -f, --forceoverwrite             Ignore conflict warnings and overwrite changes to the project.
   -m, --metadata=<value>...        Comma-separated list of names of metadata components to retrieve from the org.
   -n, --packagenames=<value>...    Comma-separated list of packages to retrieve.
-  -o, --target-org=<value>         (required) Username or alias of the target org.
+  -o, --target-org=<value>         (required) Username or alias of the target org. Not required if the `target-org`
+                                   configuration variable is already set.
   -p, --sourcepath=<value>...      Comma-separated list of file paths for source to retrieve from the org.
   -r, --retrievetargetdir=<value>  Root of the directory structure into which the source files are retrieved.
   -t, --tracksource                If the retrieve succeeds, update source tracking information; doesn't delete local
@@ -1118,7 +1127,7 @@ FLAG DESCRIPTIONS
     If you specify this parameter, don’t specify --metadata or --sourcepath.
 ```
 
-_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/retrieve.ts)_
+_See code: [src/commands/force/source/retrieve.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/retrieve.ts)_
 
 ## `sfdx force source status`
 
@@ -1130,7 +1139,8 @@ USAGE
 
 FLAGS
   -l, --local                List the changes that have been made locally.
-  -o, --target-org=<value>   (required) Username or alias of the target org.
+  -o, --target-org=<value>   (required) Username or alias of the target org. Not required if the `target-org`
+                             configuration variable is already set.
   -r, --remote               List the changes that have been made in the org.
       --api-version=<value>  Override the api version used for api requests made by this command
       --concise              Show only the changes that will be pushed or pulled; omits files that are forceignored.
@@ -1148,6 +1158,6 @@ EXAMPLES
     $ sfdx force source status --remote
 ```
 
-_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.5/src/commands/force/source/status.ts)_
+_See code: [src/commands/force/source/status.ts](https://github.com/salesforcecli/plugin-source/blob/3.0.6/src/commands/force/source/status.ts)_
 
 <!-- commandsstop -->
