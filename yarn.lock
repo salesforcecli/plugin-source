@@ -961,18 +961,20 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@salesforce/apex-node@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-2.1.2.tgz#f42935b9be6ad7d28b5810ea36a88124789e6f5f"
-  integrity sha512-4ShpuymejVotaK4BYa9h33jc3zj0J9xPV7IIKfTscBTfFHspgPEPaDghTODC+DZMn6TJ1M2nNzRfeHmlF7J2kA==
+"@salesforce/apex-node@^2.1.7":
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-2.1.7.tgz#0785f2a1363fbeb636f5cef4904287e4ef057d88"
+  integrity sha512-2s29mbHNL0vXmbcfndkLbKEYclHHc7sj7ei2vscsR8/HdHGy3SsEfir1IU/Sqeqd79yxJdxMUfwmzVnRFR6WJA==
   dependencies:
-    "@salesforce/core" "^5.3.18"
-    "@types/istanbul-reports" "^3.0.1"
+    "@salesforce/core" "^6.1.0"
+    "@salesforce/kit" "^3.0.15"
+    "@types/istanbul-reports" "^3.0.4"
     faye "1.4.0"
-    glob "^8.0.3"
-    istanbul-lib-coverage "^3.2.0"
+    glob "^10.3.10"
+    istanbul-lib-coverage "^3.2.2"
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.6"
+    jsforce "^2.0.0-beta.29"
 
 "@salesforce/cli-plugins-testkit@^5.0.2", "@salesforce/cli-plugins-testkit@^5.0.4":
   version "5.0.4"
@@ -989,7 +991,7 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/core@^5.3.1", "@salesforce/core@^5.3.17", "@salesforce/core@^5.3.18", "@salesforce/core@^5.3.20":
+"@salesforce/core@^5.3.1", "@salesforce/core@^5.3.17", "@salesforce/core@^5.3.20":
   version "5.3.20"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-5.3.20.tgz#4e934d4551bb70423cb1c4115615bc41cffca41e"
   integrity sha512-y+O6O2c8OYFDrAy2qsG+pAcNxoyL14nmBXcBRRcYA7Huj8ikK+aLJK84PuVAYdQz+hNwImQF+69IWtDkpK4Irg==
@@ -1013,7 +1015,7 @@
     semver "^7.5.4"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/core@^6.2.0", "@salesforce/core@^6.2.2", "@salesforce/core@^6.4.0":
+"@salesforce/core@^6.1.0", "@salesforce/core@^6.2.0", "@salesforce/core@^6.2.2", "@salesforce/core@^6.4.0":
   version "6.4.1"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-6.4.1.tgz#27edd083b62ee96d6270b60da6dfb959bff1a0a5"
   integrity sha512-Bn/Pox5JLeVBg35zgSmtNU+f9wdOaa7a/hmCIvQibci1dpKtLGUmSpdHibWR6zHag8ZoRkueea7zuqEjYzECyA==
@@ -1470,7 +1472,7 @@
   dependencies:
     "@types/istanbul-lib-coverage" "*"
 
-"@types/istanbul-reports@^3.0.1":
+"@types/istanbul-reports@^3.0.4":
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@types/istanbul-reports/-/istanbul-reports-3.0.4.tgz#0f03e3d2f670fbdac586e34b433783070cc16f54"
   integrity sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==
@@ -4964,7 +4966,7 @@ isomorphic-git@1.23.0:
     sha.js "^2.4.9"
     simple-get "^4.0.1"
 
-istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
+istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0, istanbul-lib-coverage@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-3.2.2.tgz#2d166c4b0644d43a39f04bf6c2edd1e585f31756"
   integrity sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==
