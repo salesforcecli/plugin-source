@@ -773,10 +773,10 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^3.0.4", "@oclif/core@^3.10.8", "@oclif/core@^3.11.0", "@oclif/core@^3.13.1", "@oclif/core@^3.14.1", "@oclif/core@^3.3.1":
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.14.1.tgz#634fc96124068e47b720d62f3b278d818a07495e"
-  integrity sha512-HLFL2s45DFdqYI2CFjVS/CIQ4cQ4yZqH0XqO9nnwcRWYboz2rEW/vLmidjIYGDjh6xA/k5psiAL3O1KEjqSHuQ==
+"@oclif/core@^3.0.4", "@oclif/core@^3.10.8", "@oclif/core@^3.11.0", "@oclif/core@^3.13.1", "@oclif/core@^3.14.1", "@oclif/core@^3.15.0", "@oclif/core@^3.3.1":
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.15.0.tgz#28405012137fa92efcc5a2c4d61336dd64c697cb"
+  integrity sha512-A1EVh4gv7mqAJ9OGVxLugaLcHvQnGwvOnPToP8OT9AldJ0LwVExOwhhlnOstYca33MIpGH00twYxWMS5nxMuDQ==
   dependencies:
     ansi-escapes "^4.3.2"
     ansi-styles "^4.3.0"
@@ -806,12 +806,12 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/plugin-command-snapshot@^5.0.3":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-command-snapshot/-/plugin-command-snapshot-5.0.3.tgz#1ca2ccc173ba66d81e0e351f0cf640a9c3782f02"
-  integrity sha512-LbG7lxdKhaapv7nrgUoQU505PA92OU4SOMyczS74BatgUHjx4B0qXOe3VI2aKmd+SApPaLDe/QsGnm98gfZhmQ==
+"@oclif/plugin-command-snapshot@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-command-snapshot/-/plugin-command-snapshot-5.0.5.tgz#8594869b2e70c5703041d810b7c6515dcd179494"
+  integrity sha512-rv+1DVDRJQhD6BXQ1rA7ZZRiXroqDEyfnuIdWLlELxmyENH5askz6q+PeY0GDIAGbIlGCsTv84B3rPk1qsMqRA==
   dependencies:
-    "@oclif/core" "^3.10.8"
+    "@oclif/core" "^3.15.0"
     "@types/lodash.difference" "^4.5.9"
     chalk "^5.3.0"
     just-diff "^5.2.0"
@@ -819,7 +819,7 @@
     lodash.get "^4.4.2"
     lodash.sortby "^4.7.0"
     semver "^7.5.4"
-    ts-json-schema-generator "^1.4.0"
+    ts-json-schema-generator "^1.5.0"
 
 "@oclif/plugin-help@^5.2.14":
   version "5.2.20"
@@ -8120,10 +8120,10 @@ ts-api-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.0.3.tgz#f12c1c781d04427313dbac808f453f050e54a331"
   integrity sha512-wNMeqtMz5NtwpT/UZGY5alT+VoKdSsOOP/kqHFcUW1P/VRhH2wJ48+DN2WwUliNbQ976ETwDL0Ifd2VVvgonvg==
 
-ts-json-schema-generator@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/ts-json-schema-generator/-/ts-json-schema-generator-1.4.0.tgz#f341b36792c372d3d09245414a4f3a6efa2697f8"
-  integrity sha512-wm8vyihmGgYpxrqRshmYkWGNwEk+sf3xV2rUgxv8Ryeh7bSpMO7pZQOht+2rS002eDkFTxR7EwRPXVzrS0WJTg==
+ts-json-schema-generator@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/ts-json-schema-generator/-/ts-json-schema-generator-1.5.0.tgz#9f5cea606c27ebcf13060157542ac1d3b225430f"
+  integrity sha512-RkiaJ6YxGc5EWVPfyHxszTmpGxX8HC2XBvcFlAl1zcvpOG4tjjh+eXioStXJQYTvr9MoK8zCOWzAUlko3K0DiA==
   dependencies:
     "@types/json-schema" "^7.0.12"
     commander "^11.0.0"
@@ -8131,7 +8131,7 @@ ts-json-schema-generator@^1.4.0:
     json5 "^2.2.3"
     normalize-path "^3.0.0"
     safe-stable-stringify "^2.4.3"
-    typescript "~5.2.2"
+    typescript "~5.3.2"
 
 ts-node@^10.8.1, ts-node@^10.9.1, ts-node@^10.9.2:
   version "10.9.2"
@@ -8303,7 +8303,7 @@ typedoc@^0.25.3:
     minimatch "^9.0.3"
     shiki "^0.14.1"
 
-"typescript@^4.6.4 || ^5.2.2", typescript@^5.3.3:
+"typescript@^4.6.4 || ^5.2.2", typescript@^5.3.3, typescript@~5.3.2:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
   integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
@@ -8312,11 +8312,6 @@ typescript@^4.9.5:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
-
-typescript@~5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
-  integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
 
 uglify-js@^3.1.4:
   version "3.17.4"
