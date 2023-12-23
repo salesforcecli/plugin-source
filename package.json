@@ -23,7 +23,7 @@
     "@salesforce/dev-scripts": "^8.1.2",
     "@salesforce/plugin-command-reference": "^3.0.54",
     "@salesforce/plugin-info": "^2.6.50",
-    "@salesforce/source-testkit": "^2.1.74",
+    "@salesforce/source-testkit": "^2.1.76",
     "@salesforce/ts-sinon": "1.4.19",
     "@types/archiver": "^5.3.2",
     "archiver": "^5.3.2",
