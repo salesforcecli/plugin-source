@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { ComponentStatus, DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -27,7 +27,7 @@ import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBa
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
 import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 

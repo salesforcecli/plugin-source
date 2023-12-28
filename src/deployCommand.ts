@@ -7,7 +7,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
+
 import {
   AsyncResult,
   ComponentSet,
@@ -43,7 +43,7 @@ import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResul
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
-Messages.importMessagesDirectory(path.dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 

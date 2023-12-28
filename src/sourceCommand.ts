@@ -7,7 +7,7 @@
 
 import { dirname, resolve, extname } from 'node:path';
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
+
 import { Messages, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { getString, Optional } from '@salesforce/ts-types';
@@ -15,7 +15,7 @@ import { ux } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
 
 export abstract class SourceCommand extends SfCommand<unknown> {

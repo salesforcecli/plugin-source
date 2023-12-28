@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { Messages, SfError } from '@salesforce/core';
 import { get } from '@salesforce/ts-types';
 import {
@@ -20,7 +20,7 @@ import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
 import chalk from 'chalk';
 import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 
 export abstract class RetrieveFormatter extends ResultFormatter {
   protected warnings: RetrieveMessage[];

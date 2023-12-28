@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
@@ -22,7 +22,7 @@ import {
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 
 export type PullResponse = { pulledSource: Array<Pick<FileResponse, 'filePath' | 'fullName' | 'state' | 'type'>> };

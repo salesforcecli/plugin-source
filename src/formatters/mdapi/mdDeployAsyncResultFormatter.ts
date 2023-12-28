@@ -7,15 +7,15 @@
 
 import { EOL } from 'node:os';
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { Messages } from '@salesforce/core';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatterOptions } from '../resultFormatter.js';
 import { DeployAsyncResultFormatter } from '../source/deployAsyncResultFormatter.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 
 export class MdDeployAsyncResultFormatter extends DeployAsyncResultFormatter {

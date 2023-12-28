@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { Duration } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { FileResponse, RequestStatus, RetrieveVersionData, RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -23,7 +23,7 @@ import { SourceCommand } from '../../../sourceCommand.js';
 import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter.js';
 import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 

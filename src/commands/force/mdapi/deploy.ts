@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { AsyncResult, DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
@@ -32,7 +32,7 @@ import { DeployProgressStatusFormatter } from '../../../formatters/deployProgres
 import { MdDeployAsyncResultFormatter } from '../../../formatters/mdapi/mdDeployAsyncResultFormatter.js';
 import { ResultFormatterOptions } from '../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deploy');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 

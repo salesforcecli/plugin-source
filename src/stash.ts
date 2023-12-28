@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { ConfigFile, Logger, Messages, SfError } from '@salesforce/core';
 import { JsonMap, Optional } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 
 interface StashFile {
   isGlobal: boolean;
