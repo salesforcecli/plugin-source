@@ -6,8 +6,8 @@
  */
 
 import path from 'node:path';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+
+
 import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
@@ -29,7 +29,7 @@ import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter.js';
 import { maybePrintCodeCoverageTable } from './codeCoverageTable.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export type DeployCommandResult = {

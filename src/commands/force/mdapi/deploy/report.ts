@@ -4,8 +4,8 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import { Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -24,7 +24,7 @@ import { ProgressFormatter } from '../../../../formatters/progressFormatter.js';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter.js';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.deployreport');
 
 const replacement = 'project deploy report';

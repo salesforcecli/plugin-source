@@ -5,8 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+
+
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, StubbedType, stubInterface, stubMethod } from '@salesforce/ts-sinon';
@@ -16,7 +16,7 @@ import { TestContext } from '@salesforce/core/lib/testSetup.js';
 import { hook } from '../../src/hooks/diagnostics.js';
 const pluginName = '@salesforce/plugin-source';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages(pluginName, 'diagnostics');
 
 describe('Doctor diagnostics', () => {
