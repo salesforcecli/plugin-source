@@ -9,7 +9,7 @@ import { join, relative } from 'node:path';
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { FileResponse } from '@salesforce/source-deploy-retrieve';
-import { cloneJson, ensureArray } from '@salesforce/kit';
+import { ensureArray } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { TestContext } from '@salesforce/core/lib/testSetup.js';
@@ -62,7 +62,7 @@ describe('RetrieveResultFormatter', () => {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [],
         warnings: [],
-        response: cloneJson(retrieveResultSuccess.response),
+        response: structuredClone(retrieveResultSuccess.response),
       };
       const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
@@ -73,7 +73,7 @@ describe('RetrieveResultFormatter', () => {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [],
         warnings: [],
-        response: cloneJson(retrieveResultFailure.response),
+        response: structuredClone(retrieveResultFailure.response),
       };
       const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultFailure);
       expect(formatter.getJson()).to.deep.equal(expectedFailureResults);
@@ -84,7 +84,7 @@ describe('RetrieveResultFormatter', () => {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [],
         warnings: [],
-        response: cloneJson(retrieveResultInProgress.response),
+        response: structuredClone(retrieveResultInProgress.response),
       };
       const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultInProgress);
       expect(formatter.getJson()).to.deep.equal(expectedInProgressResults);
@@ -96,7 +96,7 @@ describe('RetrieveResultFormatter', () => {
         inboundFiles: retrieveResultSuccess.getFileResponses(),
         packages: [testPkg],
         warnings: [],
-        response: cloneJson(retrieveResultSuccess.response),
+        response: structuredClone(retrieveResultSuccess.response),
       };
       const formatter = new RetrieveResultFormatter(ux, { packages: [testPkg] }, retrieveResultSuccess);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
@@ -109,7 +109,7 @@ describe('RetrieveResultFormatter', () => {
         inboundFiles: retrieveResultWarnings.getFileResponses(),
         packages: [],
         warnings,
-        response: cloneJson(retrieveResultWarnings.response),
+        response: structuredClone(retrieveResultWarnings.response),
       };
       const formatter = new RetrieveResultFormatter(ux, {}, retrieveResultWarnings);
       expect(formatter.getJson()).to.deep.equal(expectedSuccessResults);
