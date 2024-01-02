@@ -7,15 +7,12 @@
 
 import { EOL } from 'node:os';
 
-
-
 import { Messages } from '@salesforce/core';
-import { cloneJson } from '@salesforce/kit';
 import { AsyncResult } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export interface DeployCommandAsyncResult extends DeployAsyncStatus {
@@ -54,7 +51,7 @@ export class DeployAsyncResultFormatter extends ResultFormatter {
       status: 'Queued',
       timedOut: true,
     } as DeployCommandAsyncResult;
-    const resultClone = cloneJson(asyncResult);
+    const resultClone = structuredClone(asyncResult);
     asyncResult.outboundFiles = [];
     asyncResult.deploys = [resultClone];
 
