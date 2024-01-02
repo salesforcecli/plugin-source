@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
-
 import { Duration } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { FileResponse, RequestStatus, RetrieveVersionData, RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -23,7 +21,7 @@ import { SourceCommand } from '../../../sourceCommand.js';
 import { PullResponse, PullResultFormatter } from '../../../formatters/source/pullFormatter.js';
 import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
@@ -31,6 +29,7 @@ const replacement = 'project retrieve start';
 
 export default class Pull extends SourceCommand {
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),

@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
-
 import { Messages, SfProject } from '@salesforce/core';
 
 import { Duration, env } from '@salesforce/kit';
@@ -30,7 +28,7 @@ import { DeployProgressBarFormatter } from '../../../../formatters/deployProgres
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter.js';
 import { ResultFormatterOptions } from '../../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'report');
 
 const replacement = 'project deploy report';
@@ -40,6 +38,7 @@ export class Report extends DeployCommand {
   public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', ['project deploy start', replacement]),

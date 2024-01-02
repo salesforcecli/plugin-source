@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
-
 import { Messages } from '@salesforce/core';
 import { ChangeResult, StatusOutputRow } from '@salesforce/source-tracking';
 import { Interfaces } from '@oclif/core';
@@ -26,7 +24,7 @@ import {
 } from '../../../formatters/source/statusFormatter.js';
 import { trackingSetup } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'status');
 
 export type StatusCommandResult = StatusResult[];
@@ -36,6 +34,7 @@ export default class Status extends SfCommand<StatusCommandResult> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),

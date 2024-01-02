@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
-
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
@@ -37,7 +35,7 @@ import { DeployProgressStatusFormatter } from '../../../formatters/deployProgres
 import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 import { ResultFormatterOptions } from '../../../formatters/resultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
@@ -53,6 +51,7 @@ export class Deploy extends DeployCommand {
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),

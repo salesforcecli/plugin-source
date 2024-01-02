@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
 import { Messages, Org, SfError } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import { MetadataApiRetrieve, MetadataApiRetrieveStatus, RetrieveResult } from '@salesforce/source-deploy-retrieve';
@@ -25,7 +24,7 @@ import {
   RetrieveResultFormatter,
 } from '../../../../formatters/mdapi/retrieveResultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 export type ReportCommandResult = RetrieveCommandResult | RetrieveCommandAsyncResult;
@@ -34,6 +33,7 @@ export class Report extends SourceCommand {
   public static readonly description = messages.getMessage('report.description');
   public static readonly examples = messages.getMessages('report.examples');
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
     loglevel,
