@@ -5,8 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
-
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { ComponentStatus, DeployResult, DeployVersionData, RequestStatus } from '@salesforce/source-deploy-retrieve';
@@ -27,7 +25,7 @@ import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBa
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
 import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 const deployMessages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 
@@ -35,6 +33,7 @@ const replacement = 'project deploy start';
 
 export default class Push extends DeployCommand {
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),

@@ -8,7 +8,6 @@
 import { dirname, join, resolve } from 'node:path';
 import fs from 'node:fs';
 
-
 import { Lifecycle, Messages, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
@@ -39,7 +38,7 @@ import {
 import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions.js';
 import { promisesQueue } from '../../../promiseQueue.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -52,6 +51,7 @@ export class Retrieve extends SourceCommand {
   public static readonly examples = messages.getMessages('examples');
   public static readonly requiresProject = true;
   public static readonly state = 'deprecated';
+  public static readonly hidden = true;
   public static readonly deprecationOptions = {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),

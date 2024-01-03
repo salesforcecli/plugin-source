@@ -5,7 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
 import { Lifecycle, Messages, Org, SfError, SfProject } from '@salesforce/core';
 import { Duration } from '@salesforce/kit';
 import {
@@ -32,7 +31,7 @@ import {
   RetrieveResultFormatter,
 } from '../../../formatters/mdapi/retrieveResultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'md.retrieve');
 const spinnerMessages = Messages.loadMessages('@salesforce/plugin-source', 'spinner');
 const retrieveMessages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
@@ -45,6 +44,7 @@ export class Retrieve extends SourceCommand {
     to: replacement,
     message: messages.getMessage('deprecation', [replacement]),
   };
+  public static readonly hidden = true;
   public static readonly summary = messages.getMessage('retrieve.summary');
   public static readonly description = messages.getMessage('retrieve.description');
   public static readonly examples = messages.getMessages('retrieve.examples');
