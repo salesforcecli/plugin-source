@@ -1,3 +1,9 @@
+# [3.1.0](https://github.com/salesforcecli/plugin-source/compare/3.0.10...3.1.0) (2024-01-03)
+
+### Features
+
+- hide deprecated commands ([#1050](https://github.com/salesforcecli/plugin-source/issues/1050)) ([ed172ae](https://github.com/salesforcecli/plugin-source/commit/ed172aeb1cc822c345cad98e76cd558f68aff5c3))
+
 ## [3.0.10](https://github.com/salesforcecli/plugin-source/compare/3.0.9...3.0.10) (2023-12-30)
 
 ### Bug Fixes
