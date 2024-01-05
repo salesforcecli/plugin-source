@@ -15,7 +15,7 @@ import { ux } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
 
 export abstract class SourceCommand extends SfCommand<unknown> {
@@ -46,11 +46,11 @@ export abstract class SourceCommand extends SfCommand<unknown> {
   }
 
   protected getPackageDirs(): string[] {
-    return this.project.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
+    return this.project!.getUniquePackageDirectories().map((pDir) => pDir.fullPath);
   }
 
   protected async getSourceApiVersion(): Promise<Optional<string>> {
-    const projectConfig = await this.project.resolveProjectConfig();
+    const projectConfig = await this.project!.resolveProjectConfig();
     return getString(projectConfig, 'sourceApiVersion') as string;
   }
 

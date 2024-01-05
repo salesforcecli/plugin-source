@@ -181,7 +181,7 @@ export class Deploy extends DeployCommand {
         // we'll check ACTUAL conflicts once we get a componentSet built
         ignoreConflicts: true,
         org: this.org,
-        project: this.project,
+        project: this.project!,
         ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
       });
     }

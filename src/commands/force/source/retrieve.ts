@@ -143,7 +143,7 @@ export class Retrieve extends SourceCommand {
       this.tracking = await trackingSetup({
         ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
         org: this.flags['target-org'],
-        project: this.project,
+        project: this.project!,
         ignoreConflicts: true,
       });
     }
@@ -215,7 +215,7 @@ export class Retrieve extends SourceCommand {
     const mdapiRetrieve = await this.componentSet.retrieve({
       usernameOrConnection: username,
       merge: true,
-      output: this.resolvedTargetDir || this.project.getDefaultPackage().fullPath,
+      output: this.resolvedTargetDir || this.project!.getDefaultPackage().fullPath,
       packageOptions: this.flags.packagenames,
     });
 
@@ -340,6 +340,6 @@ export class Retrieve extends SourceCommand {
   }
 
   private overlapsPackage(): boolean {
-    return !!this.project.getPackageNameFromPath(this.resolvedTargetDir);
+    return !!this.project!.getPackageNameFromPath(this.resolvedTargetDir);
   }
 }

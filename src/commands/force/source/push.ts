@@ -86,7 +86,7 @@ export default class Push extends DeployCommand {
     this.tracking = await trackingSetup({
       ignoreConflicts: this.flags.forceoverwrite ?? false,
       org: this.flags['target-org'],
-      project: this.project,
+      project: this.project!,
       ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
     });
 
@@ -97,7 +97,7 @@ export default class Push extends DeployCommand {
   protected async deploy(): Promise<void> {
     const username = this.flags['target-org'].getUsername() as string;
     const isSequentialDeploy = getBoolean(
-      await this.project.resolveProjectConfig(),
+      await this.project!.resolveProjectConfig(),
       'pushPackageDirectoriesSequentially',
       false
     );
@@ -163,7 +163,7 @@ export default class Push extends DeployCommand {
         if (
           result.response.status !== RequestStatus.Succeeded &&
           isSequentialDeploy &&
-          this.project.hasMultiplePackages()
+          this.project!.hasMultiplePackages()
         ) {
           this.log(messages.getMessage('sequentialFail'));
           break;
