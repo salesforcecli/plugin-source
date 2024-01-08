@@ -1,3 +1,15 @@
+## [3.1.2](https://github.com/salesforcecli/plugin-source/compare/3.1.1...3.1.2) (2024-01-07)
+
+### Bug Fixes
+
+- **deps:** bump @oclif/core from 3.15.1 to 3.16.0 ([#1054](https://github.com/salesforcecli/plugin-source/issues/1054)) ([b0947cd](https://github.com/salesforcecli/plugin-source/commit/b0947cd8d7dedb165262531c09dbaac635d59b1a))
+
+## [3.1.1](https://github.com/salesforcecli/plugin-source/compare/3.1.0...3.1.1) (2024-01-06)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 6.4.2 to 6.4.4 ([#1057](https://github.com/salesforcecli/plugin-source/issues/1057)) ([c3e9b92](https://github.com/salesforcecli/plugin-source/commit/c3e9b92212702e0c04ef2b47f1c0183065bf41d2))
+
 # [3.1.0](https://github.com/salesforcecli/plugin-source/compare/3.0.10...3.1.0) (2024-01-03)
 
 ### Features
