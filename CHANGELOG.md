@@ -1,3 +1,9 @@
+## [3.1.3](https://github.com/salesforcecli/plugin-source/compare/3.1.2...3.1.3) (2024-01-08)
+
+### Bug Fixes
+
+- **deps:** plugins-core 7 ([#1052](https://github.com/salesforcecli/plugin-source/issues/1052)) ([00091be](https://github.com/salesforcecli/plugin-source/commit/00091be93ca989d343399b9b9daa85f1aa26b1e4))
+
 ## [3.1.2](https://github.com/salesforcecli/plugin-source/compare/3.1.1...3.1.2) (2024-01-07)
 
 ### Bug Fixes
