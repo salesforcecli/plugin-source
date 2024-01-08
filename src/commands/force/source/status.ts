@@ -67,7 +67,7 @@ export default class Status extends SfCommand<StatusCommandResult> {
     const tracking = await trackingSetup({
       ignoreConflicts: true,
       org: this.flags['target-org'],
-      project: this.project,
+      project: this.project!,
       ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
     });
 
@@ -75,8 +75,7 @@ export default class Status extends SfCommand<StatusCommandResult> {
     const wantsRemote = this.flags.remote || (!this.flags.remote && !this.flags.local);
 
     this.debug(
-      `project is ${this.project.getPath()} and pkgDirs are ${this.project
-        .getPackageDirectories()
+      `project is ${this.project!.getPath()} and pkgDirs are ${this.project!.getPackageDirectories()
         .map((dir) => dir.path)
         .join(',')}`
     );

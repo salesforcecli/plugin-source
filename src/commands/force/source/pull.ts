@@ -88,7 +88,7 @@ export default class Pull extends SourceCommand {
     this.tracking = await trackingSetup({
       ignoreConflicts: this.flags?.forceoverwrite ?? false,
       org: this.flags['target-org'],
-      project: this.project,
+      project: this.project!,
       ux: new Ux({ jsonEnabled: this.jsonEnabled() }),
     });
   }
@@ -130,7 +130,7 @@ export default class Pull extends SourceCommand {
     const mdapiRetrieve = await componentSet.retrieve({
       usernameOrConnection: username,
       merge: true,
-      output: this.project.getDefaultPackage().fullPath,
+      output: this.project!.getDefaultPackage().fullPath,
     });
 
     this.spinner.status = 'Retrieving metadata from the org';
