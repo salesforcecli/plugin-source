@@ -1,3 +1,9 @@
+## [3.1.8](https://github.com/salesforcecli/plugin-source/compare/3.1.7...3.1.8) (2024-01-27)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/apex-node from 3.0.1 to 3.0.2 ([#1072](https://github.com/salesforcecli/plugin-source/issues/1072)) ([5b62ea5](https://github.com/salesforcecli/plugin-source/commit/5b62ea53b7bfab2f621a19f11e8f627c1085dcdf))
+
 ## [3.1.7](https://github.com/salesforcecli/plugin-source/compare/3.1.6...3.1.7) (2024-01-27)
 
 ### Bug Fixes
