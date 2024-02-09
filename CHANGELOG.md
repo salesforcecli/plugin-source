@@ -1,3 +1,9 @@
+## [3.1.11](https://github.com/salesforcecli/plugin-source/compare/3.1.10...3.1.11) (2024-02-09)
+
+### Bug Fixes
+
+- remove doctor diagnostic test from plugin-source ([#1080](https://github.com/salesforcecli/plugin-source/issues/1080)) ([3f61b89](https://github.com/salesforcecli/plugin-source/commit/3f61b897e6be3117a2dd9c13e1a0f275791a540c))
+
 ## [3.1.10](https://github.com/salesforcecli/plugin-source/compare/3.1.9...3.1.10) (2024-02-04)
 
 ### Bug Fixes
