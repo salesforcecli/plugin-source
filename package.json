@@ -22,7 +22,6 @@
     "@salesforce/cli-plugins-testkit": "^5.1.5",
     "@salesforce/dev-scripts": "^8.3.0",
     "@salesforce/plugin-command-reference": "^3.0.64",
-    "@salesforce/plugin-info": "^2.6.50",
     "@salesforce/source-testkit": "^2.1.91",
     "@salesforce/ts-sinon": "1.4.19",
     "@types/archiver": "^5.3.2",
@@ -95,9 +94,6 @@
           }
         }
       }
-    },
-    "hooks": {
-      "sf-doctor-@salesforce/plugin-source": "./lib/hooks/diagnostics"
     },
     "flexibleTaxonomy": true,
     "topicSeparator": " "
