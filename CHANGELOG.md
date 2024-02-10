@@ -1,3 +1,9 @@
+## [3.1.12](https://github.com/salesforcecli/plugin-source/compare/3.1.11...3.1.12) (2024-02-10)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 5.1.9 to 5.1.11 ([#1082](https://github.com/salesforcecli/plugin-source/issues/1082)) ([a7121ce](https://github.com/salesforcecli/plugin-source/commit/a7121ce20c8e4ffde614f23d39240b14b6841ebf))
+
 ## [3.1.11](https://github.com/salesforcecli/plugin-source/compare/3.1.10...3.1.11) (2024-02-09)
 
 ### Bug Fixes
