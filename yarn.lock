@@ -1617,7 +1617,7 @@
     istanbul-reports "^3.1.6"
     jsforce "^2.0.0-beta.29"
 
-"@salesforce/cli-plugins-testkit@^5.1.5", "@salesforce/cli-plugins-testkit@^5.1.7":
+"@salesforce/cli-plugins-testkit@^5.1.5", "@salesforce/cli-plugins-testkit@^5.1.8":
   version "5.1.8"
   resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.1.8.tgz#789630cc389c13fe016c7593aa4ac8bbf532e3bd"
   integrity sha512-3/jvEc+RVWFRbGPtyEzNJ5eb84p7HuLYDZ1EAokLVgDpnW5qy9UpBWrU0Tv98MaQhfRtPdSc/gmzB6m6nqWZLg==
@@ -1770,12 +1770,12 @@
     proxy-agent "^6.3.1"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/source-testkit@^2.1.91":
-  version "2.1.91"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.91.tgz#d6254541fdfffae607817644ec1141d2a92206a2"
-  integrity sha512-T0NFWNLD+ZTx3Xyn378nUtQtDAfUfDzDTmSF7hWqiEOGW0N2/SrP/v860l3rcdC8HtWxoD+CKOEFAtnaH95zAw==
+"@salesforce/source-testkit@^2.1.92":
+  version "2.1.92"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.92.tgz#1b212be21da28f70a973dfc816f7a86ca3772177"
+  integrity sha512-jmLRwnu7Qnk9DyqgJWuM7/JPFEXRDnLUT5lQKQEgDauRSdfSHQXdkg/F0/znQrs5Jfa7GyOxTfHNz/SXOMClYQ==
   dependencies:
-    "@salesforce/cli-plugins-testkit" "^5.1.7"
+    "@salesforce/cli-plugins-testkit" "^5.1.8"
     "@salesforce/core" "^6.5.1"
     "@salesforce/kit" "^3.0.15"
     "@salesforce/source-deploy-retrieve" "^10.3.1"
