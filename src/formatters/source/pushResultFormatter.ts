@@ -14,6 +14,7 @@ import {
   DeployResult,
   FileResponse,
   FileResponseFailure,
+  FileResponseSuccess,
   MetadataResolver,
   SourceComponent,
   VirtualTreeContainer,
@@ -23,7 +24,7 @@ import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
 
 export type PushResponse = {
@@ -132,33 +133,32 @@ export class PushResultFormatter extends ResultFormatter {
     }
     // "content" property of the bundles as a string
     const contentFilePathFromDeployedBundles = this.componentsFromFilenames(
-      // the .filter(isString) should ensure only strings are present, but TS isn't finding that
-      bundlesDeployed.map((fileResponse) => fileResponse.filePath as string)
+      bundlesDeployed.map((fileResponse) => fileResponse.filePath).filter(isString)
     )
       .map((c) => c.content)
       .filter(isString);
 
     // there may be deletes not represented in the file responses (if bundle type)
     const resolver = new MetadataResolver(undefined, VirtualTreeContainer.fromFilePaths(this.deletes));
-    return (
-      this.deletes
-        .map((filePath) => {
-          const cmp = this.resolveComponentsOrWarn(filePath, resolver)[0];
-          if (
-            cmp.type.strategies?.adapter === 'bundle' &&
-            contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content ?? ''))
-          ) {
-            return {
-              state: ComponentStatus.Deleted,
-              fullName: cmp.fullName,
-              type: cmp.type.name,
-              filePath,
-            } as FileResponse;
-          }
-        })
-        .filter((fileResponse) => fileResponse)
-        // we can be sure there's no undefined responses because of the filter above
-        .concat(withoutUnchanged) as FileResponse[]
+
+    return withoutUnchanged.concat(
+      this.deletes.flatMap((filePath) =>
+        this.resolveComponentsOrWarn(filePath, resolver)
+          .filter(
+            (cmp) =>
+              cmp.type.strategies?.adapter === 'bundle' &&
+              contentFilePathFromDeployedBundles.includes(pathResolve(cmp.content ?? ''))
+          )
+          .map(
+            (cmp) =>
+              ({
+                state: ComponentStatus.Deleted,
+                fullName: cmp.fullName,
+                type: cmp.type.name,
+                filePath,
+              } satisfies FileResponseSuccess)
+          )
+      )
     );
   }
 
