@@ -1,3 +1,9 @@
+## [3.1.13](https://github.com/salesforcecli/plugin-source/compare/3.1.12...3.1.13) (2024-02-12)
+
+### Bug Fixes
+
+- remove an undefined TypeError ([#1081](https://github.com/salesforcecli/plugin-source/issues/1081)) ([88e6c34](https://github.com/salesforcecli/plugin-source/commit/88e6c34d914de8c59b47d9c8d32f8e7fc0009288))
+
 ## [3.1.12](https://github.com/salesforcecli/plugin-source/compare/3.1.11...3.1.12) (2024-02-10)
 
 ### Bug Fixes
