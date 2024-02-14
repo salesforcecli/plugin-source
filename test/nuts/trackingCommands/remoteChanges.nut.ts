@@ -11,7 +11,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
-import { expect } from 'chai';
+import { expect, config } from 'chai';
 
 import { execCmd, TestSession } from '@salesforce/cli-plugins-testkit';
 import { AuthInfo, Connection } from '@salesforce/core';
@@ -24,7 +24,15 @@ import { itemsInEBikesPush } from './consts.js';
 let session: TestSession;
 let conn: Connection;
 
+config.truncateThreshold = 0;
+
 const filterIgnored = (r: StatusResult): boolean => r.ignored !== true;
+const noReportTypes = (r: PullResponse['pulledSource'][number]): boolean => r.type !== 'ReportType';
+
+// ebikes ignore file doesn't catch this somehow on windows (probably that slash)
+// https://github.com/trailheadapps/ebikes-lwc/blob/3e5baf83d97bc71660feaa9922f8fed2e686f5f8/.forceignore#L136-L137
+const noPRMReports = (r: PullResponse['pulledSource'][number]): boolean =>
+  !r.fullName.includes('prm_channel_reports_folder');
 
 describe('remote changes', () => {
   before(async () => {
@@ -106,12 +114,10 @@ describe('remote changes', () => {
     });
     it('can pull the delete', () => {
       const result = execCmd<PullResponse>('force:source:pull --json', { ensureExitCode: 0 }).jsonOutput?.result;
-      // ebikes ignore file doesn't catch this somehow on windows (probably that slash)
-      // https://github.com/trailheadapps/ebikes-lwc/blob/3e5baf83d97bc71660feaa9922f8fed2e686f5f8/.forceignore#L136-L137
-      const filteredSource = result?.pulledSource.filter((r) => !r.fullName.includes('prm_channel_reports_folder'));
+
+      const filteredSource = result?.pulledSource.filter(noPRMReports).filter(noReportTypes);
       // the 2 files for the apexClass, and possibly one for the Profile (depending on whether it got created in time)
-      expect(filteredSource).to.have.length.greaterThanOrEqual(2);
-      expect(filteredSource).to.have.length.lessThanOrEqual(4);
+      expect(filteredSource).to.have.length.greaterThanOrEqual(2).and.lessThanOrEqual(4);
       result?.pulledSource
         .filter((r) => r.fullName === 'TestOrderController')
         .map((r) => expect(r.state).to.equal('Deleted'));
