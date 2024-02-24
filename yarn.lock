@@ -1801,10 +1801,10 @@
     proxy-agent "^6.3.1"
     ts-retry-promise "^0.7.1"
 
-"@salesforce/source-testkit@^2.1.96":
-  version "2.1.96"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.96.tgz#3f6efbbbcf12c2be996b400afb7732e5aa8c692f"
-  integrity sha512-2+He+sy3PrYesg4IMLpAXxJ5y0bb/LEL1WiRwej0UWoR0g4O4cH3uZwncBsCYGRaz9xmoRjv4BzLOqjeHbE25A==
+"@salesforce/source-testkit@^2.1.97":
+  version "2.1.97"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.1.97.tgz#637615b8acc2a3845bab60c4cd5026fe06e7ff99"
+  integrity sha512-6LsrpDyM/5bB0NAgzYyfutGUpBE/vwwj6FGGLC9HmKA8uJ1TkHmGw4EMFpiXNtYwvaM5LVCu++OyJCEqnH1N3w==
   dependencies:
     "@salesforce/cli-plugins-testkit" "^5.1.9"
     "@salesforce/core" "^6.5.3"
