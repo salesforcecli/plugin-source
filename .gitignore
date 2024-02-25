@@ -30,6 +30,11 @@ docs
 *.sig
 package.json.bak.
 
+
+npm-shrinkwrap.json
+oclif.manifest.json
+oclif.lock
+
 # -- CLEAN ALL
 *.tsbuildinfo
 .eslintcache
@@ -45,5 +50,3 @@ node_modules
 
 # ignore generated nut tests
 test/nuts/generated/
-
-oclif.lock
