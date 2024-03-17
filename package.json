@@ -21,7 +21,7 @@
     "@oclif/plugin-help": "^6.0.14",
     "@salesforce/cli-plugins-testkit": "^5.1.9",
     "@salesforce/dev-scripts": "^8.4.1",
-    "@salesforce/plugin-command-reference": "^3.0.69",
+    "@salesforce/plugin-command-reference": "^3.0.70",
     "@salesforce/source-testkit": "^2.1.104",
     "@salesforce/ts-sinon": "1.4.19",
     "@types/archiver": "^5.3.2",
