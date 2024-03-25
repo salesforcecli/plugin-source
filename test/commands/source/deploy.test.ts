@@ -7,7 +7,6 @@
 
 import { join } from 'node:path';
 
-
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { ComponentSetBuilder, ComponentSetOptions, MetadataApiDeployOptions } from '@salesforce/source-deploy-retrieve';
@@ -28,7 +27,7 @@ import { DeployProgressStatusFormatter } from '../../../src/formatters/deployPro
 import { getDeployResult } from './deployResponses.js';
 import { exampleSourceComponent } from './testConsts.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 describe('force:source:deploy', () => {
   const $$ = new TestContext();
   const testOrg = new MockTestOrgData();

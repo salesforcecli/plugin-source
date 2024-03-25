@@ -43,7 +43,7 @@ import { transformCoverageToApexCoverage, transformDeployTestsResultsToTestResul
 
 export type TestLevel = 'NoTestRun' | 'RunSpecifiedTests' | 'RunLocalTests' | 'RunAllTestsInOrg';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deployCommand');
 export const reportsFormatters = Object.keys(DefaultReportOptions);
 

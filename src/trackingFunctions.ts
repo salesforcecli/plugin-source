@@ -6,8 +6,6 @@
  */
 import path from 'node:path';
 
-
-
 import { ChangeResult, SourceTracking, SourceTrackingOptions } from '@salesforce/source-tracking';
 import { Messages, SfError } from '@salesforce/core';
 import {
@@ -18,7 +16,7 @@ import {
   RetrieveResult,
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
 interface TrackingSetupRequest extends SourceTrackingOptions {
