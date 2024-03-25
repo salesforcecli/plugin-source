@@ -6,11 +6,10 @@
  */
 import fs from 'node:fs';
 
-
 import { ConfigFile, Logger, Messages, SfError } from '@salesforce/core';
 import { JsonMap, Optional } from '@salesforce/ts-types';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
 interface StashFile {
   isGlobal: boolean;

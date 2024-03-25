@@ -8,7 +8,6 @@
 import { join } from 'node:path';
 import path from 'node:path';
 
-
 import sinon from 'sinon';
 import { expect } from 'chai';
 import {
@@ -31,7 +30,7 @@ import { getRetrieveResult } from './retrieveResponses.js';
 
 import { exampleSourceComponent } from './testConsts.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'retrieve');
 
 describe('force:source:retrieve', () => {

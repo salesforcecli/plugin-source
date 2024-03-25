@@ -7,7 +7,6 @@
 
 import path from 'node:path';
 
-
 import chalk from 'chalk';
 
 import { Messages, SfError } from '@salesforce/core';
@@ -29,7 +28,7 @@ import { ResultFormatter, ResultFormatterOptions } from './resultFormatter.js';
 import { MdDeployResult } from './mdapi/mdDeployResultFormatter.js';
 import { maybePrintCodeCoverageTable } from './codeCoverageTable.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
 export type DeployCommandResult = {

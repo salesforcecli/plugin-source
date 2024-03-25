@@ -5,13 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-
-
 import { MetadataApiDeployStatus, RequestStatus } from '@salesforce/source-deploy-retrieve';
 import { SfError, Messages } from '@salesforce/core';
 import { DeployResultFormatter } from './deployResultFormatter.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 export type DeployReportCommandResult = MetadataApiDeployStatus;
 
 export class DeployReportResultFormatter extends DeployResultFormatter {
