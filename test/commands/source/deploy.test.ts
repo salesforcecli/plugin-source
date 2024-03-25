@@ -35,7 +35,15 @@ describe('force:source:deploy', () => {
   testOrg.username = 'deploy-test@org.com';
   const packageXml = 'package.xml';
   const defaultDir = join('my', 'default', 'package');
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  const oclifConfigStub = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () =>
+        Promise.resolve({
+          successes: [],
+          failures: [],
+        }),
+    })
+  );
 
   const deployResult = getDeployResult('successSync');
   const expectedResults = deployResult.response as DeployCommandResult;

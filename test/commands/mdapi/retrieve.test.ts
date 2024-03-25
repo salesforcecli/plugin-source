@@ -27,7 +27,15 @@ describe('force:mdapi:retrieve', () => {
   testOrg.username = 'retrieve-test@org.com';
   const packageXml = 'package.xml';
   const retrievetargetdir = path.resolve('retrieve-target-dir');
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  const oclifConfigStub = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () =>
+        Promise.resolve({
+          successes: [],
+          failures: [],
+        }),
+    })
+  );
   const retrieveResult = getRetrieveResult('success');
   const defaultZipFilePath = path.join(retrievetargetdir, 'unpackaged.zip');
   const expectedDefaultResult = Object.assign({}, retrieveResult.response, { zipFilePath: defaultZipFilePath });

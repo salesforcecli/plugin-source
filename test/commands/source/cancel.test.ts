@@ -38,7 +38,15 @@ describe('force:source:deploy:cancel', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  const oclifConfigStub = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () =>
+        Promise.resolve({
+          successes: [],
+          failures: [],
+        }),
+    })
+  );
   let pollStub: sinon.SinonStub;
   let cancelStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;

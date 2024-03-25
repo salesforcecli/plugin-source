@@ -38,7 +38,15 @@ describe('force:source:report', () => {
   expectedResults.deploys = [deployResult.response];
 
   // Stubs
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  const oclifConfigStub = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () =>
+        Promise.resolve({
+          successes: [],
+          failures: [],
+        }),
+    })
+  );
   let checkDeployStatusStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let pollStatusStub: sinon.SinonStub;
