@@ -1618,10 +1618,10 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@salesforce/apex-node@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-3.1.0.tgz#6cde172fa5dbbbcc14a7d0cad2946da37810d8d9"
-  integrity sha512-bx48c7X7BK/7uksh3iXFY8gk8+W4w+ih44zf/cz9sn+/eQhZ6cWvcsOjulb6cbGVJPcJUMgbMKchAJAK6w1Yhw==
+"@salesforce/apex-node@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/apex-node/-/apex-node-4.0.2.tgz#688dd4e9a5f7bfab09d24c6460bac72a322ad6d4"
+  integrity sha512-vNjj/CHnX7DerQsePG1HuOqshugKp+v8k8lrH6Pgut0C3AZB4oUn8BDauUtJb0IsyzjwS7B4CDNVuwziKFWheg==
   dependencies:
     "@salesforce/core" "^6.5.1"
     "@salesforce/kit" "^3.0.15"
