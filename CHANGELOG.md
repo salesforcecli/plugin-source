@@ -1,3 +1,9 @@
+## [3.2.2](https://github.com/salesforcecli/plugin-source/compare/3.2.1...3.2.2) (2024-03-30)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/sf-plugins-core from 8.0.1 to 8.0.2 ([#1139](https://github.com/salesforcecli/plugin-source/issues/1139)) ([2e12e94](https://github.com/salesforcecli/plugin-source/commit/2e12e94e958195a80ba10e872f9c1817a305fcb8))
+
 ## [3.2.1](https://github.com/salesforcecli/plugin-source/compare/3.2.0...3.2.1) (2024-03-29)
 
 ### Bug Fixes
