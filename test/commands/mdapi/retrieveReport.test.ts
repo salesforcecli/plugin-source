@@ -113,7 +113,7 @@ describe('force:mdapi:retrieve:report', () => {
     expect(fsStatStub.called).to.be.true;
     // should use the default polling timeout of 1440 minutes (86400 seconds)
     expect(pollStatusStub.firstCall.args[0]).to.equal(1000);
-    expect(pollStatusStub.firstCall.args[1]).to.equal(86400);
+    expect(pollStatusStub.firstCall.args[1]).to.equal(86_400);
   });
 
   it('should pass along jobid', async () => {
