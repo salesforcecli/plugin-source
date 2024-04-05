@@ -20,13 +20,13 @@ import { ResultFormatterOptions } from '../resultFormatter.js';
 
 export type RetrieveCommandResult = Omit<MetadataApiRetrieveStatus, 'zipFile'> & { zipFilePath: string };
 
-export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
+export type RetrieveResultFormatterOptions = {
   retrieveTargetDir: string;
   zipFileName?: string;
   unzip?: boolean;
-}
+} & ResultFormatterOptions
 
-export interface RetrieveCommandAsyncResult {
+export type RetrieveCommandAsyncResult = {
   done: boolean;
   id: string;
   state: RequestStatus | 'Queued';

@@ -11,23 +11,23 @@ import { JsonMap, Optional } from '@salesforce/ts-types';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
-interface StashFile {
+type StashFile = {
   isGlobal: boolean;
   filename: string;
 }
 
 export type StashKey = keyof typeof Stash.KEYS;
 
-export interface DeployData extends JsonMap {
+export type DeployData = {
   jobid: string;
-}
+} & JsonMap
 
-export interface MdRetrieveData extends JsonMap {
+export type MdRetrieveData = {
   jobid: string;
   retrievetargetdir: string;
   zipfilename?: string;
   unzip?: boolean;
-}
+} & JsonMap
 
 export type StashData = DeployData | MdRetrieveData;
 
