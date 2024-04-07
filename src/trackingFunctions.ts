@@ -19,12 +19,12 @@ import { Ux } from '@salesforce/sf-plugins-core';
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 
-interface TrackingSetupRequest extends SourceTrackingOptions {
+type TrackingSetupRequest = {
   ignoreConflicts: boolean;
   ux: Ux;
-}
+} & SourceTrackingOptions
 
-interface TrackingUpdateRequest {
+type TrackingUpdateRequest = {
   tracking: SourceTracking;
   result: DeployResult | RetrieveResult;
   ux: Ux;
