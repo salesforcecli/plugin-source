@@ -19,14 +19,14 @@ import { Ux } from '@salesforce/sf-plugins-core';
 import { RetrieveFormatter } from './retrieveFormatter.js';
 import { ResultFormatterOptions } from './resultFormatter.js';
 
-export interface PackageRetrieval {
+export type PackageRetrieval = {
   name: string;
   path: string;
 }
 
-export interface RetrieveResultFormatterOptions extends ResultFormatterOptions {
+export type RetrieveResultFormatterOptions = {
   packages?: PackageRetrieval[];
-}
+} & ResultFormatterOptions
 
 export type RetrieveCommandResult = {
   inboundFiles: FileResponse[];

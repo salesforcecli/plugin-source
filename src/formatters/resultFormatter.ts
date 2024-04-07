@@ -14,7 +14,7 @@ import chalk from 'chalk';
 import { CoverageReporterOptions, DefaultReportOptions } from '@salesforce/apex-node';
 import { Ux } from '@salesforce/sf-plugins-core';
 
-export interface ResultFormatterOptions {
+export type ResultFormatterOptions = {
   verbose?: boolean;
   quiet?: boolean;
   waitTime?: number;

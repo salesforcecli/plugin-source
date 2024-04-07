@@ -5,11 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-export interface FsError extends Error {
+export type FsError = {
   code: string;
-}
+} & Error
 
-export interface EnsureFsFlagOptions {
+export type EnsureFsFlagOptions = {
   flagName: string;
   path?: string;
   type: 'dir' | 'file' | 'any';

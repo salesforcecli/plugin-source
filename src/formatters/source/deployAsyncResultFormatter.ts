@@ -15,14 +15,14 @@ import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'deploy');
 
-export interface DeployCommandAsyncResult extends DeployAsyncStatus {
+export type DeployCommandAsyncResult = {
   outboundFiles: string[];
   deploys: DeployAsyncStatus[];
-}
+} & DeployAsyncStatus
 // Per the AsyncResult MDAPI docs, only `id` is required/used. The rest is here for
 // backwards compatibility.
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_asyncresult.htm
-export interface DeployAsyncStatus {
+export type DeployAsyncStatus = {
   done: boolean;
   id: string;
   state: 'Queued';
