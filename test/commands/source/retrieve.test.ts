@@ -21,7 +21,7 @@ import {
 import { Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { stubSfCommandUx, stubSpinner, stubUx } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 
 import { Retrieve } from '../../../src/commands/force/source/retrieve.js';
 

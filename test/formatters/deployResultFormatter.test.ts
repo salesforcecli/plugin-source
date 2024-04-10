@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import { DeployResult, FileResponse } from '@salesforce/source-deploy-retrieve';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { getDeployResult } from '../commands/source/deployResponses.js';
 import { DeployCommandResult, DeployResultFormatter } from '../../src/formatters/deployResultFormatter.js';
 

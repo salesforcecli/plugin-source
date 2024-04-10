@@ -11,7 +11,7 @@ import { expect } from 'chai';
 import { spyMethod, stubMethod } from '@salesforce/ts-sinon';
 import { ConfigFile } from '@salesforce/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 import { stubSfCommandUx, stubUx } from '@salesforce/sf-plugins-core';
 import { Cancel } from '../../../src/commands/force/mdapi/deploy/cancel.js';
 import { DeployCancelResultFormatter } from '../../../src/formatters/deployCancelResultFormatter.js';

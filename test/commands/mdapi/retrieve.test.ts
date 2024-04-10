@@ -15,7 +15,7 @@ import { Config } from '@oclif/core';
 import { ComponentSetBuilder, ComponentSetOptions, RetrieveOptions } from '@salesforce/source-deploy-retrieve';
 import { Duration } from '@salesforce/kit';
 import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 import { Retrieve } from '../../../src/commands/force/mdapi/retrieve.js';
 import { Stash, StashData } from '../../../src/stash.js';
 import { getRetrieveResult } from '../source/retrieveResponses.js';

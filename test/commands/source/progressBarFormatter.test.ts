@@ -9,7 +9,7 @@ import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
 import { ProgressBar } from '../../../src/types.js';
 

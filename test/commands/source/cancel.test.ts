@@ -12,7 +12,7 @@ import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-s
 import { ConfigFile, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 
 import { Ux } from '@salesforce/sf-plugins-core';
 import { Cancel } from '../../../src/commands/force/source/deploy/cancel.js';

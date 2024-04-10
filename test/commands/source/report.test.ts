@@ -14,7 +14,7 @@ import { Config } from '@oclif/core';
 
 import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 import { Report } from '../../../src/commands/force/source/deploy/report.js';
 import { DeployReportResultFormatter } from '../../../src/formatters/deployReportResultFormatter.js';
 import { DeployCommandResult } from '../../../src/formatters/deployResultFormatter.js';
