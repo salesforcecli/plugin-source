@@ -92,7 +92,7 @@ describe('PushResultFormatter', () => {
         expect(error).to.have.property('message', 'Push failed. ');
         expect(error).to.have.property('name', 'DeployFailed');
         expect(error).to.have.property('stack').includes('DeployFailed:');
-        expect(error).to.have.property('actions').deep.equal([]);
+        expect(error).to.have.property('actions').to.be.undefined;
         expect(error).to.have.property('data').deep.equal([expectedFail]);
         expect(error).to.have.property('result').deep.equal([expectedFail]);
         expect(error).to.have.property('context', 'Push');

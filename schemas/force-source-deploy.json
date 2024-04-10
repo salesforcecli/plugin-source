@@ -208,8 +208,7 @@
       "type": "object",
       "properties": {
         "changed": {
-          "type": ["string", "boolean"],
-          "enum": ["true", "false", true, false]
+          "$ref": "#/definitions/BooleanString"
         },
         "columnNumber": {
           "type": "string"
@@ -218,15 +217,13 @@
           "type": "string"
         },
         "created": {
-          "type": ["string", "boolean"],
-          "enum": ["true", "false", true, false]
+          "$ref": "#/definitions/BooleanString"
         },
         "createdDate": {
           "type": "string"
         },
         "deleted": {
-          "type": ["string", "boolean"],
-          "enum": ["true", "false", true, false]
+          "$ref": "#/definitions/BooleanString"
         },
         "fileName": {
           "type": "string"
@@ -248,12 +245,15 @@
           "enum": ["Warning", "Error"]
         },
         "success": {
-          "type": ["string", "boolean"],
-          "enum": ["true", "false", true, false]
+          "$ref": "#/definitions/BooleanString"
         }
       },
       "required": ["changed", "created", "createdDate", "deleted", "fileName", "fullName", "success"],
       "additionalProperties": false
+    },
+    "BooleanString": {
+      "type": ["string", "boolean"],
+      "enum": ["true", "false", true, false]
     },
     "RunTestResult": {
       "type": "object",
@@ -459,6 +459,7 @@
     },
     "FileResponseSuccess": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fullName": {
           "type": "string"
@@ -474,11 +475,11 @@
           "enum": ["Created", "Changed", "Unchanged", "Deleted"]
         }
       },
-      "required": ["fullName", "state", "type"],
-      "additionalProperties": false
+      "required": ["fullName", "state", "type"]
     },
     "FileResponseFailure": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fullName": {
           "type": "string"
@@ -507,11 +508,11 @@
           "enum": ["Warning", "Error"]
         }
       },
-      "required": ["error", "fullName", "problemType", "state", "type"],
-      "additionalProperties": false
+      "required": ["error", "fullName", "problemType", "state", "type"]
     },
     "MetadataApiDeployStatus": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "id": {
           "type": "string"
@@ -613,11 +614,11 @@
         "status",
         "success"
       ],
-      "additionalProperties": false,
       "description": "Raw response returned from a checkDeployStatus call to the Metadata API"
     },
     "DeployCommandAsyncResult": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "done": {
           "type": "boolean"
@@ -649,8 +650,7 @@
           }
         }
       },
-      "required": ["deploys", "done", "id", "outboundFiles", "state", "status", "timedOut"],
-      "additionalProperties": false
+      "required": ["deploys", "done", "id", "outboundFiles", "state", "status", "timedOut"]
     },
     "DeployAsyncStatus": {
       "type": "object",

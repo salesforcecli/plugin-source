@@ -42,6 +42,7 @@
     },
     "FileResponseSuccess": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fullName": {
           "type": "string"
@@ -57,11 +58,11 @@
           "enum": ["Created", "Changed", "Unchanged", "Deleted"]
         }
       },
-      "required": ["fullName", "state", "type"],
-      "additionalProperties": false
+      "required": ["fullName", "state", "type"]
     },
     "FileResponseFailure": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fullName": {
           "type": "string"
@@ -90,8 +91,7 @@
           "enum": ["Warning", "Error"]
         }
       },
-      "required": ["error", "fullName", "problemType", "state", "type"],
-      "additionalProperties": false
+      "required": ["error", "fullName", "problemType", "state", "type"]
     },
     "PackageRetrieval": {
       "type": "object",
