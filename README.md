@@ -75,7 +75,7 @@ $ npm install -g @salesforce/plugin-source
 $ sfdx COMMAND
 running command...
 $ sfdx (--version)
-@salesforce/plugin-source/3.2.3 linux-x64 node-v18.20.0
+@salesforce/plugin-source/3.3.0 linux-x64 node-v18.20.1
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND

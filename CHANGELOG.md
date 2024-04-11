@@ -1,3 +1,9 @@
+# [3.3.0](https://github.com/salesforcecli/plugin-source/compare/3.2.3...3.3.0) (2024-04-11)
+
+### Features
+
+- core7, jsforce-node ([ee1bd7e](https://github.com/salesforcecli/plugin-source/commit/ee1bd7e009dc885e4e6d17f99e18bceaa18bcc7d))
+
 ## [3.2.3](https://github.com/salesforcecli/plugin-source/compare/3.2.2...3.2.3) (2024-04-06)
 
 ### Bug Fixes
