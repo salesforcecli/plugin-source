@@ -15,7 +15,7 @@ import { AnyJson } from '@salesforce/ts-types';
 import { ConfigAggregator, Lifecycle, Messages, SfProject } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 import { Deploy } from '../../../src/commands/force/source/deploy.js';
 import { DeployCommandResult, DeployResultFormatter } from '../../../src/formatters/deployResultFormatter.js';
 import {

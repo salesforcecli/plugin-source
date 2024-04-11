@@ -17,7 +17,7 @@ import {
   MetadataApiRetrieve,
   RetrieveSetOptions,
 } from '@salesforce/source-deploy-retrieve';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 
 import { RetrieveCommandResult } from '../../src/formatters/retrieveResultFormatter.js';
 import { Retrieve } from '../../src/commands/force/source/retrieve.js';

@@ -8,7 +8,7 @@ import { stubInterface } from '@salesforce/ts-sinon';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { StatusFormatter, StatusResult } from '../../src/formatters/source/statusFormatter.js';
 
 const fakeResult: StatusResult[] = [

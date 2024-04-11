@@ -12,7 +12,7 @@ import { FileResponse } from '@salesforce/source-deploy-retrieve';
 import { ensureArray } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
 import { Ux } from '@salesforce/sf-plugins-core';
-import { TestContext } from '@salesforce/core/lib/testSetup.js';
+import { TestContext } from '@salesforce/core/testSetup';
 import { getRetrieveResult } from '../commands/source/retrieveResponses.js';
 import { RetrieveCommandResult, RetrieveResultFormatter } from '../../src/formatters/retrieveResultFormatter.js';
 

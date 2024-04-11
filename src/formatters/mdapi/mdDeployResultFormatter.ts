@@ -6,7 +6,7 @@
  */
 
 import chalk from 'chalk';
-import { getNumber } from '@salesforce/ts-types';
+import { AnyJson, getNumber } from '@salesforce/ts-types';
 import { Messages, SfError } from '@salesforce/core';
 import {
   DeployMessage,
@@ -103,11 +103,13 @@ export class MdDeployResultFormatter extends ResultFormatter {
     }
     // TODO: the toolbelt version of this is returning an SfError shape.  This returns a status=1 and the result (mdapi response) but not the error name, etc
     if (!this.isSuccess()) {
-      // Add error message directly on the DeployResult (e.g., a GACK)
-      const errMsg = this.getResponse()?.errorMessage ?? '';
-      const error = new SfError(messages.getMessage('deployFailed', [errMsg]), 'mdapiDeployFailed');
-      error.setData(this.result);
-      throw error;
+      throw SfError.create({
+        // Add error message directly on the DeployResult (e.g., a GACK)
+        message: messages.getMessage('deployFailed', [this.getResponse()?.errorMessage ?? '']),
+        name: 'mdapiDeployFailed',
+        // this.result is a Class, so here's the serializable portions of it
+        data: JSON.parse(JSON.stringify(this.result)) as AnyJson,
+      });
     }
   }
 

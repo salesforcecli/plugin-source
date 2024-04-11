@@ -14,7 +14,7 @@ import { Config } from '@oclif/core';
 
 import { MetadataApiRetrieve } from '@salesforce/source-deploy-retrieve';
 import { SfCommand, Ux } from '@salesforce/sf-plugins-core';
-import { MockTestOrgData, TestContext } from '@salesforce/core/lib/testSetup.js';
+import { MockTestOrgData, TestContext } from '@salesforce/core/testSetup';
 
 import { Report } from '../../../src/commands/force/mdapi/retrieve/report.js';
 import { Stash } from '../../../src/stash.js';
