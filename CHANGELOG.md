@@ -1,3 +1,9 @@
+## [3.3.1](https://github.com/salesforcecli/plugin-source/compare/3.3.0...3.3.1) (2024-04-11)
+
+### Bug Fixes
+
+- **deps:** bump apex-node ([#1155](https://github.com/salesforcecli/plugin-source/issues/1155)) ([ccd307b](https://github.com/salesforcecli/plugin-source/commit/ccd307bc555436bc4c05bd5014c5710020f7b5a4))
+
 # [3.3.0](https://github.com/salesforcecli/plugin-source/compare/3.2.3...3.3.0) (2024-04-11)
 
 ### Features
