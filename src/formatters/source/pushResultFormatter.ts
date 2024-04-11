@@ -55,21 +55,28 @@ export class PushResultFormatter extends ResultFormatter {
   public getJson(): PushResponse {
     // throws a particular json structure.
     if (process.exitCode !== 0) {
+      const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
+
+      const error = SfError.create({
+        context: 'Push',
+        name: 'DeployFailed',
+        exitCode: process.exitCode,
+        message: messages.getMessage('sourcepushFailed', ['']),
+        data: errorData,
+      });
+      // matching toolbelt error json.  Does not match the SfError type
+
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const error: SfError & {
-        result: FileResponse[];
-        commandName: string;
-        context: string;
-        partialSuccess: FileResponse[];
-      } = new SfError(messages.getMessage('sourcepushFailed', ['']), 'DeployFailed', [], process.exitCode);
-      const errorData = this.fileResponses.filter((fileResponse) => fileResponse.state === ComponentStatus.Failed);
-      error.setData(errorData);
-      error['result'] = errorData;
-      error['commandName'] = 'Push';
-      error['context'] = 'Push';
+      error.result = errorData;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      error.commandName = 'Push';
+
       // partial success
       if (process.exitCode === 69) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         error['partialSuccess'] = this.fileResponses.filter(
           (fileResponse) => fileResponse.state !== ComponentStatus.Failed
         );
