@@ -1,3 +1,9 @@
+## [3.3.4](https://github.com/salesforcecli/plugin-source/compare/3.3.3...3.3.4) (2024-04-24)
+
+### Bug Fixes
+
+- **deps:** bump deps ([#1164](https://github.com/salesforcecli/plugin-source/issues/1164)) ([a1550b1](https://github.com/salesforcecli/plugin-source/commit/a1550b145faab805a6979c425ebc3003f82ad1f1))
+
 ## [3.3.3](https://github.com/salesforcecli/plugin-source/compare/3.3.2...3.3.3) (2024-04-20)
 
 ### Bug Fixes
