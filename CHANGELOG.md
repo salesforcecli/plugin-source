@@ -1,3 +1,9 @@
+## [3.3.6](https://github.com/salesforcecli/plugin-source/compare/3.3.5...3.3.6) (2024-05-04)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-deploy-retrieve from 11.1.2 to 11.3.0 ([#1172](https://github.com/salesforcecli/plugin-source/issues/1172)) ([a6ee0ea](https://github.com/salesforcecli/plugin-source/commit/a6ee0ead45dbf15b40b5ca226b55127dbf3c9e51))
+
 ## [3.3.5](https://github.com/salesforcecli/plugin-source/compare/3.3.4...3.3.5) (2024-04-27)
 
 ### Bug Fixes
