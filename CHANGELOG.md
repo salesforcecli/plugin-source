@@ -1,3 +1,9 @@
+## [3.3.8](https://github.com/salesforcecli/plugin-source/compare/3.3.7...3.3.8) (2024-05-05)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 6.0.0 to 6.0.4 ([#1170](https://github.com/salesforcecli/plugin-source/issues/1170)) ([f6f8363](https://github.com/salesforcecli/plugin-source/commit/f6f836355335df5a29121c6cb866578bb0330177))
+
 ## [3.3.7](https://github.com/salesforcecli/plugin-source/compare/3.3.6...3.3.7) (2024-05-05)
 
 ### Bug Fixes
