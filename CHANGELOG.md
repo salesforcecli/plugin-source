@@ -1,3 +1,9 @@
+## [3.3.9](https://github.com/salesforcecli/plugin-source/compare/3.3.8...3.3.9) (2024-05-06)
+
+### Bug Fixes
+
+- node types for process exitCode don't allow string ([#1175](https://github.com/salesforcecli/plugin-source/issues/1175)) ([06ef385](https://github.com/salesforcecli/plugin-source/commit/06ef385f97f540874876362df36db80bc6207fc3))
+
 ## [3.3.8](https://github.com/salesforcecli/plugin-source/compare/3.3.7...3.3.8) (2024-05-05)
 
 ### Bug Fixes
