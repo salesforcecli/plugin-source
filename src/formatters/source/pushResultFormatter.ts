@@ -23,6 +23,7 @@ import { isString } from '@salesforce/ts-types';
 import { ensureArray } from '@salesforce/kit';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
+import { exitCodeAsNumber } from './statusFormatter.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'push');
@@ -60,7 +61,7 @@ export class PushResultFormatter extends ResultFormatter {
       const error = SfError.create({
         context: 'Push',
         name: 'DeployFailed',
-        exitCode: process.exitCode,
+        exitCode: exitCodeAsNumber(),
         message: messages.getMessage('sourcepushFailed', ['']),
         data: errorData,
       });

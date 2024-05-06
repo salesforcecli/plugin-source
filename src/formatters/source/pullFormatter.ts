@@ -19,6 +19,7 @@ import {
 } from '@salesforce/source-deploy-retrieve';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ResultFormatter, ResultFormatterOptions } from '../resultFormatter.js';
+import { exitCodeAsNumber } from './statusFormatter.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'pull');
@@ -59,7 +60,7 @@ export class PullResultFormatter extends ResultFormatter {
    */
   public getJson(): PullResponse {
     if (!this.isSuccess()) {
-      const error = new SfError('Pull failed.', 'PullFailed', [], process.exitCode);
+      const error = new SfError('Pull failed.', 'PullFailed', [], exitCodeAsNumber());
       error.setData(
         this.fileResponses.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath }))
       );
