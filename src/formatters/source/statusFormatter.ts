@@ -39,6 +39,15 @@ const rowSortFunction = (a: StatusResult, b: StatusResult): number => {
   return a.state.toLowerCase() < b.state.toLowerCase() ? -1 : 1;
 };
 
+export const exitCodeAsNumber = (): number | undefined => {
+  try {
+    return typeof process.exitCode === 'string' ? parseInt(process.exitCode, 10) : process.exitCode;
+  } catch {
+    // it *could* be a string that fails to parse to int?
+    return undefined;
+  }
+};
+
 export class StatusFormatter extends ResultFormatter {
   public constructor(ux: Ux, options: ResultFormatterOptions, private statusRows: StatusResult[]) {
     super(ux, options);
