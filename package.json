@@ -21,7 +21,7 @@
     "@oclif/plugin-command-snapshot": "^5.1.7",
     "@oclif/plugin-help": "^6.0.20",
     "@salesforce/cli-plugins-testkit": "^5.3.2",
-    "@salesforce/dev-scripts": "^9.0.0",
+    "@salesforce/dev-scripts": "^9.1.1",
     "@salesforce/plugin-command-reference": "^3.0.82",
     "@salesforce/source-testkit": "^2.2.10",
     "@salesforce/ts-sinon": "1.4.19",
@@ -42,8 +42,6 @@
   "files": [
     "/lib",
     "/messages",
-    "/npm-shrinkwrap.json",
-    "/oclif.lock",
     "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/salesforcecli/plugin-source",
