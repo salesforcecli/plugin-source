@@ -1,3 +1,9 @@
+## [3.3.13](https://github.com/salesforcecli/plugin-source/compare/3.3.12...3.3.13) (2024-05-15)
+
+### Bug Fixes
+
+- bump STL ([#1183](https://github.com/salesforcecli/plugin-source/issues/1183)) ([468ee44](https://github.com/salesforcecli/plugin-source/commit/468ee44205486b91e74fe0e54982f8098657e558))
+
 ## [3.3.12](https://github.com/salesforcecli/plugin-source/compare/3.3.11...3.3.12) (2024-05-12)
 
 ### Bug Fixes
