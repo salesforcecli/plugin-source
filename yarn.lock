@@ -1466,23 +1466,23 @@
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.6"
 
-"@salesforce/cli-plugins-testkit@^5.3.2", "@salesforce/cli-plugins-testkit@^5.3.5":
-  version "5.3.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.5.tgz#1aff37ffaba78552a7dcacf62817efb94ae883e6"
-  integrity sha512-fL6EsPDVv3+0u+5CqVsGa+PixqmVElQUsIS5RjUYAs6bvUpBG/vK5EAS+BwWroZhoFgmUgh7hFQJCSssaf7NOQ==
+"@salesforce/cli-plugins-testkit@^5.3.5", "@salesforce/cli-plugins-testkit@^5.3.8":
+  version "5.3.9"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.9.tgz#864cb3e2421c1734c3d4ba838aa7e6447abaf201"
+  integrity sha512-v9WQZCCX1Izs4e/4hMn5nCsPyoE3iUmdpV5/nT9lfjFdtdUlwpfhdwUJqNczEz8g2qkJnebYETrB+KklHAQj2A==
   dependencies:
-    "@salesforce/core" "^7.3.8"
-    "@salesforce/kit" "^3.1.1"
+    "@salesforce/core" "^7.3.9"
+    "@salesforce/kit" "^3.1.2"
     "@salesforce/ts-types" "^2.0.9"
     "@types/shelljs" "^0.8.15"
-    debug "^4.3.1"
+    debug "^4.3.5"
     jszip "^3.10.1"
     shelljs "^0.8.4"
     sinon "^17.0.2"
     strip-ansi "6.0.1"
-    ts-retry-promise "^0.8.0"
+    ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^7.0.0", "@salesforce/core@^7.2.0", "@salesforce/core@^7.3.5", "@salesforce/core@^7.3.6", "@salesforce/core@^7.3.8", "@salesforce/core@^7.3.9":
+"@salesforce/core@^7.0.0", "@salesforce/core@^7.2.0", "@salesforce/core@^7.3.6", "@salesforce/core@^7.3.8", "@salesforce/core@^7.3.9":
   version "7.3.9"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-7.3.9.tgz#8abe2b3e2393989d11e92b7a6b96043fc9d5b9c8"
   integrity sha512-eJqDiA5b7wU50Ee/xjmGzSnHrNVJ8S77B7enfX30gm7gxU3i3M3QeBdiV6XAOPLSIL96DseofP6Tv6c+rljlKA==
@@ -1587,7 +1587,7 @@
     "@salesforce/ts-types" "^2.0.9"
     chalk "^5.3.0"
 
-"@salesforce/source-deploy-retrieve@^11.4.3", "@salesforce/source-deploy-retrieve@^11.6.2", "@salesforce/source-deploy-retrieve@^11.6.4":
+"@salesforce/source-deploy-retrieve@^11.6.2", "@salesforce/source-deploy-retrieve@^11.6.4":
   version "11.6.4"
   resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-11.6.4.tgz#9aa54f115b1f58a08a3f38d7945ce734feba824c"
   integrity sha512-HwR33sizKJD+33Xgo7IiwnHYLXuKTwShzlr4Rv3oRBoHZyaz4wBpJOtVldwVq5l5U9++Nk5iBI4IXyWaX7SlOg==
@@ -1605,18 +1605,18 @@
     minimatch "^5.1.6"
     proxy-agent "^6.4.0"
 
-"@salesforce/source-testkit@^2.2.13":
-  version "2.2.13"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.2.13.tgz#489701b3d81d31c263da11140f24d816521ee8e3"
-  integrity sha512-ugXfB/G0MCBKd5ZzNPt373GmRYdY7wgv13lbeZJt5Dpn1A5hOKkb1OgaPF8llChPxCI2ULhoKv1OsRaxeOnGMw==
+"@salesforce/source-testkit@^2.2.23":
+  version "2.2.23"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.2.23.tgz#26475ea1fb04643291ebb5a3fb214836e80e719d"
+  integrity sha512-FSaKz3thMxkWXzqRwhAssRyEf5ZkSzJUv4a1/TIdJB1VjL6Fd8oq8CkIpuuSHHVrHnqgStAGOII+I6ZOiAwiZQ==
   dependencies:
-    "@salesforce/cli-plugins-testkit" "^5.3.2"
-    "@salesforce/core" "^7.3.5"
-    "@salesforce/kit" "^3.1.1"
-    "@salesforce/source-deploy-retrieve" "^11.4.3"
+    "@salesforce/cli-plugins-testkit" "^5.3.8"
+    "@salesforce/core" "^7.3.9"
+    "@salesforce/kit" "^3.1.2"
+    "@salesforce/source-deploy-retrieve" "^11.6.4"
     "@salesforce/ts-types" "^2.0.9"
     chai "^4.4.1"
-    debug "^4.3.1"
+    debug "^4.3.5"
     fast-glob "^3.3.2"
     shelljs "^0.8.4"
     sinon "^10.0.0"
@@ -3534,7 +3534,14 @@ dateformat@^4.6.3:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-4.6.3.tgz#556fa6497e5217fedb78821424f8a1c22fa3f4b5"
   integrity sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==
 
-debug@4, debug@4.3.4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.5.tgz#e83444eceb9fedd4a1da56d671ae2446a01a6e1e"
+  integrity sha512-pt0bNEmneDIvdL1Xsd9oDQ/wrQRkXDT4AUWlNZNPKvW5x/jyO9VFXkJUP07vQ2upmw5PlaITaPKc31jK13V+jg==
+  dependencies:
+    ms "2.1.2"
+
+debug@4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -7579,7 +7586,7 @@ ts-retry-promise@^0.7.1:
   resolved "https://registry.yarnpkg.com/ts-retry-promise/-/ts-retry-promise-0.7.1.tgz#176d6eee6415f07b6c7c286d3657355e284a6906"
   integrity sha512-NhHOCZ2AQORvH42hOPO5UZxShlcuiRtm7P2jIq2L2RY3PBxw2mLnUsEdHrIslVBFya1v5aZmrR55lWkzo13LrQ==
 
-ts-retry-promise@^0.8.0, ts-retry-promise@^0.8.1:
+ts-retry-promise@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/ts-retry-promise/-/ts-retry-promise-0.8.1.tgz#ba90eb07cb03677fcbf78fe38e94c9183927e154"
   integrity sha512-+AHPUmAhr5bSRRK5CurE9kNH8gZlEHnCgusZ0zy2bjfatUBDX0h6vGQjiT0YrGwSDwRZmU+bapeX6mj55FOPvg==
