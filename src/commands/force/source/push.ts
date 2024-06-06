@@ -20,7 +20,6 @@ import {
 import { Interfaces } from '@oclif/core';
 import { DeployCommand } from '../../../deployCommand.js';
 import { PushResponse, PushResultFormatter } from '../../../formatters/source/pushResultFormatter.js';
-import { ProgressFormatter } from '../../../formatters/progressFormatter.js';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter.js';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
 import { trackingSetup, updateTracking } from '../../../trackingFunctions.js';
@@ -149,8 +148,8 @@ export default class Push extends DeployCommand {
 
       // we're not print JSON output
       if (!this.jsonEnabled()) {
-        const progressFormatter: ProgressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
-          ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+        const progressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
+          ? new DeployProgressBarFormatter()
           : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
         progressFormatter.progress(deploy);
       }

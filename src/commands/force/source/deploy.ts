@@ -29,7 +29,6 @@ import {
   DeployAsyncResultFormatter,
   DeployCommandAsyncResult,
 } from '../../../formatters/source/deployAsyncResultFormatter.js';
-import { ProgressFormatter } from '../../../formatters/progressFormatter.js';
 import { DeployProgressBarFormatter } from '../../../formatters/deployProgressBarFormatter.js';
 import { DeployProgressStatusFormatter } from '../../../formatters/deployProgressStatusFormatter.js';
 import { filterConflictsByComponentSet, trackingSetup, updateTracking } from '../../../trackingFunctions.js';
@@ -283,8 +282,8 @@ export class Deploy extends DeployCommand {
       if (!this.isAsync) {
         // we're not print JSON output
         if (!this.jsonEnabled()) {
-          const progressFormatter: ProgressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
-            ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+          const progressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
+            ? new DeployProgressBarFormatter()
             : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }), {
                 verbose: this.flags.verbose,
               });
