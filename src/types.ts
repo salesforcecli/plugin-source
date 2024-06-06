@@ -7,20 +7,11 @@
 
 export type FsError = {
   code: string;
-} & Error
+} & Error;
 
 export type EnsureFsFlagOptions = {
   flagName: string;
   path?: string;
   type: 'dir' | 'file' | 'any';
   throwOnENOENT?: boolean;
-}
-
-export type ProgressBar = {
-  total?: number;
-  value?: number;
-  start: (total: number, startValue: number, payload?: object) => void;
-  update: (num: number, payload?: object) => void;
-  setTotal: (num: number) => void;
-  stop: () => void;
 };

@@ -19,7 +19,6 @@ import {
 import { Interfaces } from '@oclif/core';
 import { MdDeployResult, MdDeployResultFormatter } from '../../../../formatters/mdapi/mdDeployResultFormatter.js';
 import { DeployCommand, getCoverageFormattersOptions, reportsFormatters } from '../../../../deployCommand.js';
-import { ProgressFormatter } from '../../../../formatters/progressFormatter.js';
 import { DeployProgressBarFormatter } from '../../../../formatters/deployProgressBarFormatter.js';
 import { DeployProgressStatusFormatter } from '../../../../formatters/deployProgressStatusFormatter.js';
 
@@ -112,8 +111,8 @@ export class Report extends DeployCommand {
 
     const deploy = this.createDeploy(this.org.getConnection(), deployId);
     if (!this.jsonEnabled()) {
-      const progressFormatter: ProgressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
-        ? new DeployProgressBarFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }))
+      const progressFormatter = env.getBoolean('SF_USE_PROGRESS_BAR', true)
+        ? new DeployProgressBarFormatter()
         : new DeployProgressStatusFormatter(new Ux({ jsonEnabled: this.jsonEnabled() }));
       progressFormatter.progress(deploy);
     }

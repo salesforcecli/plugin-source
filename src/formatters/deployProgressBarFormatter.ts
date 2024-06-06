@@ -5,42 +5,38 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import { once } from '@salesforce/kit';
+import { MetadataApiDeploy, MetadataApiDeployStatus } from '@salesforce/source-deploy-retrieve';
 import { SingleBar } from 'cli-progress';
-import { Ux } from '@salesforce/sf-plugins-core';
-import { ProgressFormatter } from './progressFormatter.js';
 
-export class DeployProgressBarFormatter extends ProgressFormatter {
+export class DeployProgressBarFormatter {
   protected progressBar = new SingleBar({
     format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
     linewrap: true,
+    noTTYOutput: Boolean(process.env.TERM === 'dumb' || !process.stdin.isTTY),
   });
-  public constructor(ux: Ux) {
-    super(ux);
-  }
+
+  public constructor() {}
 
   // displays the progress of the Deployment
   public progress(deploy: MetadataApiDeploy): void {
-    const startProgressBar = once((componentTotal: number) => {
-      this.progressBar.start(componentTotal, 0);
-    });
-
-    deploy.onUpdate((data) => {
-      // the numCompTot. isn't computed right away, wait to start until we know how many we have
-      const total = data.numberComponentsTotal + data.numberTestsTotal;
-      if (data.numberComponentsTotal) {
-        startProgressBar(total);
-        this.progressBar.update(data.numberComponentsDeployed + data.numberTestsCompleted);
+    this.progressBar.start(0, 0);
+    deploy.onUpdate(
+      ({
+        numberComponentsTotal,
+        numberTestsTotal,
+        numberComponentsDeployed,
+        numberTestsCompleted,
+      }: MetadataApiDeployStatus) => {
+        // the numberComponentsTotal isn't computed right away, wait to start until we know how many we have
+        const total = numberComponentsTotal + numberTestsTotal;
+        if (this.progressBar.getTotal() !== total) {
+          this.progressBar.setTotal(total);
+        }
+        this.progressBar.update(numberComponentsDeployed + numberTestsCompleted);
       }
-
-      // the numTestsTot. isn't computed until validated as tests by the server, update the PB once we know
-      if (data.numberTestsTotal && data.numberComponentsTotal) {
-        this.progressBar.setTotal(total);
-      }
-    });
+    );
 
     // any thing else should stop the progress bar
     deploy.onFinish((data) => {

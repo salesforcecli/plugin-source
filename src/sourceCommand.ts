@@ -13,7 +13,7 @@ import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { getString, Optional } from '@salesforce/ts-types';
 import { SingleBar } from 'cli-progress';
 import { SfCommand } from '@salesforce/sf-plugins-core';
-import { EnsureFsFlagOptions, FsError, ProgressBar } from './types.js';
+import { EnsureFsFlagOptions, FsError } from './types.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.validation');
@@ -21,7 +21,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'flags.valid
 export abstract class SourceCommand extends SfCommand<unknown> {
   public static readonly DEFAULT_WAIT_MINUTES = 33;
 
-  protected progressBar?: ProgressBar;
+  protected progressBar?: SingleBar;
   protected componentSet?: ComponentSet;
 
   protected initProgressBar(): void {
@@ -31,7 +31,7 @@ export abstract class SourceCommand extends SfCommand<unknown> {
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',
       linewrap: true,
-    }) as ProgressBar;
+    });
   }
 
   /**

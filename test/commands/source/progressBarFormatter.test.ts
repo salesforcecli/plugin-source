@@ -8,35 +8,33 @@ import { EventEmitter } from 'node:events';
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { assert, expect } from 'chai';
-import { Ux } from '@salesforce/sf-plugins-core';
 import { TestContext } from '@salesforce/core/testSetup';
+import { SingleBar } from 'cli-progress';
 import { DeployProgressBarFormatter } from '../../../src/formatters/deployProgressBarFormatter.js';
-import { ProgressBar } from '../../../src/types.js';
 
 describe('Progress Bar Events', () => {
   const sandbox = new TestContext().SANDBOX;
   const username = 'me@my.org';
   const deploy = new MetadataApiDeploy({ usernameOrConnection: username, id: '123' });
-  const progressBarFormatter = new DeployProgressBarFormatter(Ux.prototype);
-  let bar: ProgressBar;
+  let progressBarFormatter: DeployProgressBarFormatter;
+  let bar: SingleBar;
   let events: EventEmitter;
 
   const overrideEvent = (event: EventEmitter) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore the deploy must be listening to the same EventEmitter emitting events
+    // @ts-expect-error the deploy must be listening to the same EventEmitter emitting events
     deploy.event = event;
   };
 
-  const getProgressbar = () =>
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore protected member access
-    progressBarFormatter.progressBar;
+  // @ts-expect-error protected member access
+  const getProgressbar = () => progressBarFormatter.progressBar;
+
   afterEach(() => {
     sandbox.restore();
   });
 
   beforeEach(() => {
     events = new EventEmitter();
+    progressBarFormatter = new DeployProgressBarFormatter();
     overrideEvent(events);
     progressBarFormatter.progress(deploy);
     bar = getProgressbar();
@@ -49,8 +47,8 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 0,
       numberTestsTotal: 0,
     });
-    expect(bar.value).to.equal(3);
-    expect(bar.total).to.equal(5);
+    expect(bar.getTotal()).to.equal(5);
+    expect(bar.getProgress()).to.equal(3 / 5);
     events.emit('finish', {
       response: {
         numberComponentsTotal: 5,
@@ -68,8 +66,8 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 0,
       numberTestsTotal: 0,
     });
-    expect(bar.total).to.equal(10);
-    expect(bar.value).to.equal(3);
+    expect(bar.getTotal()).to.equal(10);
+    expect(bar.getProgress()).to.equal(3 / 10);
     // deploy done, tests running
     events.emit('update', {
       numberComponentsTotal: 10,
@@ -77,8 +75,8 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 5,
       numberTestsTotal: 10,
     });
-    expect(bar.total).to.equal(20);
-    expect(bar.value).to.equal(15);
+    expect(bar.getTotal()).to.equal(20);
+    expect(bar.getProgress()).to.equal(15 / 20);
     // all done
     events.emit('finish', {
       response: {
@@ -88,7 +86,7 @@ describe('Progress Bar Events', () => {
         numberTestsTotal: 10,
       },
     });
-    expect(bar.value).to.equal(20);
+    expect(bar.getProgress()).to.equal(20 / 20);
   });
 
   it('should update progress bar when server returns different calculated value', () => {
@@ -98,8 +96,8 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 0,
       numberTestsTotal: 0,
     });
-    expect(bar.total).to.equal(20);
-    expect(bar.value).to.equal(3);
+    expect(bar.getTotal()).to.equal(20);
+    expect(bar.getProgress()).to.equal(3 / 20);
     // deploy done, tests running
     events.emit('update', {
       numberComponentsTotal: 20,
@@ -107,8 +105,8 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 5,
       numberTestsTotal: 10,
     });
-    expect(bar.total).to.equal(30);
-    expect(bar.value).to.equal(15);
+    expect(bar.getTotal()).to.equal(30);
+    expect(bar.getProgress()).to.equal(15 / 30);
     // all done - notice 19 comps. deployed
     events.emit('finish', {
       response: {
@@ -118,8 +116,8 @@ describe('Progress Bar Events', () => {
         numberTestsTotal: 10,
       },
     });
-    expect(bar.value).to.equal(29);
-    expect(bar.total).to.equal(29);
+    expect(bar.getProgress()).to.equal(29 / 29);
+    expect(bar.getTotal()).to.equal(29);
   });
 
   it('should stop progress bar onCancel', () => {
@@ -131,8 +129,8 @@ describe('Progress Bar Events', () => {
       numberTestsCompleted: 0,
       numberTestsTotal: 0,
     });
-    expect(bar.total).to.equal(10);
-    expect(bar.value).to.equal(3);
+    expect(bar.getTotal()).to.equal(10);
+    expect(bar.getProgress()).to.equal(3 / 10);
 
     events.emit('cancel');
     expect(stopSpy.calledOnce).to.be.true;
@@ -148,8 +146,8 @@ describe('Progress Bar Events', () => {
       numberTestsTotal: 0,
     });
 
-    expect(bar.total).to.equal(10);
-    expect(bar.value).to.equal(3);
+    expect(bar.getTotal()).to.equal(10);
+    expect(bar.getProgress()).to.equal(3 / 10);
 
     try {
       events.emit('error', new Error('error on deploy'));
