@@ -28,7 +28,6 @@ import {
   requiredOrgFlagWithDeprecations,
   Ux,
 } from '@salesforce/sf-plugins-core';
-import { AlphabetLowercase } from '@oclif/core/lib/interfaces';
 import { SourceCommand } from '../../../sourceCommand.js';
 import {
   PackageRetrieval,
@@ -57,8 +56,7 @@ export class Retrieve extends SourceCommand {
     message: messages.getMessage('deprecation', [replacement]),
   };
   public static readonly flags = {
-    // I have no idea why 'a' isn't matching the type AlphabetLowercase automatically
-    'api-version': { ...orgApiVersionFlagWithDeprecations, char: 'a' as AlphabetLowercase },
+    'api-version': { ...orgApiVersionFlagWithDeprecations, char: 'a' as const },
     loglevel,
     'target-org': requiredOrgFlagWithDeprecations,
     retrievetargetdir: Flags.directory({
