@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import { Messages, SfError } from '@salesforce/core';
 import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import { getString, Optional } from '@salesforce/ts-types';
-import { ux } from '@oclif/core';
+import { SingleBar } from 'cli-progress';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import { EnsureFsFlagOptions, FsError, ProgressBar } from './types.js';
 
@@ -26,7 +26,7 @@ export abstract class SourceCommand extends SfCommand<unknown> {
 
   protected initProgressBar(): void {
     this.debug('initializing progress bar');
-    this.progressBar = ux.progress({
+    this.progressBar = new SingleBar({
       format: 'SOURCE PROGRESS | {bar} | {value}/{total} Components',
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',

@@ -7,12 +7,12 @@
 
 import { MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
 import { once } from '@salesforce/kit';
-import { ux as coreUx } from '@oclif/core';
+import { SingleBar } from 'cli-progress';
 import { Ux } from '@salesforce/sf-plugins-core';
 import { ProgressFormatter } from './progressFormatter.js';
 
 export class DeployProgressBarFormatter extends ProgressFormatter {
-  protected progressBar = coreUx.progress({
+  protected progressBar = new SingleBar({
     format: 'DEPLOY PROGRESS | {bar} | {value}/{total} Components',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
