@@ -143,7 +143,7 @@ describe('conflict detection and resolution', () => {
         filePath,
       },
     ]);
-    expect(json?.code).to.equal(1);
+    expect(json?.code).to.equal('sourceConflictDetected');
     expect(json?.exitCode).to.equal(1);
     expect(json?.status).to.equal(1);
     expect(json?.name).to.equal('sourceConflictDetected');
