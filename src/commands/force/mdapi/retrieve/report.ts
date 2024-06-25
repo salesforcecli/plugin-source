@@ -33,6 +33,10 @@ export class Report extends SourceCommand {
   public static readonly description = messages.getMessage('report.description');
   public static readonly examples = messages.getMessages('report.examples');
   public static readonly state = 'deprecated';
+  public static readonly deprecationOptions = {
+    to: 'project retrieve report',
+    message: messages.getMessage('deprecation', ['project retrieve report']),
+  };
   public static readonly hidden = true;
   public static readonly flags = {
     'api-version': orgApiVersionFlagWithDeprecations,
