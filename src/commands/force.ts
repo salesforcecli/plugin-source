@@ -76,8 +76,7 @@ export class ForceCommand extends SfCommand<ForceCommandResult> {
   public static readonly examples = [];
   public static state = 'deprecated';
   public static readonly deprecationOptions = {
-    message:
-      'The Salesforce CLI does ship an API version.  You can use "org display" to see the API version of any org.',
+    message: 'Use "org display" to see the API version of any org.',
   };
   // eslint-disable-next-line sf-plugin/no-hardcoded-messages-commands
   public static readonly summary = 'Display the ASCII art logo for the Salesforce CLI';
