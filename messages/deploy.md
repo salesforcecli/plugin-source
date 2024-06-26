@@ -273,4 +273,4 @@ You requested an async deploy with code coverage or JUnit results. The reports w
 
 # deprecation
 
-We plan to deprecate this command in the future. Try using the "%s" command instead.
+This command is deprecated and will be removed from Salesforce CLI on November 6, 2024. Use the "%s" command instead.

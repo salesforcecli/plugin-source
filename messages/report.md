@@ -50,4 +50,4 @@ The metadata deploy operation failed.
 
 # deprecation
 
-We plan to deprecate this command in the future. Try using the "%s" and "%s" pair instead.
+This command is deprecated and will be removed from Salesforce CLI on November 6, 2024. Use the "%s" and "%s" pair instead.
