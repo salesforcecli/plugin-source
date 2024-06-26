@@ -54,4 +54,4 @@ Using specified username %s.
 
 # deprecation
 
-This command is deprecated and will be removed from the CLI on November 6, 2024. Use the "%s" and "%s" pair instead.
+This command is deprecated and will be removed from Salesforce CLI on November 6, 2024. Use the "%s" and "%s" pair instead.

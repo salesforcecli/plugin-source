@@ -117,4 +117,4 @@ If the retrieve request has completed, the retrieved metadata zip file will be w
 
 # deprecation
 
-This command is deprecated and will be removed from the CLI on November 6, 2024. Use the "%s" command instead.
+This command is deprecated and will be removed from Salesforce CLI on November 6, 2024. Use the "%s" command instead.

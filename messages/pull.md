@@ -62,4 +62,4 @@ Your retrieve request did not complete within the specified wait time [%s minute
 
 # deprecation
 
-This command is deprecated and will be removed from the CLI on November 6, 2024. Use the "%s" command instead.
+This command is deprecated and will be removed from Salesforce CLI on November 6, 2024. Use the "%s" command instead.

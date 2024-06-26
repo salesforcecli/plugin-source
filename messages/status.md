@@ -34,4 +34,4 @@ No local or remote changes found.
 
 # deprecation
 
-This command is deprecated and will be removed from the CLI on November 6, 2024. Use the "%s" command instead.
+This command is deprecated and will be removed from Salesforce CLI on November 6, 2024. Use the "%s" command instead.
