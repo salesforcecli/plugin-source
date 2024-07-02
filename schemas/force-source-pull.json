@@ -24,7 +24,7 @@
                 "type": "string"
               }
             },
-            "required": ["fullName", "state", "type"],
+            "required": ["state"],
             "additionalProperties": false
           }
         }
