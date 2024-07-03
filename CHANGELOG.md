@@ -1,3 +1,13 @@
+# [3.5.0](https://github.com/salesforcecli/plugin-source/compare/3.4.8...3.5.0) (2024-07-03)
+
+### Bug Fixes
+
+- **deps:** apex-node7, core8 ([#1230](https://github.com/salesforcecli/plugin-source/issues/1230)) ([6e87dd1](https://github.com/salesforcecli/plugin-source/commit/6e87dd13539333b8d5451674d09f2fd1e5899db7))
+
+### Features
+
+- removal notice ([#1226](https://github.com/salesforcecli/plugin-source/issues/1226)) ([78966a0](https://github.com/salesforcecli/plugin-source/commit/78966a0b96e230e04a980bc5dad32cfca029d2e3))
+
 ## [3.4.8](https://github.com/salesforcecli/plugin-source/compare/3.4.7...3.4.8) (2024-06-22)
 
 ### Bug Fixes
