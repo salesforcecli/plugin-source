@@ -7,7 +7,7 @@
   "dependencies": {
     "@oclif/core": "^4",
     "@salesforce/apex-node": "^7.0.2",
-    "@salesforce/core": "^8.1.0",
+    "@salesforce/core": "^8.1.1",
     "@salesforce/kit": "^3.1.6",
     "@salesforce/sf-plugins-core": "^11.1.2",
     "@salesforce/source-deploy-retrieve": "^12.1.4",
@@ -23,7 +23,7 @@
     "@oclif/plugin-help": "^6.2.3",
     "@salesforce/cli-plugins-testkit": "^5.3.15",
     "@salesforce/dev-scripts": "^10.2.2",
-    "@salesforce/plugin-command-reference": "^3.1.5",
+    "@salesforce/plugin-command-reference": "^3.1.8",
     "@salesforce/source-testkit": "^2.2.23",
     "@salesforce/ts-sinon": "1.4.20",
     "@types/archiver": "^5.3.2",
@@ -31,11 +31,11 @@
     "archiver": "^5.3.2",
     "chai-each": "^0.0.1",
     "cross-env": "^7.0.3",
-    "eslint-plugin-sf-plugin": "^1.18.8",
+    "eslint-plugin-sf-plugin": "^1.18.10",
     "fast-glob": "^3.3.1",
-    "oclif": "^4.10.11",
+    "oclif": "^4.13.12",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3"
   },
   "config": {},
   "engines": {
