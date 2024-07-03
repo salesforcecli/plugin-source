@@ -228,8 +228,8 @@ export class PushResultFormatter extends ResultFormatter {
         .filter((f) => f.state === ComponentStatus.Failed)
         .map((f) => {
           // we've filtered all of the file responses to failed errors with the state filter  above
-          fileResponses.push(f as FileResponseFailure);
-          fileResponseFailures.set(`${f.type}#${f.fullName}`, (f as FileResponseFailure).error);
+          fileResponses.push(f);
+          fileResponseFailures.set(`${f.type}#${f.fullName}`, f.error);
         });
       this.sortFileResponses(fileResponses);
       this.asRelativePaths(fileResponses);

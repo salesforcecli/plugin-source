@@ -461,6 +461,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["Created", "Changed", "Unchanged", "Deleted"]
+        },
         "fullName": {
           "type": "string"
         },
@@ -469,13 +473,9 @@
         },
         "filePath": {
           "type": "string"
-        },
-        "state": {
-          "type": "string",
-          "enum": ["Created", "Changed", "Unchanged", "Deleted"]
         }
       },
-      "required": ["fullName", "state", "type"]
+      "required": ["state"]
     },
     "FileResponseFailure": {
       "type": "object",
