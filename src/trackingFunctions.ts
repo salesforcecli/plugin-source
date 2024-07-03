@@ -22,7 +22,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-source', 'tracking');
 type TrackingSetupRequest = {
   ignoreConflicts: boolean;
   ux: Ux;
-} & SourceTrackingOptions
+} & SourceTrackingOptions;
 
 type TrackingUpdateRequest = {
   tracking: SourceTracking;
@@ -33,7 +33,7 @@ type TrackingUpdateRequest = {
    * You can also pass this in if your command already ran getFileResponses and you want to avoid the perf hit from doing it twice
    */
   fileResponses?: FileResponse[];
-}
+};
 
 type ConflictResponse = {
   state: 'Conflict';
@@ -100,10 +100,10 @@ export const updateTracking = async ({ tracking, result, ux, fileResponses }: Tr
     tracking.updateLocalTracking({
       files: successes
         .filter((fileResponse) => fileResponse.state !== ComponentStatus.Deleted)
-        .map((fileResponse) => fileResponse.filePath as string),
+        .map((fileResponse) => fileResponse.filePath),
       deletedFiles: successes
         .filter((fileResponse) => fileResponse.state === ComponentStatus.Deleted)
-        .map((fileResponse) => fileResponse.filePath as string),
+        .map((fileResponse) => fileResponse.filePath),
     }),
     tracking.updateRemoteTracking(
       successes.map(({ state, fullName, type, filePath }) => ({ state, fullName, type, filePath })),
