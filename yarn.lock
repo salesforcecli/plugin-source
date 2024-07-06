@@ -1346,12 +1346,12 @@
     istanbul-lib-report "^3.0.1"
     istanbul-reports "^3.1.7"
 
-"@salesforce/cli-plugins-testkit@^5.3.15", "@salesforce/cli-plugins-testkit@^5.3.8":
-  version "5.3.15"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.15.tgz#a7e240119bbc987e869873c5a3ce3d70abbfe120"
-  integrity sha512-nst9ZKu7pqkR4Ayf3klbg4/41CmxJuLzdBL9EqGNZyZgKXBw1g+nlCcfvV9q1sY3LF2L2ljsC8N8phqiFoDKOQ==
+"@salesforce/cli-plugins-testkit@^5.3.17", "@salesforce/cli-plugins-testkit@^5.3.8":
+  version "5.3.17"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-5.3.17.tgz#b1a66508cf7a5d235d4fe30cf6b0045776ef7a2f"
+  integrity sha512-+cPyjXfuVD3pYjm+EGYC4JowoYq8QXRyTTDlZTVPD8VBe/byyXzxdphjK5gIuKhBYvKwWN1kT3zbno25U49ljQ==
   dependencies:
-    "@salesforce/core" "^8.0.1"
+    "@salesforce/core" "^8.1.0"
     "@salesforce/kit" "^3.1.6"
     "@salesforce/ts-types" "^2.0.10"
     "@types/shelljs" "^0.8.15"
