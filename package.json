@@ -27,7 +27,7 @@
     "@salesforce/source-testkit": "^2.2.37",
     "@salesforce/ts-sinon": "1.4.20",
     "@types/archiver": "^5.3.2",
-    "@types/cli-progress": "^3.11.5",
+    "@types/cli-progress": "^3.11.6",
     "archiver": "^5.3.2",
     "chai-each": "^0.0.1",
     "cross-env": "^7.0.3",
