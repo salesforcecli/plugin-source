@@ -1,3 +1,9 @@
+## [3.5.4](https://github.com/salesforcecli/plugin-source/compare/3.5.3...3.5.4) (2024-07-13)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/source-tracking from 7.0.1 to 7.0.7 ([#1242](https://github.com/salesforcecli/plugin-source/issues/1242)) ([4979346](https://github.com/salesforcecli/plugin-source/commit/4979346366c99db89d8e7605456309f6e85da12f))
+
 ## [3.5.3](https://github.com/salesforcecli/plugin-source/compare/3.5.2...3.5.3) (2024-07-06)
 
 ### Bug Fixes
