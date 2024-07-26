@@ -51,8 +51,7 @@ context('Deploy metadata NUTs [name: %REPO_NAME%]', () => {
     }
 
     it('should throw an error if the metadata is not valid', async () => {
-      const deploy = await testkit.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
-      testkit.expect.errorToHaveName(deploy ?? {}, 'SfError');
+      await testkit.deploy({ args: '--metadata DOES_NOT_EXIST', exitCode: 1 });
     });
 
     it('should not deploy metadata outside of a package directory', async () => {

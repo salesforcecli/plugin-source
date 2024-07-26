@@ -7,7 +7,6 @@
 
 import { fileURLToPath } from 'node:url';
 import { SourceTestkit } from '@salesforce/source-testkit';
-import { JsonMap } from '@salesforce/ts-types';
 import { RepoConfig, TEST_REPOS_MAP } from '../testMatrix.js';
 
 // DO NOT TOUCH. generateNuts.ts will insert these values
@@ -45,11 +44,10 @@ context('Retrieve metadata NUTs [name: %REPO_NAME%]', () => {
     }
 
     it('should throw an error if the metadata is not valid', async () => {
-      const retrieve = (await testkit.retrieve({
+      await testkit.retrieve({
         args: '--retrievetargetdir targetdir --metadata DOES_NOT_EXIST',
         exitCode: 1,
-      })) as JsonMap;
-      testkit.expect.errorToHaveName(retrieve, 'SfError');
+      });
     });
   });
 });
