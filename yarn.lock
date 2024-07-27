@@ -1520,15 +1520,15 @@
     minimatch "^9.0.5"
     proxy-agent "^6.4.0"
 
-"@salesforce/source-testkit@^2.2.40":
-  version "2.2.40"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.2.40.tgz#7f2225e8eb739ee6dcb0fdb66b6ab2059c9c2115"
-  integrity sha512-2uSeRj5iCqYawlOoHCzp9VMLfjrIWDHRuF5xfauWmjv9cmxBNIsKnqzvOM4m2vCILi5gYOh6YoHa9DflmGbhTw==
+"@salesforce/source-testkit@^2.2.41":
+  version "2.2.41"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-testkit/-/source-testkit-2.2.41.tgz#9554e1556ca7c0531d3ccc6bbf0a7a3b53397c07"
+  integrity sha512-xQCu5hl+ey8p1ngk3o+uAKcAncYi37JvERl/mrrQvjZZtB3YQPqHrnjQxA2bE+2GilawvG5N+FZIruCqyTfRQA==
   dependencies:
     "@salesforce/cli-plugins-testkit" "^5.3.18"
     "@salesforce/core" "^8.2.1"
     "@salesforce/kit" "^3.1.6"
-    "@salesforce/source-deploy-retrieve" "^12.1.5"
+    "@salesforce/source-deploy-retrieve" "^12.1.8"
     "@salesforce/ts-types" "^2.0.10"
     chai "^4.4.1"
     debug "^4.3.5"
