@@ -1,3 +1,9 @@
+## [3.5.10](https://github.com/salesforcecli/plugin-source/compare/3.5.9...3.5.10) (2024-07-30)
+
+### Bug Fixes
+
+- nullish in template-literal ([91a978d](https://github.com/salesforcecli/plugin-source/commit/91a978dd35584c607ca9e68110a497ab872856e5))
+
 ## [3.5.9](https://github.com/salesforcecli/plugin-source/compare/3.5.8...3.5.9) (2024-07-27)
 
 ### Bug Fixes
