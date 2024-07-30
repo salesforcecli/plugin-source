@@ -50,7 +50,7 @@ export const reportsFormatters = Object.keys(DefaultReportOptions);
 export abstract class DeployCommand extends SourceCommand {
   protected displayDeployId = once((id?: string) => {
     if (!this.jsonEnabled()) {
-      this.log(`Deploy ID: ${id}`);
+      this.log(`Deploy ID: ${id ?? '<not present>'}`);
     }
   });
 

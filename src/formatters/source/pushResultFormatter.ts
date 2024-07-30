@@ -240,7 +240,7 @@ export class PushResultFormatter extends ResultFormatter {
     if (deployMessages.length > failures.length) {
       // if there's additional failures in the API response, find the failure and add it to the output
       deployMessages.map((deployMessage) => {
-        if (!fileResponseFailures.has(`${deployMessage.componentType}#${deployMessage.fullName}`)) {
+        if (!fileResponseFailures.has(`${deployMessage.componentType ?? ''}#${deployMessage.fullName}`)) {
           // duplicate the problem message to the error property for displaying in the table
           failures.push(
             Object.assign(deployMessage, { error: deployMessage.problem }) as unknown as FileResponseFailure

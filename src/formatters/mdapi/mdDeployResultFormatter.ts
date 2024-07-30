@@ -182,7 +182,9 @@ export class MdDeployResultFormatter extends ResultFormatter {
       const tests = this.sortTestResults(failures);
 
       this.ux.log('');
-      this.ux.styledHeader(chalk.red(`Test Failures [${this.result.response.details.runTestResult?.numFailures}]`));
+      this.ux.styledHeader(
+        chalk.red(`Test Failures [${this.result.response.details.runTestResult?.numFailures ?? 0}]`)
+      );
       this.ux.table(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
