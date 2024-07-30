@@ -15,13 +15,7 @@ import {
   RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
 import { Optional, ensure } from '@salesforce/ts-types';
-import {
-  arrayWithDeprecation,
-  Flags,
-  loglevel,
-  requiredOrgFlagWithDeprecations,
-  Ux,
-} from '@salesforce/sf-plugins-core';
+import { Flags, loglevel, requiredOrgFlagWithDeprecations, Ux } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
 import { resolveZipFileName, SourceCommand } from '../../../sourceCommand.js';
 import { Stash } from '../../../stash.js';
@@ -66,7 +60,9 @@ export class Retrieve extends SourceCommand {
       summary: messages.getMessage('flags.sourcedir.summary'),
       exclusive: ['unpackaged', 'packagenames'],
     }),
-    packagenames: arrayWithDeprecation({
+    packagenames: Flags.string({
+      multiple: true,
+      delimiter: ',',
       char: 'p',
       summary: messages.getMessage('flags.packagenames.summary'),
       exclusive: ['sourcedir', 'unpackaged'],
@@ -123,7 +119,7 @@ export class Retrieve extends SourceCommand {
 
   protected async retrieve(): Promise<void> {
     const packagenames = this.flags.packagenames;
-    if (!packagenames && !this.flags.unpackaged) {
+    if (packagenames === this.unzip && !this.flags.unpackaged) {
       this.sourceDir = this.resolveRootDir(this.flags.sourcedir);
     }
     this.retrieveTargetDir = this.resolveOutputDir(this.flags.retrievetargetdir);
@@ -135,7 +131,7 @@ export class Retrieve extends SourceCommand {
     this.wait = waitFlag.minutes === -1 ? Duration.days(7) : waitFlag;
     this.isAsync = this.wait.quantity === 0;
 
-    if (singlePackage && packagenames?.length > 1) {
+    if (singlePackage && packagenames?.length) {
       throw new SfError(messages.getMessage('InvalidPackageNames', [packagenames.toString()]), 'InvalidPackageNames');
     }
 

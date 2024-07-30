@@ -222,7 +222,7 @@ export abstract class DeployCommand extends SourceCommand {
     if (resultsDir) {
       return resultsDir;
     }
-    if (coverageFormatters || junit) {
+    if (coverageFormatters.length || junit) {
       if (deployId) {
         return deployId;
       }

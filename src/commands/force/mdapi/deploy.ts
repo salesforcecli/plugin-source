@@ -8,13 +8,7 @@
 import { Duration, env } from '@salesforce/kit';
 import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { AsyncResult, DeployVersionData, MetadataApiDeploy } from '@salesforce/source-deploy-retrieve';
-import {
-  arrayWithDeprecation,
-  Flags,
-  loglevel,
-  orgApiVersionFlagWithDeprecations,
-  Ux,
-} from '@salesforce/sf-plugins-core';
+import { Flags, loglevel, orgApiVersionFlagWithDeprecations, Ux } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
 import {
   DeployCommand,
@@ -76,8 +70,10 @@ export class Deploy extends DeployCommand {
       summary: messages.getMessage('flags.testLevel.summary'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
-    runtests: arrayWithDeprecation({
+    runtests: Flags.string({
       char: 'r',
+      multiple: true,
+      delimiter: ',',
       summary: messages.getMessage('flags.runTests.summary'),
     }),
     ignoreerrors: Flags.boolean({
@@ -128,7 +124,9 @@ export class Deploy extends DeployCommand {
     resultsdir: Flags.directory({
       summary: messages.getMessage('flags.resultsDir.summary'),
     }),
-    coverageformatters: arrayWithDeprecation({
+    coverageformatters: Flags.string({
+      multiple: true,
+      delimiter: ',',
       summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
@@ -216,7 +214,7 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): MdDeployResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
+      this.flags.coverageformatters ?? [],
       this.flags.junit,
       this.flags.resultsdir,
       this.deployResult?.response?.id,
@@ -242,7 +240,7 @@ export class Deploy extends DeployCommand {
 
     if (!this.isAsync) {
       this.maybeCreateRequestedReports({
-        coverageformatters: this.flags.coverageformatters,
+        coverageformatters: this.flags.coverageformatters ?? [],
         junit: this.flags.junit,
         org: this.org,
       });
