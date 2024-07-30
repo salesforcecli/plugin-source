@@ -138,7 +138,7 @@ const processConflicts = (conflicts: ChangeResult[], ux: Ux, message: string): v
   const conflictMap = new Map<string, ConflictResponse>();
   conflicts.forEach((c) => {
     c.filenames?.forEach((f) => {
-      conflictMap.set(`${c.name}#${c.type}#${f}`, {
+      conflictMap.set(`${c.name ?? ''}#${c.type ?? ''}#${f}`, {
         state: 'Conflict',
         fullName: c.name as string,
         type: c.type as string,

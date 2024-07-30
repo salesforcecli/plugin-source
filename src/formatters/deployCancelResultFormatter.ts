@@ -25,7 +25,7 @@ export class DeployCancelResultFormatter extends ResultFormatter {
   }
 
   public display(): void {
-    const deployId = getString(this.result, 'response.id');
+    const deployId = this.result.response.id;
     if (this.isSuccess()) {
       this.ux.log(`Successfully canceled ${deployId}`);
     } else {

@@ -14,7 +14,7 @@ import {
   RetrieveResult,
   RetrieveVersionData,
 } from '@salesforce/source-deploy-retrieve';
-import { Optional, ensure } from '@salesforce/ts-types';
+import { Optional, ensure, ensureString } from '@salesforce/ts-types';
 import { Flags, loglevel, requiredOrgFlagWithDeprecations, Ux } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
 import { resolveZipFileName, SourceCommand } from '../../../sourceCommand.js';
@@ -100,7 +100,7 @@ export class Retrieve extends SourceCommand {
 
   protected retrieveResult: RetrieveResult | undefined;
   private sourceDir: string | undefined;
-  private retrieveTargetDir: string | undefined;
+  private retrieveTargetDir!: string;
   private zipFileName: string | undefined;
   private unzip: boolean | undefined;
   // will be set to `flags.wait` (which has a default value) when executed.
@@ -111,6 +111,7 @@ export class Retrieve extends SourceCommand {
   private org!: Org | undefined;
   public async run(): Promise<RetrieveCommandCombinedResult> {
     this.flags = (await this.parse(Retrieve)).flags;
+    this.retrieveTargetDir = this.resolveOutputDir(this.flags.retrievetargetdir);
     this.org = this.flags['target-org'];
     await this.retrieve();
     this.resolveSuccess();
@@ -185,7 +186,7 @@ export class Retrieve extends SourceCommand {
       unzip: this.unzip,
     });
 
-    this.log(`Retrieve ID: ${this.mdapiRetrieve.id}`);
+    this.log(`Retrieve ID: ${this.mdapiRetrieve.id ?? ''}`);
 
     if (this.isAsync) {
       this.spinner.stop('queued');
@@ -216,11 +217,11 @@ export class Retrieve extends SourceCommand {
   protected formatResult(): RetrieveCommandResult | RetrieveCommandAsyncResult {
     // async result
     if (this.isAsync) {
-      let cmdFlags = `--jobid ${this.mdapiRetrieve?.id} --retrievetargetdir ${this.retrieveTargetDir}`;
-      const targetusernameFlag = this.flags['target-org'];
-      if (targetusernameFlag) {
-        cmdFlags += ` --targetusername ${targetusernameFlag.getUsername()}`;
-      }
+      const targetUsername = this.flags['target-org'].getUsername();
+
+      const cmdFlags = `--jobid ${ensureString(this.mdapiRetrieve?.id)} --retrievetargetdir ${this.retrieveTargetDir}${
+        targetUsername ? ` --targetusername ${targetUsername}` : ''
+      }`;
       this.log('');
       this.log(messages.getMessage('checkStatus', [cmdFlags]));
       return {

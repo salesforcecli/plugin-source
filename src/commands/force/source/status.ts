@@ -114,7 +114,7 @@ const resultConverter = (input: StatusOutputRow): StatusResult => {
     type,
     // this string became the place to store information.
     // The JSON now breaks out that info but preserves this property for backward compatibility
-    state: `${origin} ${actualState}${conflict ? ' (Conflict)' : ''}` as StatusStateString,
+    state: `${origin} ${actualState as string}${conflict ? ' (Conflict)' : ''}` as StatusStateString,
     ignored,
     filePath,
     origin,

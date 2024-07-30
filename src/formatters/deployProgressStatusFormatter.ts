@@ -69,10 +69,10 @@ export class DeployProgressStatusFormatter extends ProgressFormatter {
       const testsTotal = getNumber(data, 'numberTestsTotal');
       const testsCompleted = getNumber(data, 'numberTestsCompleted');
       const testErrors = getNumber(data, 'numberTestErrors');
-      const deploys = `${componentsDeployed}/${componentsTotal} components deployed.`;
-      const deployErrors = componentErrors === 1 ? `${componentErrors} error.` : `${componentErrors} errors.`;
-      const tests = `${testsCompleted}/${testsTotal} tests completed.`;
-      const testErrs = testErrors === 1 ? `${testErrors} error.` : `${testErrors} errors.`;
+      const deploys = `${componentsDeployed ?? 0}/${componentsTotal ?? 0} components deployed.`;
+      const deployErrors = componentErrors === 1 ? `${componentErrors} error.` : `${componentErrors ?? 0} errors.`;
+      const tests = `${testsCompleted ?? 0}/${testsTotal ?? 0} tests completed.`;
+      const testErrs = testErrors === 1 ? `${testErrors} error.` : `${testErrors ?? 0} errors.`;
       this.ux.log(`${deploys} ${deployErrors}`);
       this.ux.log(`${tests} ${testErrs}`);
     } else {

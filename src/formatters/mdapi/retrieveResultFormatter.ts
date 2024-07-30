@@ -24,7 +24,7 @@ export type RetrieveResultFormatterOptions = {
   retrieveTargetDir: string;
   zipFileName?: string;
   unzip?: boolean;
-} & ResultFormatterOptions
+} & ResultFormatterOptions;
 
 export type RetrieveCommandAsyncResult = {
   done: boolean;
@@ -32,7 +32,7 @@ export type RetrieveCommandAsyncResult = {
   state: RequestStatus | 'Queued';
   status: RequestStatus | 'Queued';
   timedOut: boolean;
-}
+};
 
 export class RetrieveResultFormatter extends RetrieveFormatter {
   protected zipFilePath: string;
@@ -67,7 +67,7 @@ export class RetrieveResultFormatter extends RetrieveFormatter {
       this.ux.log(`Wrote retrieve zip to ${this.zipFilePath}`);
       if (this.options.unzip) {
         const extractPath = join(this.options.retrieveTargetDir, parse(this.options.zipFileName ?? '').name);
-        this.ux.log(`Extracted ${this.options.zipFileName} to: ${extractPath}`);
+        this.ux.log(`Extracted ${this.options.zipFileName ?? '<missing zipFileName>'} to: ${extractPath}`);
       }
       if (this.options.verbose) {
         const retrievedFiles = ensureArray(this.result.fileProperties);
