@@ -10,7 +10,6 @@ import { Messages, SfProject } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { ComponentSetBuilder } from '@salesforce/source-deploy-retrieve';
 import {
-  arrayWithDeprecation,
   Flags,
   loglevel,
   orgApiVersionFlagWithDeprecations,
@@ -65,7 +64,9 @@ export class Report extends DeployCommand {
     resultsdir: Flags.directory({
       summary: messages.getMessage('flags.resultsDir.summary'),
     }),
-    coverageformatters: arrayWithDeprecation({
+    coverageformatters: Flags.string({
+      multiple: true,
+      delimiter: ',',
       summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
@@ -87,7 +88,7 @@ export class Report extends DeployCommand {
     const deployId = this.resolveDeployId(this.flags.jobid);
 
     this.resultsDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
+      this.flags.coverageformatters ?? [],
       this.flags.junit,
       this.flags.resultsdir,
       deployId,
@@ -151,7 +152,7 @@ export class Report extends DeployCommand {
     );
 
     this.maybeCreateRequestedReports({
-      coverageformatters: this.flags.coverageformatters,
+      coverageformatters: this.flags.coverageformatters ?? [],
       junit: this.flags.junit,
       org: this.flags['target-org'],
     });

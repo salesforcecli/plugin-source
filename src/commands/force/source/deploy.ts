@@ -9,13 +9,7 @@ import { Lifecycle, Messages, Org } from '@salesforce/core';
 import { Duration, env } from '@salesforce/kit';
 import { SourceTracking } from '@salesforce/source-tracking';
 import { AsyncResult, ComponentSetBuilder, DeployVersionData } from '@salesforce/source-deploy-retrieve';
-import {
-  arrayWithDeprecation,
-  Flags,
-  loglevel,
-  orgApiVersionFlagWithDeprecations,
-  Ux,
-} from '@salesforce/sf-plugins-core';
+import { Flags, loglevel, orgApiVersionFlagWithDeprecations, Ux } from '@salesforce/sf-plugins-core';
 import { Interfaces } from '@oclif/core';
 import {
   DeployCommand,
@@ -83,13 +77,15 @@ export class Deploy extends DeployCommand {
       summary: messages.getMessage('flags.testLevel.summary'),
       options: ['NoTestRun', 'RunSpecifiedTests', 'RunLocalTests', 'RunAllTestsInOrg'],
     }),
-    runtests: arrayWithDeprecation({
+    runtests: Flags.string({
+      multiple: true,
+      delimiter: ',',
       char: 'r',
       summary: messages.getMessage('flags.runTests.summary'),
     }),
     ignoreerrors: Flags.boolean({
       char: 'o',
-      // brfeak this
+      // break this
       description: messages.getMessage('flags.ignoreErrors.description'),
       summary: messages.getMessage('flags.ignoreErrors.summary'),
     }),
@@ -113,14 +109,18 @@ export class Deploy extends DeployCommand {
     verbose: Flags.boolean({
       summary: messages.getMessage('flags.verbose.summary'),
     }),
-    metadata: arrayWithDeprecation({
+    metadata: Flags.string({
+      multiple: true,
+      delimiter: ',',
       char: 'm',
       description: messages.getMessage('flags.metadata.description'),
       summary: messages.getMessage('flags.metadata.summary'),
       exactlyOne: xorFlags,
     }),
-    sourcepath: arrayWithDeprecation({
+    sourcepath: Flags.string({
       char: 'p',
+      multiple: true,
+      delimiter: ',',
       description: messages.getMessage('flags.sourcePath.description'),
       summary: messages.getMessage('flags.sourcePath.summary'),
       exactlyOne: xorFlags,
@@ -153,7 +153,9 @@ export class Deploy extends DeployCommand {
     resultsdir: Flags.directory({
       summary: messages.getMessage('flags.resultsDir.summary'),
     }),
-    coverageformatters: arrayWithDeprecation({
+    coverageformatters: Flags.string({
+      multiple: true,
+      delimiter: ',',
       summary: messages.getMessage('flags.coverageFormatters.summary'),
       options: reportsFormatters,
       helpValue: reportsFormatters.join(','),
@@ -301,7 +303,7 @@ export class Deploy extends DeployCommand {
 
   protected formatResult(): DeployCommandResult | DeployCommandAsyncResult {
     this.resultsDir = this.resolveOutputDir(
-      this.flags.coverageformatters,
+      this.flags.coverageformatters ?? [],
       this.flags.junit,
       this.flags.resultsdir,
       this.deployResult?.response?.id,
@@ -327,7 +329,7 @@ export class Deploy extends DeployCommand {
 
     if (!this.isAsync) {
       this.maybeCreateRequestedReports({
-        coverageformatters: this.flags.coverageformatters,
+        coverageformatters: this.flags.coverageformatters ?? [],
         junit: this.flags.junit,
         org: this.org,
       });

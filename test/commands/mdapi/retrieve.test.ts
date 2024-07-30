@@ -109,7 +109,6 @@ describe('force:mdapi:retrieve', () => {
     sandbox.restore();
   });
 
-  // Ensure SourceCommand.createComponentSet() args
   const ensureCreateComponentSetArgs = (overrides?: Partial<ComponentSetOptions>) => {
     const defaultArgs = {
       packagenames: undefined,
