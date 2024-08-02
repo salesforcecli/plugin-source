@@ -1,3 +1,9 @@
+## [3.5.11](https://github.com/salesforcecli/plugin-source/compare/3.5.10...3.5.11) (2024-08-02)
+
+### Bug Fixes
+
+- **deps:** bump apex lib ([#1262](https://github.com/salesforcecli/plugin-source/issues/1262)) ([cf0524f](https://github.com/salesforcecli/plugin-source/commit/cf0524f427e5b48d7288ad477c0749da07226247))
+
 ## [3.5.10](https://github.com/salesforcecli/plugin-source/compare/3.5.9...3.5.10) (2024-07-30)
 
 ### Bug Fixes
