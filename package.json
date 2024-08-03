@@ -25,7 +25,7 @@
     "@salesforce/dev-scripts": "^10.2.9",
     "@salesforce/plugin-command-reference": "^3.1.10",
     "@salesforce/source-testkit": "^2.2.41",
-    "@salesforce/ts-sinon": "1.4.22",
+    "@salesforce/ts-sinon": "1.4.23",
     "@types/archiver": "^5.3.2",
     "@types/cli-progress": "^3.11.6",
     "archiver": "^5.3.2",
