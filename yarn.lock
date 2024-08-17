@@ -1029,7 +1029,7 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.2.tgz#d9fae00a2d5cb40f92cfe64b47ad749fbc38f917"
   integrity sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==
 
-"@inquirer/confirm@^3.1.14", "@inquirer/confirm@^3.1.16", "@inquirer/confirm@^3.1.17":
+"@inquirer/confirm@^3.1.14", "@inquirer/confirm@^3.1.16", "@inquirer/confirm@^3.1.22":
   version "3.1.22"
   resolved "https://registry.yarnpkg.com/@inquirer/confirm/-/confirm-3.1.22.tgz#23990624c11f60c6f7a5b0558c7505c35076a037"
   integrity sha512-gsAKIOWBm2Q87CDfs9fEo7wJT3fwWIJfnDGMn9Qy74gBnNFOACDNfhUzovubbJjWnKLGBln7/NcSmZwj5DuEXg==
@@ -1056,7 +1056,7 @@
     wrap-ansi "^6.2.0"
     yoctocolors-cjs "^2.1.2"
 
-"@inquirer/core@^9.0.2", "@inquirer/core@^9.0.7":
+"@inquirer/core@^9.0.2":
   version "9.0.7"
   resolved "https://registry.yarnpkg.com/@inquirer/core/-/core-9.0.7.tgz#ec529c2e8b531d574155f12615fbff42bb615da4"
   integrity sha512-wyqnTmlnd9p7cX6tfMlth+/Nx7vV2t/FvtO9VMSi2XjBkNy0MkPr19RSOyP3qrywdlJT+BQbEnXLPqq0wFMw3A==
@@ -1088,13 +1088,13 @@
     "@inquirer/core" "^9.0.10"
     "@inquirer/type" "^1.5.2"
 
-"@inquirer/password@^2.1.18":
-  version "2.1.19"
-  resolved "https://registry.yarnpkg.com/@inquirer/password/-/password-2.1.19.tgz#21d3f9f2dff2314830ebd8822dac2c1c5a270245"
-  integrity sha512-1BQqBlKFNfa+Cnio3cM1Qs78ho/eOek62ifiJBQZ1Q04K5lSGKwuoXxMZRHoafIN3ag9nicWCQZJxdWsvTNUkw==
+"@inquirer/password@^2.1.22":
+  version "2.1.22"
+  resolved "https://registry.yarnpkg.com/@inquirer/password/-/password-2.1.22.tgz#ec7ee5709923cf285b3e0ae53eed4fdc3c05b422"
+  integrity sha512-5Fxt1L9vh3rAKqjYwqsjU4DZsEvY/2Gll+QkqR4yEpy6wvzLxdSgFhUcxfDAOtO4BEoTreWoznC0phagwLU5Kw==
   dependencies:
-    "@inquirer/core" "^9.0.7"
-    "@inquirer/type" "^1.5.1"
+    "@inquirer/core" "^9.0.10"
+    "@inquirer/type" "^1.5.2"
     ansi-escapes "^4.3.2"
 
 "@inquirer/select@^2.3.10":
@@ -1424,17 +1424,17 @@
   resolved "https://registry.yarnpkg.com/@salesforce/schemas/-/schemas-1.9.0.tgz#ba477a112653a20b4edcf989c61c57bdff9aa3ca"
   integrity sha512-LiN37zG5ODT6z70sL1fxF7BQwtCX9JOWofSU8iliSNIM+WDEeinnoFtVqPInRSNt8I0RiJxIKCrqstsmQRBNvA==
 
-"@salesforce/sf-plugins-core@^11.1.6", "@salesforce/sf-plugins-core@^11.2.4":
-  version "11.2.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-11.2.4.tgz#ccec29eee7b71d0b0edbd283e6e2039025703fd2"
-  integrity sha512-gA4gQGfvQaW1CVodwGRHCfhWTo6zrOZq83Ygy/sVmz0KzffBvs6axUnKns9NMHUAGabwVZVY6bbnLJeFvCRWeg==
+"@salesforce/sf-plugins-core@^11.1.6", "@salesforce/sf-plugins-core@^11.3.2":
+  version "11.3.2"
+  resolved "https://registry.yarnpkg.com/@salesforce/sf-plugins-core/-/sf-plugins-core-11.3.2.tgz#8a4ffde0bbef88fe4d669844a119e8f436d6b0ab"
+  integrity sha512-QyFX/PBzw/hkBUJFl1HH+g7ghRSIwWy9Y0NZgCQgWQQJtV6Sfi4fyeaUafsiOjVnyCqa+r+tWHV/JgRr2yK9NA==
   dependencies:
-    "@inquirer/confirm" "^3.1.17"
-    "@inquirer/password" "^2.1.18"
+    "@inquirer/confirm" "^3.1.22"
+    "@inquirer/password" "^2.1.22"
     "@oclif/core" "^4.0.15"
     "@salesforce/core" "^8.2.7"
-    "@salesforce/kit" "^3.1.6"
-    "@salesforce/ts-types" "^2.0.11"
+    "@salesforce/kit" "^3.2.1"
+    "@salesforce/ts-types" "^2.0.12"
     ansis "^3.3.2"
     cli-progress "^3.12.0"
     natural-orderby "^3.0.2"
