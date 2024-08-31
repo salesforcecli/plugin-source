@@ -1443,10 +1443,10 @@
     string-width "^7.2.0"
     terminal-link "^3.0.0"
 
-"@salesforce/source-deploy-retrieve@^12.1.8", "@salesforce/source-deploy-retrieve@^12.4.0":
-  version "12.4.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.4.0.tgz#7e5a72b1d7b559eaa7f6f333ee212380b6316542"
-  integrity sha512-gvTEjLPbNRt62GEKvejt/f1TtG6Zx8JPd/5BYjnXyEJu8BeOy5kL4zJm9GD3ZiTzBnPGHLzfVL09JjWfNBbo0A==
+"@salesforce/source-deploy-retrieve@^12.1.8", "@salesforce/source-deploy-retrieve@^12.6.0":
+  version "12.6.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/source-deploy-retrieve/-/source-deploy-retrieve-12.6.0.tgz#0d2961fb2befeac0431fe8f6a70f439bc049fcea"
+  integrity sha512-gowMwjG93a8Bd5N05o46Z46TSsHZMeZXV3rQwMP3LXDnIhvSx3vxHJMzk0KKMOatfQFF2t+YI/6MR+47KWSblw==
   dependencies:
     "@salesforce/core" "^8.4.0"
     "@salesforce/kit" "^3.2.1"
@@ -1455,7 +1455,8 @@
     fast-xml-parser "^4.4.1"
     got "^11.8.6"
     graceful-fs "^4.2.11"
-    ignore "^5.3.1"
+    ignore "^5.3.2"
+    isbinaryfile "^5.0.2"
     jszip "^3.10.1"
     mime "2.6.0"
     minimatch "^9.0.5"
@@ -4810,10 +4811,10 @@ ieee754@^1.1.13, ieee754@^1.2.1:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
-ignore@^5.1.4, ignore@^5.2.0, ignore@^5.2.4, ignore@^5.3.0, ignore@^5.3.1:
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.1.tgz#5073e554cd42c5b33b394375f538b8593e34d4ef"
-  integrity sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==
+ignore@^5.1.4, ignore@^5.2.0, ignore@^5.2.4, ignore@^5.3.0, ignore@^5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.2.tgz#3cd40e729f3643fd87cb04e50bf0eb722bc596f5"
+  integrity sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==
 
 immediate@~3.0.5:
   version "3.0.6"
@@ -5109,6 +5110,11 @@ isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==
+
+isbinaryfile@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-5.0.2.tgz#fe6e4dfe2e34e947ffa240c113444876ba393ae0"
+  integrity sha512-GvcjojwonMjWbTkfMpnVHVqXW/wKMYDfEpY94/8zy8HFMOqb/VL6oeONq9v87q4ttVlaTLnGXnJD4B5B1OTGIg==
 
 isexe@^2.0.0:
   version "2.0.0"
