@@ -33,7 +33,7 @@
     "cross-env": "^7.0.3",
     "eslint-plugin-sf-plugin": "^1.20.7",
     "fast-glob": "^3.3.1",
-    "oclif": "^4.14.22",
+    "oclif": "^4.14.35",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
