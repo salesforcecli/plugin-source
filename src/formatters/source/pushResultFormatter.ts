@@ -134,6 +134,7 @@ export class PushResultFormatter extends ResultFormatter {
         'AuraDefinitionBundle',
         'WaveTemplateBundle',
         'ExperiencePropertyTypeBundle',
+        'LightningTypeBundle',
       ].includes(fileResponse.type)
     );
     if (bundlesDeployed.length === 0) {
